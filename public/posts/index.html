@@ -147,61 +147,37 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">week log
+    <h2 class="entry-hint-parent">How to Build a Blog System
     </h2>
   </header>
   <div class="entry-content">
-    <p>周报 周期 week1
-主要产出和链接 遇到的问题和解决方案 下周计划和优先级 需要协调的事项/决策请求 日报 日期 项目/任务: 当前进度/状态 用时 阻塞/需要支持: 明日计划 日报 日期 2025-11-02 10:54:11
-项目/任务: 当前进度/状态 用时 阻塞/需要支持: 明日计划</p>
+    <p>标题：用 Hugo &#43; GitHub Pages 十分钟上线个人博客（超详细新手指南） 副标题 / 摘要 本教程带你从零开始，将本地 Hugo 博客部署到 GitHub Pages，全程只需 10 分钟，适合想快速上线技术博客、文档站点的开发者。确保你不仅能跑起来，还能理解背后的工作原理。
+目标读者 Hugo 初学者 想快速上线个人技术博客的开发者 想了解 GitHub Pages &#43; GitHub Actions 部署的用户 想要零成本托管静态网站的同学 背景 / 动机：为什么要用 Hugo &#43; GitHub Pages？ 许多人写博客时面临这些痛点：
+发布文章要手动上传，不自动化 静态站点生成器很多，但部署步骤零散 GitHub Pages 文档不够清晰，新手容易踩坑 主题（如 PaperMod）需要正确处理资源（SCSS）才能编译成功 Hugo &#43; GitHub Pages &#43; GitHub Actions 组合 完美解决了这些问题：
+Hugo 构建速度极快（上千文章依旧瞬间生成） GitHub Pages 完全免费，不需要服务器 GitHub Actions 自动部署，写完文章 push 即上线 核心概念（必须理解） 1. Hugo 一个超快的静态博客生成器，通过 Markdown 生成 HTML。
+2. GitHub Pages GitHub 提供的免费静态网站托管。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-11-14 00:00:00 +0000 UTC'>November 14, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to week log" href="http://localhost:1313/jeanblog/posts/week_log/"></a>
+  <footer class="entry-footer"><span title='2025-11-14 15:04:02 +0800 HKT'>November 14, 2025</span>&nbsp;·&nbsp;<span>3 min</span></footer>
+  <a class="entry-link" aria-label="post link to How to Build a Blog System" href="http://localhost:1313/jeanblog/posts/how-to-build-a-blog-system/"></a>
 </article>
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">用一段优雅的python代码，把sqlalchemy模型高效转为字典
+    <h2 class="entry-hint-parent">How to Publish by Hugo
     </h2>
   </header>
   <div class="entry-content">
-    <p>标题
-用一段优雅的 Python 代码，把 SQLAlchemy 模型安全、高效地序列化成字典
-副标题 / 摘要
-SQLAlchemy 模型转字典（dict）看似简单，却暗藏字段格式、关系递归、循环引用等坑。本文通过一段实战代码，带你实现一个可复用的 _to_dict 序列化工具，并分析其设计取舍与改进方向，适合正在用 SQLAlchemy 写后端接口的你。
-目标读者
-这篇文章适合以下读者：
-使用 SQLAlchemy 做 ORM 的后端开发者 想把 ORM 模型转换为 JSON/dict 的 Python 工程师 对 模型序列化规范化 有需求的中级开发者 使用 Flask/FastAPI/Django &#43; SQLAlchemy 的同学 一、背景 / 动机：为什么要自己写 _to_dict？ 在 Web 开发中，我们几乎每天都要做一件事：
-把数据库里的 ORM 对象，转成可以 JSON 响应给前端的数据结构（通常是 dict / list）。
-乍一看好像只是 obj.__dict__ 或用个 asdict 就完事，但现实中的问题包括：
-日期时间字段无法直接 JSON 化： datetime / date 对象不能直接 JSON 序列化，必须格式化成字符串。
-关系字段怎么处理？
-一对多 / 多对多（uselist=True） 一对一 / 多对一（uselist=False） 避免递归爆炸： 两个模型互相关联，很容易序列化时陷入无限递归。
+    <p>标题：如何使用 Hugo 发布文章：从 Markdown 到线上博客的全流程指南 副标题 / 摘要 这篇文章教你如何使用 Hugo 创建、管理与发布文章，包括 front matter 设置、草稿管理、图片处理、目录结构、预览与上线，让你从零掌握完整写作流程。
+目标读者 Hugo 初学者 想用 Hugo 搭建技术博客的人 想学习 Markdown &#43; 静态站点写作流程的开发者 使用 PaperMod、DoIt 等主题的用户 背景 / 动机 很多人在成功搭建 Hugo 博客后会遇到新的困惑：
+文章应该放在哪个目录？ front matter 要怎么写？ 图片要放哪？ 为什么本地能看到文章但线上看不到？ 草稿 / 发布时间如何控制？ 怎样让文章自动出现在首页？ 这些都是 Hugo 新手非常常见的痛点。 本教程用实战步骤 &#43; 最佳实践帮助你完全掌握“如何发布文章”的整个流程。
+核心概念 1. Hugo Content（内容目录） Hugo 的文章都放在 content/ 目录下，比如：
+content/ posts/ my-first-post.md 2. Front Matter 文章头部的三段 YAML/TOML/JSON，用来控制文章：
+--- title: &#34;文章标题&#34; date: 2024-08-26 draft: false tags: [&#34;hugo&#34;, &#34;blog&#34;] --- 3. Draft（草稿） 草稿不会被构建，只能在本地用 hugo server -D 查看。
 ...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-11-12 00:00:00 +0000 UTC'>November 12, 2025</span>&nbsp;·&nbsp;<span>4 min</span></footer>
-  <a class="entry-link" aria-label="post link to 用一段优雅的python代码，把sqlalchemy模型高效转为字典" href="http://localhost:1313/jeanblog/posts/%E7%94%A8%E4%B8%80%E6%AE%B5%E4%BC%98%E9%9B%85%E7%9A%84python%E4%BB%A3%E7%A0%81%E6%8A%8Asqlalchemy%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E8%BD%AC%E4%B8%BA%E5%AD%97%E5%85%B8/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">用Issue把问题写清楚，从0到TEMPLATE
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>标题（吸引且准确，包含关键词） 用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南
-副标题 / 摘要 这篇文章手把手教你在 GitHub 仓库中配置「新需求 / Feature」与「Bug」Issue 模板，包括目录结构、YAML 表单、Markdown 模板以及常见坑。适合想让团队需求沟通更规范、减少反复追问的开发者和团队负责人。
-目标读者 这篇文章适合：
-经常在 GitHub 仓库里开 Issue、提需求的 后端 / 前端 / 全栈工程师 想把团队需求提交流程「标准化」的 项目负责人 / TL / 架构师 对 GitHub 已经有基本使用经验、但还没用过 Issue 模板的 中级开发者 完全新手也能看懂，但会默认你知道：什么是仓库、什么是 Issue、如何提交代码等。
-背景 / 动机：为什么要折腾 Issue 模板？ 没有 Issue 模板时，日常可能是这样的：
-“这个需求背景是什么？” “影响哪些模块？” “验收标准怎么算通过？” “优先级到底多高？” 一句话 Issue：
-“做个导出功能” 直接把所有人整破防。
-长期下来会有几个痛点：
-沟通成本高：每个需求都要反复追问细节； 信息不对称：请求人脑子里很清楚，但写在 Issue 里的只有一句话； 难以排期：没有明确优先级和验收标准，大家都觉得自己的需求是 P0； 历史难追踪：几个月后再看这个 Issue，完全不知道当时怎么想的。 而 GitHub 提供的 Issue Template，其实就是一套「结构化提问」工具：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-11-11 00:00:00 +0000 UTC'>November 11, 2025</span>&nbsp;·&nbsp;<span>4 min</span></footer>
-  <a class="entry-link" aria-label="post link to 用Issue把问题写清楚，从0到TEMPLATE" href="http://localhost:1313/jeanblog/posts/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/"></a>
+  <footer class="entry-footer"><span title='2025-11-14 15:01:32 +0800 HKT'>November 14, 2025</span>&nbsp;·&nbsp;<span>3 min</span></footer>
+  <a class="entry-link" aria-label="post link to How to Publish by Hugo" href="http://localhost:1313/jeanblog/posts/how-to-publish-by-hugo/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -328,6 +304,27 @@ WebSocket 的出现，彻底改变了这种单向关系， 让 Web 应用第一�
   </div>
   <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
   <a class="entry-link" aria-label="post link to 从 Pip 到 UV：一站式 Python 包管理与依赖同步指南" href="http://localhost:1313/jeanblog/posts/%E4%BB%8E-pip-%E5%88%B0-uv%E4%B8%80%E7%AB%99%E5%BC%8F-python-%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%90%8C%E6%AD%A5%E6%8C%87%E5%8D%97/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如何使用wrk进行压测
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🚀 使用 wrk 对接口进行高性能压力测试（超详细教程） 本文介绍如何在 Ubuntu 环境中使用 wrk 对后端接口（如 Flask / FastAPI / Spring Boot 等）进行高并发压力测试，并结合结果分析性能瓶颈。
+🧰 一、什么是 wrk？ wrk 是一个现代化、高性能的 HTTP 压测工具，由 C 语言编写，具有以下特点：
+高并发能力强：支持成千上万的并发连接 支持多线程：充分利用多核 CPU 可自定义 Lua 脚本：适合复杂场景（如自定义请求头、Body、Token 等） 比 Apache Benchmark (ab) 更轻量、更快、更稳定 ⚙️ 二、安装 wrk 在 Ubuntu / Debian 上安装：
+sudo apt update sudo apt install wrk -y 验证安装是否成功：
+wrk --version 输出类似：
+wrk 4.2.0 [epoll] 表示安装成功 ✅
+🧪 三、快速开始压测 假设你的服务运行在：
+http://192.168.1.224:5000/api/tenders 运行：
+wrk -t4 -c100 -d30s http://192.168.1.224:5000/api/tenders 参数说明： 参数 含义 -t4 启动 4 个线程（利用多核 CPU） -c100 模拟 100 个并发连接 -d30s 持续压测 30 秒 最后一个参数 目标 URL 📊 四、示例输出结果解读 假设输出如下：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-22 00:00:00 +0000 UTC'>October 22, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 如何使用wrk进行压测" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8wrk%E8%BF%9B%E8%A1%8C%E5%8E%8B%E6%B5%8B/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
