@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>用Issue把问题写清楚，从0到TEMPLATE | Jeanphilo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="标题（吸引且准确，包含关键词）
+用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南
+
+副标题 / 摘要
+这篇文章手把手教你在 GitHub 仓库中配置「新需求 / Feature」与「Bug」Issue 模板，包括目录结构、YAML 表单、Markdown 模板以及常见坑。适合想让团队需求沟通更规范、减少反复追问的开发者和团队负责人。
+
+目标读者
+这篇文章适合：
+
+经常在 GitHub 仓库里开 Issue、提需求的 后端 / 前端 / 全栈工程师
+想把团队需求提交流程「标准化」的 项目负责人 / TL / 架构师
+对 GitHub 已经有基本使用经验、但还没用过 Issue 模板的 中级开发者
+
+完全新手也能看懂，但会默认你知道：什么是仓库、什么是 Issue、如何提交代码等。
+
+背景 / 动机：为什么要折腾 Issue 模板？
+没有 Issue 模板时，日常可能是这样的：
+
+“这个需求背景是什么？”
+“影响哪些模块？”
+“验收标准怎么算通过？”
+“优先级到底多高？”
+
+一句话 Issue：
+
+“做个导出功能”
+直接把所有人整破防。
+
+长期下来会有几个痛点：
+
+沟通成本高：每个需求都要反复追问细节；
+信息不对称：请求人脑子里很清楚，但写在 Issue 里的只有一句话；
+难以排期：没有明确优先级和验收标准，大家都觉得自己的需求是 P0；
+历史难追踪：几个月后再看这个 Issue，完全不知道当时怎么想的。
+
+而 GitHub 提供的 Issue Template，其实就是一套「结构化提问」工具：">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/posts/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/posts/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/posts/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="用Issue把问题写清楚，从0到TEMPLATE">
+  <meta property="og:description" content="标题（吸引且准确，包含关键词） 用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南
+副标题 / 摘要 这篇文章手把手教你在 GitHub 仓库中配置「新需求 / Feature」与「Bug」Issue 模板，包括目录结构、YAML 表单、Markdown 模板以及常见坑。适合想让团队需求沟通更规范、减少反复追问的开发者和团队负责人。
+目标读者 这篇文章适合：
+经常在 GitHub 仓库里开 Issue、提需求的 后端 / 前端 / 全栈工程师 想把团队需求提交流程「标准化」的 项目负责人 / TL / 架构师 对 GitHub 已经有基本使用经验、但还没用过 Issue 模板的 中级开发者 完全新手也能看懂，但会默认你知道：什么是仓库、什么是 Issue、如何提交代码等。
+背景 / 动机：为什么要折腾 Issue 模板？ 没有 Issue 模板时，日常可能是这样的：
+“这个需求背景是什么？” “影响哪些模块？” “验收标准怎么算通过？” “优先级到底多高？” 一句话 Issue：
+“做个导出功能” 直接把所有人整破防。
+长期下来会有几个痛点：
+沟通成本高：每个需求都要反复追问细节； 信息不对称：请求人脑子里很清楚，但写在 Issue 里的只有一句话； 难以排期：没有明确优先级和验收标准，大家都觉得自己的需求是 P0； 历史难追踪：几个月后再看这个 Issue，完全不知道当时怎么想的。 而 GitHub 提供的 Issue Template，其实就是一套「结构化提问」工具：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-11-11T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-11-11T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="用Issue把问题写清楚，从0到TEMPLATE">
+<meta name="twitter:description" content="标题（吸引且准确，包含关键词）
+用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南
+
+副标题 / 摘要
+这篇文章手把手教你在 GitHub 仓库中配置「新需求 / Feature」与「Bug」Issue 模板，包括目录结构、YAML 表单、Markdown 模板以及常见坑。适合想让团队需求沟通更规范、减少反复追问的开发者和团队负责人。
+
+目标读者
+这篇文章适合：
+
+经常在 GitHub 仓库里开 Issue、提需求的 后端 / 前端 / 全栈工程师
+想把团队需求提交流程「标准化」的 项目负责人 / TL / 架构师
+对 GitHub 已经有基本使用经验、但还没用过 Issue 模板的 中级开发者
+
+完全新手也能看懂，但会默认你知道：什么是仓库、什么是 Issue、如何提交代码等。
+
+背景 / 动机：为什么要折腾 Issue 模板？
+没有 Issue 模板时，日常可能是这样的：
+
+“这个需求背景是什么？”
+“影响哪些模块？”
+“验收标准怎么算通过？”
+“优先级到底多高？”
+
+一句话 Issue：
+
+“做个导出功能”
+直接把所有人整破防。
+
+长期下来会有几个痛点：
+
+沟通成本高：每个需求都要反复追问细节；
+信息不对称：请求人脑子里很清楚，但写在 Issue 里的只有一句话；
+难以排期：没有明确优先级和验收标准，大家都觉得自己的需求是 P0；
+历史难追踪：几个月后再看这个 Issue，完全不知道当时怎么想的。
+
+而 GitHub 提供的 Issue Template，其实就是一套「结构化提问」工具：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "用Issue把问题写清楚，从0到TEMPLATE",
+      "item": "http://localhost:1313/posts/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "用Issue把问题写清楚，从0到TEMPLATE",
+  "name": "用Issue把问题写清楚，从0到TEMPLATE",
+  "description": "标题（吸引且准确，包含关键词） 用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南\n副标题 / 摘要 这篇文章手把手教你在 GitHub 仓库中配置「新需求 / Feature」与「Bug」Issue 模板，包括目录结构、YAML 表单、Markdown 模板以及常见坑。适合想让团队需求沟通更规范、减少反复追问的开发者和团队负责人。\n目标读者 这篇文章适合：\n经常在 GitHub 仓库里开 Issue、提需求的 后端 / 前端 / 全栈工程师 想把团队需求提交流程「标准化」的 项目负责人 / TL / 架构师 对 GitHub 已经有基本使用经验、但还没用过 Issue 模板的 中级开发者 完全新手也能看懂，但会默认你知道：什么是仓库、什么是 Issue、如何提交代码等。\n背景 / 动机：为什么要折腾 Issue 模板？ 没有 Issue 模板时，日常可能是这样的：\n“这个需求背景是什么？” “影响哪些模块？” “验收标准怎么算通过？” “优先级到底多高？” 一句话 Issue：\n“做个导出功能” 直接把所有人整破防。\n长期下来会有几个痛点：\n沟通成本高：每个需求都要反复追问细节； 信息不对称：请求人脑子里很清楚，但写在 Issue 里的只有一句话； 难以排期：没有明确优先级和验收标准，大家都觉得自己的需求是 P0； 历史难追踪：几个月后再看这个 Issue，完全不知道当时怎么想的。 而 GitHub 提供的 Issue Template，其实就是一套「结构化提问」工具：\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "标题（吸引且准确，包含关键词） 用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南\n副标题 / 摘要 这篇文章手把手教你在 GitHub 仓库中配置「新需求 / Feature」与「Bug」Issue 模板，包括目录结构、YAML 表单、Markdown 模板以及常见坑。适合想让团队需求沟通更规范、减少反复追问的开发者和团队负责人。\n目标读者 这篇文章适合：\n经常在 GitHub 仓库里开 Issue、提需求的 后端 / 前端 / 全栈工程师 想把团队需求提交流程「标准化」的 项目负责人 / TL / 架构师 对 GitHub 已经有基本使用经验、但还没用过 Issue 模板的 中级开发者 完全新手也能看懂，但会默认你知道：什么是仓库、什么是 Issue、如何提交代码等。\n背景 / 动机：为什么要折腾 Issue 模板？ 没有 Issue 模板时，日常可能是这样的：\n“这个需求背景是什么？” “影响哪些模块？” “验收标准怎么算通过？” “优先级到底多高？” 一句话 Issue：\n“做个导出功能” 直接把所有人整破防。\n长期下来会有几个痛点：\n沟通成本高：每个需求都要反复追问细节； 信息不对称：请求人脑子里很清楚，但写在 Issue 里的只有一句话； 难以排期：没有明确优先级和验收标准，大家都觉得自己的需求是 P0； 历史难追踪：几个月后再看这个 Issue，完全不知道当时怎么想的。 而 GitHub 提供的 Issue Template，其实就是一套「结构化提问」工具：\n新建 Issue 时强制/引导用户按模板填写； 自动带上标签、标题前缀； 可以用表单形式校验必填项。 目标很简单：让每一个新需求一眼就能看懂，减少沟通折腾。\n核心概念：我们要搞懂的几个关键词 在配置之前，先把几个概念说清楚：\n1. Issue Template（Issue 模板） 新建 Issue 时出现的“预设格式” 可以是纯文本（Markdown），也可以是 Web 表单（YAML） 2. Markdown 模板 旧式 / 简单版 本质上就是一个预填的 Markdown 文本 文件放在：.github/ISSUE_TEMPLATE/xxx.md 或 .github/ISSUE_TEMPLATE.md 3. YAML Issue 表单（表单模板） 新式 / 推荐 新建 Issue 时会出现带输入框、下拉框的表单 提交后会把你的填写内容转成 Markdown 填进 Issue 正文 文件放在：.github/ISSUE_TEMPLATE/xxx.yml 4. config.yml 放在：.github/ISSUE_TEMPLATE/config.yml\n控制：\n是否允许“没有模板的空白 Issue” 模板列表的显示（部分场景） 实践指南 / 步骤概览 我们按下面这个顺序来做：\n创建 .github/ISSUE_TEMPLATE 目录 新建「新需求 / Feature」模板（YAML 表单） 3.（可选）新建「Bug 反馈」模板 配置 config.yml 控制是否允许空白 Issue 提交并推送到 GitHub 在 Web 上验证模板是否生效 步骤一：创建 Issue 模板目录 在你的项目根目录下执行：\nmkdir -p .github/ISSUE_TEMPLATE 创建完后，目录结构大致是：\nyour-repo/ .github/ ISSUE_TEMPLATE/ # 等会儿我们会往这里加 yml / md 文件 src/ ... 步骤二：创建「新需求 / Feature」模板（YAML 表单） 在 .github/ISSUE_TEMPLATE/feature-request.yml 中写入以下内容：\nname: \"新需求 / Feature\" description: \"用于提交新的功能需求或需求变更\" title: \"[需求] \" labels: - \"feature\" - \"enhancement\" body: - type: markdown attributes: value: | 感谢提交新需求 🙏 请尽量填写清晰，方便评估和排期。 - type: input id: module attributes: label: 影响模块 description: 涉及的服务/模块，例如：后端接口、爬虫、前端页面等 placeholder: 例如：ecp 爬虫 / 附件浏览接口 validations: required: true - type: textarea id: background attributes: label: 背景 / 场景 description: 为什么要做这个需求？当前遇到什么问题？有没有现有替代方案？ placeholder: | 简要描述业务背景、角色、使用场景、痛点等… validations: required: true - type: textarea id: description attributes: label: 需求描述 description: 希望系统具体怎么变化？最好从“用户视角”来描述。 placeholder: | 1. 在 xxx 页面增加 ... 2. 当用户执行 ... 时，系统应 ... 3. 需要支持的边界场景：... validations: required: true - type: textarea id: acceptance_criteria attributes: label: 验收标准 description: 哪些情况算是“满足需求”？方便后续自测和验收。 placeholder: | - [ ] 场景一：... - [ ] 场景二：... - [ ] 性能 / 安全性要求：... validations: required: true - type: dropdown id: priority attributes: label: 优先级 description: 方便排期排序 options: - P0（必须本迭代完成） - P1（高优先级） - P2（一般） - P3（低） default: 2 validations: required: false - type: textarea id: extra attributes: label: 其他信息 description: 相关接口、文档链接、设计稿、截图、关联 Issue 等 placeholder: | - 接口文档： - 设计稿 / 原型： - 相关 Issue / 需求单： validations: required: false 效果：\n新建 Issue 时会有一个「新需求 / Feature」选项； 点进去是表单，而不是纯文本； labels 会自动打上 feature / enhancement 标签； 标题自动带 [需求] 前缀； background/description/acceptance_criteria 等字段是必填。 步骤三（可选）：创建「Bug 反馈」模板 在 .github/ISSUE_TEMPLATE/bug-report.yml 写入：\nname: \"缺陷 / Bug\" description: \"用于提交 Bug 和异常问题\" title: \"[Bug] \" labels: - \"bug\" body: - type: textarea id: summary attributes: label: 问题概述 placeholder: 简要描述问题现象 validations: required: true - type: textarea id: steps attributes: label: 复现步骤 placeholder: | 1. 打开 ... 2. 点击 ... 3. 看到 ... validations: required: true - type: textarea id: expected attributes: label: 预期结果 validations: required: true - type: textarea id: actual attributes: label: 实际结果 validations: required: true - type: textarea id: extra attributes: label: 其他信息 description: 日志、截图、环境信息等 validations: required: false 这样一来，团队就可以比较清楚地区分「功能需求」和「Bug」。\n步骤四：配置 config.yml（控制模板选择和空白 Issue） 在 .github/ISSUE_TEMPLATE/config.yml 写入：\nblank_issues_enabled: false # 禁止直接新建“空白 Issue”，强制选模板 contact_links: - name: 内部需求管理系统 url: https://example.com/your-internal-system about: 如为正式立项需求，请先在内部系统中创建，再在此关联编号。 如果你还没内部需求系统，可以先把 contact_links 删除或改成你自己的 Wiki 链接。\nblank_issues_enabled: false 会让所有 Issue 都必须走模板，避免出现“什么都没填就扔一个 Issue”的情况。\n步骤五：提交并推送到 GitHub git add .github/ISSUE_TEMPLATE/* git commit -m \"chore: add GitHub issue templates for feature \u0026 bug\" git push 推送到默认分支（通常是 main 或 master）之后，模板就生效了。\n步骤六：在 GitHub 上验证效果 打开你的 GitHub 仓库； 点击上方的 Issues； 点击 New issue。 此时一般会看到一个「选择模板」的页面，例如：\n新需求 / Feature 缺陷 / Bug （如果开了）Open a blank issue 如果你配置了 blank_issues_enabled: false，就不会有空白 Issue 选项。\n点「新需求 / Feature」，你会看见你刚才在 YAML 里定义的表单，中英文都能正常显示。\n可运行示例：最小可用配置（拷贝即用） 如果你只想要一套最小可用的 Feature 模板，下面这两步就够了：\n1）创建目录：\nmkdir -p .github/ISSUE_TEMPLATE 2）创建 .github/ISSUE_TEMPLATE/feature-request.yml：\nname: \"新需求 / Feature\" description: \"用于提交新的功能需求或需求变更\" title: \"[需求] \" labels: [\"feature\"] body: - type: textarea id: background attributes: label: 背景 / 场景 placeholder: 简要描述为什么要做这个需求 validations: required: true - type: textarea id: description attributes: label: 需求描述 placeholder: | 希望系统做什么？用户如何使用？列出关键流程。 validations: required: true - type: textarea id: acceptance attributes: label: 验收标准 placeholder: | - [ ] 场景一：... - [ ] 场景二：... validations: required: true 加上：\ngit add .github/ISSUE_TEMPLATE/feature-request.yml git commit -m \"add minimal feature request issue template\" git push 就能在仓库里看到一个「新需求 / Feature」模板。\n解释与原理：为什么要用 YAML 表单而不是单纯 Markdown？ YAML 表单的好处 必填校验：可以强制要求填写“背景”“需求描述”“验收标准”等，避免空空如也； 更友好的 UI：对非技术同事也相对友好，不需要懂 Markdown； 结构更清晰：每个字段都是独立的，便于阅读和后期自动化处理（比如机器人、脚本）； 自动打标签 / 标题前缀：省去后续人工维护。 Markdown 模板的优势与局限 Markdown 模板（.md 文件）也很好用，但：\n好处：\n简单、兼容老版本； 对纯技术团队来说完全够用。 缺点：\n无法强制校验必填项（大家经常只改一行标题就点提交）； UI 不够直观，尤其对产品、运营等非技术角色不够友好。 所以，如果你是给 团队内部用、且想提升规范，YAML 表单更适合。 如果只是个人项目、或者团队非常小，Markdown 模板已经足够。\n常见问题与注意事项 1. 模板没生效怎么办？ 检查这些点：\n文件路径是否正确： 必须是 .github/ISSUE_TEMPLATE/xxx.yml 或 .github/ISSUE_TEMPLATE/xxx.md 分支是否正确： 模板必须在默认分支（main / master）上才会生效； 文件名大小写： GitHub 对大小写是敏感的，ISSUE_TEMPLATE 目录名一定要对。 2. 改了模板但页面没变化？ 浏览器可能有缓存，试着刷新 / 无痕窗口打开； 确认代码已经 push 到 GitHub； 如果你是 Fork 仓库，模板是跟着当前 repo 走的，不会继承上游仓库的模板。 3. 可以为组织统一配置模板吗？ 可以在 组织级别的 .github 仓库 中配置默认模板，这样组织内的仓库如果本身没有模板，就会使用组织模板。 但这属于进阶玩法，这篇先不展开。 4. YAML 写错了怎么办？ YAML 对缩进和空格比较敏感；\n如果写错，有时 GitHub 会直接无视这个模板 / 报错；\n建议：\n使用编辑器的 YAML 高亮和校验（VS Code 非常好用）； 保证缩进是空格，且层级一致。 最佳实践与建议 明确目标：先从一个「新需求模板」开始，不要一上来就搞一堆复杂配置。\n强制填写核心字段：背景、需求描述、验收标准，至少这三项建议必填。\n统一标题前缀：比如 [需求] / [Bug]，方便筛选和搜索。\n自动打标签：减少后续手动维护，比如 feature、bug、enhancement。\n适度即可：模板太长、太复杂，用户会烦；保持在「引导清晰，又不至于太啰嗦」的平衡点。\n定期回顾：用一两个月后，回头看看：\n哪些字段大家从来不填 → 可以删； 哪些信息总是缺 → 加一个字段。 小结 / 结论 这篇文章里我们做了几件事：\n搞清楚了 Issue 模板 / YAML 表单 / Markdown 模板 这些核心概念； 实际配置了一套 「新需求 / Feature」表单模板 和一个可选的 Bug 模板； 用步骤和命令跑完了 从创建目录 → 写模板 → 推送 → 验证 的完整流程； 解释了为什么推荐用 YAML 表单，以及常见的配置坑。 如果你把这些步骤在自己的仓库跑一遍，你的团队提需求这件事，质量会立刻有肉眼可见的提升——至少从“一句废话 Issue”变成了“可读、可执行的需求描述”。\n参考与延伸阅读 你可以在这些关键词下继续查官方文档和示例：\nGitHub Docs：Issue and pull request templates\n关键词：\ngithub issue template yaml github issue forms github .github/ISSUE_TEMPLATE examples （如果你团队同时用 Gitea \u0026 GitHub，其实两边的理念是通的，配置方式也很接近。）\n元信息 预计阅读时长：8–12 分钟\n标签：GitHub、协作效率、Issue 模板、团队规范、需求管理\nSEO 关键词：\nGitHub Issue 模板 GitHub Issue Template 配置 YAML Issue Form 教程 Feature Request 模板 元描述（Meta Description）： 本文详细介绍如何在 GitHub 仓库中配置 Issue 模板，尤其是用于新需求 / Feature 的 YAML 表单模板和 Bug 模板，包含完整目录结构、配置示例、常见问题与最佳实践，帮助团队规范需求提交流程，提升协作效率。\n行动号召（CTA） 如果你已经看完了，我建议你现在就：\n找一个你常用的 GitHub 仓库； 按文中步骤创建 .github/ISSUE_TEMPLATE/feature-request.yml； 推上去，自己开一个测试 Issue 感受一下效果。 ",
+  "wordCount" : "836",
+  "inLanguage": "en",
+  "datePublished": "2025-11-11T00:00:00Z",
+  "dateModified": "2025-11-11T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/posts/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/posts/">Posts</a></div>
+    <h1 class="post-title entry-hint-parent">
+      用Issue把问题写清楚，从0到TEMPLATE
+    </h1>
+    <div class="post-meta"><span title='2025-11-11 00:00:00 +0000 UTC'>November 11, 2025</span>&nbsp;·&nbsp;<span>4 min</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%a0%87%e9%a2%98%e5%90%b8%e5%bc%95%e4%b8%94%e5%87%86%e7%a1%ae%e5%8c%85%e5%90%ab%e5%85%b3%e9%94%ae%e8%af%8d" aria-label="标题（吸引且准确，包含关键词）">标题（吸引且准确，包含关键词）</a></li>
+                <li>
+                    <a href="#%e5%89%af%e6%a0%87%e9%a2%98--%e6%91%98%e8%a6%81" aria-label="副标题 / 摘要">副标题 / 摘要</a></li>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87%e8%af%bb%e8%80%85" aria-label="目标读者">目标读者</a></li>
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af--%e5%8a%a8%e6%9c%ba%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e6%8a%98%e8%85%be-issue-%e6%a8%a1%e6%9d%bf" aria-label="背景 / 动机：为什么要折腾 Issue 模板？">背景 / 动机：为什么要折腾 Issue 模板？</a></li>
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5%e6%88%91%e4%bb%ac%e8%a6%81%e6%90%9e%e6%87%82%e7%9a%84%e5%87%a0%e4%b8%aa%e5%85%b3%e9%94%ae%e8%af%8d" aria-label="核心概念：我们要搞懂的几个关键词">核心概念：我们要搞懂的几个关键词</a><ul>
+                        
+                <li>
+                    <a href="#1-issue-templateissue-%e6%a8%a1%e6%9d%bf" aria-label="1. Issue Template（Issue 模板）">1. Issue Template（Issue 模板）</a></li>
+                <li>
+                    <a href="#2-markdown-%e6%a8%a1%e6%9d%bf" aria-label="2. Markdown 模板">2. Markdown 模板</a></li>
+                <li>
+                    <a href="#3-yaml-issue-%e8%a1%a8%e5%8d%95%e8%a1%a8%e5%8d%95%e6%a8%a1%e6%9d%bf" aria-label="3. YAML Issue 表单（表单模板）">3. YAML Issue 表单（表单模板）</a></li>
+                <li>
+                    <a href="#4-configyml" aria-label="4. config.yml">4. config.yml</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%9e%e8%b7%b5%e6%8c%87%e5%8d%97--%e6%ad%a5%e9%aa%a4%e6%a6%82%e8%a7%88" aria-label="实践指南 / 步骤概览">实践指南 / 步骤概览</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4%e4%b8%80%e5%88%9b%e5%bb%ba-issue-%e6%a8%a1%e6%9d%bf%e7%9b%ae%e5%bd%95" aria-label="步骤一：创建 Issue 模板目录">步骤一：创建 Issue 模板目录</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4%e4%ba%8c%e5%88%9b%e5%bb%ba%e6%96%b0%e9%9c%80%e6%b1%82--feature%e6%a8%a1%e6%9d%bfyaml-%e8%a1%a8%e5%8d%95" aria-label="步骤二：创建「新需求 / Feature」模板（YAML 表单）">步骤二：创建「新需求 / Feature」模板（YAML 表单）</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4%e4%b8%89%e5%8f%af%e9%80%89%e5%88%9b%e5%bb%babug-%e5%8f%8d%e9%a6%88%e6%a8%a1%e6%9d%bf" aria-label="步骤三（可选）：创建「Bug 反馈」模板">步骤三（可选）：创建「Bug 反馈」模板</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4%e5%9b%9b%e9%85%8d%e7%bd%ae-configyml%e6%8e%a7%e5%88%b6%e6%a8%a1%e6%9d%bf%e9%80%89%e6%8b%a9%e5%92%8c%e7%a9%ba%e7%99%bd-issue" aria-label="步骤四：配置 config.yml（控制模板选择和空白 Issue）">步骤四：配置 config.yml（控制模板选择和空白 Issue）</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4%e4%ba%94%e6%8f%90%e4%ba%a4%e5%b9%b6%e6%8e%a8%e9%80%81%e5%88%b0-github" aria-label="步骤五：提交并推送到 GitHub">步骤五：提交并推送到 GitHub</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4%e5%85%ad%e5%9c%a8-github-%e4%b8%8a%e9%aa%8c%e8%af%81%e6%95%88%e6%9e%9c" aria-label="步骤六：在 GitHub 上验证效果">步骤六：在 GitHub 上验证效果</a></li>
+                <li>
+                    <a href="#%e5%8f%af%e8%bf%90%e8%a1%8c%e7%a4%ba%e4%be%8b%e6%9c%80%e5%b0%8f%e5%8f%af%e7%94%a8%e9%85%8d%e7%bd%ae%e6%8b%b7%e8%b4%9d%e5%8d%b3%e7%94%a8" aria-label="可运行示例：最小可用配置（拷贝即用）">可运行示例：最小可用配置（拷贝即用）</a></li>
+                <li>
+                    <a href="#%e8%a7%a3%e9%87%8a%e4%b8%8e%e5%8e%9f%e7%90%86%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e7%94%a8-yaml-%e8%a1%a8%e5%8d%95%e8%80%8c%e4%b8%8d%e6%98%af%e5%8d%95%e7%ba%af-markdown" aria-label="解释与原理：为什么要用 YAML 表单而不是单纯 Markdown？">解释与原理：为什么要用 YAML 表单而不是单纯 Markdown？</a><ul>
+                        
+                <li>
+                    <a href="#yaml-%e8%a1%a8%e5%8d%95%e7%9a%84%e5%a5%bd%e5%a4%84" aria-label="YAML 表单的好处">YAML 表单的好处</a></li>
+                <li>
+                    <a href="#markdown-%e6%a8%a1%e6%9d%bf%e7%9a%84%e4%bc%98%e5%8a%bf%e4%b8%8e%e5%b1%80%e9%99%90" aria-label="Markdown 模板的优势与局限">Markdown 模板的优势与局限</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="常见问题与注意事项">常见问题与注意事项</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%a8%a1%e6%9d%bf%e6%b2%a1%e7%94%9f%e6%95%88%e6%80%8e%e4%b9%88%e5%8a%9e" aria-label="1. 模板没生效怎么办？">1. 模板没生效怎么办？</a></li>
+                <li>
+                    <a href="#2-%e6%94%b9%e4%ba%86%e6%a8%a1%e6%9d%bf%e4%bd%86%e9%a1%b5%e9%9d%a2%e6%b2%a1%e5%8f%98%e5%8c%96" aria-label="2. 改了模板但页面没变化？">2. 改了模板但页面没变化？</a></li>
+                <li>
+                    <a href="#3-%e5%8f%af%e4%bb%a5%e4%b8%ba%e7%bb%84%e7%bb%87%e7%bb%9f%e4%b8%80%e9%85%8d%e7%bd%ae%e6%a8%a1%e6%9d%bf%e5%90%97" aria-label="3. 可以为组织统一配置模板吗？">3. 可以为组织统一配置模板吗？</a></li>
+                <li>
+                    <a href="#4-yaml-%e5%86%99%e9%94%99%e4%ba%86%e6%80%8e%e4%b9%88%e5%8a%9e" aria-label="4. YAML 写错了怎么办？">4. YAML 写错了怎么办？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%bb%ba%e8%ae%ae" aria-label="最佳实践与建议">最佳实践与建议</a></li>
+                <li>
+                    <a href="#%e5%b0%8f%e7%bb%93--%e7%bb%93%e8%ae%ba" aria-label="小结 / 结论">小结 / 结论</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e4%b8%8e%e5%bb%b6%e4%bc%b8%e9%98%85%e8%af%bb" aria-label="参考与延伸阅读">参考与延伸阅读</a></li>
+                <li>
+                    <a href="#%e5%85%83%e4%bf%a1%e6%81%af" aria-label="元信息">元信息</a></li>
+                <li>
+                    <a href="#%e8%a1%8c%e5%8a%a8%e5%8f%b7%e5%8f%accta" aria-label="行动号召（CTA）">行动号召（CTA）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h2 id="标题吸引且准确包含关键词">标题（吸引且准确，包含关键词）<a hidden class="anchor" aria-hidden="true" href="#标题吸引且准确包含关键词">#</a></h2>
+<p><strong>用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南</strong></p>
+<hr>
+<h2 id="副标题--摘要">副标题 / 摘要<a hidden class="anchor" aria-hidden="true" href="#副标题--摘要">#</a></h2>
+<p>这篇文章手把手教你在 GitHub 仓库中配置「新需求 / Feature」与「Bug」Issue 模板，包括目录结构、YAML 表单、Markdown 模板以及常见坑。适合想让团队需求沟通更规范、减少反复追问的开发者和团队负责人。</p>
+<hr>
+<h2 id="目标读者">目标读者<a hidden class="anchor" aria-hidden="true" href="#目标读者">#</a></h2>
+<p>这篇文章适合：</p>
+<ul>
+<li>经常在 GitHub 仓库里开 Issue、提需求的 <strong>后端 / 前端 / 全栈工程师</strong></li>
+<li>想把团队需求提交流程「标准化」的 <strong>项目负责人 / TL / 架构师</strong></li>
+<li>对 GitHub 已经有基本使用经验、但还没用过 Issue 模板的 <strong>中级开发者</strong></li>
+</ul>
+<p>完全新手也能看懂，但会默认你知道：什么是仓库、什么是 Issue、如何提交代码等。</p>
+<hr>
+<h2 id="背景--动机为什么要折腾-issue-模板">背景 / 动机：为什么要折腾 Issue 模板？<a hidden class="anchor" aria-hidden="true" href="#背景--动机为什么要折腾-issue-模板">#</a></h2>
+<p>没有 Issue 模板时，日常可能是这样的：</p>
+<ul>
+<li>“这个需求背景是什么？”</li>
+<li>“影响哪些模块？”</li>
+<li>“验收标准怎么算通过？”</li>
+<li>“优先级到底多高？”</li>
+</ul>
+<p>一句话 Issue：</p>
+<blockquote>
+<p>“做个导出功能”
+直接把所有人整破防。</p>
+</blockquote>
+<p>长期下来会有几个痛点：</p>
+<ol>
+<li><strong>沟通成本高</strong>：每个需求都要反复追问细节；</li>
+<li><strong>信息不对称</strong>：请求人脑子里很清楚，但写在 Issue 里的只有一句话；</li>
+<li><strong>难以排期</strong>：没有明确优先级和验收标准，大家都觉得自己的需求是 P0；</li>
+<li><strong>历史难追踪</strong>：几个月后再看这个 Issue，完全不知道当时怎么想的。</li>
+</ol>
+<p>而 GitHub 提供的 <strong>Issue Template</strong>，其实就是一套「结构化提问」工具：</p>
+<ul>
+<li>新建 Issue 时强制/引导用户按模板填写；</li>
+<li>自动带上标签、标题前缀；</li>
+<li>可以用表单形式校验必填项。</li>
+</ul>
+<p><strong>目标</strong>很简单：让每一个新需求一眼就能看懂，减少沟通折腾。</p>
+<hr>
+<h2 id="核心概念我们要搞懂的几个关键词">核心概念：我们要搞懂的几个关键词<a hidden class="anchor" aria-hidden="true" href="#核心概念我们要搞懂的几个关键词">#</a></h2>
+<p>在配置之前，先把几个概念说清楚：</p>
+<h3 id="1-issue-templateissue-模板">1. Issue Template（Issue 模板）<a hidden class="anchor" aria-hidden="true" href="#1-issue-templateissue-模板">#</a></h3>
+<ul>
+<li>新建 Issue 时出现的“预设格式”</li>
+<li>可以是纯文本（Markdown），也可以是 Web 表单（YAML）</li>
+</ul>
+<h3 id="2-markdown-模板">2. Markdown 模板<a hidden class="anchor" aria-hidden="true" href="#2-markdown-模板">#</a></h3>
+<ul>
+<li>旧式 / 简单版</li>
+<li>本质上就是一个预填的 Markdown 文本</li>
+<li>文件放在：<code>.github/ISSUE_TEMPLATE/xxx.md</code> 或 <code>.github/ISSUE_TEMPLATE.md</code></li>
+</ul>
+<h3 id="3-yaml-issue-表单表单模板">3. YAML Issue 表单（表单模板）<a hidden class="anchor" aria-hidden="true" href="#3-yaml-issue-表单表单模板">#</a></h3>
+<ul>
+<li>新式 / 推荐</li>
+<li>新建 Issue 时会出现带输入框、下拉框的表单</li>
+<li>提交后会把你的填写内容转成 Markdown 填进 Issue 正文</li>
+<li>文件放在：<code>.github/ISSUE_TEMPLATE/xxx.yml</code></li>
+</ul>
+<h3 id="4-configyml">4. config.yml<a hidden class="anchor" aria-hidden="true" href="#4-configyml">#</a></h3>
+<ul>
+<li>
+<p>放在：<code>.github/ISSUE_TEMPLATE/config.yml</code></p>
+</li>
+<li>
+<p>控制：</p>
+<ul>
+<li>是否允许“没有模板的空白 Issue”</li>
+<li>模板列表的显示（部分场景）</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="实践指南--步骤概览">实践指南 / 步骤概览<a hidden class="anchor" aria-hidden="true" href="#实践指南--步骤概览">#</a></h2>
+<p>我们按下面这个顺序来做：</p>
+<ol>
+<li>创建 <code>.github/ISSUE_TEMPLATE</code> 目录</li>
+<li>新建「新需求 / Feature」模板（YAML 表单）
+3.（可选）新建「Bug 反馈」模板</li>
+<li>配置 <code>config.yml</code> 控制是否允许空白 Issue</li>
+<li>提交并推送到 GitHub</li>
+<li>在 Web 上验证模板是否生效</li>
+</ol>
+<hr>
+<h2 id="步骤一创建-issue-模板目录">步骤一：创建 Issue 模板目录<a hidden class="anchor" aria-hidden="true" href="#步骤一创建-issue-模板目录">#</a></h2>
+<p>在你的项目根目录下执行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir -p .github/ISSUE_TEMPLATE
+</span></span></code></pre></div><p>创建完后，目录结构大致是：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>your-repo/
+</span></span><span style="display:flex;"><span>  .github/
+</span></span><span style="display:flex;"><span>    ISSUE_TEMPLATE/
+</span></span><span style="display:flex;"><span>      # 等会儿我们会往这里加 yml / md 文件
+</span></span><span style="display:flex;"><span>  src/
+</span></span><span style="display:flex;"><span>  ...
+</span></span></code></pre></div><hr>
+<h2 id="步骤二创建新需求--feature模板yaml-表单">步骤二：创建「新需求 / Feature」模板（YAML 表单）<a hidden class="anchor" aria-hidden="true" href="#步骤二创建新需求--feature模板yaml-表单">#</a></h2>
+<p>在 <code>.github/ISSUE_TEMPLATE/feature-request.yml</code> 中写入以下内容：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;新需求 / Feature&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;用于提交新的功能需求或需求变更&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">title</span>: <span style="color:#e6db74">&#34;[需求] &#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;feature&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;enhancement&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">body</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">markdown</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">value</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        感谢提交新需求 🙏  
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        请尽量填写清晰，方便评估和排期。</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">input</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">module</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">影响模块</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">涉及的服务/模块，例如：后端接口、爬虫、前端页面等</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: <span style="color:#ae81ff">例如：ecp 爬虫 / 附件浏览接口</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">background</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">背景 / 场景</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">为什么要做这个需求？当前遇到什么问题？有没有现有替代方案？</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        简要描述业务背景、角色、使用场景、痛点等…</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">description</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">需求描述</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">希望系统具体怎么变化？最好从“用户视角”来描述。</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        1. 在 xxx 页面增加 ...
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        2. 当用户执行 ... 时，系统应 ...
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        3. 需要支持的边界场景：...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">acceptance_criteria</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">验收标准</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">哪些情况算是“满足需求”？方便后续自测和验收。</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - [ ] 场景一：...
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - [ ] 场景二：...
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - [ ] 性能 / 安全性要求：...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">dropdown</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">priority</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">优先级</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">方便排期排序</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">options</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">P0（必须本迭代完成）</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">P1（高优先级）</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">P2（一般）</span>
+</span></span><span style="display:flex;"><span>        - <span style="color:#ae81ff">P3（低）</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">default</span>: <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">extra</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">其他信息</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">相关接口、文档链接、设计稿、截图、关联 Issue 等</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - 接口文档：
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - 设计稿 / 原型：
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - 相关 Issue / 需求单：</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">false</span>
+</span></span></code></pre></div><p><strong>效果：</strong></p>
+<ul>
+<li>新建 Issue 时会有一个「新需求 / Feature」选项；</li>
+<li>点进去是表单，而不是纯文本；</li>
+<li><code>labels</code> 会自动打上 <code>feature</code> / <code>enhancement</code> 标签；</li>
+<li>标题自动带 <code>[需求] </code> 前缀；</li>
+<li><code>background/description/acceptance_criteria</code> 等字段是必填。</li>
+</ul>
+<hr>
+<h2 id="步骤三可选创建bug-反馈模板">步骤三（可选）：创建「Bug 反馈」模板<a hidden class="anchor" aria-hidden="true" href="#步骤三可选创建bug-反馈模板">#</a></h2>
+<p>在 <code>.github/ISSUE_TEMPLATE/bug-report.yml</code> 写入：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;缺陷 / Bug&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;用于提交 Bug 和异常问题&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">title</span>: <span style="color:#e6db74">&#34;[Bug] &#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;bug&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">body</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">summary</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">问题概述</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: <span style="color:#ae81ff">简要描述问题现象</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">steps</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">复现步骤</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        1. 打开 ...
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        2. 点击 ...
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        3. 看到 ...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">expected</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">预期结果</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">actual</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">实际结果</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">extra</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">其他信息</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">description</span>: <span style="color:#ae81ff">日志、截图、环境信息等</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">false</span>
+</span></span></code></pre></div><p>这样一来，团队就可以比较清楚地区分「功能需求」和「Bug」。</p>
+<hr>
+<h2 id="步骤四配置-configyml控制模板选择和空白-issue">步骤四：配置 <code>config.yml</code>（控制模板选择和空白 Issue）<a hidden class="anchor" aria-hidden="true" href="#步骤四配置-configyml控制模板选择和空白-issue">#</a></h2>
+<p>在 <code>.github/ISSUE_TEMPLATE/config.yml</code> 写入：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">blank_issues_enabled</span>: <span style="color:#66d9ef">false</span>  <span style="color:#75715e"># 禁止直接新建“空白 Issue”，强制选模板</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">contact_links</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">name</span>: <span style="color:#ae81ff">内部需求管理系统</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">url</span>: <span style="color:#ae81ff">https://example.com/your-internal-system</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">about</span>: <span style="color:#ae81ff">如为正式立项需求，请先在内部系统中创建，再在此关联编号。</span>
+</span></span></code></pre></div><p>如果你还没内部需求系统，可以先把 <code>contact_links</code> 删除或改成你自己的 Wiki 链接。</p>
+<p><code>blank_issues_enabled: false</code> 会让所有 Issue 都必须走模板，避免出现“什么都没填就扔一个 Issue”的情况。</p>
+<hr>
+<h2 id="步骤五提交并推送到-github">步骤五：提交并推送到 GitHub<a hidden class="anchor" aria-hidden="true" href="#步骤五提交并推送到-github">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git add .github/ISSUE_TEMPLATE/*
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#e6db74">&#34;chore: add GitHub issue templates for feature &amp; bug&#34;</span>
+</span></span><span style="display:flex;"><span>git push
+</span></span></code></pre></div><p>推送到默认分支（通常是 <code>main</code> 或 <code>master</code>）之后，模板就生效了。</p>
+<hr>
+<h2 id="步骤六在-github-上验证效果">步骤六：在 GitHub 上验证效果<a hidden class="anchor" aria-hidden="true" href="#步骤六在-github-上验证效果">#</a></h2>
+<ol>
+<li>打开你的 GitHub 仓库；</li>
+<li>点击上方的 <strong>Issues</strong>；</li>
+<li>点击 <strong>New issue</strong>。</li>
+</ol>
+<p>此时一般会看到一个「选择模板」的页面，例如：</p>
+<ul>
+<li>新需求 / Feature</li>
+<li>缺陷 / Bug</li>
+<li>（如果开了）Open a blank issue</li>
+</ul>
+<p>如果你配置了 <code>blank_issues_enabled: false</code>，就不会有空白 Issue 选项。</p>
+<p>点「新需求 / Feature」，你会看见你刚才在 YAML 里定义的表单，中英文都能正常显示。</p>
+<hr>
+<h2 id="可运行示例最小可用配置拷贝即用">可运行示例：最小可用配置（拷贝即用）<a hidden class="anchor" aria-hidden="true" href="#可运行示例最小可用配置拷贝即用">#</a></h2>
+<p>如果你只想要<strong>一套最小可用</strong>的 Feature 模板，下面这两步就够了：</p>
+<p><strong>1）创建目录：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir -p .github/ISSUE_TEMPLATE
+</span></span></code></pre></div><p><strong>2）创建 <code>.github/ISSUE_TEMPLATE/feature-request.yml</code>：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#e6db74">&#34;新需求 / Feature&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">description</span>: <span style="color:#e6db74">&#34;用于提交新的功能需求或需求变更&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">title</span>: <span style="color:#e6db74">&#34;[需求] &#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">labels</span>: [<span style="color:#e6db74">&#34;feature&#34;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">body</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">background</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">背景 / 场景</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: <span style="color:#ae81ff">简要描述为什么要做这个需求</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">description</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">需求描述</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        希望系统做什么？用户如何使用？列出关键流程。</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">type</span>: <span style="color:#ae81ff">textarea</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">id</span>: <span style="color:#ae81ff">acceptance</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">attributes</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">label</span>: <span style="color:#ae81ff">验收标准</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">placeholder</span>: |<span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - [ ] 场景一：...
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        - [ ] 场景二：...</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">validations</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">required</span>: <span style="color:#66d9ef">true</span>
+</span></span></code></pre></div><p>加上：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git add .github/ISSUE_TEMPLATE/feature-request.yml
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#e6db74">&#34;add minimal feature request issue template&#34;</span>
+</span></span><span style="display:flex;"><span>git push
+</span></span></code></pre></div><p>就能在仓库里看到一个「新需求 / Feature」模板。</p>
+<hr>
+<h2 id="解释与原理为什么要用-yaml-表单而不是单纯-markdown">解释与原理：为什么要用 YAML 表单而不是单纯 Markdown？<a hidden class="anchor" aria-hidden="true" href="#解释与原理为什么要用-yaml-表单而不是单纯-markdown">#</a></h2>
+<h3 id="yaml-表单的好处">YAML 表单的好处<a hidden class="anchor" aria-hidden="true" href="#yaml-表单的好处">#</a></h3>
+<ul>
+<li><strong>必填校验</strong>：可以强制要求填写“背景”“需求描述”“验收标准”等，避免空空如也；</li>
+<li><strong>更友好的 UI</strong>：对非技术同事也相对友好，不需要懂 Markdown；</li>
+<li><strong>结构更清晰</strong>：每个字段都是独立的，便于阅读和后期自动化处理（比如机器人、脚本）；</li>
+<li><strong>自动打标签 / 标题前缀</strong>：省去后续人工维护。</li>
+</ul>
+<h3 id="markdown-模板的优势与局限">Markdown 模板的优势与局限<a hidden class="anchor" aria-hidden="true" href="#markdown-模板的优势与局限">#</a></h3>
+<p>Markdown 模板（<code>.md</code> 文件）也很好用，但：</p>
+<ul>
+<li>
+<p>好处：</p>
+<ul>
+<li>简单、兼容老版本；</li>
+<li>对纯技术团队来说完全够用。</li>
+</ul>
+</li>
+<li>
+<p>缺点：</p>
+<ul>
+<li>无法强制校验必填项（大家经常只改一行标题就点提交）；</li>
+<li>UI 不够直观，尤其对产品、运营等非技术角色不够友好。</li>
+</ul>
+</li>
+</ul>
+<p>所以，如果你是给 <strong>团队内部用、且想提升规范</strong>，<strong>YAML 表单更适合</strong>。
+如果只是个人项目、或者团队非常小，Markdown 模板已经足够。</p>
+<hr>
+<h2 id="常见问题与注意事项">常见问题与注意事项<a hidden class="anchor" aria-hidden="true" href="#常见问题与注意事项">#</a></h2>
+<h3 id="1-模板没生效怎么办">1. 模板没生效怎么办？<a hidden class="anchor" aria-hidden="true" href="#1-模板没生效怎么办">#</a></h3>
+<p>检查这些点：</p>
+<ul>
+<li>文件路径是否正确：
+必须是 <code>.github/ISSUE_TEMPLATE/xxx.yml</code> 或 <code>.github/ISSUE_TEMPLATE/xxx.md</code></li>
+<li>分支是否正确：
+模板必须在默认分支（<code>main</code> / <code>master</code>）上才会生效；</li>
+<li>文件名大小写：
+GitHub 对大小写是敏感的，<code>ISSUE_TEMPLATE</code> 目录名一定要对。</li>
+</ul>
+<h3 id="2-改了模板但页面没变化">2. 改了模板但页面没变化？<a hidden class="anchor" aria-hidden="true" href="#2-改了模板但页面没变化">#</a></h3>
+<ul>
+<li>浏览器可能有缓存，试着刷新 / 无痕窗口打开；</li>
+<li>确认代码已经 <code>push</code> 到 GitHub；</li>
+<li>如果你是 Fork 仓库，模板是跟着当前 repo 走的，不会继承上游仓库的模板。</li>
+</ul>
+<h3 id="3-可以为组织统一配置模板吗">3. 可以为组织统一配置模板吗？<a hidden class="anchor" aria-hidden="true" href="#3-可以为组织统一配置模板吗">#</a></h3>
+<ul>
+<li>可以在 <strong>组织级别的 <code>.github</code> 仓库</strong> 中配置默认模板，这样组织内的仓库如果本身没有模板，就会使用组织模板。</li>
+<li>但这属于进阶玩法，这篇先不展开。</li>
+</ul>
+<h3 id="4-yaml-写错了怎么办">4. YAML 写错了怎么办？<a hidden class="anchor" aria-hidden="true" href="#4-yaml-写错了怎么办">#</a></h3>
+<ul>
+<li>
+<p>YAML 对缩进和空格比较敏感；</p>
+</li>
+<li>
+<p>如果写错，有时 GitHub 会直接无视这个模板 / 报错；</p>
+</li>
+<li>
+<p>建议：</p>
+<ul>
+<li>使用编辑器的 YAML 高亮和校验（VS Code 非常好用）；</li>
+<li>保证缩进是空格，且层级一致。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="最佳实践与建议">最佳实践与建议<a hidden class="anchor" aria-hidden="true" href="#最佳实践与建议">#</a></h2>
+<ol>
+<li>
+<p><strong>明确目标：先从一个「新需求模板」开始</strong>，不要一上来就搞一堆复杂配置。</p>
+</li>
+<li>
+<p><strong>强制填写核心字段</strong>：背景、需求描述、验收标准，至少这三项建议必填。</p>
+</li>
+<li>
+<p><strong>统一标题前缀</strong>：比如 <code>[需求]</code> / <code>[Bug]</code>，方便筛选和搜索。</p>
+</li>
+<li>
+<p><strong>自动打标签</strong>：减少后续手动维护，比如 <code>feature</code>、<code>bug</code>、<code>enhancement</code>。</p>
+</li>
+<li>
+<p><strong>适度即可</strong>：模板太长、太复杂，用户会烦；保持在「引导清晰，又不至于太啰嗦」的平衡点。</p>
+</li>
+<li>
+<p><strong>定期回顾</strong>：用一两个月后，回头看看：</p>
+<ul>
+<li>哪些字段大家从来不填 → 可以删；</li>
+<li>哪些信息总是缺 → 加一个字段。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="小结--结论">小结 / 结论<a hidden class="anchor" aria-hidden="true" href="#小结--结论">#</a></h2>
+<p>这篇文章里我们做了几件事：</p>
+<ul>
+<li>搞清楚了 <strong>Issue 模板 / YAML 表单 / Markdown 模板</strong> 这些核心概念；</li>
+<li>实际配置了一套 <strong>「新需求 / Feature」表单模板</strong> 和一个可选的 Bug 模板；</li>
+<li>用步骤和命令跑完了 <strong>从创建目录 → 写模板 → 推送 → 验证</strong> 的完整流程；</li>
+<li>解释了为什么推荐用 YAML 表单，以及常见的配置坑。</li>
+</ul>
+<p>如果你把这些步骤在自己的仓库跑一遍，你的团队提需求这件事，质量会立刻有肉眼可见的提升——至少从“一句废话 Issue”变成了“可读、可执行的需求描述”。</p>
+<hr>
+<h2 id="参考与延伸阅读">参考与延伸阅读<a hidden class="anchor" aria-hidden="true" href="#参考与延伸阅读">#</a></h2>
+<p>你可以在这些关键词下继续查官方文档和示例：</p>
+<ul>
+<li>
+<p>GitHub Docs：Issue and pull request templates</p>
+</li>
+<li>
+<p>关键词：</p>
+<ul>
+<li><code>github issue template yaml</code></li>
+<li><code>github issue forms</code></li>
+<li><code>github .github/ISSUE_TEMPLATE examples</code></li>
+</ul>
+</li>
+</ul>
+<p>（如果你团队同时用 Gitea &amp; GitHub，其实两边的理念是通的，配置方式也很接近。）</p>
+<hr>
+<h2 id="元信息">元信息<a hidden class="anchor" aria-hidden="true" href="#元信息">#</a></h2>
+<ul>
+<li>
+<p><strong>预计阅读时长</strong>：8–12 分钟</p>
+</li>
+<li>
+<p><strong>标签</strong>：GitHub、协作效率、Issue 模板、团队规范、需求管理</p>
+</li>
+<li>
+<p><strong>SEO 关键词</strong>：</p>
+<ul>
+<li>GitHub Issue 模板</li>
+<li>GitHub Issue Template 配置</li>
+<li>YAML Issue Form 教程</li>
+<li>Feature Request 模板</li>
+</ul>
+</li>
+<li>
+<p><strong>元描述（Meta Description）</strong>：
+本文详细介绍如何在 GitHub 仓库中配置 Issue 模板，尤其是用于新需求 / Feature 的 YAML 表单模板和 Bug 模板，包含完整目录结构、配置示例、常见问题与最佳实践，帮助团队规范需求提交流程，提升协作效率。</p>
+</li>
+</ul>
+<hr>
+<h2 id="行动号召cta">行动号召（CTA）<a hidden class="anchor" aria-hidden="true" href="#行动号召cta">#</a></h2>
+<p>如果你已经看完了，我建议你现在就：</p>
+<ol>
+<li>找一个你常用的 GitHub 仓库；</li>
+<li>按文中步骤创建 <code>.github/ISSUE_TEMPLATE/feature-request.yml</code>；</li>
+<li>推上去，自己开一个测试 Issue 感受一下效果。</li>
+</ol>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/posts/%E7%94%A8%E4%B8%80%E6%AE%B5%E4%BC%98%E9%9B%85%E7%9A%84python%E4%BB%A3%E7%A0%81%E6%8A%8Asqlalchemy%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E8%BD%AC%E4%B8%BA%E5%AD%97%E5%85%B8/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>用一段优雅的python代码，把sqlalchemy模型高效转为字典</span>
+  </a>
+  <a class="next" href="http://localhost:1313/posts/%E5%88%AB%E8%AE%A9pydantic%E5%8D%A0%E9%A2%86%E4%BD%A0%E7%9A%84%E6%95%B4%E4%B8%AA%E9%A1%B9%E7%9B%AE%E8%81%8A%E8%81%8Aapi%E6%A0%A1%E9%AA%8Cdomain%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BE%B9%E7%95%8C/">
+    <span class="title">Next »</span>
+    <br>
+    <span>别让Pydantic占领你的整个项目:聊聊API校验,Domain模型和数据库之间的边界</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用Issue把问题写清楚，从0到TEMPLATE on x"
+            href="https://x.com/intent/tweet/?text=%e7%94%a8Issue%e6%8a%8a%e9%97%ae%e9%a2%98%e5%86%99%e6%b8%85%e6%a5%9a%ef%bc%8c%e4%bb%8e0%e5%88%b0TEMPLATE&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E7%2594%25A8issue%25E6%258A%258A%25E9%2597%25AE%25E9%25A2%2598%25E5%2586%2599%25E6%25B8%2585%25E6%25A5%259A%25E4%25BB%258E0%25E5%2588%25B0template%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用Issue把问题写清楚，从0到TEMPLATE on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E7%2594%25A8issue%25E6%258A%258A%25E9%2597%25AE%25E9%25A2%2598%25E5%2586%2599%25E6%25B8%2585%25E6%25A5%259A%25E4%25BB%258E0%25E5%2588%25B0template%2f&amp;title=%e7%94%a8Issue%e6%8a%8a%e9%97%ae%e9%a2%98%e5%86%99%e6%b8%85%e6%a5%9a%ef%bc%8c%e4%bb%8e0%e5%88%b0TEMPLATE&amp;summary=%e7%94%a8Issue%e6%8a%8a%e9%97%ae%e9%a2%98%e5%86%99%e6%b8%85%e6%a5%9a%ef%bc%8c%e4%bb%8e0%e5%88%b0TEMPLATE&amp;source=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E7%2594%25A8issue%25E6%258A%258A%25E9%2597%25AE%25E9%25A2%2598%25E5%2586%2599%25E6%25B8%2585%25E6%25A5%259A%25E4%25BB%258E0%25E5%2588%25B0template%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用Issue把问题写清楚，从0到TEMPLATE on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E7%2594%25A8issue%25E6%258A%258A%25E9%2597%25AE%25E9%25A2%2598%25E5%2586%2599%25E6%25B8%2585%25E6%25A5%259A%25E4%25BB%258E0%25E5%2588%25B0template%2f&title=%e7%94%a8Issue%e6%8a%8a%e9%97%ae%e9%a2%98%e5%86%99%e6%b8%85%e6%a5%9a%ef%bc%8c%e4%bb%8e0%e5%88%b0TEMPLATE">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用Issue把问题写清楚，从0到TEMPLATE on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E7%2594%25A8issue%25E6%258A%258A%25E9%2597%25AE%25E9%25A2%2598%25E5%2586%2599%25E6%25B8%2585%25E6%25A5%259A%25E4%25BB%258E0%25E5%2588%25B0template%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用Issue把问题写清楚，从0到TEMPLATE on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e7%94%a8Issue%e6%8a%8a%e9%97%ae%e9%a2%98%e5%86%99%e6%b8%85%e6%a5%9a%ef%bc%8c%e4%bb%8e0%e5%88%b0TEMPLATE%20-%20http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E7%2594%25A8issue%25E6%258A%258A%25E9%2597%25AE%25E9%25A2%2598%25E5%2586%2599%25E6%25B8%2585%25E6%25A5%259A%25E4%25BB%258E0%25E5%2588%25B0template%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用Issue把问题写清楚，从0到TEMPLATE on telegram"
+            href="https://telegram.me/share/url?text=%e7%94%a8Issue%e6%8a%8a%e9%97%ae%e9%a2%98%e5%86%99%e6%b8%85%e6%a5%9a%ef%bc%8c%e4%bb%8e0%e5%88%b0TEMPLATE&amp;url=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E7%2594%25A8issue%25E6%258A%258A%25E9%2597%25AE%25E9%25A2%2598%25E5%2586%2599%25E6%25B8%2585%25E6%25A5%259A%25E4%25BB%258E0%25E5%2588%25B0template%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 用Issue把问题写清楚，从0到TEMPLATE on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e7%94%a8Issue%e6%8a%8a%e9%97%ae%e9%a2%98%e5%86%99%e6%b8%85%e6%a5%9a%ef%bc%8c%e4%bb%8e0%e5%88%b0TEMPLATE&u=http%3a%2f%2flocalhost%3a1313%2fposts%2f%25E7%2594%25A8issue%25E6%258A%258A%25E9%2597%25AE%25E9%25A2%2598%25E5%2586%2599%25E6%25B8%2585%25E6%25A5%259A%25E4%25BB%258E0%25E5%2588%25B0template%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

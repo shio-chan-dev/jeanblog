@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.152.2"><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Jeanphilo Blog</title>
+
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/index.xml" title="rss">
+<link rel="alternate" type="application/json" href="http://localhost:1313/index.json" title="json">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="Jeanphilo Blog">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Jeanphilo Blog">
+<meta name="twitter:description" content="">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Jeanphilo Blog",
+  "url": "http://localhost:1313/",
+  "description": "",
+  "logo": "http://localhost:1313/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">对于ai系统的思考
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>对于一个系统来说，单线程就应该是一个助手，我们应该给每个用户就单纯提供一个助手，我们所需要做的就是优化这一个助手，
+绝对不是向一个用户可以提供很多个线程的处理方式，成本太高
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
+  <a class="entry-link" aria-label="post link to 对于ai系统的思考" href="http://localhost:1313/posts/%E5%AF%B9%E4%BA%8Eai%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%80%9D%E8%80%83/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如何高效审核后端fastapi代码
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🧩 如何高效审核 FastAPI 后端项目的 Pull Request（PR） 副标题 / 摘要： 本文为你系统梳理了在 Python FastAPI 项目中如何进行专业的代码审核流程，从逻辑正确性到安全、性能与架构一致性，附带实用审查清单与示例，助你成为团队中更高效的 Reviewer。
+👥 目标读者 使用 Python &#43; FastAPI 的中高级后端开发者 初入团队、需要学习代码审查流程的工程师 负责代码质量与合并决策的 Tech Lead / Reviewer 💡 背景与动机 在多人协作的后端项目中，代码审查（Code Review） 是保障系统稳定、提升团队代码质量的关键环节。 但许多工程师在面对 PR 时往往只“浏览一下改动”，忽略了逻辑、性能和安全的隐患。
+尤其在 FastAPI 项目中，接口结构简洁、异步特性突出，但也因此容易出现：
+不当的 async/await 用法导致阻塞； 不安全的输入校验； 不一致的 Schema 与返回模型； 难以维护的业务逻辑。 因此，本文将教你如何 系统化、标准化地审查 FastAPI PR。
+🧠 核心概念 概念 说明 PR (Pull Request) 在 Git 平台上发起代码合并请求，等待他人审核后合并到主分支。 Code Review 同事间对代码进行质量和设计审查的过程。 FastAPI 高性能、异步的 Python Web 框架，基于 Pydantic 和 Starlette。 Pydantic Schema FastAPI 的数据验证与序列化模型系统。 Depends() FastAPI 的依赖注入机制，用于数据库连接、认证等。 🧭 实践指南：PR 审核流程 1️⃣ 阅读 PR 描述 明确改动目的、功能范围、对应 issue。 判断是否为修复、功能新增、重构或优化。 2️⃣ 浏览改动文件 注意核心目录：routers/, schemas/, models/, services/, core/。 检查是否包含依赖变更、配置修改或多余文件。 3️⃣ 深入逻辑代码 重点审查：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-30 00:00:00 +0000 UTC'>October 30, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 如何高效审核后端fastapi代码" href="http://localhost:1313/posts/%E5%A6%82%E4%BD%95%E9%AB%98%E6%95%88%E5%AE%A1%E6%A0%B8%E5%90%8E%E7%AB%AFfastapi%E4%BB%A3%E7%A0%81/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如何配置gitea
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🚀 本地搭建 Gitea：打造你的私人 GitHub（含已有仓库导入指南） 副标题 / 摘要： 本文将手把手教你在本地电脑上安装轻量级 Git 服务器 —— Gitea。 无需 root、不会影响系统环境，让你像在 GitHub 一样管理、查看和推送项目，还能导入已有仓库。
+目标读者： 👉 适合个人开发者、独立工程师、小型团队技术负责人。 适用于初中级开发者，有 Git 基础即可上手。
+🧠 背景 / 动机 很多开发者希望：
+在公司电脑或内网环境下托管代码； 不想使用云端（如 GitHub、Gitee）； 又希望有 Web 界面、Pull Request、代码浏览体验。 但 GitLab 太重（动辄占用数 GB 内存），而 Gitea 则：
+🌱 轻量级、单可执行文件、支持 PR、Wiki、Issue、CI/CD。
+只需几分钟，你就能拥有一个完全属于自己的“小型 GitHub”。
+📘 核心概念 名称 说明 GitLab 功能最强大的开源 Git 平台，但资源占用高 Gitea 轻量级自托管 Git 服务，界面类似 GitHub Bare 仓库 只保存版本数据、不包含工作区的纯仓库 Pull Request 一个分支向另一个分支发起的合并请求 SQLite Gitea 默认使用的轻量数据库，无需额外配置 🧩 实践指南 / 安装步骤 1️⃣ 准备环境 系统要求：Linux / macOS / Windows 均可 推荐配置：内存 ≥ 512MB，磁盘 ≥ 1GB
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-28 00:00:00 +0000 UTC'>October 28, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 如何配置gitea" href="http://localhost:1313/posts/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgitea/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">掌握git提交规范,让团队协作更高效率
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>标题 🚀 从「feat」到「fix」：掌握 Git 提交规范，让团队协作与自动化更高效
+副标题 / 摘要 一篇为开发者准备的实用指南，带你理解并掌握业界通行的 Git 提交信息标准（Conventional Commits）， 从 commit 标签（如 feat:、fix:）到自动生成 changelog，一次学会写出高质量的提交记录。
+目标读者 初学者：刚开始使用 Git，想养成规范提交的习惯。 中级开发者：希望让提交信息对团队和 CI 工具更友好。 团队负责人 / 架构师：想建立统一的代码提交标准，提升协作与版本管理效率。 背景 / 动机 大多数开发者写提交信息的方式都是这样的：
+“update code” “fix bug” “修改东西”
+这类信息短期可读，长期无用。 当团队人数增多、项目复杂时，无法追踪改动意图，也无法让自动化工具正确识别变更类型。 这就是为什么业界推出了 Conventional Commits： 一个简洁统一的 commit 语法标准，让 Git 提交可读、可追踪、可自动化。
+核心概念 Conventional Commits 是一种提交信息格式约定，它规定了提交消息的结构：
+&lt;type&gt;(&lt;scope&gt;): &lt;subject&gt; &lt;body&gt; &lt;footer&gt; type：提交类型，如 feat、fix、docs scope：作用范围，可选（如 ui、api） subject：简短描述（不超过 50 字） body：详细说明（可选） footer：备注（如 BREAKING CHANGE） 实践指南 / 步骤 1️⃣ 设置 Git 编辑器为 Neovim（可选）
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-25 00:00:00 +0000 UTC'>October 25, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 掌握git提交规范,让团队协作更高效率" href="http://localhost:1313/posts/%E6%8E%8C%E6%8F%A1git%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83%E8%AE%A9%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E6%9B%B4%E9%AB%98%E6%95%88%E7%8E%87/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程 副标题： 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别 阅读时长： 7 分钟 标签： 网络排查、SSH、VNC、Linux、远程连接 SEO 关键词： SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC
+🎯 目标读者 Linux 使用者、开发者、服务器维护人员 想学习网络排错思路的中级工程师 对 SSH/VNC 协议机制有兴趣的读者 💡 背景与动机 你是否遇到过这样的情况：
+“服务器能 ping 通，但 SSH 连不上？”
+这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。 本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。
+🔍 问题现象 执行命令：
+ssh chenhm@101.6.142.82 -p 5905 输出：
+kex_exchange_identification: Connection closed by remote host Connection closed by 101.6.142.82 port 5905 尝试 ping：
+ping 101.6.142.82 能通，没有丢包。
+于是我们知道：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程" href="http://localhost:1313/posts/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E4%BB%A5ping%E9%80%9A%E5%8D%B4ssh%E4%B8%8D%E9%80%9A%E4%B8%80%E6%AC%A1%E5%81%87ssh%E7%9C%9Fvnc%E7%9A%84%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">开启sshsystem进程失败怎么解决
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>标题： 🚀 在无 sudo 环境下让 sshd 常驻运行：从错误排查到 nohup 与 systemd 双方案实战
+副标题 / 摘要： 本文讲述如何在普通用户权限下运行 OpenSSH 服务，逐步解决“连接被拒绝”“密码认证失败”“systemd start-limit-hit”等典型问题，并最终用 nohup 与 systemd 实现持久运行。
+目标读者： Linux 中级用户、科研或企业多用户服务器使用者、无 root 权限的 SSH 自部署者。
+一、背景 / 动机 在部分高校实验室或云主机环境中，普通账户没有 sudo 权限，默认 sshd 服务无法启动。 当我们需要：
+远程访问自己的 Linux 主机； 使用 VS Code Remote 或 SCP 传文件； 但又无法修改系统级配置； 就必须在用户态自行运行 sshd。 然而这会引发一系列问题：端口冲突、防火墙、认证失败、start-limit-hit 等。 二、核心概念 名称 含义 sshd OpenSSH 守护进程，负责处理 SSH 登录请求 用户态 sshd 非 root 用户手动启动的 sshd 实例，仅有用户权限 authorized_keys 存放允许登录的公钥 nohup 让程序脱离终端后台运行 systemd –user 用户级 systemd 实例，可管理自启服务 start-limit-hit systemd 检测到服务频繁退出后自动暂停重启 三、实践指南 / 全流程步骤 1️⃣ 生成并配置 SSH 密钥 ssh-keygen -t ed25519 -C &#34;&#34; -f ~/.ssh/id_ed25519_noemail cat ~/.ssh/id_ed25519_noemail.pub &gt;&gt; ~/.ssh/authorized_keys chmod 700 ~/.ssh chmod 600 ~/.ssh/authorized_keys 确保 ~/.ssh/authorized_keys 权限正确。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 开启sshsystem进程失败怎么解决" href="http://localhost:1313/posts/%E5%BC%80%E5%90%AFsshsystem%E8%BF%9B%E7%A8%8B%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">怎么撰写一篇完美的机器学习文档
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🧠 Bengio 风格的机器学习任务说明文档：从研究到工程的技术规范指南 副标题： 如何编写一份可复现、可解释、可比较的模型微调任务说明文档 —— 来自 Yoshua Bengio 的研究方法论 阅读时长： 10 分钟 标签： 机器学习文档结构 模型微调 技术规范 深度学习实践 适合读者： 中高级 ML 工程师、研究员、技术写作者
+一、为什么需要这样的文档？ 在机器学习项目中，我们经常遇到这样的情况： 团队完成了一个模型微调实验，但几个月后再回头看，没人能完全复现结果，也不清楚为什么要采用某个学习率或 LoRA 层。
+Yoshua Bengio（深度学习三巨头之一）早在 Montréal Institute for Learning Algorithms (MILA) 就提出了一个理念：
+“一个机器学习研究或工程任务的文档，必须能让他人完全重现结果并理解背后的设计动机。”
+这就是后来被称为 Bengio-style Machine Learning Project Report Structure 的经典模板，被 Google Research、Meta AI、OpenAI 等广泛采用。
+二、Bengio 风格模板的核心思想 项目 内容 来源 Yoshua Bengio，《Deep Learning Research Practice Notes》 目标 确保机器学习实验 可复现、可理解、可比较 适用场景 模型微调、对比实验、学术研究报告、内部技术说明 优势 逻辑清晰、结构统一、可直接转化为论文或内部白皮书 三、标准结构（适用于四个模型微调任务） 以下是 Bengio 风格文档的经典九个部分：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 怎么撰写一篇完美的机器学习文档" href="http://localhost:1313/posts/%E6%80%8E%E4%B9%88%E6%92%B0%E5%86%99%E4%B8%80%E7%AF%87%E5%AE%8C%E7%BE%8E%E7%9A%84%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%96%87%E6%A1%A3/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">没有sudo权限开启ssh
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。
+🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略） 副标题 / 摘要： 当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 sshd，支持密钥登录并实现远程连接。
+阅读时长： 10 分钟 目标读者： 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者 标签： SSH、sshd、Linux、远程连接、非 root、系统配置 SEO 关键词： SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败
+🎯 背景与动机 很多科研服务器、学校实验室或共享主机都不给普通用户 sudo 权限。 然而我们仍常常需要：
+远程登录自己的账户； 上传/下载文件； 或从另一台机器访问自己的进程。 默认情况下，sshd 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 用户目录 下运行一个“用户态 SSH 服务”，无需修改系统配置。
+🧩 核心概念 名词 含义 sshd SSH 服务端程序，负责接收和验证 SSH 连接。 用户态（user-space）sshd 普通用户自行启动的 sshd 进程，不使用 root 权限。 HostKey 服务器用于加密连接的密钥对。 AuthorizedKeys 被允许登录该账户的公钥列表。 /etc/shadow 系统密码哈希存储文件，非 root 用户无法访问。 ⚙️ 实践指南：从零启动用户态 SSH 服务 🪜 第一步：准备配置文件 创建配置目录：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 没有sudo权限开启ssh" href="http://localhost:1313/posts/%E6%B2%A1%E6%9C%89sudo%E6%9D%83%E9%99%90%E5%BC%80%E5%90%AFssh/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">在Ubuntu上让frp内网穿透服务开机自启
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🚀 在 Ubuntu 上让 frp 内网穿透服务开机自启：完整指南 副标题 / 摘要 通过 systemd 将 frp（Fast Reverse Proxy）设置为系统服务，实现稳定、安全、可监控的开机自动启动方案，避免每次手动运行。
+阅读时长：8 分钟 标签：frp、内网穿透、systemd、自启、Linux、Ubuntu SEO 关键词：frp 开机自启、Ubuntu frp 配置、frpc systemd、frps 服务端启动、内网穿透配置 元描述：手把手教你在 Ubuntu 上使用 systemd 将 frp（frpc / frps）设置为开机自启服务，附配置文件模板与常见问题排查。
+🎯 目标读者 适合：
+想在云服务器上部署 frps 的开发者 想让家中/办公内网机器长期稳定穿透的中级 Linux 用户 DevOps / 自建服务爱好者 🧩 背景与动机 许多开发者使用 frp 实现内网穿透，让内网服务（如 SSH、Web、NAS）可以安全地从外部访问。 问题是：手动运行 ./frpc -c frpc.ini 既麻烦又不稳定，机器重启后容易忘记启动。
+因此，我们希望通过 systemd 服务 实现“自动随系统启动 &#43; 失败自动重启 &#43; 集中日志管理”的效果。
+💡 核心概念 frps / frpc：frp 的服务端与客户端可执行程序。 systemd：现代 Linux 系统的服务管理器，用于定义和控制后台服务。 unit 文件：定义服务的配置（如启动命令、依赖、重启策略）。 🛠️ 实践步骤指南 1️⃣ 安装与准备 将二进制文件与配置文件放入系统路径：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-23 00:00:00 +0000 UTC'>October 23, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 在Ubuntu上让frp内网穿透服务开机自启" href="http://localhost:1313/posts/%E5%9C%A8ubuntu%E4%B8%8A%E8%AE%A9frp%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如何配置orm管理数据
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🧱 从零到生产：如何优雅地设计 ORM 层管理（以 SQLAlchemy 为核心） 本文将带你从数据库表结构出发，构建一套高内聚、低耦合的 ORM 层架构。 目标：让你的 Flask / FastAPI 项目在数据访问上既简洁又稳健。
+一、为什么要重视 ORM 层设计？ 很多项目初期只是“先能跑”，直接把 SQL 写在控制器里，但很快就会出现：
+业务逻辑和 SQL 混在一起； 表关系复杂，维护困难； 想复用查询逻辑很麻烦； 迁移到别的框架（Flask → FastAPI）代价大。 ORM 层（Object Relational Mapping）是数据库与业务逻辑之间的 抽象桥梁， 一个好的 ORM 层能让你只关心对象，不用反复写 SQL。
+二、项目场景：招标信息数据系统 我们以一个真实业务为例： 爬取各网站的招标公告，保存为结构化数据，并生成统计看板。
+目标数据库实体 表名 功能 tender_info 公告基本信息 tender_attachments 公告及变更文件 tender_organization 招标机构与联系方式 tender_statistics 每日/月/年统计信息 三、ORM 层设计思路 🧩 分层原则 层级 作用 代码位置 Model 层 ORM 模型定义，对应数据库表结构 models.py Repository 层 封装 CRUD 逻辑（数据库操作） repository.py Service 层 业务逻辑层（聚合多个仓库逻辑） service.py API 层 控制器/路由接口 Flask/FastAPI 视图文件 这种分层让你做到：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-23 00:00:00 +0000 UTC'>October 23, 2025</span>&nbsp;·&nbsp;<span>4 min</span></footer>
+  <a class="entry-link" aria-label="post link to 如何配置orm管理数据" href="http://localhost:1313/posts/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEorm%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="prev" href="http://localhost:1313/">
+      «&nbsp;Prev&nbsp;
+    </a>
+    <a class="next" href="http://localhost:1313/page/3/">Next&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>
