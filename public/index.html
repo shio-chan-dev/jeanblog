@@ -135,6 +135,21 @@
                     <span>搜索</span>
                 </a>
             </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/linux/" title="Linux">
+                    <span>Linux</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/python/" title="Python">
+                    <span>Python</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/thoughts/" title="随想">
+                    <span>随想</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
@@ -142,16 +157,37 @@
 
 <article class="first-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">week log
+    <h2 class="entry-hint-parent">How to Build a Blog System
     </h2>
   </header>
   <div class="entry-content">
-    <p>周报 周期 week1
-主要产出和链接 遇到的问题和解决方案 下周计划和优先级 需要协调的事项/决策请求 日报 日期 项目/任务: 当前进度/状态 用时 阻塞/需要支持: 明日计划 日报 日期 2025-11-02 10:54:11
-项目/任务: 当前进度/状态 用时 阻塞/需要支持: 明日计划</p>
+    <p>标题：用 Hugo &#43; GitHub Pages 十分钟上线个人博客（超详细新手指南） 副标题 / 摘要 本教程带你从零开始，将本地 Hugo 博客部署到 GitHub Pages，全程只需 10 分钟，适合想快速上线技术博客、文档站点的开发者。确保你不仅能跑起来，还能理解背后的工作原理。
+目标读者 Hugo 初学者 想快速上线个人技术博客的开发者 想了解 GitHub Pages &#43; GitHub Actions 部署的用户 想要零成本托管静态网站的同学 背景 / 动机：为什么要用 Hugo &#43; GitHub Pages？ 许多人写博客时面临这些痛点：
+发布文章要手动上传，不自动化 静态站点生成器很多，但部署步骤零散 GitHub Pages 文档不够清晰，新手容易踩坑 主题（如 PaperMod）需要正确处理资源（SCSS）才能编译成功 Hugo &#43; GitHub Pages &#43; GitHub Actions 组合 完美解决了这些问题：
+Hugo 构建速度极快（上千文章依旧瞬间生成） GitHub Pages 完全免费，不需要服务器 GitHub Actions 自动部署，写完文章 push 即上线 核心概念（必须理解） 1. Hugo 一个超快的静态博客生成器，通过 Markdown 生成 HTML。
+2. GitHub Pages GitHub 提供的免费静态网站托管。
+...</p>
   </div>
-  <footer class="entry-footer"><span title='2025-11-14 00:00:00 +0000 UTC'>November 14, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to week log" href="http://localhost:1313/jeanblog/posts/week_log/"></a>
+  <footer class="entry-footer"><span title='2025-11-14 15:04:02 +0800 HKT'>November 14, 2025</span>&nbsp;·&nbsp;<span>3 min</span></footer>
+  <a class="entry-link" aria-label="post link to How to Build a Blog System" href="http://localhost:1313/jeanblog/posts/how-to-build-a-blog-system/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">How to Publish by Hugo
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>标题：如何使用 Hugo 发布文章：从 Markdown 到线上博客的全流程指南 副标题 / 摘要 这篇文章教你如何使用 Hugo 创建、管理与发布文章，包括 front matter 设置、草稿管理、图片处理、目录结构、预览与上线，让你从零掌握完整写作流程。
+目标读者 Hugo 初学者 想用 Hugo 搭建技术博客的人 想学习 Markdown &#43; 静态站点写作流程的开发者 使用 PaperMod、DoIt 等主题的用户 背景 / 动机 很多人在成功搭建 Hugo 博客后会遇到新的困惑：
+文章应该放在哪个目录？ front matter 要怎么写？ 图片要放哪？ 为什么本地能看到文章但线上看不到？ 草稿 / 发布时间如何控制？ 怎样让文章自动出现在首页？ 这些都是 Hugo 新手非常常见的痛点。 本教程用实战步骤 &#43; 最佳实践帮助你完全掌握“如何发布文章”的整个流程。
+核心概念 1. Hugo Content（内容目录） Hugo 的文章都放在 content/ 目录下，比如：
+content/ posts/ my-first-post.md 2. Front Matter 文章头部的三段 YAML/TOML/JSON，用来控制文章：
+--- title: &#34;文章标题&#34; date: 2024-08-26 draft: false tags: [&#34;hugo&#34;, &#34;blog&#34;] --- 3. Draft（草稿） 草稿不会被构建，只能在本地用 hugo server -D 查看。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-11-14 15:01:32 +0800 HKT'>November 14, 2025</span>&nbsp;·&nbsp;<span>3 min</span></footer>
+  <a class="entry-link" aria-label="post link to How to Publish by Hugo" href="http://localhost:1313/jeanblog/posts/how-to-publish-by-hugo/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -175,7 +211,7 @@ SQLAlchemy 模型转字典（dict）看似简单，却暗藏字段格式、关�
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-11-12 00:00:00 +0000 UTC'>November 12, 2025</span>&nbsp;·&nbsp;<span>4 min</span></footer>
-  <a class="entry-link" aria-label="post link to 用一段优雅的python代码，把sqlalchemy模型高效转为字典" href="http://localhost:1313/jeanblog/posts/%E7%94%A8%E4%B8%80%E6%AE%B5%E4%BC%98%E9%9B%85%E7%9A%84python%E4%BB%A3%E7%A0%81%E6%8A%8Asqlalchemy%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E8%BD%AC%E4%B8%BA%E5%AD%97%E5%85%B8/"></a>
+  <a class="entry-link" aria-label="post link to 用一段优雅的python代码，把sqlalchemy模型高效转为字典" href="http://localhost:1313/jeanblog/posts/python/%E7%94%A8%E4%B8%80%E6%AE%B5%E4%BC%98%E9%9B%85%E7%9A%84python%E4%BB%A3%E7%A0%81%E6%8A%8Asqlalchemy%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E8%BD%AC%E4%B8%BA%E5%AD%97%E5%85%B8/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -196,7 +232,7 @@ SQLAlchemy 模型转字典（dict）看似简单，却暗藏字段格式、关�
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-11-11 00:00:00 +0000 UTC'>November 11, 2025</span>&nbsp;·&nbsp;<span>4 min</span></footer>
-  <a class="entry-link" aria-label="post link to 用Issue把问题写清楚，从0到TEMPLATE" href="http://localhost:1313/jeanblog/posts/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/"></a>
+  <a class="entry-link" aria-label="post link to 用Issue把问题写清楚，从0到TEMPLATE" href="http://localhost:1313/jeanblog/posts/git-notes/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -215,7 +251,7 @@ SQLAlchemy 模型转字典（dict）看似简单，却暗藏字段格式、关�
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-11-09 00:00:00 +0000 UTC'>November 9, 2025</span>&nbsp;·&nbsp;<span>6 min</span></footer>
-  <a class="entry-link" aria-label="post link to 别让Pydantic占领你的整个项目:聊聊API校验,Domain模型和数据库之间的边界" href="http://localhost:1313/jeanblog/posts/%E5%88%AB%E8%AE%A9pydantic%E5%8D%A0%E9%A2%86%E4%BD%A0%E7%9A%84%E6%95%B4%E4%B8%AA%E9%A1%B9%E7%9B%AE%E8%81%8A%E8%81%8Aapi%E6%A0%A1%E9%AA%8Cdomain%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BE%B9%E7%95%8C/"></a>
+  <a class="entry-link" aria-label="post link to 别让Pydantic占领你的整个项目:聊聊API校验,Domain模型和数据库之间的边界" href="http://localhost:1313/jeanblog/posts/python/%E5%88%AB%E8%AE%A9pydantic%E5%8D%A0%E9%A2%86%E4%BD%A0%E7%9A%84%E6%95%B4%E4%B8%AA%E9%A1%B9%E7%9B%AE%E8%81%8A%E8%81%8Aapi%E6%A0%A1%E9%AA%8Cdomain%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BE%B9%E7%95%8C/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -234,7 +270,7 @@ SQLAlchemy 模型转字典（dict）看似简单，却暗藏字段格式、关�
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-11-08 00:00:00 +0000 UTC'>November 8, 2025</span>&nbsp;·&nbsp;<span>5 min</span></footer>
-  <a class="entry-link" aria-label="post link to 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API" href="http://localhost:1313/jeanblog/posts/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/"></a>
+  <a class="entry-link" aria-label="post link to 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API" href="http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -269,7 +305,7 @@ resp = client.chat.completions.create(model=&#34;gpt-4o&#34;, messages=messages)
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-11-02 00:00:00 +0000 UTC'>November 2, 2025</span>&nbsp;·&nbsp;<span>3 min</span></footer>
-  <a class="entry-link" aria-label="post link to 为什么让前端完成Chat Completion: 一套通用的多模型流式对话架构设计" href="http://localhost:1313/jeanblog/posts/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%A9%E5%89%8D%E7%AB%AF%E5%AE%8C%E6%88%90chat-completion-%E4%B8%80%E5%A5%97%E9%80%9A%E7%94%A8%E7%9A%84%E5%A4%9A%E6%A8%A1%E5%9E%8B%E6%B5%81%E5%BC%8F%E5%AF%B9%E8%AF%9D%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/"></a>
+  <a class="entry-link" aria-label="post link to 为什么让前端完成Chat Completion: 一套通用的多模型流式对话架构设计" href="http://localhost:1313/jeanblog/posts/python/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%A9%E5%89%8D%E7%AB%AF%E5%AE%8C%E6%88%90chat-completion-%E4%B8%80%E5%A5%97%E9%80%9A%E7%94%A8%E7%9A%84%E5%A4%9A%E6%A8%A1%E5%9E%8B%E6%B5%81%E5%BC%8F%E5%AF%B9%E8%AF%9D%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -287,7 +323,7 @@ resp = client.chat.completions.create(model=&#34;gpt-4o&#34;, messages=messages)
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-11-02 00:00:00 +0000 UTC'>November 2, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 从堵塞到异步:为什么上传文件接口不该等文件处理完" href="http://localhost:1313/jeanblog/posts/%E4%BB%8E%E5%A0%B5%E5%A1%9E%E5%88%B0%E5%BC%82%E6%AD%A5%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E6%8E%A5%E5%8F%A3%E4%B8%8D%E8%AF%A5%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E5%AE%8C/"></a>
+  <a class="entry-link" aria-label="post link to 从堵塞到异步:为什么上传文件接口不该等文件处理完" href="http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%A0%B5%E5%A1%9E%E5%88%B0%E5%BC%82%E6%AD%A5%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E6%8E%A5%E5%8F%A3%E4%B8%8D%E8%AF%A5%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E5%AE%8C/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -304,25 +340,7 @@ WebSocket 的出现，彻底改变了这种单向关系， 让 Web 应用第一�
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to webSocket深入理解:为什么要保持一个永远在线的连接" href="http://localhost:1313/jeanblog/posts/websocket%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E4%B8%AA%E6%B0%B8%E8%BF%9C%E5%9C%A8%E7%BA%BF%E7%9A%84%E8%BF%9E%E6%8E%A5/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">从 Pip 到 UV：一站式 Python 包管理与依赖同步指南
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>🚀 从 Pip 到 UV：一站式 Python 包管理与依赖同步指南 💡 副标题 / 摘要 想让你的 Python 环境更干净、更快、更可靠？本文将带你从传统的 pip &#43; venv &#43; requirements.txt 迁移到现代的 uv 包管理系统，并教你如何在两者之间无缝同步。
-🎯 目标读者 适合 Python 开发者（初学者到中级）、数据科学家、后端工程师，以及希望提升开发环境一致性、减少依赖地狱的读者。
-🔥 背景 / 动机 在日常 Python 开发中，我们经常遇到以下痛点：
-环境混乱、包冲突； pip install 太慢； 不同机器、团队成员环境不一致； requirements.txt 手动维护麻烦。 而 uv 是一个由 Astral 团队推出的新一代包管理工具， 用 Rust 编写，集成了：
-包安装（比 pip 快数倍）； 虚拟环境管理； 锁文件机制（可复现环境）； 与 PyPI 完全兼容。 一句话：uv = pip &#43; virtualenv &#43; pip-tools &#43; poetry 的融合体。
-🧩 核心概念 概念 说明 pyproject.toml 现代 Python 项目的依赖与元信息文件 uv.lock 锁文件，记录所有依赖的精确版本，保证可复现 uv sync 根据锁文件同步环境（自动创建/更新虚拟环境） uv add / remove 添加或删除依赖，并自动更新锁文件 uv export 导出为 requirements.txt，兼容传统 pip 流程 🛠 实践指南 / 步骤 一、从 pip 项目迁移到 uv 假设你已有一个项目：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 从 Pip 到 UV：一站式 Python 包管理与依赖同步指南" href="http://localhost:1313/jeanblog/posts/%E4%BB%8E-pip-%E5%88%B0-uv%E4%B8%80%E7%AB%99%E5%BC%8F-python-%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%90%8C%E6%AD%A5%E6%8C%87%E5%8D%97/"></a>
+  <a class="entry-link" aria-label="post link to webSocket深入理解:为什么要保持一个永远在线的连接" href="http://localhost:1313/jeanblog/posts/python/websocket%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E4%B8%AA%E6%B0%B8%E8%BF%9C%E5%9C%A8%E7%BA%BF%E7%9A%84%E8%BF%9E%E6%8E%A5/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

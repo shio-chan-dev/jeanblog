@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Git on Jeanphilo Blog</title>
+    <link>http://localhost:1313/jeanblog/categories/git/</link>
+    <description>Recent content in Git on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 11 Nov 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/jeanblog/categories/git/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>用Issue把问题写清楚，从0到TEMPLATE</title>
+      <link>http://localhost:1313/jeanblog/posts/git-notes/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/</link>
+      <pubDate>Tue, 11 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/</guid>
+      <description>&lt;h2 id=&#34;标题吸引且准确包含关键词&#34;&gt;标题（吸引且准确，包含关键词）&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;副标题--摘要&#34;&gt;副标题 / 摘要&lt;/h2&gt;
+&lt;p&gt;这篇文章手把手教你在 GitHub 仓库中配置「新需求 / Feature」与「Bug」Issue 模板，包括目录结构、YAML 表单、Markdown 模板以及常见坑。适合想让团队需求沟通更规范、减少反复追问的开发者和团队负责人。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;目标读者&#34;&gt;目标读者&lt;/h2&gt;
+&lt;p&gt;这篇文章适合：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;经常在 GitHub 仓库里开 Issue、提需求的 &lt;strong&gt;后端 / 前端 / 全栈工程师&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;想把团队需求提交流程「标准化」的 &lt;strong&gt;项目负责人 / TL / 架构师&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;对 GitHub 已经有基本使用经验、但还没用过 Issue 模板的 &lt;strong&gt;中级开发者&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;完全新手也能看懂，但会默认你知道：什么是仓库、什么是 Issue、如何提交代码等。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;背景--动机为什么要折腾-issue-模板&#34;&gt;背景 / 动机：为什么要折腾 Issue 模板？&lt;/h2&gt;
+&lt;p&gt;没有 Issue 模板时，日常可能是这样的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;“这个需求背景是什么？”&lt;/li&gt;
+&lt;li&gt;“影响哪些模块？”&lt;/li&gt;
+&lt;li&gt;“验收标准怎么算通过？”&lt;/li&gt;
+&lt;li&gt;“优先级到底多高？”&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一句话 Issue：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“做个导出功能”
+直接把所有人整破防。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;长期下来会有几个痛点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;沟通成本高&lt;/strong&gt;：每个需求都要反复追问细节；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;信息不对称&lt;/strong&gt;：请求人脑子里很清楚，但写在 Issue 里的只有一句话；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;难以排期&lt;/strong&gt;：没有明确优先级和验收标准，大家都觉得自己的需求是 P0；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;历史难追踪&lt;/strong&gt;：几个月后再看这个 Issue，完全不知道当时怎么想的。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;而 GitHub 提供的 &lt;strong&gt;Issue Template&lt;/strong&gt;，其实就是一套「结构化提问」工具：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>如何配置gitea</title>
+      <link>http://localhost:1313/jeanblog/posts/git-notes/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgitea/</link>
+      <pubDate>Tue, 28 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgitea/</guid>
+      <description>&lt;h1 id=&#34;-本地搭建-gitea打造你的私人-github含已有仓库导入指南&#34;&gt;🚀 本地搭建 Gitea：打造你的私人 GitHub（含已有仓库导入指南）&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;副标题 / 摘要：&lt;/strong&gt;
+本文将手把手教你在本地电脑上安装轻量级 Git 服务器 —— Gitea。
+无需 root、不会影响系统环境，让你像在 GitHub 一样管理、查看和推送项目，还能导入已有仓库。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;目标读者：&lt;/strong&gt;
+👉 适合个人开发者、独立工程师、小型团队技术负责人。
+适用于初中级开发者，有 Git 基础即可上手。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景--动机&#34;&gt;🧠 背景 / 动机&lt;/h2&gt;
+&lt;p&gt;很多开发者希望：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在公司电脑或内网环境下托管代码；&lt;/li&gt;
+&lt;li&gt;不想使用云端（如 GitHub、Gitee）；&lt;/li&gt;
+&lt;li&gt;又希望有 Web 界面、Pull Request、代码浏览体验。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但 &lt;strong&gt;GitLab 太重&lt;/strong&gt;（动辄占用数 GB 内存），而 Gitea 则：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🌱 轻量级、单可执行文件、支持 PR、Wiki、Issue、CI/CD。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;只需几分钟，你就能拥有一个完全属于自己的“小型 GitHub”。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-核心概念&#34;&gt;📘 核心概念&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;名称&lt;/th&gt;
+          &lt;th&gt;说明&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;GitLab&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;功能最强大的开源 Git 平台，但资源占用高&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Gitea&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;轻量级自托管 Git 服务，界面类似 GitHub&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Bare 仓库&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;只保存版本数据、不包含工作区的纯仓库&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Pull Request&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;一个分支向另一个分支发起的合并请求&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;SQLite&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;Gitea 默认使用的轻量数据库，无需额外配置&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-实践指南--安装步骤&#34;&gt;🧩 实践指南 / 安装步骤&lt;/h2&gt;
+&lt;h3 id=&#34;1-准备环境&#34;&gt;1️⃣ 准备环境&lt;/h3&gt;
+&lt;p&gt;系统要求：Linux / macOS / Windows 均可
+推荐配置：内存 ≥ 512MB，磁盘 ≥ 1GB&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>掌握git提交规范,让团队协作更高效率</title>
+      <link>http://localhost:1313/jeanblog/posts/git-notes/%E6%8E%8C%E6%8F%A1git%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83%E8%AE%A9%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E6%9B%B4%E9%AB%98%E6%95%88%E7%8E%87/</link>
+      <pubDate>Sat, 25 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E6%8E%8C%E6%8F%A1git%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83%E8%AE%A9%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E6%9B%B4%E9%AB%98%E6%95%88%E7%8E%87/</guid>
+      <description>&lt;h3 id=&#34;标题&#34;&gt;&lt;strong&gt;标题&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;🚀 从「feat」到「fix」：掌握 Git 提交规范，让团队协作与自动化更高效&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;副标题--摘要&#34;&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;一篇为开发者准备的实用指南，带你理解并掌握业界通行的 Git 提交信息标准（Conventional Commits），
+从 commit 标签（如 &lt;code&gt;feat:&lt;/code&gt;、&lt;code&gt;fix:&lt;/code&gt;）到自动生成 changelog，一次学会写出高质量的提交记录。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;目标读者&#34;&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;初学者&lt;/strong&gt;：刚开始使用 Git，想养成规范提交的习惯。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;中级开发者&lt;/strong&gt;：希望让提交信息对团队和 CI 工具更友好。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;团队负责人 / 架构师&lt;/strong&gt;：想建立统一的代码提交标准，提升协作与版本管理效率。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;背景--动机&#34;&gt;&lt;strong&gt;背景 / 动机&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;大多数开发者写提交信息的方式都是这样的：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“update code”
+“fix bug”
+“修改东西”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这类信息短期可读，长期无用。
+当团队人数增多、项目复杂时，&lt;strong&gt;无法追踪改动意图&lt;/strong&gt;，也无法让自动化工具正确识别变更类型。
+这就是为什么业界推出了 &lt;strong&gt;Conventional Commits&lt;/strong&gt;：
+一个简洁统一的 commit 语法标准，让 Git 提交&lt;strong&gt;可读、可追踪、可自动化&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;核心概念&#34;&gt;&lt;strong&gt;核心概念&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Conventional Commits&lt;/strong&gt; 是一种提交信息格式约定，它规定了提交消息的结构：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;&amp;lt;type&amp;gt;(&amp;lt;scope&amp;gt;): &amp;lt;subject&amp;gt;
+
+&amp;lt;body&amp;gt;
+
+&amp;lt;footer&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt;：提交类型，如 &lt;code&gt;feat&lt;/code&gt;、&lt;code&gt;fix&lt;/code&gt;、&lt;code&gt;docs&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;scope&lt;/code&gt;：作用范围，可选（如 &lt;code&gt;ui&lt;/code&gt;、&lt;code&gt;api&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;subject&lt;/code&gt;：简短描述（不超过 50 字）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;body&lt;/code&gt;：详细说明（可选）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;footer&lt;/code&gt;：备注（如 BREAKING CHANGE）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;实践指南--步骤&#34;&gt;&lt;strong&gt;实践指南 / 步骤&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;1️⃣ &lt;strong&gt;设置 Git 编辑器为 Neovim（可选）&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>局域网Git Bare</title>
+      <link>http://localhost:1313/jeanblog/posts/git-notes/%E5%B1%80%E5%9F%9F%E7%BD%91git-bare/</link>
+      <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E5%B1%80%E5%9F%9F%E7%BD%91git-bare/</guid>
+      <description>&lt;h1 id=&#34;在局域网访问-windows-wsl2-上的-git-bare-仓库&#34;&gt;在局域网访问 Windows WSL2 上的 Git Bare 仓库&lt;/h1&gt;
+&lt;p&gt;在开发中，我们经常需要在多台电脑之间共享 Git 仓库。如果你在 Windows 上使用 WSL2，并且想在同一局域网的其他电脑访问 WSL2 上的 Git bare 仓库，本文将一步步教你实现。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-在-wsl2-创建-git-bare-仓库&#34;&gt;1. 在 WSL2 创建 Git Bare 仓库&lt;/h2&gt;
+&lt;p&gt;打开 WSL2 终端，进入你想存放仓库的目录，执行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git init --bare my_project.git
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;my_project.git&lt;/code&gt; 是 bare 仓库，不含工作区，仅用于推送和拉取。&lt;/li&gt;
+&lt;li&gt;bare 仓库就像远程仓库一样，可以被克隆和操作。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-配置-wsl2-的-ssh-服务&#34;&gt;2. 配置 WSL2 的 SSH 服务&lt;/h2&gt;
+&lt;p&gt;为了让其他电脑访问仓库，需要通过 SSH 访问 WSL2。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;安装 SSH 服务：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt update
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install openssh-server -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;启动 SSH 服务：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo service ssh start
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;检查 SSH 服务状态：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo service ssh status
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;默认端口是 22，可以在 &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt; 修改。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;3-获取-wsl2-ip-地址&#34;&gt;3. 获取 WSL2 IP 地址&lt;/h2&gt;
+&lt;p&gt;在 WSL2 终端运行：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>git分支管理方法</title>
+      <link>http://localhost:1313/jeanblog/posts/git-notes/git%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95/</link>
+      <pubDate>Mon, 20 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/jeanblog/posts/git-notes/git%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95/</guid>
+      <description>&lt;h1 id=&#34;-简化-git-分支工作流个人--小团队&#34;&gt;🌿 简化 Git 分支工作流（个人 / 小团队）&lt;/h1&gt;
+&lt;p&gt;本工作流基于 Git Flow 精简而来，适合个人或小团队，既规范又不复杂。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-1-主分支长期分支&#34;&gt;🚀 1. 主分支（长期分支）&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;main&lt;/code&gt;&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;永远保持稳定、可发布的状态。&lt;/li&gt;
+&lt;li&gt;部署到生产环境的代码都来自这里。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;对于小团队，通常只需要 &lt;code&gt;main&lt;/code&gt;，不需要维护 &lt;code&gt;develop&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-2-功能开发feature-branch&#34;&gt;🛠️ 2. 功能开发（Feature Branch）&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;分支命名：&lt;code&gt;feature/&amp;lt;功能名&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;用途：开发新功能，完成后合并回 &lt;code&gt;main&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;示例：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;
+feature/login-api
+feature/user-profile
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;流程：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 从 main 创建功能分支&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git checkout -b feature/login-api main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# 开发完成后，合并到 main&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git checkout main
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git merge feature/login-api
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git branch -d feature/login-api
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id=&#34;-3-bug-修复bugfix-branch&#34;&gt;🐞 3. Bug 修复（Bugfix Branch）&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;分支命名：&lt;code&gt;bugfix/&amp;lt;问题名&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;用途：修复测试或开发环境的 bug。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;示例：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;bugfix/fix-login-redirect
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;流程同 feature 分支，完成后合并回 &lt;code&gt;main&lt;/code&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-4-紧急修复hotfix-branch&#34;&gt;🔥 4. 紧急修复（Hotfix Branch）&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;分支命名：&lt;code&gt;hotfix/&amp;lt;问题名&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;用途：生产环境出现严重问题时的快速修复。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;示例：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>在本地使用git裸仓库实现开发环境和测试环境隔离</title>
+      <link>http://localhost:1313/jeanblog/posts/git-notes/%E5%9C%A8%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8git%E8%A3%B8%E4%BB%93%E5%BA%93%E5%AE%9E%E7%8E%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB/</link>
+      <pubDate>Mon, 20 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E5%9C%A8%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8git%E8%A3%B8%E4%BB%93%E5%BA%93%E5%AE%9E%E7%8E%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB/</guid>
+      <description>&lt;h1 id=&#34;在本地使用-git-裸仓库实现开发环境和测试环境隔离&#34;&gt;在本地使用 Git 裸仓库实现开发环境和测试环境隔离&lt;/h1&gt;
+&lt;p&gt;在全栈开发的过程中，我们常常遇到一个问题：&lt;strong&gt;开发环境和测试环境如何隔离&lt;/strong&gt;？
+很多人第一反应是用 GitHub 或 GitLab 来托管代码，但如果项目涉及隐私，不方便放在公共仓库，那该怎么办呢？&lt;/p&gt;
+&lt;p&gt;其实，Git 是分布式的，我们完全可以在 &lt;strong&gt;本地电脑上建立一个“裸仓库 (bare repo)”&lt;/strong&gt;，当作“远程仓库”来用，从而实现 &lt;strong&gt;开发环境 → 测试环境&lt;/strong&gt; 的代码迁移和同步。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;什么是裸仓库-bare-repository&#34;&gt;什么是裸仓库 (bare repository)&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;普通 Git 仓库（&lt;code&gt;git init&lt;/code&gt;）包含 &lt;strong&gt;工作区 + .git 元数据&lt;/strong&gt;，可以直接编辑文件。&lt;/li&gt;
+&lt;li&gt;裸仓库（&lt;code&gt;git init --bare&lt;/code&gt;）只有 Git 的版本信息，没有工作区，不能直接编辑文件，通常作为 &lt;strong&gt;远程仓库&lt;/strong&gt; 来存储和同步代码。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;简单理解：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;开发仓库&lt;/strong&gt;：我在这里写代码。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;裸仓库&lt;/strong&gt;：我用来存放代码历史，作为远程同步点。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;测试仓库&lt;/strong&gt;：从裸仓库克隆出来，模拟运行环境。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;步骤一创建裸仓库&#34;&gt;步骤一：创建裸仓库&lt;/h2&gt;
+&lt;p&gt;在本机某个目录（比如 &lt;code&gt;~/.repos&lt;/code&gt;）下创建裸仓库：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mkdir -p ~/.repos
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cd ~/.repos
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git init --bare scrapy.git
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样你得到一个路径 &lt;code&gt;~/.repos/scrapy.git&lt;/code&gt;，它就是本地的远程仓库。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;步骤二在开发仓库里添加远程&#34;&gt;步骤二：在开发仓库里添加远程&lt;/h2&gt;
+&lt;p&gt;假设你的开发仓库在 &lt;code&gt;~/scrapy&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cd ~/scrapy
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git remote add local ~/.repos/scrapy.git
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;检查一下远程是否添加成功：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git remote -v
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;输出类似：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;local	/home/gong/.repos/scrapy.git (fetch)
+local	/home/gong/.repos/scrapy.git (push)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;说明配置成功。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

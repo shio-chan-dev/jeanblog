@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/jeanblog/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=jeanblog/livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Linux | Jeanphilo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/jeanblog/categories/linux/">
+<link crossorigin="anonymous" href="/jeanblog/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/jeanblog/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/jeanblog/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/jeanblog/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/jeanblog/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/jeanblog/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/jeanblog/categories/linux/index.xml" title="rss">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/jeanblog/categories/linux/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/jeanblog/categories/linux/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="Linux">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux">
+<meta name="twitter:description" content="">
+
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/jeanblog/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/jeanblog/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/linux/" title="Linux">
+                    <span class="active">Linux</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/python/" title="Python">
+                    <span>Python</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/thoughts/" title="随想">
+                    <span>随想</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="http://localhost:1313/jeanblog/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/jeanblog/categories/">Categories</a></div>
+  <h1>
+    Linux
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程 副标题： 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别 阅读时长： 7 分钟 标签： 网络排查、SSH、VNC、Linux、远程连接 SEO 关键词： SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC
+🎯 目标读者 Linux 使用者、开发者、服务器维护人员 想学习网络排错思路的中级工程师 对 SSH/VNC 协议机制有兴趣的读者 💡 背景与动机 你是否遇到过这样的情况：
+“服务器能 ping 通，但 SSH 连不上？”
+这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。 本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。
+🔍 问题现象 执行命令：
+ssh chenhm@101.6.142.82 -p 5905 输出：
+kex_exchange_identification: Connection closed by remote host Connection closed by 101.6.142.82 port 5905 尝试 ping：
+ping 101.6.142.82 能通，没有丢包。
+于是我们知道：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程" href="http://localhost:1313/jeanblog/posts/linux/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E4%BB%A5ping%E9%80%9A%E5%8D%B4ssh%E4%B8%8D%E9%80%9A%E4%B8%80%E6%AC%A1%E5%81%87ssh%E7%9C%9Fvnc%E7%9A%84%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">开启sshsystem进程失败怎么解决
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>标题： 🚀 在无 sudo 环境下让 sshd 常驻运行：从错误排查到 nohup 与 systemd 双方案实战
+副标题 / 摘要： 本文讲述如何在普通用户权限下运行 OpenSSH 服务，逐步解决“连接被拒绝”“密码认证失败”“systemd start-limit-hit”等典型问题，并最终用 nohup 与 systemd 实现持久运行。
+目标读者： Linux 中级用户、科研或企业多用户服务器使用者、无 root 权限的 SSH 自部署者。
+一、背景 / 动机 在部分高校实验室或云主机环境中，普通账户没有 sudo 权限，默认 sshd 服务无法启动。 当我们需要：
+远程访问自己的 Linux 主机； 使用 VS Code Remote 或 SCP 传文件； 但又无法修改系统级配置； 就必须在用户态自行运行 sshd。 然而这会引发一系列问题：端口冲突、防火墙、认证失败、start-limit-hit 等。 二、核心概念 名称 含义 sshd OpenSSH 守护进程，负责处理 SSH 登录请求 用户态 sshd 非 root 用户手动启动的 sshd 实例，仅有用户权限 authorized_keys 存放允许登录的公钥 nohup 让程序脱离终端后台运行 systemd –user 用户级 systemd 实例，可管理自启服务 start-limit-hit systemd 检测到服务频繁退出后自动暂停重启 三、实践指南 / 全流程步骤 1️⃣ 生成并配置 SSH 密钥 ssh-keygen -t ed25519 -C &#34;&#34; -f ~/.ssh/id_ed25519_noemail cat ~/.ssh/id_ed25519_noemail.pub &gt;&gt; ~/.ssh/authorized_keys chmod 700 ~/.ssh chmod 600 ~/.ssh/authorized_keys 确保 ~/.ssh/authorized_keys 权限正确。
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 开启sshsystem进程失败怎么解决" href="http://localhost:1313/jeanblog/posts/linux/%E5%BC%80%E5%90%AFsshsystem%E8%BF%9B%E7%A8%8B%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">没有sudo权限开启ssh
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。
+🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略） 副标题 / 摘要： 当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 sshd，支持密钥登录并实现远程连接。
+阅读时长： 10 分钟 目标读者： 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者 标签： SSH、sshd、Linux、远程连接、非 root、系统配置 SEO 关键词： SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败
+🎯 背景与动机 很多科研服务器、学校实验室或共享主机都不给普通用户 sudo 权限。 然而我们仍常常需要：
+远程登录自己的账户； 上传/下载文件； 或从另一台机器访问自己的进程。 默认情况下，sshd 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 用户目录 下运行一个“用户态 SSH 服务”，无需修改系统配置。
+🧩 核心概念 名词 含义 sshd SSH 服务端程序，负责接收和验证 SSH 连接。 用户态（user-space）sshd 普通用户自行启动的 sshd 进程，不使用 root 权限。 HostKey 服务器用于加密连接的密钥对。 AuthorizedKeys 被允许登录该账户的公钥列表。 /etc/shadow 系统密码哈希存储文件，非 root 用户无法访问。 ⚙️ 实践指南：从零启动用户态 SSH 服务 🪜 第一步：准备配置文件 创建配置目录：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 没有sudo权限开启ssh" href="http://localhost:1313/jeanblog/posts/linux/%E6%B2%A1%E6%9C%89sudo%E6%9D%83%E9%99%90%E5%BC%80%E5%90%AFssh/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">在Ubuntu上让frp内网穿透服务开机自启
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🚀 在 Ubuntu 上让 frp 内网穿透服务开机自启：完整指南 副标题 / 摘要 通过 systemd 将 frp（Fast Reverse Proxy）设置为系统服务，实现稳定、安全、可监控的开机自动启动方案，避免每次手动运行。
+阅读时长：8 分钟 标签：frp、内网穿透、systemd、自启、Linux、Ubuntu SEO 关键词：frp 开机自启、Ubuntu frp 配置、frpc systemd、frps 服务端启动、内网穿透配置 元描述：手把手教你在 Ubuntu 上使用 systemd 将 frp（frpc / frps）设置为开机自启服务，附配置文件模板与常见问题排查。
+🎯 目标读者 适合：
+想在云服务器上部署 frps 的开发者 想让家中/办公内网机器长期稳定穿透的中级 Linux 用户 DevOps / 自建服务爱好者 🧩 背景与动机 许多开发者使用 frp 实现内网穿透，让内网服务（如 SSH、Web、NAS）可以安全地从外部访问。 问题是：手动运行 ./frpc -c frpc.ini 既麻烦又不稳定，机器重启后容易忘记启动。
+因此，我们希望通过 systemd 服务 实现“自动随系统启动 &#43; 失败自动重启 &#43; 集中日志管理”的效果。
+💡 核心概念 frps / frpc：frp 的服务端与客户端可执行程序。 systemd：现代 Linux 系统的服务管理器，用于定义和控制后台服务。 unit 文件：定义服务的配置（如启动命令、依赖、重启策略）。 🛠️ 实践步骤指南 1️⃣ 安装与准备 将二进制文件与配置文件放入系统路径：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-23 00:00:00 +0000 UTC'>October 23, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 在Ubuntu上让frp内网穿透服务开机自启" href="http://localhost:1313/jeanblog/posts/linux/%E5%9C%A8ubuntu%E4%B8%8A%E8%AE%A9frp%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">WSL解决内网和windows不共享
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>📝 Windows &#43; WSL2 端口转发教程（访问 Flask 5000） 前提条件 你正在使用 WSL2（Ubuntu 或其他 Linux 发行版） Windows 主机能访问局域网（Wi-Fi 或以太网） Flask 服务在 WSL2 中运行，并监听： app.run(host=&#34;0.0.0.0&#34;, port=5000) ⚠️ host=&#34;0.0.0.0&#34; 必须，否则外部无法访问
+第 1 步：确认 WSL2 的 IP 在 WSL2 中运行：
+ip addr show eth0 你会看到类似：
+inet 172.26.209.37/20 记下 inet 后面的 IP（本例是 172.26.209.37），这是 WSL2 内部 IP。
+第 2 步：打开 PowerShell（管理员模式） 按 Win &#43; X → 选择 Windows PowerShell (管理员) 确认管理员权限，必要时允许 UAC 提示 第 3 步：设置端口转发 在 PowerShell 中执行以下命令，将 Windows 的 5000 端口转发到 WSL2：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-22 00:00:00 +0000 UTC'>October 22, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to WSL解决内网和windows不共享" href="http://localhost:1313/jeanblog/posts/linux/wsl%E8%A7%A3%E5%86%B3%E5%86%85%E7%BD%91%E5%92%8Cwindows%E4%B8%8D%E5%85%B1%E4%BA%AB/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/jeanblog/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

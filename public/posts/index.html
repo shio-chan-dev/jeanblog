@@ -135,6 +135,21 @@
                     <span>搜索</span>
                 </a>
             </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/linux/" title="Linux">
+                    <span>Linux</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/python/" title="Python">
+                    <span>Python</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/thoughts/" title="随想">
+                    <span>随想</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
@@ -182,44 +197,6 @@ content/ posts/ my-first-post.md 2. Front Matter 文章头部的三段 YAML/TOML
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">别让Pydantic占领你的整个项目:聊聊API校验,Domain模型和数据库之间的边界
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>标题 别让 Pydantic 占领你的整个项目：聊聊 API 校验、Domain 模型和数据库之间的边界
-副标题 / 摘要 很多用 FastAPI/Pydantic 的 Python 工程师，会不知不觉让 Pydantic Model 贯穿 API、业务、数据库所有层。本文用一个清晰的分层思路和完整代码示例，帮你搞清楚：Pydantic 适合用在什么地方，Domain / ORM 又应该怎么配合。
-目标读者 这篇文章适合：
-正在使用 FastAPI / Pydantic / SQLAlchemy / SQLModel 的 Python 后端工程师 刚入行 0–3 年、开始关心“分层、架构、领域模型”的开发者 想从“会写接口”进阶到“懂业务建模、懂分层”的工程师 对 “Pydantic 要不要进 Domain / 要不要用于 DB 模型” 有疑惑的人 一、背景 / 动机：为什么 Pydantic 容易“长满全项目”？ 如果你是从 FastAPI 入门后端，很可能经历过这样的路径：
-用 Pydantic 定义请求体、响应体：太好用了，自动校验 &#43; 文档 &#43; 类型提示。
-觉得既然 Pydantic 这么香，那干脆：
-直接拿 Pydantic Model 当“业务对象”传来传去 甚至顺手拿它去做“数据库模型” 渐渐地，你的项目变成：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-11-09 00:00:00 +0000 UTC'>November 9, 2025</span>&nbsp;·&nbsp;<span>6 min</span></footer>
-  <a class="entry-link" aria-label="post link to 别让Pydantic占领你的整个项目:聊聊API校验,Domain模型和数据库之间的边界" href="http://localhost:1313/jeanblog/posts/%E5%88%AB%E8%AE%A9pydantic%E5%8D%A0%E9%A2%86%E4%BD%A0%E7%9A%84%E6%95%B4%E4%B8%AA%E9%A1%B9%E7%9B%AE%E8%81%8A%E8%81%8Aapi%E6%A0%A1%E9%AA%8Cdomain%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BE%B9%E7%95%8C/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>标题 从写路由到写“大脑”：Python 工程师如何先搞定核心逻辑，再考虑 API
-副标题 / 摘要 刚入行时，我们常常一上来就写路由、设计接口、想 chat_id / message_id 怎么存，却发现真正的“智力活”——核心逻辑——总是拖到后面。这篇文章带你从「先写接口」的思维，升级到「先写大脑，再接外壳」，并串起来六边形架构、Clean Architecture、DDD 等背后的经典理念。
-目标读者 适合这些同学阅读：
-1–3 年经验 的 Python 后端工程师 / AI 应用开发者 正在用 FastAPI / Django / Flask 等框架写 API 的工程师 想从“CRUD 搬砖工”进化为“懂设计、能抽象”的工程师 对 六边形架构 / Clean Architecture / DDD 有点好奇但没系统看过书的人 一、背景 / 动机：为什么“先写接口”会卡死自己？ 很多刚入行的 Python 工程师（包括你我）会有这样的流程：
-产品提一个新需求：做一个 AI 聊天功能。
-打开编辑器，第一反应就是：
-设计 URL：POST /api/chat/send_message 开始写 router：@app.post(&#34;/chat/send&#34;) 想 request body 参数长什么样：chat_id / message_id / user_id / content 想数据库表结构：chats，messages 写了一堆 API、schema、model、迁移脚本之后，才想起来： “那 AI 回复到底是怎么生成的？”
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-11-08 00:00:00 +0000 UTC'>November 8, 2025</span>&nbsp;·&nbsp;<span>5 min</span></footer>
-  <a class="entry-link" aria-label="post link to 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API" href="http://localhost:1313/jeanblog/posts/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
     <h2 class="entry-hint-parent">api标准
     </h2>
   </header>
@@ -233,77 +210,6 @@ content/ posts/ my-first-post.md 2. Front Matter 文章头部的三段 YAML/TOML
   </div>
   <footer class="entry-footer"><span title='2025-11-06 00:00:00 +0000 UTC'>November 6, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
   <a class="entry-link" aria-label="post link to api标准" href="http://localhost:1313/jeanblog/posts/api%E6%A0%87%E5%87%86/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">为什么让前端完成Chat Completion: 一套通用的多模型流式对话架构设计
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>🔌 为什么让前端执行 Chat Completion：一套通用的多模型流式对话架构设计 副标题 / 摘要 在现代 AI 聊天系统中，很多人会问：为什么不直接在后端调用 OpenAI API？ 本文将带你理解一种更灵活的架构——让前端承担推理执行，后端负责调度和状态同步。适合需要支持多模型、本地推理或用户自带 API Key 的开发者。
-目标读者
-AI 聊天应用开发者 WebSocket / Socket.IO 实践者 想构建多模型、多端协作聊天系统的架构师 🧠 背景 / 动机 传统的聊天后端往往直接在服务器调用 OpenAI API：
-resp = client.chat.completions.create(model=&#34;gpt-4o&#34;, messages=messages) 虽然简单，但带来几个现实问题：
-所有请求都消耗服务器的 Key，成本高且难追踪； 无法支持用户自定义 Key（BYOK 模式）； 无法连接用户本地推理（如 Ollama、LM Studio）； 无法切换不同模型或 API Base URL； 前后端状态不同步，不利于流式消息推送。 为了解决这些问题，一些开源系统（如 Open-WebUI、Chatbot-UI 增强版）采用了更灵活的 Socket.IO 双向通信架构。 服务端负责「调度与状态流」，前端负责「执行与回传」。
-🧩 核心概念 概念 说明 Socket.IO 基于 WebSocket 的实时双向通信库，支持事件与回调。 event_emitter 服务端向前端广播事件（推送消息/状态）。 event_caller (sio.call) 服务端请求前端执行任务（RPC），并等待前端 callback 返回。 request:chat:completion 一种自定义事件类型，用于请求前端执行 chat completion。 BYOK 模式 “Bring Your Own Key”，用户使用自己的 OpenAI Key 调用 API。 Executor 架构 前端承担推理任务的执行者，后端作为协调者。 🧭 实践指南 / 步骤 1️⃣ 服务端发送调用请求 res = await event_caller({ &#34;type&#34;: &#34;request:chat:completion&#34;, &#34;data&#34;: { &#34;form_data&#34;: form_data, &#34;model&#34;: models[form_data[&#34;model&#34;]], &#34;channel&#34;: channel, &#34;session_id&#34;: session_id, }, }) 这里的 event_caller 使用 sio.call() 发送事件给指定客户端，并等待 callback 返回。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-11-02 00:00:00 +0000 UTC'>November 2, 2025</span>&nbsp;·&nbsp;<span>3 min</span></footer>
-  <a class="entry-link" aria-label="post link to 为什么让前端完成Chat Completion: 一套通用的多模型流式对话架构设计" href="http://localhost:1313/jeanblog/posts/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%A9%E5%89%8D%E7%AB%AF%E5%AE%8C%E6%88%90chat-completion-%E4%B8%80%E5%A5%97%E9%80%9A%E7%94%A8%E7%9A%84%E5%A4%9A%E6%A8%A1%E5%9E%8B%E6%B5%81%E5%BC%8F%E5%AF%B9%E8%AF%9D%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">从堵塞到异步:为什么上传文件接口不该等文件处理完
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>🚀 从阻塞到异步：为什么上传接口不该等文件处理完？ —— 用异步任务和状态跟踪构建高性能文件处理系统
-🧭 副标题 / 摘要 在现代 Web 系统中，文件上传只是起点，真正的挑战在于后续的解析、索引和处理。本文带你理解为什么“上传接口不等待处理完成”是现代架构的核心理念，以及如何通过异步任务 &#43; 状态查询实现稳定、可扩展的后台处理系统。
-👥 目标读者 有一定 Web 开发经验的工程师（Python/FastAPI/Node.js 等） 想优化后端性能、提高可扩展性的中级开发者 对架构设计、异步系统感兴趣的工程师或技术负责人 🎯 背景 / 动机 很多初学者写上传接口时会这样做：
-@app.post(&#34;/upload&#34;) def upload_file(file: UploadFile): parse_and_store(file) # 阻塞操作 return {&#34;status&#34;: &#34;completed&#34;} 表面简单，实则隐藏问题：
-⏱ 超时风险高（解析/embedding/OCR可能几分钟） 🧵 阻塞主线程，拖慢整个 API 服务 💥 请求中断即任务丢失 😕 用户只能干等着，无法看到进度 解决方案就是：上传与处理分离。上传只负责“投递任务”，处理由后台 worker 异步执行，状态存储在数据库中供前端查询。
-🔍 核心概念 概念 说明 异步任务（Async Job） 文件解析、OCR、embedding 等耗时操作独立运行，不阻塞主线程。 任务队列（Task Queue） 临时存放待执行的任务，如 Redis、RabbitMQ、Celery。 状态持久化（State Persistence） 将任务状态（pending / processing / completed / failed）写入数据库。 SSE（Server-Sent Events） 一种轻量的实时推送机制，前端可实时接收状态更新。 ⚙️ 实践指南 / 实现步骤 1️⃣ 上传文件接口（只负责入队） @router.post(&#34;/upload&#34;) async def upload(file: UploadFile, user=Depends(get_verified_user)): file_id = Files.create(file, user.id) # 异步提交任务（Celery、RQ、线程池等） background_tasks.add_task(process_file, file_id) return {&#34;file_id&#34;: file_id, &#34;status&#34;: &#34;pending&#34;} 2️⃣ 异步任务（后台 worker 执行） def process_file(file_id: str): file = Files.get(file_id) Files.update_status(file_id, &#34;processing&#34;) try: parse_and_vectorize(file) Files.update_status(file_id, &#34;completed&#34;) except Exception as e: Files.update_status(file_id, &#34;failed&#34;, error=str(e)) 3️⃣ 状态查询接口 @router.get(&#34;/{id}/process/status&#34;) async def get_status(id: str, stream: bool = False): file = Files.get(id) if stream: async def event_stream(): while True: status = Files.get_status(id) yield f&#34;data: {json.dumps({&#39;status&#39;: status})}\n\n&#34; if status in (&#34;completed&#34;, &#34;failed&#34;): break await asyncio.sleep(1) return StreamingResponse(event_stream(), media_type=&#34;text/event-stream&#34;) return {&#34;status&#34;: file.data.get(&#34;status&#34;, &#34;pending&#34;)} 💻 可运行示例 前端轮询： async function checkStatus(fileId) { let status = &#39;pending&#39;; while (status === &#39;pending&#39; || status === &#39;processing&#39;) { const res = await fetch(`/api/files/${fileId}/process/status`); const data = await res.json(); status = data.status; console.log(&#34;当前状态:&#34;, status); await new Promise(r =&gt; setTimeout(r, 1000)); } if (status === &#39;completed&#39;) alert(&#34;解析完成！&#34;); } 前端 SSE 实时监听： const evtSource = new EventSource(`/api/files/${fileId}/process/status?stream=true`); evtSource.onmessage = (e) =&gt; { const { status } = JSON.parse(e.data); console.log(&#34;文件状态:&#34;, status); if (status === &#34;completed&#34;) evtSource.close(); }; 🧠 原理解释与取舍 模式 特点 适用场景 同步上传&#43;处理 实现简单，但阻塞主线程 小文件、低并发、离线脚本 异步上传&#43;状态查询（推荐） 非阻塞、可恢复、可扩展 Web 应用、后台任务 消息队列驱动 支持分布式任务、重试机制 大规模系统、微服务架构 取舍原则：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-11-02 00:00:00 +0000 UTC'>November 2, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 从堵塞到异步:为什么上传文件接口不该等文件处理完" href="http://localhost:1313/jeanblog/posts/%E4%BB%8E%E5%A0%B5%E5%A1%9E%E5%88%B0%E5%BC%82%E6%AD%A5%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E6%8E%A5%E5%8F%A3%E4%B8%8D%E8%AF%A5%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E5%AE%8C/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">webSocket深入理解:为什么要保持一个永远在线的连接
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>🛰️ WebSocket 深入理解：为什么要保持一个“永远在线”的连接？ ✨ 副标题 / 摘要 这篇文章带你彻底搞懂 WebSocket： 它和 HTTP 的根本区别、为什么需要“长连接”、连接是如何建立和保持的、以及它在实时应用中的意义。 适合想从“知道是什么”到“理解为什么”的开发者。
-👩‍💻 目标读者 Web 前后端初级到中级开发者 想实现实时聊天、AI 流式输出、协作系统的工程师 想从 HTTP 模型过渡到实时架构思维的学习者 🧭 背景 / 动机：为什么这个问题重要？ 几乎每个现代 Web 应用都涉及“实时”功能：
-聊天对话（ChatGPT、Slack） 实时通知（邮箱、消息提醒） 在线协作（Notion、Google Docs） 数据看板（实时指标、监控） 然而，传统的 HTTP 是“一问一答”的协议， 无法满足服务器主动通知客户端、低延迟双向通信的需求。
-WebSocket 的出现，彻底改变了这种单向关系， 让 Web 应用第一次真正拥有了“实时对话”的能力。
-🧠 核心概念与术语解释 名称 说明 HTTP 一问一答型协议。客户端发请求，服务器回响应，然后断开。 长连接 一条保持不关闭的 TCP 连接，可反复收发数据。 WebSocket 一种基于 TCP 的双向通信协议，能让服务器主动推送消息。 握手 (Handshake) 客户端通过 HTTP 请求告诉服务器：“我想升级为 WebSocket 协议”。 帧 (Frame) WebSocket 传输的最小数据单元，比 HTTP header 更轻量。 心跳 (Ping/Pong) 定期发送的小数据包，防止连接超时断开。 🪜 实践指南：WebSocket 建立的全过程 1️⃣ 浏览器发起请求（HTTP 阶段）
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to webSocket深入理解:为什么要保持一个永远在线的连接" href="http://localhost:1313/jeanblog/posts/websocket%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E4%B8%AA%E6%B0%B8%E8%BF%9C%E5%9C%A8%E7%BA%BF%E7%9A%84%E8%BF%9E%E6%8E%A5/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">从 Pip 到 UV：一站式 Python 包管理与依赖同步指南
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>🚀 从 Pip 到 UV：一站式 Python 包管理与依赖同步指南 💡 副标题 / 摘要 想让你的 Python 环境更干净、更快、更可靠？本文将带你从传统的 pip &#43; venv &#43; requirements.txt 迁移到现代的 uv 包管理系统，并教你如何在两者之间无缝同步。
-🎯 目标读者 适合 Python 开发者（初学者到中级）、数据科学家、后端工程师，以及希望提升开发环境一致性、减少依赖地狱的读者。
-🔥 背景 / 动机 在日常 Python 开发中，我们经常遇到以下痛点：
-环境混乱、包冲突； pip install 太慢； 不同机器、团队成员环境不一致； requirements.txt 手动维护麻烦。 而 uv 是一个由 Astral 团队推出的新一代包管理工具， 用 Rust 编写，集成了：
-包安装（比 pip 快数倍）； 虚拟环境管理； 锁文件机制（可复现环境）； 与 PyPI 完全兼容。 一句话：uv = pip &#43; virtualenv &#43; pip-tools &#43; poetry 的融合体。
-🧩 核心概念 概念 说明 pyproject.toml 现代 Python 项目的依赖与元信息文件 uv.lock 锁文件，记录所有依赖的精确版本，保证可复现 uv sync 根据锁文件同步环境（自动创建/更新虚拟环境） uv add / remove 添加或删除依赖，并自动更新锁文件 uv export 导出为 requirements.txt，兼容传统 pip 流程 🛠 实践指南 / 步骤 一、从 pip 项目迁移到 uv 假设你已有一个项目：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 从 Pip 到 UV：一站式 Python 包管理与依赖同步指南" href="http://localhost:1313/jeanblog/posts/%E4%BB%8E-pip-%E5%88%B0-uv%E4%B8%80%E7%AB%99%E5%BC%8F-python-%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%90%8C%E6%AD%A5%E6%8C%87%E5%8D%97/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -326,12 +232,93 @@ wrk -t4 -c100 -d30s http://192.168.1.224:5000/api/tenders 参数说明： 参数
   <footer class="entry-footer"><span title='2025-10-22 00:00:00 +0000 UTC'>October 22, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
   <a class="entry-link" aria-label="post link to 如何使用wrk进行压测" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8wrk%E8%BF%9B%E8%A1%8C%E5%8E%8B%E6%B5%8B/"></a>
 </article>
-<footer class="page-footer">
-  <nav class="pagination">
-    <a class="next" href="http://localhost:1313/jeanblog/posts/page/2/">Next&nbsp;&nbsp;»
-    </a>
-  </nav>
-</footer>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如何使用和配置typescript环境
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Introduction 对于typescript以.ts为后缀的文件,我们是不能直接编译运行的,我们需要把typescript文件转译为js文件然后再进行运行
+我们可以选择两种方式,把ts文件传到服务器上使用ci工具进行编译,或者直接在本地转译后上传js文件到生产环境,如果我们想要在开发环境中直接进行运行测试的话,可以使用ts-node进行运行,但是开发环境之中还是需要编译
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-28 00:00:00 +0000 UTC'>August 28, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
+  <a class="entry-link" aria-label="post link to 如何使用和配置typescript环境" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E5%92%8C%E9%85%8D%E7%BD%AEtypescript%E7%8E%AF%E5%A2%83/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如何创建mermaid图像并进行编辑
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>Introduction Mermaid是一个用于使用代码创建图像的框架,今天的博客,我们将会简单介绍如何在自己的服务器上安装相关的框架,并对代码进行渲染生成图像
+具体步骤 如何安装渲染框架 使用
+npm install -g @mermaid-js/mermaid-cli 就可以安装
+需要注意的是该框架使用的npm版本需要大于20,所以我们需要切换npm版本,推荐使用nvm管理npm的版本
+如果没有nvm的话,使用下列命令进行安装
+curl -o https://raw.githubusercontent.com/nvm-sh/nvim/v0.39.4/install.sh | bash 然后对shell进行重启
+然后使用
+nvm install 20 nvm use 20 nvm alias default 20 进行安装,并把默认npm切换为20
+可以使用
+node -v npm -v 确认版本
+如何进行渲染 将需要渲染的代码放置在以.mmd结尾的文件中
+然后使用
+mmdc -i diagrams/example.mmd -o images/example.svg 即可
+</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-08-26 00:00:00 +0000 UTC'>August 26, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
+  <a class="entry-link" aria-label="post link to 如何创建mermaid图像并进行编辑" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BAmermaid%E5%9B%BE%E5%83%8F%E5%B9%B6%E8%BF%9B%E8%A1%8C%E7%BC%96%E8%BE%91/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Python
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer"><span title='2025-11-12 00:00:00 +0000 UTC'>November 12, 2025</span>&nbsp;·&nbsp;<span>0 min</span></footer>
+  <a class="entry-link" aria-label="post link to Python" href="http://localhost:1313/jeanblog/posts/python/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Git 笔记
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer"><span title='2025-11-11 00:00:00 +0000 UTC'>November 11, 2025</span>&nbsp;·&nbsp;<span>0 min</span></footer>
+  <a class="entry-link" aria-label="post link to Git 笔记" href="http://localhost:1313/jeanblog/posts/git-notes/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">随想
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>0 min</span></footer>
+  <a class="entry-link" aria-label="post link to 随想" href="http://localhost:1313/jeanblog/posts/thoughts/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Linux
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>0 min</span></footer>
+  <a class="entry-link" aria-label="post link to Linux" href="http://localhost:1313/jeanblog/posts/linux/"></a>
+</article>
     </main>
     
 <footer class="footer">

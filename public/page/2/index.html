@@ -135,10 +135,43 @@
                     <span>搜索</span>
                 </a>
             </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/linux/" title="Linux">
+                    <span>Linux</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/python/" title="Python">
+                    <span>Python</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/thoughts/" title="随想">
+                    <span>随想</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
 <main class="main"> 
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">从 Pip 到 UV：一站式 Python 包管理与依赖同步指南
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🚀 从 Pip 到 UV：一站式 Python 包管理与依赖同步指南 💡 副标题 / 摘要 想让你的 Python 环境更干净、更快、更可靠？本文将带你从传统的 pip &#43; venv &#43; requirements.txt 迁移到现代的 uv 包管理系统，并教你如何在两者之间无缝同步。
+🎯 目标读者 适合 Python 开发者（初学者到中级）、数据科学家、后端工程师，以及希望提升开发环境一致性、减少依赖地狱的读者。
+🔥 背景 / 动机 在日常 Python 开发中，我们经常遇到以下痛点：
+环境混乱、包冲突； pip install 太慢； 不同机器、团队成员环境不一致； requirements.txt 手动维护麻烦。 而 uv 是一个由 Astral 团队推出的新一代包管理工具， 用 Rust 编写，集成了：
+包安装（比 pip 快数倍）； 虚拟环境管理； 锁文件机制（可复现环境）； 与 PyPI 完全兼容。 一句话：uv = pip &#43; virtualenv &#43; pip-tools &#43; poetry 的融合体。
+🧩 核心概念 概念 说明 pyproject.toml 现代 Python 项目的依赖与元信息文件 uv.lock 锁文件，记录所有依赖的精确版本，保证可复现 uv sync 根据锁文件同步环境（自动创建/更新虚拟环境） uv add / remove 添加或删除依赖，并自动更新锁文件 uv export 导出为 requirements.txt，兼容传统 pip 流程 🛠 实践指南 / 步骤 一、从 pip 项目迁移到 uv 假设你已有一个项目：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
+  <a class="entry-link" aria-label="post link to 从 Pip 到 UV：一站式 Python 包管理与依赖同步指南" href="http://localhost:1313/jeanblog/posts/python/%E4%BB%8E-pip-%E5%88%B0-uv%E4%B8%80%E7%AB%99%E5%BC%8F-python-%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%90%8C%E6%AD%A5%E6%8C%87%E5%8D%97/"></a>
+</article>
 
 <article class="post-entry"> 
   <header class="entry-header">
@@ -151,7 +184,7 @@
 </p>
   </div>
   <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to 对于ai系统的思考" href="http://localhost:1313/jeanblog/posts/%E5%AF%B9%E4%BA%8Eai%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%80%9D%E8%80%83/"></a>
+  <a class="entry-link" aria-label="post link to 对于ai系统的思考" href="http://localhost:1313/jeanblog/posts/thoughts/%E5%AF%B9%E4%BA%8Eai%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%80%9D%E8%80%83/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -168,7 +201,7 @@
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-30 00:00:00 +0000 UTC'>October 30, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 如何高效审核后端fastapi代码" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E9%AB%98%E6%95%88%E5%AE%A1%E6%A0%B8%E5%90%8E%E7%AB%AFfastapi%E4%BB%A3%E7%A0%81/"></a>
+  <a class="entry-link" aria-label="post link to 如何高效审核后端fastapi代码" href="http://localhost:1313/jeanblog/posts/python/%E5%A6%82%E4%BD%95%E9%AB%98%E6%95%88%E5%AE%A1%E6%A0%B8%E5%90%8E%E7%AB%AFfastapi%E4%BB%A3%E7%A0%81/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -187,7 +220,7 @@
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-28 00:00:00 +0000 UTC'>October 28, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 如何配置gitea" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgitea/"></a>
+  <a class="entry-link" aria-label="post link to 如何配置gitea" href="http://localhost:1313/jeanblog/posts/git-notes/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgitea/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -206,7 +239,7 @@
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-25 00:00:00 +0000 UTC'>October 25, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 掌握git提交规范,让团队协作更高效率" href="http://localhost:1313/jeanblog/posts/%E6%8E%8C%E6%8F%A1git%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83%E8%AE%A9%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E6%9B%B4%E9%AB%98%E6%95%88%E7%8E%87/"></a>
+  <a class="entry-link" aria-label="post link to 掌握git提交规范,让团队协作更高效率" href="http://localhost:1313/jeanblog/posts/git-notes/%E6%8E%8C%E6%8F%A1git%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83%E8%AE%A9%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E6%9B%B4%E9%AB%98%E6%95%88%E7%8E%87/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -227,7 +260,7 @@ ping 101.6.142.82 能通，没有丢包。
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程" href="http://localhost:1313/jeanblog/posts/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E4%BB%A5ping%E9%80%9A%E5%8D%B4ssh%E4%B8%8D%E9%80%9A%E4%B8%80%E6%AC%A1%E5%81%87ssh%E7%9C%9Fvnc%E7%9A%84%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B/"></a>
+  <a class="entry-link" aria-label="post link to 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程" href="http://localhost:1313/jeanblog/posts/linux/%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%AF%E4%BB%A5ping%E9%80%9A%E5%8D%B4ssh%E4%B8%8D%E9%80%9A%E4%B8%80%E6%AC%A1%E5%81%87ssh%E7%9C%9Fvnc%E7%9A%84%E6%8E%92%E6%9F%A5%E8%BF%87%E7%A8%8B/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -244,7 +277,7 @@ ping 101.6.142.82 能通，没有丢包。
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 开启sshsystem进程失败怎么解决" href="http://localhost:1313/jeanblog/posts/%E5%BC%80%E5%90%AFsshsystem%E8%BF%9B%E7%A8%8B%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3/"></a>
+  <a class="entry-link" aria-label="post link to 开启sshsystem进程失败怎么解决" href="http://localhost:1313/jeanblog/posts/linux/%E5%BC%80%E5%90%AFsshsystem%E8%BF%9B%E7%A8%8B%E5%A4%B1%E8%B4%A5%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -262,7 +295,7 @@ Yoshua Bengio（深度学习三巨头之一）早在 Montréal Institute for Lea
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 怎么撰写一篇完美的机器学习文档" href="http://localhost:1313/jeanblog/posts/%E6%80%8E%E4%B9%88%E6%92%B0%E5%86%99%E4%B8%80%E7%AF%87%E5%AE%8C%E7%BE%8E%E7%9A%84%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%96%87%E6%A1%A3/"></a>
+  <a class="entry-link" aria-label="post link to 怎么撰写一篇完美的机器学习文档" href="http://localhost:1313/jeanblog/posts/thoughts/%E6%80%8E%E4%B9%88%E6%92%B0%E5%86%99%E4%B8%80%E7%AF%87%E5%AE%8C%E7%BE%8E%E7%9A%84%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%96%87%E6%A1%A3/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -280,7 +313,7 @@ Yoshua Bengio（深度学习三巨头之一）早在 Montréal Institute for Lea
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 没有sudo权限开启ssh" href="http://localhost:1313/jeanblog/posts/%E6%B2%A1%E6%9C%89sudo%E6%9D%83%E9%99%90%E5%BC%80%E5%90%AFssh/"></a>
+  <a class="entry-link" aria-label="post link to 没有sudo权限开启ssh" href="http://localhost:1313/jeanblog/posts/linux/%E6%B2%A1%E6%9C%89sudo%E6%9D%83%E9%99%90%E5%BC%80%E5%90%AFssh/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -298,24 +331,7 @@ Yoshua Bengio（深度学习三巨头之一）早在 Montréal Institute for Lea
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-23 00:00:00 +0000 UTC'>October 23, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 在Ubuntu上让frp内网穿透服务开机自启" href="http://localhost:1313/jeanblog/posts/%E5%9C%A8ubuntu%E4%B8%8A%E8%AE%A9frp%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">如何配置orm管理数据
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>🧱 从零到生产：如何优雅地设计 ORM 层管理（以 SQLAlchemy 为核心） 本文将带你从数据库表结构出发，构建一套高内聚、低耦合的 ORM 层架构。 目标：让你的 Flask / FastAPI 项目在数据访问上既简洁又稳健。
-一、为什么要重视 ORM 层设计？ 很多项目初期只是“先能跑”，直接把 SQL 写在控制器里，但很快就会出现：
-业务逻辑和 SQL 混在一起； 表关系复杂，维护困难； 想复用查询逻辑很麻烦； 迁移到别的框架（Flask → FastAPI）代价大。 ORM 层（Object Relational Mapping）是数据库与业务逻辑之间的 抽象桥梁， 一个好的 ORM 层能让你只关心对象，不用反复写 SQL。
-二、项目场景：招标信息数据系统 我们以一个真实业务为例： 爬取各网站的招标公告，保存为结构化数据，并生成统计看板。
-目标数据库实体 表名 功能 tender_info 公告基本信息 tender_attachments 公告及变更文件 tender_organization 招标机构与联系方式 tender_statistics 每日/月/年统计信息 三、ORM 层设计思路 🧩 分层原则 层级 作用 代码位置 Model 层 ORM 模型定义，对应数据库表结构 models.py Repository 层 封装 CRUD 逻辑（数据库操作） repository.py Service 层 业务逻辑层（聚合多个仓库逻辑） service.py API 层 控制器/路由接口 Flask/FastAPI 视图文件 这种分层让你做到：
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-23 00:00:00 +0000 UTC'>October 23, 2025</span>&nbsp;·&nbsp;<span>4 min</span></footer>
-  <a class="entry-link" aria-label="post link to 如何配置orm管理数据" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEorm%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE/"></a>
+  <a class="entry-link" aria-label="post link to 在Ubuntu上让frp内网穿透服务开机自启" href="http://localhost:1313/jeanblog/posts/linux/%E5%9C%A8ubuntu%E4%B8%8A%E8%AE%A9frp%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F%E6%9C%8D%E5%8A%A1%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

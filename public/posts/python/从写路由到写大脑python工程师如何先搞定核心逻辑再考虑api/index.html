@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/jeanblog/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=jeanblog/livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API | Jeanphilo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="标题
+从写路由到写“大脑”：Python 工程师如何先搞定核心逻辑，再考虑 API
+
+副标题 / 摘要
+刚入行时，我们常常一上来就写路由、设计接口、想 chat_id / message_id 怎么存，却发现真正的“智力活”——核心逻辑——总是拖到后面。这篇文章带你从「先写接口」的思维，升级到「先写大脑，再接外壳」，并串起来六边形架构、Clean Architecture、DDD 等背后的经典理念。
+
+目标读者
+适合这些同学阅读：
+
+1–3 年经验 的 Python 后端工程师 / AI 应用开发者
+正在用 FastAPI / Django / Flask 等框架写 API 的工程师
+想从“CRUD 搬砖工”进化为“懂设计、能抽象”的工程师
+对 六边形架构 / Clean Architecture / DDD 有点好奇但没系统看过书的人
+
+
+一、背景 / 动机：为什么“先写接口”会卡死自己？
+很多刚入行的 Python 工程师（包括你我）会有这样的流程：
+
+
+产品提一个新需求：做一个 AI 聊天功能。
+
+
+打开编辑器，第一反应就是：
+
+设计 URL：POST /api/chat/send_message
+开始写 router：@app.post(&quot;/chat/send&quot;)
+想 request body 参数长什么样：chat_id / message_id / user_id / content
+想数据库表结构：chats，messages
+
+
+
+写了一堆 API、schema、model、迁移脚本之后，才想起来：
+“那 AI 回复到底是怎么生成的？”">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/">
+<link crossorigin="anonymous" href="/jeanblog/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/jeanblog/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/jeanblog/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/jeanblog/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/jeanblog/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/jeanblog/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API">
+  <meta property="og:description" content="标题 从写路由到写“大脑”：Python 工程师如何先搞定核心逻辑，再考虑 API
+副标题 / 摘要 刚入行时，我们常常一上来就写路由、设计接口、想 chat_id / message_id 怎么存，却发现真正的“智力活”——核心逻辑——总是拖到后面。这篇文章带你从「先写接口」的思维，升级到「先写大脑，再接外壳」，并串起来六边形架构、Clean Architecture、DDD 等背后的经典理念。
+目标读者 适合这些同学阅读：
+1–3 年经验 的 Python 后端工程师 / AI 应用开发者 正在用 FastAPI / Django / Flask 等框架写 API 的工程师 想从“CRUD 搬砖工”进化为“懂设计、能抽象”的工程师 对 六边形架构 / Clean Architecture / DDD 有点好奇但没系统看过书的人 一、背景 / 动机：为什么“先写接口”会卡死自己？ 很多刚入行的 Python 工程师（包括你我）会有这样的流程：
+产品提一个新需求：做一个 AI 聊天功能。
+打开编辑器，第一反应就是：
+设计 URL：POST /api/chat/send_message 开始写 router：@app.post(&#34;/chat/send&#34;) 想 request body 参数长什么样：chat_id / message_id / user_id / content 想数据库表结构：chats，messages 写了一堆 API、schema、model、迁移脚本之后，才想起来： “那 AI 回复到底是怎么生成的？”">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-11-08T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-11-08T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API">
+<meta name="twitter:description" content="标题
+从写路由到写“大脑”：Python 工程师如何先搞定核心逻辑，再考虑 API
+
+副标题 / 摘要
+刚入行时，我们常常一上来就写路由、设计接口、想 chat_id / message_id 怎么存，却发现真正的“智力活”——核心逻辑——总是拖到后面。这篇文章带你从「先写接口」的思维，升级到「先写大脑，再接外壳」，并串起来六边形架构、Clean Architecture、DDD 等背后的经典理念。
+
+目标读者
+适合这些同学阅读：
+
+1–3 年经验 的 Python 后端工程师 / AI 应用开发者
+正在用 FastAPI / Django / Flask 等框架写 API 的工程师
+想从“CRUD 搬砖工”进化为“懂设计、能抽象”的工程师
+对 六边形架构 / Clean Architecture / DDD 有点好奇但没系统看过书的人
+
+
+一、背景 / 动机：为什么“先写接口”会卡死自己？
+很多刚入行的 Python 工程师（包括你我）会有这样的流程：
+
+
+产品提一个新需求：做一个 AI 聊天功能。
+
+
+打开编辑器，第一反应就是：
+
+设计 URL：POST /api/chat/send_message
+开始写 router：@app.post(&quot;/chat/send&quot;)
+想 request body 参数长什么样：chat_id / message_id / user_id / content
+想数据库表结构：chats，messages
+
+
+
+写了一堆 API、schema、model、迁移脚本之后，才想起来：
+“那 AI 回复到底是怎么生成的？”">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Posts",
+      "item": "http://localhost:1313/jeanblog/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Python",
+      "item": "http://localhost:1313/jeanblog/posts/python/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "从写路由到写\"大脑\":Python工程师如何先搞定核心逻辑,再考虑API",
+      "item": "http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从写路由到写\"大脑\":Python工程师如何先搞定核心逻辑,再考虑API",
+  "name": "从写路由到写\u0022大脑\u0022:Python工程师如何先搞定核心逻辑,再考虑API",
+  "description": "标题 从写路由到写“大脑”：Python 工程师如何先搞定核心逻辑，再考虑 API\n副标题 / 摘要 刚入行时，我们常常一上来就写路由、设计接口、想 chat_id / message_id 怎么存，却发现真正的“智力活”——核心逻辑——总是拖到后面。这篇文章带你从「先写接口」的思维，升级到「先写大脑，再接外壳」，并串起来六边形架构、Clean Architecture、DDD 等背后的经典理念。\n目标读者 适合这些同学阅读：\n1–3 年经验 的 Python 后端工程师 / AI 应用开发者 正在用 FastAPI / Django / Flask 等框架写 API 的工程师 想从“CRUD 搬砖工”进化为“懂设计、能抽象”的工程师 对 六边形架构 / Clean Architecture / DDD 有点好奇但没系统看过书的人 一、背景 / 动机：为什么“先写接口”会卡死自己？ 很多刚入行的 Python 工程师（包括你我）会有这样的流程：\n产品提一个新需求：做一个 AI 聊天功能。\n打开编辑器，第一反应就是：\n设计 URL：POST /api/chat/send_message 开始写 router：@app.post(\u0026quot;/chat/send\u0026quot;) 想 request body 参数长什么样：chat_id / message_id / user_id / content 想数据库表结构：chats，messages 写了一堆 API、schema、model、迁移脚本之后，才想起来： “那 AI 回复到底是怎么生成的？”\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "标题 从写路由到写“大脑”：Python 工程师如何先搞定核心逻辑，再考虑 API\n副标题 / 摘要 刚入行时，我们常常一上来就写路由、设计接口、想 chat_id / message_id 怎么存，却发现真正的“智力活”——核心逻辑——总是拖到后面。这篇文章带你从「先写接口」的思维，升级到「先写大脑，再接外壳」，并串起来六边形架构、Clean Architecture、DDD 等背后的经典理念。\n目标读者 适合这些同学阅读：\n1–3 年经验 的 Python 后端工程师 / AI 应用开发者 正在用 FastAPI / Django / Flask 等框架写 API 的工程师 想从“CRUD 搬砖工”进化为“懂设计、能抽象”的工程师 对 六边形架构 / Clean Architecture / DDD 有点好奇但没系统看过书的人 一、背景 / 动机：为什么“先写接口”会卡死自己？ 很多刚入行的 Python 工程师（包括你我）会有这样的流程：\n产品提一个新需求：做一个 AI 聊天功能。\n打开编辑器，第一反应就是：\n设计 URL：POST /api/chat/send_message 开始写 router：@app.post(\"/chat/send\") 想 request body 参数长什么样：chat_id / message_id / user_id / content 想数据库表结构：chats，messages 写了一堆 API、schema、model、迁移脚本之后，才想起来： “那 AI 回复到底是怎么生成的？”\n常见痛点：\n核心逻辑没有想清楚：模型怎么调用、prompt 怎么构造、历史记录怎么截断，全是临时拼出来的。 逻辑被绑死在框架里： 想做一个 CLI 工具快速测试逻辑？发现所有代码都写在路由函数里。 改一点东西牵一大堆： 想换一个模型 / 调整对话策略，必须改 API 接口代码，甚至影响前端。 你直觉上已经意识到：\n“不管有没有接口，这些功能其实纯后端 / CLI 就可以跑起来，那是不是说明我应该先写核心逻辑？”\n答案是：是，而且这正好踩在一堆软件工程大师的共识上。\n二、核心概念：这套“先核心后接口”到底叫什么？ 这不是某个大师的“绝学”，而是下面这些理念的综合应用：\n关注点分离（Separation of Concerns）\n提出者之一：Dijkstra 意思：不同类型的问题（业务逻辑、UI、存储、接口）分开处理。 单一职责原则（SRP） – Robert C. Martin（Uncle Bob）\n一个类 / 模块只应该有一个引起它变化的理由。 一个“既写路由又写模型调用”的函数，就违反了这条。 六边形架构 / 端口与适配器（Hexagonal Architecture / Ports \u0026 Adapters） – Alistair Cockburn\n核心领域逻辑在中间，外面是各种适配器：HTTP、CLI、MQ、定时任务…… 核心逻辑对“如何对外暴露”不敏感。 整洁架构（Clean Architecture） – Uncle Bob\n内圈：业务规则 外圈：框架、UI、数据库、接口 内圈不能依赖外圈，反过来可以。 领域驱动设计（DDD） – Eric Evans\n先定义领域模型和领域服务，再考虑 Application / Interface 层。 Unix 哲学\n“程序只做好一件事，然后通过组合实现复杂需求。” 我们要做的事，用大白话就是：\n“先写负责‘思考’的那坨代码（大脑），再决定它是被 HTTP 调用，还是被 CLI 调用，还是被定时任务调用。”\n三、实践指南：如何从“先写接口”切换到“先写核心”？ 下面我用一个AI 聊天功能作为例子，带你从需求到代码走一遍。\n步骤 1：用一句话描述功能（对自己也要讲清楚） “用户输入一段文字，我根据历史对话，用 AI 模型生成一段回复，并保存本轮对话。”\n这个简单的小句子，会强迫你把注意力放在业务本身，而不是 HTTP 细节。\n步骤 2：先设计“核心函数”，不考虑 HTTP / CLI 这里先写一个纯 Python 函数/类，想象它可以被任何方式调用：\n# chat_core.py from typing import List, Tuple class ChatService: def __init__(self, model_client, history_repo): self.model_client = model_client self.history_repo = history_repo def generate_reply(self, user_id: int, chat_id: int, user_message: str) -\u003e str: # 1. 拉取历史对话 history = self.history_repo.load_history(user_id, chat_id) # history: List[Tuple[str, str]] -\u003e [(role, content), ...] # 2. 组装 prompt prompt = self._build_prompt(history, user_message) # 3. 调用模型 raw_reply = self.model_client.generate(prompt) # 4. 后处理（截断、过滤等） reply = self._post_process(raw_reply) # 5. 保存本轮对话 self.history_repo.save_message(user_id, chat_id, user_message, reply) return reply def _build_prompt(self, history: List[Tuple[str, str]], user_message: str) -\u003e str: # 简化示例：把历史拼成纯文本 messages = [] for role, content in history: messages.append(f\"{role.upper()}: {content}\") messages.append(f\"USER: {user_message}\") messages.append(\"ASSISTANT:\") return \"\\n\".join(messages) def _post_process(self, text: str) -\u003e str: # 示例：去掉多余空格，限制最大长度 text = text.strip() return text[:2000] 注意这里：\n没有 FastAPI、没有 request、没有 response，什么 HTTP 都没提。 只有一个清晰的输入输出：(user_id, chat_id, user_message) -\u003e reply。 history_repo 和 model_client 也是抽象出来的依赖，可以换实现。 这段代码，就是你的**“领域服务 / 核心逻辑 / 大脑”**。\n步骤 3：写一个 CLI 适配器（证明你逻辑是独立的） 先不用管前端、接口，搞一个命令行工具，自己就能玩：\n# cli_chat.py import argparse from chat_core import ChatService from infra.model_client import OpenAIModelClient from infra.history_repo import InMemoryHistoryRepo def main(): parser = argparse.ArgumentParser() parser.add_argument(\"--user-id\", type=int, default=1) parser.add_argument(\"--chat-id\", type=int, default=1) parser.add_argument(\"--message\", type=str, required=True) args = parser.parse_args() # 这里先用内存实现，后面再换数据库也行 model_client = OpenAIModelClient(api_key=\"YOUR_API_KEY\") history_repo = InMemoryHistoryRepo() service = ChatService(model_client, history_repo) reply = service.generate_reply( user_id=args.user_id, chat_id=args.chat_id, user_message=args.message, ) print(\"AI:\", reply) if __name__ == \"__main__\": main() 跑一下：\npython cli_chat.py --message \"你好，今天心情有点低落。\" 如果这一步能跑通，你就已经拥有一个“和 HTTP 完全解耦”的核心聊天逻辑了。\n步骤 4：再把它挂到 HTTP API 上（Framework 只是外壳） 现在才上 FastAPI（或其他框架）：\n# api_chat.py from fastapi import APIRouter, Depends from pydantic import BaseModel from chat_core import ChatService from infra.model_client import get_model_client from infra.history_repo import get_history_repo router = APIRouter() class ChatRequest(BaseModel): user_id: int chat_id: int message: str class ChatResponse(BaseModel): reply: str def get_chat_service() -\u003e ChatService: return ChatService( model_client=get_model_client(), history_repo=get_history_repo(), ) @router.post(\"/chat/send\", response_model=ChatResponse) def send_message(req: ChatRequest, service: ChatService = Depends(get_chat_service)): reply = service.generate_reply( user_id=req.user_id, chat_id=req.chat_id, user_message=req.message, ) return ChatResponse(reply=reply) 你会发现：\nAPI 层非常薄，只做：\n参数解析 调用核心服务 返回结果 任何业务上的改动（比如：增加多轮对话压缩）基本都在 ChatService 里完成。\n四、可运行示例：最简内存版 AI 聊天（伪模型） 下面给你一个完全可运行、纯本地版的小例子——用一个“假模型”模拟 AI 回复，用内存存聊天记录。\n文件结构 project/ ├── chat_core.py ├── infra.py ├── cli_chat.py └── api_chat.py infra.py # infra.py from typing import List, Tuple, Dict # 假模型客户端：简单回声 + 固定前缀 class DummyModelClient: def generate(self, prompt: str) -\u003e str: return \"【假模型回复】\" + prompt.split(\"USER:\")[-1].split(\"ASSISTANT:\")[0].strip() # 内存历史记录存储 class InMemoryHistoryRepo: def __init__(self): # key: (user_id, chat_id) -\u003e List[(role, content)] self._store: Dict[tuple, List[Tuple[str, str]]] = {} def load_history(self, user_id: int, chat_id: int) -\u003e List[Tuple[str, str]]: return self._store.get((user_id, chat_id), []) def save_message(self, user_id: int, chat_id: int, user_msg: str, reply: str): key = (user_id, chat_id) history = self._store.setdefault(key, []) history.append((\"user\", user_msg)) history.append((\"assistant\", reply)) chat_core.py # chat_core.py from typing import List, Tuple class ChatService: def __init__(self, model_client, history_repo): self.model_client = model_client self.history_repo = history_repo def generate_reply(self, user_id: int, chat_id: int, user_message: str) -\u003e str: history = self.history_repo.load_history(user_id, chat_id) prompt = self._build_prompt(history, user_message) raw_reply = self.model_client.generate(prompt) reply = self._post_process(raw_reply) self.history_repo.save_message(user_id, chat_id, user_message, reply) return reply def _build_prompt(self, history: List[Tuple[str, str]], user_message: str) -\u003e str: messages = [] for role, content in history: messages.append(f\"{role.upper()}: {content}\") messages.append(f\"USER: {user_message}\") messages.append(\"ASSISTANT:\") return \"\\n\".join(messages) def _post_process(self, text: str) -\u003e str: return text.strip() cli_chat.py # cli_chat.py import argparse from chat_core import ChatService from infra import DummyModelClient, InMemoryHistoryRepo # 为了简单，这里用单例 _model_client = DummyModelClient() _history_repo = InMemoryHistoryRepo() def main(): parser = argparse.ArgumentParser() parser.add_argument(\"--user-id\", type=int, default=1) parser.add_argument(\"--chat-id\", type=int, default=1) parser.add_argument(\"--message\", type=str, required=True) args = parser.parse_args() service = ChatService(_model_client, _history_repo) reply = service.generate_reply(args.user_id, args.chat_id, args.message) print(\"AI:\", reply) if __name__ == \"__main__\": main() 运行：\npython cli_chat.py --message \"你好，我有点好奇六边形架构是啥？\" 你会看到类似输出：\nAI: 【假模型回复】你好，我有点好奇六边形架构是啥？ 虽然模型是假的，但架构是真实的：你已经把“核心逻辑”和“调用方式”分开了。\n五、解释与原理：为什么要这么搞？有什么替代方案？ 为什么“先写核心逻辑”更靠谱？ 可测试性强\n不需要起 HTTP 服务、不需要数据库，就能单元测试核心逻辑。 TDD / 单元测试更容易落地。 可复用性高\n一套 ChatService，可以被 HTTP、CLI、WebSocket、公有云函数复用。 降低耦合，降低重构成本\n换模型、加新策略，不动 API 层； 换框架（FastAPI 换成 Django），不动核心逻辑。 团队协作更清晰\n有人专注领域逻辑，有人专注 API 与集成，更容易分工。 替代方案 / 其他流派？ 简单小项目：有人会说“直接写在路由里就完了”。\n对于一次性小脚本 / demo，确实可以这么干。 但只要你预感这个功能以后会复杂、有演进，就该一开始就分层。 重框架驱动开发：例如“所有逻辑都是 Django View + ORM”。\n好处：上手快、写 CRUD 很爽。 坏处：逻辑被框架锁死，想抽取纯逻辑很费劲。 “先核心后接口”的做法，更偏向长期投资，不一定是最“快写完 demo”的，但通常是最能稳住中长期复杂度的。\n六、常见问题与注意事项 Q：会不会分层分过头，写一堆 class，显得很重？\n建议：从最小可拆分单元开始：\n先把“模型调用+prompt 构造+后处理”抽成一个类 / 模块； 日后再慢慢把存储、配置、日志等抽出来。 Q：刚入行同事看不懂这种结构怎么办？\n可以在代码里写一点注释：\n# 核心业务逻辑 # HTTP 适配层 或在 README 里画一个简单架构图（内圈是 ChatService，外圈是 API/CLI）。\nQ：这样会不会影响性能？\n分层本身几乎不带来明显性能损失（多了一两个函数调用而已）。 真正的性能瓶颈多半在 I/O、网络、模型调用上。 Q：安全 / 权限控制放在哪一层？\n认证 / 鉴权通常放在 API / Application 层； 领域层只在“权限已经被确认”的前提下工作。 七、最佳实践与建议 给你几点可以直接带走的 checklist：\n新功能开发时：先问自己两个问题\n“如果没有 HTTP，这个功能能不能作为一个纯 Python 函数存在？” “如果要从命令行调用这功能，我希望的接口长什么样？” 写路由前，先写核心函数 / 核心类\n比如 ChatService.generate_reply(...) API 只负责把 HTTP 参数转换成这个函数的参数。 任何时候都警惕“巨型路由函数”\n一旦你发现：路由里有复杂的 if/else、业务判断、模型调用，那就说明该抽出来了。 强迫自己写一个 CLI 或小脚本\n让你从“框架思维”切换到“库思维 / 领域思维”。 记一句话：\n“接口是门面，核心逻辑是房子本身。 门面可以重刷，房子结构一旦烂掉，很难重建。”\n八、小结 / 结论：从“写接口”到“写核心”的思维升级 本篇我们做了这些事：\n从一个真实场景（AI 聊天功能），反思为什么我们总是先写接口。\n串起来了：\n关注点分离、单一职责原则 六边形架构 / Clean Architecture DDD、Unix 哲学 用一个完整的例子展示了：\n核心 ChatService CLI 适配器 HTTP API 适配器 下一步你可以做的事情：\n把你现有项目里“又大又乱的路由函数”挑一个出来； 按文中示例，把“模型调用 + 业务判断”抽成一个 XXXService； 尝试写一个 CLI 入口直接调用这个 Service，验证你已经分离了核心与接口。 这就是你从“普通 CRUD 后端”向“懂架构的工程师”迈出的一步。\n九、参考与延伸阅读 以下是推荐方向，你可以按关键字搜索对应资料：\nEdsger Dijkstra – Separation of Concerns\nRobert C. Martin – Clean Architecture / Agile Software Development, Principles, Patterns, and Practices\nAlistair Cockburn – Hexagonal Architecture (Ports \u0026 Adapters)\nEric Evans – Domain-Driven Design: Tackling Complexity in the Heart of Software\n“Unix Philosophy” 相关文章：\n“Do one thing and do it well” 十、元信息（Meta 信息） 预计阅读时长：10–15 分钟\n标签（Tags）：\nPython 后端 架构设计 六边形架构 Clean Architecture DDD AI 应用开发 SEO 关键词（可选）：\nPython 核心业务逻辑 六边形架构示例 Clean Architecture 实战 FastAPI 分层设计 AI 聊天服务架构 元描述（Meta Description）：\n本文面向 Python 后端与 AI 应用开发者，讲解如何在实现新功能时优先设计核心业务逻辑，再通过六边形架构与 Clean Architecture 的思想，将其暴露为 HTTP API 或 CLI 工具，帮助你从“写接口的工程师”成长为“懂架构的工程师”。\n十一、行动号召（CTA） ✍️ 试一试： 选你当前项目中的一个接口，把核心逻辑抽出来做成一个 Service 类，再补一个 CLI 调用它。\n🧩 扩展练习： 在这个基础上，再加一个“定时任务”的入口，让同一套核心逻辑支持：API + CLI + 定时任务。\n💬 交流与反馈： 如果你愿意，可以把你重构前后的代码结构（目录或伪代码）发给我，我可以帮你一起看看还能怎么优化，顺便帮你打磨成一篇对外可发的技术分享或博客。\n",
+  "wordCount" : "951",
+  "inLanguage": "en",
+  "datePublished": "2025-11-08T00:00:00Z",
+  "dateModified": "2025-11-08T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/jeanblog/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/jeanblog/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/jeanblog/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/linux/" title="Linux">
+                    <span>Linux</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/python/" title="Python">
+                    <span>Python</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/thoughts/" title="随想">
+                    <span>随想</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/jeanblog/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/jeanblog/posts/">Posts</a>&nbsp;»&nbsp;<a href="http://localhost:1313/jeanblog/posts/python/">Python</a></div>
+    <h1 class="post-title entry-hint-parent">
+      从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API
+    </h1>
+    <div class="post-meta"><span title='2025-11-08 00:00:00 +0000 UTC'>November 8, 2025</span>&nbsp;·&nbsp;<span>5 min</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e6%a0%87%e9%a2%98" aria-label="标题">标题</a><ul>
+                        
+                <li>
+                    <a href="#%e5%89%af%e6%a0%87%e9%a2%98--%e6%91%98%e8%a6%81" aria-label="副标题 / 摘要">副标题 / 摘要</a></li>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87%e8%af%bb%e8%80%85" aria-label="目标读者">目标读者</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%b8%80%e8%83%8c%e6%99%af--%e5%8a%a8%e6%9c%ba%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%88%e5%86%99%e6%8e%a5%e5%8f%a3%e4%bc%9a%e5%8d%a1%e6%ad%bb%e8%87%aa%e5%b7%b1" aria-label="一、背景 / 动机：为什么“先写接口”会卡死自己？">一、背景 / 动机：为什么“先写接口”会卡死自己？</a></li>
+                <li>
+                    <a href="#%e4%ba%8c%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5%e8%bf%99%e5%a5%97%e5%85%88%e6%a0%b8%e5%bf%83%e5%90%8e%e6%8e%a5%e5%8f%a3%e5%88%b0%e5%ba%95%e5%8f%ab%e4%bb%80%e4%b9%88" aria-label="二、核心概念：这套“先核心后接口”到底叫什么？">二、核心概念：这套“先核心后接口”到底叫什么？</a></li>
+                <li>
+                    <a href="#%e4%b8%89%e5%ae%9e%e8%b7%b5%e6%8c%87%e5%8d%97%e5%a6%82%e4%bd%95%e4%bb%8e%e5%85%88%e5%86%99%e6%8e%a5%e5%8f%a3%e5%88%87%e6%8d%a2%e5%88%b0%e5%85%88%e5%86%99%e6%a0%b8%e5%bf%83" aria-label="三、实践指南：如何从“先写接口”切换到“先写核心”？">三、实践指南：如何从“先写接口”切换到“先写核心”？</a><ul>
+                        
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4-1%e7%94%a8%e4%b8%80%e5%8f%a5%e8%af%9d%e6%8f%8f%e8%bf%b0%e5%8a%9f%e8%83%bd%e5%af%b9%e8%87%aa%e5%b7%b1%e4%b9%9f%e8%a6%81%e8%ae%b2%e6%b8%85%e6%a5%9a" aria-label="步骤 1：用一句话描述功能（对自己也要讲清楚）">步骤 1：用一句话描述功能（对自己也要讲清楚）</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4-2%e5%85%88%e8%ae%be%e8%ae%a1%e6%a0%b8%e5%bf%83%e5%87%bd%e6%95%b0%e4%b8%8d%e8%80%83%e8%99%91-http--cli" aria-label="步骤 2：先设计“核心函数”，不考虑 HTTP / CLI">步骤 2：先设计“核心函数”，不考虑 HTTP / CLI</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4-3%e5%86%99%e4%b8%80%e4%b8%aa-cli-%e9%80%82%e9%85%8d%e5%99%a8%e8%af%81%e6%98%8e%e4%bd%a0%e9%80%bb%e8%be%91%e6%98%af%e7%8b%ac%e7%ab%8b%e7%9a%84" aria-label="步骤 3：写一个 CLI 适配器（证明你逻辑是独立的）">步骤 3：写一个 CLI 适配器（证明你逻辑是独立的）</a></li>
+                <li>
+                    <a href="#%e6%ad%a5%e9%aa%a4-4%e5%86%8d%e6%8a%8a%e5%ae%83%e6%8c%82%e5%88%b0-http-api-%e4%b8%8aframework-%e5%8f%aa%e6%98%af%e5%a4%96%e5%a3%b3" aria-label="步骤 4：再把它挂到 HTTP API 上（Framework 只是外壳）">步骤 4：再把它挂到 HTTP API 上（Framework 只是外壳）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9b%9b%e5%8f%af%e8%bf%90%e8%a1%8c%e7%a4%ba%e4%be%8b%e6%9c%80%e7%ae%80%e5%86%85%e5%ad%98%e7%89%88-ai-%e8%81%8a%e5%a4%a9%e4%bc%aa%e6%a8%a1%e5%9e%8b" aria-label="四、可运行示例：最简内存版 AI 聊天（伪模型）">四、可运行示例：最简内存版 AI 聊天（伪模型）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%96%87%e4%bb%b6%e7%bb%93%e6%9e%84" aria-label="文件结构">文件结构</a></li>
+                <li>
+                    <a href="#infrapy" aria-label="infra.py">infra.py</a></li>
+                <li>
+                    <a href="#chat_corepy" aria-label="chat_core.py">chat_core.py</a></li>
+                <li>
+                    <a href="#cli_chatpy" aria-label="cli_chat.py">cli_chat.py</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e4%ba%94%e8%a7%a3%e9%87%8a%e4%b8%8e%e5%8e%9f%e7%90%86%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e8%bf%99%e4%b9%88%e6%90%9e%e6%9c%89%e4%bb%80%e4%b9%88%e6%9b%bf%e4%bb%a3%e6%96%b9%e6%a1%88" aria-label="五、解释与原理：为什么要这么搞？有什么替代方案？">五、解释与原理：为什么要这么搞？有什么替代方案？</a><ul>
+                        
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%88%e5%86%99%e6%a0%b8%e5%bf%83%e9%80%bb%e8%be%91%e6%9b%b4%e9%9d%a0%e8%b0%b1" aria-label="为什么“先写核心逻辑”更靠谱？">为什么“先写核心逻辑”更靠谱？</a></li>
+                <li>
+                    <a href="#%e6%9b%bf%e4%bb%a3%e6%96%b9%e6%a1%88--%e5%85%b6%e4%bb%96%e6%b5%81%e6%b4%be" aria-label="替代方案 / 其他流派？">替代方案 / 其他流派？</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%85%ad%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="六、常见问题与注意事项">六、常见问题与注意事项</a></li>
+                <li>
+                    <a href="#%e4%b8%83%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%bb%ba%e8%ae%ae" aria-label="七、最佳实践与建议">七、最佳实践与建议</a></li>
+                <li>
+                    <a href="#%e5%85%ab%e5%b0%8f%e7%bb%93--%e7%bb%93%e8%ae%ba%e4%bb%8e%e5%86%99%e6%8e%a5%e5%8f%a3%e5%88%b0%e5%86%99%e6%a0%b8%e5%bf%83%e7%9a%84%e6%80%9d%e7%bb%b4%e5%8d%87%e7%ba%a7" aria-label="八、小结 / 结论：从“写接口”到“写核心”的思维升级">八、小结 / 结论：从“写接口”到“写核心”的思维升级</a></li>
+                <li>
+                    <a href="#%e4%b9%9d%e5%8f%82%e8%80%83%e4%b8%8e%e5%bb%b6%e4%bc%b8%e9%98%85%e8%af%bb" aria-label="九、参考与延伸阅读">九、参考与延伸阅读</a></li>
+                <li>
+                    <a href="#%e5%8d%81%e5%85%83%e4%bf%a1%e6%81%afmeta-%e4%bf%a1%e6%81%af" aria-label="十、元信息（Meta 信息）">十、元信息（Meta 信息）</a></li>
+                <li>
+                    <a href="#%e5%8d%81%e4%b8%80%e8%a1%8c%e5%8a%a8%e5%8f%b7%e5%8f%accta" aria-label="十一、行动号召（CTA）">十一、行动号召（CTA）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="标题"><strong>标题</strong><a hidden class="anchor" aria-hidden="true" href="#标题">#</a></h1>
+<p>从写路由到写“大脑”：Python 工程师如何先搞定核心逻辑，再考虑 API</p>
+<hr>
+<h2 id="副标题--摘要">副标题 / 摘要<a hidden class="anchor" aria-hidden="true" href="#副标题--摘要">#</a></h2>
+<p>刚入行时，我们常常一上来就写路由、设计接口、想 chat_id / message_id 怎么存，却发现真正的“智力活”——核心逻辑——总是拖到后面。这篇文章带你从「先写接口」的思维，升级到「先写大脑，再接外壳」，并串起来六边形架构、Clean Architecture、DDD 等背后的经典理念。</p>
+<hr>
+<h2 id="目标读者">目标读者<a hidden class="anchor" aria-hidden="true" href="#目标读者">#</a></h2>
+<p>适合这些同学阅读：</p>
+<ul>
+<li><strong>1–3 年经验</strong> 的 Python 后端工程师 / AI 应用开发者</li>
+<li>正在用 <strong>FastAPI / Django / Flask</strong> 等框架写 API 的工程师</li>
+<li>想从“CRUD 搬砖工”进化为“懂设计、能抽象”的工程师</li>
+<li>对 <strong>六边形架构 / Clean Architecture / DDD</strong> 有点好奇但没系统看过书的人</li>
+</ul>
+<hr>
+<h1 id="一背景--动机为什么先写接口会卡死自己">一、背景 / 动机：为什么“先写接口”会卡死自己？<a hidden class="anchor" aria-hidden="true" href="#一背景--动机为什么先写接口会卡死自己">#</a></h1>
+<p>很多刚入行的 Python 工程师（包括你我）会有这样的流程：</p>
+<ol>
+<li>
+<p>产品提一个新需求：做一个 AI 聊天功能。</p>
+</li>
+<li>
+<p>打开编辑器，第一反应就是：</p>
+<ul>
+<li>设计 URL：<code>POST /api/chat/send_message</code></li>
+<li>开始写 router：<code>@app.post(&quot;/chat/send&quot;)</code></li>
+<li>想 request body 参数长什么样：<code>chat_id / message_id / user_id / content</code></li>
+<li>想数据库表结构：<code>chats</code>，<code>messages</code></li>
+</ul>
+</li>
+<li>
+<p>写了一堆 API、schema、model、迁移脚本之后，才想起来：
+<strong>“那 AI 回复到底是怎么生成的？”</strong></p>
+</li>
+</ol>
+<p>常见痛点：</p>
+<ul>
+<li><strong>核心逻辑没有想清楚</strong>：模型怎么调用、prompt 怎么构造、历史记录怎么截断，全是临时拼出来的。</li>
+<li><strong>逻辑被绑死在框架里</strong>：
+想做一个 CLI 工具快速测试逻辑？发现所有代码都写在路由函数里。</li>
+<li><strong>改一点东西牵一大堆</strong>：
+想换一个模型 / 调整对话策略，必须改 API 接口代码，甚至影响前端。</li>
+</ul>
+<p>你直觉上已经意识到：</p>
+<blockquote>
+<p>“不管有没有接口，这些功能其实纯后端 / CLI 就可以跑起来，那是不是说明我应该先写核心逻辑？”</p>
+</blockquote>
+<p>答案是：<strong>是，而且这正好踩在一堆软件工程大师的共识上。</strong></p>
+<hr>
+<h1 id="二核心概念这套先核心后接口到底叫什么">二、核心概念：这套“先核心后接口”到底叫什么？<a hidden class="anchor" aria-hidden="true" href="#二核心概念这套先核心后接口到底叫什么">#</a></h1>
+<p>这不是某个大师的“绝学”，而是下面这些理念的综合应用：</p>
+<ol>
+<li>
+<p><strong>关注点分离（Separation of Concerns）</strong></p>
+<ul>
+<li>提出者之一：Dijkstra</li>
+<li>意思：不同类型的问题（业务逻辑、UI、存储、接口）分开处理。</li>
+</ul>
+</li>
+<li>
+<p><strong>单一职责原则（SRP）</strong> – Robert C. Martin（Uncle Bob）</p>
+<ul>
+<li>一个类 / 模块只应该有一个引起它变化的理由。</li>
+<li>一个“既写路由又写模型调用”的函数，就违反了这条。</li>
+</ul>
+</li>
+<li>
+<p><strong>六边形架构 / 端口与适配器（Hexagonal Architecture / Ports &amp; Adapters）</strong> – Alistair Cockburn</p>
+<ul>
+<li>核心领域逻辑在中间，外面是各种适配器：HTTP、CLI、MQ、定时任务……</li>
+<li>核心逻辑对“如何对外暴露”不敏感。</li>
+</ul>
+</li>
+<li>
+<p><strong>整洁架构（Clean Architecture）</strong> – Uncle Bob</p>
+<ul>
+<li>内圈：业务规则</li>
+<li>外圈：框架、UI、数据库、接口</li>
+<li><strong>内圈不能依赖外圈</strong>，反过来可以。</li>
+</ul>
+</li>
+<li>
+<p><strong>领域驱动设计（DDD）</strong> – Eric Evans</p>
+<ul>
+<li>先定义领域模型和领域服务，再考虑 Application / Interface 层。</li>
+</ul>
+</li>
+<li>
+<p><strong>Unix 哲学</strong></p>
+<ul>
+<li>“程序只做好一件事，然后通过组合实现复杂需求。”</li>
+</ul>
+</li>
+</ol>
+<p>我们要做的事，用大白话就是：</p>
+<blockquote>
+<p>“先写负责‘思考’的那坨代码（大脑），再决定它是被 HTTP 调用，还是被 CLI 调用，还是被定时任务调用。”</p>
+</blockquote>
+<hr>
+<h1 id="三实践指南如何从先写接口切换到先写核心">三、实践指南：如何从“先写接口”切换到“先写核心”？<a hidden class="anchor" aria-hidden="true" href="#三实践指南如何从先写接口切换到先写核心">#</a></h1>
+<p>下面我用一个<strong>AI 聊天功能</strong>作为例子，带你从需求到代码走一遍。</p>
+<h2 id="步骤-1用一句话描述功能对自己也要讲清楚">步骤 1：用一句话描述功能（对自己也要讲清楚）<a hidden class="anchor" aria-hidden="true" href="#步骤-1用一句话描述功能对自己也要讲清楚">#</a></h2>
+<blockquote>
+<p>“用户输入一段文字，我根据历史对话，用 AI 模型生成一段回复，并保存本轮对话。”</p>
+</blockquote>
+<p>这个简单的小句子，会强迫你把注意力放在<strong>业务本身</strong>，而不是 HTTP 细节。</p>
+<hr>
+<h2 id="步骤-2先设计核心函数不考虑-http--cli">步骤 2：先设计“核心函数”，不考虑 HTTP / CLI<a hidden class="anchor" aria-hidden="true" href="#步骤-2先设计核心函数不考虑-http--cli">#</a></h2>
+<p>这里先写一个<strong>纯 Python 函数/类</strong>，想象它可以被任何方式调用：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># chat_core.py</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> List, Tuple
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ChatService</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, model_client, history_repo):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>model_client <span style="color:#f92672">=</span> model_client
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>history_repo <span style="color:#f92672">=</span> history_repo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generate_reply</span>(self, user_id: int, chat_id: int, user_message: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 1. 拉取历史对话</span>
+</span></span><span style="display:flex;"><span>        history <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>history_repo<span style="color:#f92672">.</span>load_history(user_id, chat_id)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># history: List[Tuple[str, str]] -&gt; [(role, content), ...]</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 2. 组装 prompt</span>
+</span></span><span style="display:flex;"><span>        prompt <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_build_prompt(history, user_message)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 3. 调用模型</span>
+</span></span><span style="display:flex;"><span>        raw_reply <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>model_client<span style="color:#f92672">.</span>generate(prompt)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 4. 后处理（截断、过滤等）</span>
+</span></span><span style="display:flex;"><span>        reply <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_post_process(raw_reply)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 5. 保存本轮对话</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>history_repo<span style="color:#f92672">.</span>save_message(user_id, chat_id, user_message, reply)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> reply
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_build_prompt</span>(self, history: List[Tuple[str, str]], user_message: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 简化示例：把历史拼成纯文本</span>
+</span></span><span style="display:flex;"><span>        messages <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> role, content <span style="color:#f92672">in</span> history:
+</span></span><span style="display:flex;"><span>            messages<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>role<span style="color:#f92672">.</span>upper()<span style="color:#e6db74">}</span><span style="color:#e6db74">: </span><span style="color:#e6db74">{</span>content<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        messages<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;USER: </span><span style="color:#e6db74">{</span>user_message<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        messages<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;ASSISTANT:&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>join(messages)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_post_process</span>(self, text: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 示例：去掉多余空格，限制最大长度</span>
+</span></span><span style="display:flex;"><span>        text <span style="color:#f92672">=</span> text<span style="color:#f92672">.</span>strip()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> text[:<span style="color:#ae81ff">2000</span>]
+</span></span></code></pre></div><p>注意这里：</p>
+<ul>
+<li>没有 FastAPI、没有 request、没有 response，什么 HTTP 都没提。</li>
+<li>只有一个清晰的输入输出：<code>(user_id, chat_id, user_message) -&gt; reply</code>。</li>
+<li><code>history_repo</code> 和 <code>model_client</code> 也是抽象出来的依赖，可以换实现。</li>
+</ul>
+<p>这段代码，就是你的**“领域服务 / 核心逻辑 / 大脑”**。</p>
+<hr>
+<h2 id="步骤-3写一个-cli-适配器证明你逻辑是独立的">步骤 3：写一个 CLI 适配器（证明你逻辑是独立的）<a hidden class="anchor" aria-hidden="true" href="#步骤-3写一个-cli-适配器证明你逻辑是独立的">#</a></h2>
+<p>先不用管前端、接口，搞一个命令行工具，自己就能玩：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># cli_chat.py</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> argparse
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> chat_core <span style="color:#f92672">import</span> ChatService
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> infra.model_client <span style="color:#f92672">import</span> OpenAIModelClient
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> infra.history_repo <span style="color:#f92672">import</span> InMemoryHistoryRepo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    parser <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser()
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--user-id&#34;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--chat-id&#34;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--message&#34;</span>, type<span style="color:#f92672">=</span>str, required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 这里先用内存实现，后面再换数据库也行</span>
+</span></span><span style="display:flex;"><span>    model_client <span style="color:#f92672">=</span> OpenAIModelClient(api_key<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;YOUR_API_KEY&#34;</span>)
+</span></span><span style="display:flex;"><span>    history_repo <span style="color:#f92672">=</span> InMemoryHistoryRepo()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    service <span style="color:#f92672">=</span> ChatService(model_client, history_repo)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    reply <span style="color:#f92672">=</span> service<span style="color:#f92672">.</span>generate_reply(
+</span></span><span style="display:flex;"><span>        user_id<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>user_id,
+</span></span><span style="display:flex;"><span>        chat_id<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>chat_id,
+</span></span><span style="display:flex;"><span>        user_message<span style="color:#f92672">=</span>args<span style="color:#f92672">.</span>message,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;AI:&#34;</span>, reply)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    main()
+</span></span></code></pre></div><p>跑一下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python cli_chat.py --message <span style="color:#e6db74">&#34;你好，今天心情有点低落。&#34;</span>
+</span></span></code></pre></div><p>如果这一步能跑通，你就已经拥有一个“和 HTTP 完全解耦”的核心聊天逻辑了。</p>
+<hr>
+<h2 id="步骤-4再把它挂到-http-api-上framework-只是外壳">步骤 4：再把它挂到 HTTP API 上（Framework 只是外壳）<a hidden class="anchor" aria-hidden="true" href="#步骤-4再把它挂到-http-api-上framework-只是外壳">#</a></h2>
+<p>现在才上 FastAPI（或其他框架）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># api_chat.py</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> fastapi <span style="color:#f92672">import</span> APIRouter, Depends
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> pydantic <span style="color:#f92672">import</span> BaseModel
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> chat_core <span style="color:#f92672">import</span> ChatService
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> infra.model_client <span style="color:#f92672">import</span> get_model_client
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> infra.history_repo <span style="color:#f92672">import</span> get_history_repo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>router <span style="color:#f92672">=</span> APIRouter()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ChatRequest</span>(BaseModel):
+</span></span><span style="display:flex;"><span>    user_id: int
+</span></span><span style="display:flex;"><span>    chat_id: int
+</span></span><span style="display:flex;"><span>    message: str
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ChatResponse</span>(BaseModel):
+</span></span><span style="display:flex;"><span>    reply: str
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_chat_service</span>() <span style="color:#f92672">-&gt;</span> ChatService:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ChatService(
+</span></span><span style="display:flex;"><span>        model_client<span style="color:#f92672">=</span>get_model_client(),
+</span></span><span style="display:flex;"><span>        history_repo<span style="color:#f92672">=</span>get_history_repo(),
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@router.post</span>(<span style="color:#e6db74">&#34;/chat/send&#34;</span>, response_model<span style="color:#f92672">=</span>ChatResponse)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send_message</span>(req: ChatRequest, service: ChatService <span style="color:#f92672">=</span> Depends(get_chat_service)):
+</span></span><span style="display:flex;"><span>    reply <span style="color:#f92672">=</span> service<span style="color:#f92672">.</span>generate_reply(
+</span></span><span style="display:flex;"><span>        user_id<span style="color:#f92672">=</span>req<span style="color:#f92672">.</span>user_id,
+</span></span><span style="display:flex;"><span>        chat_id<span style="color:#f92672">=</span>req<span style="color:#f92672">.</span>chat_id,
+</span></span><span style="display:flex;"><span>        user_message<span style="color:#f92672">=</span>req<span style="color:#f92672">.</span>message,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ChatResponse(reply<span style="color:#f92672">=</span>reply)
+</span></span></code></pre></div><p>你会发现：</p>
+<ul>
+<li>
+<p>API 层非常薄，只做：</p>
+<ul>
+<li>参数解析</li>
+<li>调用核心服务</li>
+<li>返回结果</li>
+</ul>
+</li>
+<li>
+<p>任何业务上的改动（比如：增加多轮对话压缩）基本都在 <code>ChatService</code> 里完成。</p>
+</li>
+</ul>
+<hr>
+<h1 id="四可运行示例最简内存版-ai-聊天伪模型">四、可运行示例：最简内存版 AI 聊天（伪模型）<a hidden class="anchor" aria-hidden="true" href="#四可运行示例最简内存版-ai-聊天伪模型">#</a></h1>
+<p>下面给你一个完全可运行、纯本地版的小例子——用一个“假模型”模拟 AI 回复，用内存存聊天记录。</p>
+<h2 id="文件结构">文件结构<a hidden class="anchor" aria-hidden="true" href="#文件结构">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>project/
+</span></span><span style="display:flex;"><span>├── chat_core.py
+</span></span><span style="display:flex;"><span>├── infra.py
+</span></span><span style="display:flex;"><span>├── cli_chat.py
+</span></span><span style="display:flex;"><span>└── api_chat.py
+</span></span></code></pre></div><h2 id="infrapy"><code>infra.py</code><a hidden class="anchor" aria-hidden="true" href="#infrapy">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># infra.py</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> List, Tuple, Dict
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 假模型客户端：简单回声 + 固定前缀</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DummyModelClient</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generate</span>(self, prompt: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;【假模型回复】&#34;</span> <span style="color:#f92672">+</span> prompt<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;USER:&#34;</span>)[<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;ASSISTANT:&#34;</span>)[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>strip()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 内存历史记录存储</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">InMemoryHistoryRepo</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self):
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># key: (user_id, chat_id) -&gt; List[(role, content)]</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>_store: Dict[tuple, List[Tuple[str, str]]] <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">load_history</span>(self, user_id: int, chat_id: int) <span style="color:#f92672">-&gt;</span> List[Tuple[str, str]]:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>_store<span style="color:#f92672">.</span>get((user_id, chat_id), [])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">save_message</span>(self, user_id: int, chat_id: int, user_msg: str, reply: str):
+</span></span><span style="display:flex;"><span>        key <span style="color:#f92672">=</span> (user_id, chat_id)
+</span></span><span style="display:flex;"><span>        history <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_store<span style="color:#f92672">.</span>setdefault(key, [])
+</span></span><span style="display:flex;"><span>        history<span style="color:#f92672">.</span>append((<span style="color:#e6db74">&#34;user&#34;</span>, user_msg))
+</span></span><span style="display:flex;"><span>        history<span style="color:#f92672">.</span>append((<span style="color:#e6db74">&#34;assistant&#34;</span>, reply))
+</span></span></code></pre></div><h2 id="chat_corepy"><code>chat_core.py</code><a hidden class="anchor" aria-hidden="true" href="#chat_corepy">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># chat_core.py</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> List, Tuple
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ChatService</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, model_client, history_repo):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>model_client <span style="color:#f92672">=</span> model_client
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>history_repo <span style="color:#f92672">=</span> history_repo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generate_reply</span>(self, user_id: int, chat_id: int, user_message: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        history <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>history_repo<span style="color:#f92672">.</span>load_history(user_id, chat_id)
+</span></span><span style="display:flex;"><span>        prompt <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_build_prompt(history, user_message)
+</span></span><span style="display:flex;"><span>        raw_reply <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>model_client<span style="color:#f92672">.</span>generate(prompt)
+</span></span><span style="display:flex;"><span>        reply <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_post_process(raw_reply)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>history_repo<span style="color:#f92672">.</span>save_message(user_id, chat_id, user_message, reply)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> reply
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_build_prompt</span>(self, history: List[Tuple[str, str]], user_message: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        messages <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> role, content <span style="color:#f92672">in</span> history:
+</span></span><span style="display:flex;"><span>            messages<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{</span>role<span style="color:#f92672">.</span>upper()<span style="color:#e6db74">}</span><span style="color:#e6db74">: </span><span style="color:#e6db74">{</span>content<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        messages<span style="color:#f92672">.</span>append(<span style="color:#e6db74">f</span><span style="color:#e6db74">&#34;USER: </span><span style="color:#e6db74">{</span>user_message<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        messages<span style="color:#f92672">.</span>append(<span style="color:#e6db74">&#34;ASSISTANT:&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>join(messages)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_post_process</span>(self, text: str) <span style="color:#f92672">-&gt;</span> str:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> text<span style="color:#f92672">.</span>strip()
+</span></span></code></pre></div><h2 id="cli_chatpy"><code>cli_chat.py</code><a hidden class="anchor" aria-hidden="true" href="#cli_chatpy">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># cli_chat.py</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> argparse
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> chat_core <span style="color:#f92672">import</span> ChatService
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> infra <span style="color:#f92672">import</span> DummyModelClient, InMemoryHistoryRepo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 为了简单，这里用单例</span>
+</span></span><span style="display:flex;"><span>_model_client <span style="color:#f92672">=</span> DummyModelClient()
+</span></span><span style="display:flex;"><span>_history_repo <span style="color:#f92672">=</span> InMemoryHistoryRepo()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    parser <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser()
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--user-id&#34;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--chat-id&#34;</span>, type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--message&#34;</span>, type<span style="color:#f92672">=</span>str, required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    service <span style="color:#f92672">=</span> ChatService(_model_client, _history_repo)
+</span></span><span style="display:flex;"><span>    reply <span style="color:#f92672">=</span> service<span style="color:#f92672">.</span>generate_reply(args<span style="color:#f92672">.</span>user_id, args<span style="color:#f92672">.</span>chat_id, args<span style="color:#f92672">.</span>message)
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;AI:&#34;</span>, reply)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    main()
+</span></span></code></pre></div><p>运行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>python cli_chat.py --message <span style="color:#e6db74">&#34;你好，我有点好奇六边形架构是啥？&#34;</span>
+</span></span></code></pre></div><p>你会看到类似输出：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>AI: 【假模型回复】你好，我有点好奇六边形架构是啥？
+</span></span></code></pre></div><p>虽然模型是假的，但<strong>架构是真实的</strong>：你已经把“核心逻辑”和“调用方式”分开了。</p>
+<hr>
+<h1 id="五解释与原理为什么要这么搞有什么替代方案">五、解释与原理：为什么要这么搞？有什么替代方案？<a hidden class="anchor" aria-hidden="true" href="#五解释与原理为什么要这么搞有什么替代方案">#</a></h1>
+<h2 id="为什么先写核心逻辑更靠谱">为什么“先写核心逻辑”更靠谱？<a hidden class="anchor" aria-hidden="true" href="#为什么先写核心逻辑更靠谱">#</a></h2>
+<ol>
+<li>
+<p><strong>可测试性强</strong></p>
+<ul>
+<li>不需要起 HTTP 服务、不需要数据库，就能单元测试核心逻辑。</li>
+<li>TDD / 单元测试更容易落地。</li>
+</ul>
+</li>
+<li>
+<p><strong>可复用性高</strong></p>
+<ul>
+<li>一套 ChatService，可以被 HTTP、CLI、WebSocket、公有云函数复用。</li>
+</ul>
+</li>
+<li>
+<p><strong>降低耦合，降低重构成本</strong></p>
+<ul>
+<li>换模型、加新策略，不动 API 层；</li>
+<li>换框架（FastAPI 换成 Django），不动核心逻辑。</li>
+</ul>
+</li>
+<li>
+<p><strong>团队协作更清晰</strong></p>
+<ul>
+<li>有人专注领域逻辑，有人专注 API 与集成，更容易分工。</li>
+</ul>
+</li>
+</ol>
+<h2 id="替代方案--其他流派">替代方案 / 其他流派？<a hidden class="anchor" aria-hidden="true" href="#替代方案--其他流派">#</a></h2>
+<ul>
+<li>
+<p><strong>简单小项目</strong>：有人会说“直接写在路由里就完了”。</p>
+<ul>
+<li>对于<strong>一次性小脚本 / demo</strong>，确实可以这么干。</li>
+<li>但只要你预感这个功能以后会复杂、有演进，就该一开始就分层。</li>
+</ul>
+</li>
+<li>
+<p><strong>重框架驱动开发</strong>：例如“所有逻辑都是 Django View + ORM”。</p>
+<ul>
+<li>好处：上手快、写 CRUD 很爽。</li>
+<li>坏处：逻辑被框架锁死，想抽取纯逻辑很费劲。</li>
+</ul>
+</li>
+</ul>
+<p>“先核心后接口”的做法，更偏向<strong>长期投资</strong>，不一定是最“快写完 demo”的，但通常是<strong>最能稳住中长期复杂度</strong>的。</p>
+<hr>
+<h1 id="六常见问题与注意事项">六、常见问题与注意事项<a hidden class="anchor" aria-hidden="true" href="#六常见问题与注意事项">#</a></h1>
+<ol>
+<li>
+<p><strong>Q：会不会分层分过头，写一堆 class，显得很重？</strong></p>
+<ul>
+<li>
+<p>建议：从<strong>最小可拆分单元</strong>开始：</p>
+<ul>
+<li>先把“模型调用+prompt 构造+后处理”抽成一个类 / 模块；</li>
+<li>日后再慢慢把存储、配置、日志等抽出来。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Q：刚入行同事看不懂这种结构怎么办？</strong></p>
+<ul>
+<li>
+<p>可以在代码里写一点注释：</p>
+<ul>
+<li><code># 核心业务逻辑</code></li>
+<li><code># HTTP 适配层</code></li>
+</ul>
+</li>
+<li>
+<p>或在 README 里画一个简单架构图（内圈是 ChatService，外圈是 API/CLI）。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Q：这样会不会影响性能？</strong></p>
+<ul>
+<li>分层本身几乎不带来明显性能损失（多了一两个函数调用而已）。</li>
+<li>真正的性能瓶颈多半在 I/O、网络、模型调用上。</li>
+</ul>
+</li>
+<li>
+<p><strong>Q：安全 / 权限控制放在哪一层？</strong></p>
+<ul>
+<li><strong>认证 / 鉴权</strong>通常放在 API / Application 层；</li>
+<li>领域层只在“权限已经被确认”的前提下工作。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="七最佳实践与建议">七、最佳实践与建议<a hidden class="anchor" aria-hidden="true" href="#七最佳实践与建议">#</a></h1>
+<p>给你几点可以直接带走的 checklist：</p>
+<ol>
+<li>
+<p><strong>新功能开发时：先问自己两个问题</strong></p>
+<ul>
+<li>“如果没有 HTTP，这个功能能不能作为一个纯 Python 函数存在？”</li>
+<li>“如果要从命令行调用这功能，我希望的接口长什么样？”</li>
+</ul>
+</li>
+<li>
+<p><strong>写路由前，先写核心函数 / 核心类</strong></p>
+<ul>
+<li>比如 <code>ChatService.generate_reply(...)</code></li>
+<li>API 只负责把 HTTP 参数转换成这个函数的参数。</li>
+</ul>
+</li>
+<li>
+<p><strong>任何时候都警惕“巨型路由函数”</strong></p>
+<ul>
+<li>一旦你发现：路由里有复杂的 if/else、业务判断、模型调用，那就说明该抽出来了。</li>
+</ul>
+</li>
+<li>
+<p><strong>强迫自己写一个 CLI 或小脚本</strong></p>
+<ul>
+<li>让你从“框架思维”切换到“库思维 / 领域思维”。</li>
+</ul>
+</li>
+<li>
+<p><strong>记一句话：</strong></p>
+<blockquote>
+<p>“接口是门面，核心逻辑是房子本身。
+门面可以重刷，房子结构一旦烂掉，很难重建。”</p>
+</blockquote>
+</li>
+</ol>
+<hr>
+<h1 id="八小结--结论从写接口到写核心的思维升级">八、小结 / 结论：从“写接口”到“写核心”的思维升级<a hidden class="anchor" aria-hidden="true" href="#八小结--结论从写接口到写核心的思维升级">#</a></h1>
+<p>本篇我们做了这些事：</p>
+<ul>
+<li>
+<p>从一个真实场景（AI 聊天功能），反思<strong>为什么我们总是先写接口</strong>。</p>
+</li>
+<li>
+<p>串起来了：</p>
+<ul>
+<li>关注点分离、单一职责原则</li>
+<li>六边形架构 / Clean Architecture</li>
+<li>DDD、Unix 哲学</li>
+</ul>
+</li>
+<li>
+<p>用一个完整的例子展示了：</p>
+<ul>
+<li>核心 <code>ChatService</code></li>
+<li>CLI 适配器</li>
+<li>HTTP API 适配器</li>
+</ul>
+</li>
+</ul>
+<p><strong>下一步你可以做的事情：</strong></p>
+<ul>
+<li>把你现有项目里“又大又乱的路由函数”挑一个出来；</li>
+<li>按文中示例，把“模型调用 + 业务判断”抽成一个 <code>XXXService</code>；</li>
+<li>尝试写一个 CLI 入口直接调用这个 Service，验证你已经分离了核心与接口。</li>
+</ul>
+<p>这就是你从“普通 CRUD 后端”向“懂架构的工程师”迈出的一步。</p>
+<hr>
+<h1 id="九参考与延伸阅读">九、参考与延伸阅读<a hidden class="anchor" aria-hidden="true" href="#九参考与延伸阅读">#</a></h1>
+<blockquote>
+<p><em>以下是推荐方向，你可以按关键字搜索对应资料：</em></p>
+</blockquote>
+<ul>
+<li>
+<p>Edsger Dijkstra – <em>Separation of Concerns</em></p>
+</li>
+<li>
+<p>Robert C. Martin – <em>Clean Architecture</em> / <em>Agile Software Development, Principles, Patterns, and Practices</em></p>
+</li>
+<li>
+<p>Alistair Cockburn – <em>Hexagonal Architecture (Ports &amp; Adapters)</em></p>
+</li>
+<li>
+<p>Eric Evans – <em>Domain-Driven Design: Tackling Complexity in the Heart of Software</em></p>
+</li>
+<li>
+<p>“Unix Philosophy” 相关文章：</p>
+<ul>
+<li>“Do one thing and do it well”</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1 id="十元信息meta-信息">十、元信息（Meta 信息）<a hidden class="anchor" aria-hidden="true" href="#十元信息meta-信息">#</a></h1>
+<ul>
+<li>
+<p><strong>预计阅读时长</strong>：10–15 分钟</p>
+</li>
+<li>
+<p><strong>标签（Tags）</strong>：</p>
+<ul>
+<li>Python 后端</li>
+<li>架构设计</li>
+<li>六边形架构</li>
+<li>Clean Architecture</li>
+<li>DDD</li>
+<li>AI 应用开发</li>
+</ul>
+</li>
+<li>
+<p><strong>SEO 关键词（可选）</strong>：</p>
+<ul>
+<li>Python 核心业务逻辑</li>
+<li>六边形架构示例</li>
+<li>Clean Architecture 实战</li>
+<li>FastAPI 分层设计</li>
+<li>AI 聊天服务架构</li>
+</ul>
+</li>
+<li>
+<p><strong>元描述（Meta Description）</strong>：</p>
+<blockquote>
+<p>本文面向 Python 后端与 AI 应用开发者，讲解如何在实现新功能时优先设计核心业务逻辑，再通过六边形架构与 Clean Architecture 的思想，将其暴露为 HTTP API 或 CLI 工具，帮助你从“写接口的工程师”成长为“懂架构的工程师”。</p>
+</blockquote>
+</li>
+</ul>
+<hr>
+<h1 id="十一行动号召cta">十一、行动号召（CTA）<a hidden class="anchor" aria-hidden="true" href="#十一行动号召cta">#</a></h1>
+<ul>
+<li>
+<p>✍️ <strong>试一试</strong>：
+选你当前项目中的一个接口，把核心逻辑抽出来做成一个 <code>Service</code> 类，再补一个 CLI 调用它。</p>
+</li>
+<li>
+<p>🧩 <strong>扩展练习</strong>：
+在这个基础上，再加一个“定时任务”的入口，让同一套核心逻辑支持：API + CLI + 定时任务。</p>
+</li>
+<li>
+<p>💬 <strong>交流与反馈</strong>：
+如果你愿意，可以把你重构前后的代码结构（目录或伪代码）发给我，我可以帮你一起看看还能怎么优化，顺便帮你打磨成一篇对外可发的技术分享或博客。</p>
+</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/jeanblog/posts/python/%E5%88%AB%E8%AE%A9pydantic%E5%8D%A0%E9%A2%86%E4%BD%A0%E7%9A%84%E6%95%B4%E4%B8%AA%E9%A1%B9%E7%9B%AE%E8%81%8A%E8%81%8Aapi%E6%A0%A1%E9%AA%8Cdomain%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BE%B9%E7%95%8C/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>别让Pydantic占领你的整个项目:聊聊API校验,Domain模型和数据库之间的边界</span>
+  </a>
+  <a class="next" href="http://localhost:1313/jeanblog/posts/api%E6%A0%87%E5%87%86/">
+    <span class="title">Next »</span>
+    <br>
+    <span>api标准</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API on x"
+            href="https://x.com/intent/tweet/?text=%e4%bb%8e%e5%86%99%e8%b7%af%e7%94%b1%e5%88%b0%e5%86%99%22%e5%a4%a7%e8%84%91%22%3aPython%e5%b7%a5%e7%a8%8b%e5%b8%88%e5%a6%82%e4%bd%95%e5%85%88%e6%90%9e%e5%ae%9a%e6%a0%b8%e5%bf%83%e9%80%bb%e8%be%91%2c%e5%86%8d%e8%80%83%e8%99%91API&amp;url=http%3a%2f%2flocalhost%3a1313%2fjeanblog%2fposts%2fpython%2f%25E4%25BB%258E%25E5%2586%2599%25E8%25B7%25AF%25E7%2594%25B1%25E5%2588%25B0%25E5%2586%2599%25E5%25A4%25A7%25E8%2584%2591python%25E5%25B7%25A5%25E7%25A8%258B%25E5%25B8%2588%25E5%25A6%2582%25E4%25BD%2595%25E5%2585%2588%25E6%2590%259E%25E5%25AE%259A%25E6%25A0%25B8%25E5%25BF%2583%25E9%2580%25BB%25E8%25BE%2591%25E5%2586%258D%25E8%2580%2583%25E8%2599%2591api%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fjeanblog%2fposts%2fpython%2f%25E4%25BB%258E%25E5%2586%2599%25E8%25B7%25AF%25E7%2594%25B1%25E5%2588%25B0%25E5%2586%2599%25E5%25A4%25A7%25E8%2584%2591python%25E5%25B7%25A5%25E7%25A8%258B%25E5%25B8%2588%25E5%25A6%2582%25E4%25BD%2595%25E5%2585%2588%25E6%2590%259E%25E5%25AE%259A%25E6%25A0%25B8%25E5%25BF%2583%25E9%2580%25BB%25E8%25BE%2591%25E5%2586%258D%25E8%2580%2583%25E8%2599%2591api%2f&amp;title=%e4%bb%8e%e5%86%99%e8%b7%af%e7%94%b1%e5%88%b0%e5%86%99%22%e5%a4%a7%e8%84%91%22%3aPython%e5%b7%a5%e7%a8%8b%e5%b8%88%e5%a6%82%e4%bd%95%e5%85%88%e6%90%9e%e5%ae%9a%e6%a0%b8%e5%bf%83%e9%80%bb%e8%be%91%2c%e5%86%8d%e8%80%83%e8%99%91API&amp;summary=%e4%bb%8e%e5%86%99%e8%b7%af%e7%94%b1%e5%88%b0%e5%86%99%22%e5%a4%a7%e8%84%91%22%3aPython%e5%b7%a5%e7%a8%8b%e5%b8%88%e5%a6%82%e4%bd%95%e5%85%88%e6%90%9e%e5%ae%9a%e6%a0%b8%e5%bf%83%e9%80%bb%e8%be%91%2c%e5%86%8d%e8%80%83%e8%99%91API&amp;source=http%3a%2f%2flocalhost%3a1313%2fjeanblog%2fposts%2fpython%2f%25E4%25BB%258E%25E5%2586%2599%25E8%25B7%25AF%25E7%2594%25B1%25E5%2588%25B0%25E5%2586%2599%25E5%25A4%25A7%25E8%2584%2591python%25E5%25B7%25A5%25E7%25A8%258B%25E5%25B8%2588%25E5%25A6%2582%25E4%25BD%2595%25E5%2585%2588%25E6%2590%259E%25E5%25AE%259A%25E6%25A0%25B8%25E5%25BF%2583%25E9%2580%25BB%25E8%25BE%2591%25E5%2586%258D%25E8%2580%2583%25E8%2599%2591api%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fjeanblog%2fposts%2fpython%2f%25E4%25BB%258E%25E5%2586%2599%25E8%25B7%25AF%25E7%2594%25B1%25E5%2588%25B0%25E5%2586%2599%25E5%25A4%25A7%25E8%2584%2591python%25E5%25B7%25A5%25E7%25A8%258B%25E5%25B8%2588%25E5%25A6%2582%25E4%25BD%2595%25E5%2585%2588%25E6%2590%259E%25E5%25AE%259A%25E6%25A0%25B8%25E5%25BF%2583%25E9%2580%25BB%25E8%25BE%2591%25E5%2586%258D%25E8%2580%2583%25E8%2599%2591api%2f&title=%e4%bb%8e%e5%86%99%e8%b7%af%e7%94%b1%e5%88%b0%e5%86%99%22%e5%a4%a7%e8%84%91%22%3aPython%e5%b7%a5%e7%a8%8b%e5%b8%88%e5%a6%82%e4%bd%95%e5%85%88%e6%90%9e%e5%ae%9a%e6%a0%b8%e5%bf%83%e9%80%bb%e8%be%91%2c%e5%86%8d%e8%80%83%e8%99%91API">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fjeanblog%2fposts%2fpython%2f%25E4%25BB%258E%25E5%2586%2599%25E8%25B7%25AF%25E7%2594%25B1%25E5%2588%25B0%25E5%2586%2599%25E5%25A4%25A7%25E8%2584%2591python%25E5%25B7%25A5%25E7%25A8%258B%25E5%25B8%2588%25E5%25A6%2582%25E4%25BD%2595%25E5%2585%2588%25E6%2590%259E%25E5%25AE%259A%25E6%25A0%25B8%25E5%25BF%2583%25E9%2580%25BB%25E8%25BE%2591%25E5%2586%258D%25E8%2580%2583%25E8%2599%2591api%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%bb%8e%e5%86%99%e8%b7%af%e7%94%b1%e5%88%b0%e5%86%99%22%e5%a4%a7%e8%84%91%22%3aPython%e5%b7%a5%e7%a8%8b%e5%b8%88%e5%a6%82%e4%bd%95%e5%85%88%e6%90%9e%e5%ae%9a%e6%a0%b8%e5%bf%83%e9%80%bb%e8%be%91%2c%e5%86%8d%e8%80%83%e8%99%91API%20-%20http%3a%2f%2flocalhost%3a1313%2fjeanblog%2fposts%2fpython%2f%25E4%25BB%258E%25E5%2586%2599%25E8%25B7%25AF%25E7%2594%25B1%25E5%2588%25B0%25E5%2586%2599%25E5%25A4%25A7%25E8%2584%2591python%25E5%25B7%25A5%25E7%25A8%258B%25E5%25B8%2588%25E5%25A6%2582%25E4%25BD%2595%25E5%2585%2588%25E6%2590%259E%25E5%25AE%259A%25E6%25A0%25B8%25E5%25BF%2583%25E9%2580%25BB%25E8%25BE%2591%25E5%2586%258D%25E8%2580%2583%25E8%2599%2591api%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API on telegram"
+            href="https://telegram.me/share/url?text=%e4%bb%8e%e5%86%99%e8%b7%af%e7%94%b1%e5%88%b0%e5%86%99%22%e5%a4%a7%e8%84%91%22%3aPython%e5%b7%a5%e7%a8%8b%e5%b8%88%e5%a6%82%e4%bd%95%e5%85%88%e6%90%9e%e5%ae%9a%e6%a0%b8%e5%bf%83%e9%80%bb%e8%be%91%2c%e5%86%8d%e8%80%83%e8%99%91API&amp;url=http%3a%2f%2flocalhost%3a1313%2fjeanblog%2fposts%2fpython%2f%25E4%25BB%258E%25E5%2586%2599%25E8%25B7%25AF%25E7%2594%25B1%25E5%2588%25B0%25E5%2586%2599%25E5%25A4%25A7%25E8%2584%2591python%25E5%25B7%25A5%25E7%25A8%258B%25E5%25B8%2588%25E5%25A6%2582%25E4%25BD%2595%25E5%2585%2588%25E6%2590%259E%25E5%25AE%259A%25E6%25A0%25B8%25E5%25BF%2583%25E9%2580%25BB%25E8%25BE%2591%25E5%2586%258D%25E8%2580%2583%25E8%2599%2591api%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%bb%8e%e5%86%99%e8%b7%af%e7%94%b1%e5%88%b0%e5%86%99%22%e5%a4%a7%e8%84%91%22%3aPython%e5%b7%a5%e7%a8%8b%e5%b8%88%e5%a6%82%e4%bd%95%e5%85%88%e6%90%9e%e5%ae%9a%e6%a0%b8%e5%bf%83%e9%80%bb%e8%be%91%2c%e5%86%8d%e8%80%83%e8%99%91API&u=http%3a%2f%2flocalhost%3a1313%2fjeanblog%2fposts%2fpython%2f%25E4%25BB%258E%25E5%2586%2599%25E8%25B7%25AF%25E7%2594%25B1%25E5%2588%25B0%25E5%2586%2599%25E5%25A4%25A7%25E8%2584%2591python%25E5%25B7%25A5%25E7%25A8%258B%25E5%25B8%2588%25E5%25A6%2582%25E4%25BD%2595%25E5%2585%2588%25E6%2590%259E%25E5%25AE%259A%25E6%25A0%25B8%25E5%25BF%2583%25E9%2580%25BB%25E8%25BE%2591%25E5%2586%258D%25E8%2580%2583%25E8%2599%2591api%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2025 <a href="http://localhost:1313/jeanblog/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

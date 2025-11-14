@@ -135,10 +135,42 @@
                     <span>搜索</span>
                 </a>
             </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/linux/" title="Linux">
+                    <span>Linux</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/python/" title="Python">
+                    <span>Python</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/jeanblog/categories/thoughts/" title="随想">
+                    <span>随想</span>
+                </a>
+            </li>
         </ul>
     </nav>
 </header>
 <main class="main"> 
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">如何配置orm管理数据
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>🧱 从零到生产：如何优雅地设计 ORM 层管理（以 SQLAlchemy 为核心） 本文将带你从数据库表结构出发，构建一套高内聚、低耦合的 ORM 层架构。 目标：让你的 Flask / FastAPI 项目在数据访问上既简洁又稳健。
+一、为什么要重视 ORM 层设计？ 很多项目初期只是“先能跑”，直接把 SQL 写在控制器里，但很快就会出现：
+业务逻辑和 SQL 混在一起； 表关系复杂，维护困难； 想复用查询逻辑很麻烦； 迁移到别的框架（Flask → FastAPI）代价大。 ORM 层（Object Relational Mapping）是数据库与业务逻辑之间的 抽象桥梁， 一个好的 ORM 层能让你只关心对象，不用反复写 SQL。
+二、项目场景：招标信息数据系统 我们以一个真实业务为例： 爬取各网站的招标公告，保存为结构化数据，并生成统计看板。
+目标数据库实体 表名 功能 tender_info 公告基本信息 tender_attachments 公告及变更文件 tender_organization 招标机构与联系方式 tender_statistics 每日/月/年统计信息 三、ORM 层设计思路 🧩 分层原则 层级 作用 代码位置 Model 层 ORM 模型定义，对应数据库表结构 models.py Repository 层 封装 CRUD 逻辑（数据库操作） repository.py Service 层 业务逻辑层（聚合多个仓库逻辑） service.py API 层 控制器/路由接口 Flask/FastAPI 视图文件 这种分层让你做到：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-23 00:00:00 +0000 UTC'>October 23, 2025</span>&nbsp;·&nbsp;<span>4 min</span></footer>
+  <a class="entry-link" aria-label="post link to 如何配置orm管理数据" href="http://localhost:1313/jeanblog/posts/python/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEorm%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE/"></a>
+</article>
 
 <article class="post-entry"> 
   <header class="entry-header">
@@ -154,7 +186,7 @@ inet 172.26.209.37/20 记下 inet 后面的 IP（本例是 172.26.209.37），�
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-22 00:00:00 +0000 UTC'>October 22, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to WSL解决内网和windows不共享" href="http://localhost:1313/jeanblog/posts/wsl%E8%A7%A3%E5%86%B3%E5%86%85%E7%BD%91%E5%92%8Cwindows%E4%B8%8D%E5%85%B1%E4%BA%AB/"></a>
+  <a class="entry-link" aria-label="post link to WSL解决内网和windows不共享" href="http://localhost:1313/jeanblog/posts/linux/wsl%E8%A7%A3%E5%86%B3%E5%86%85%E7%BD%91%E5%92%8Cwindows%E4%B8%8D%E5%85%B1%E4%BA%AB/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -191,7 +223,7 @@ git init --bare my_project.git my_project.git 是 bare 仓库，不含工作区�
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-22 00:00:00 +0000 UTC'>October 22, 2025</span>&nbsp;·&nbsp;<span>2 min</span></footer>
-  <a class="entry-link" aria-label="post link to 局域网Git Bare" href="http://localhost:1313/jeanblog/posts/%E5%B1%80%E5%9F%9F%E7%BD%91git-bare/"></a>
+  <a class="entry-link" aria-label="post link to 局域网Git Bare" href="http://localhost:1313/jeanblog/posts/git-notes/%E5%B1%80%E5%9F%9F%E7%BD%91git-bare/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -210,7 +242,7 @@ bugfix/fix-login-redirect 流程同 feature 分支，完成后合并回 main。
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-20 00:00:00 +0000 UTC'>October 20, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to git分支管理方法" href="http://localhost:1313/jeanblog/posts/git%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95/"></a>
+  <a class="entry-link" aria-label="post link to git分支管理方法" href="http://localhost:1313/jeanblog/posts/git-notes/git%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -231,7 +263,7 @@ local	/home/gong/.repos/scrapy.git (fetch) local	/home/gong/.repos/scrapy.git (p
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-10-20 00:00:00 +0000 UTC'>October 20, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to 在本地使用git裸仓库实现开发环境和测试环境隔离" href="http://localhost:1313/jeanblog/posts/%E5%9C%A8%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8git%E8%A3%B8%E4%BB%93%E5%BA%93%E5%AE%9E%E7%8E%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB/"></a>
+  <a class="entry-link" aria-label="post link to 在本地使用git裸仓库实现开发环境和测试环境隔离" href="http://localhost:1313/jeanblog/posts/git-notes/%E5%9C%A8%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8git%E8%A3%B8%E4%BB%93%E5%BA%93%E5%AE%9E%E7%8E%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -264,7 +296,7 @@ TL;DR： 设置 json 格式日志并通过 OpenTelemetry 在每条日志里注�
 ...</p>
   </div>
   <footer class="entry-footer"><span title='2025-08-28 00:00:00 +0000 UTC'>August 28, 2025</span>&nbsp;·&nbsp;<span>3 min</span></footer>
-  <a class="entry-link" aria-label="post link to 结构化日志和追踪" href="http://localhost:1313/jeanblog/posts/%E7%BB%93%E6%9E%84%E5%8C%96%E6%97%A5%E5%BF%97%E5%92%8C%E8%BF%BD%E8%B8%AA/"></a>
+  <a class="entry-link" aria-label="post link to 结构化日志和追踪" href="http://localhost:1313/jeanblog/posts/python/%E7%BB%93%E6%9E%84%E5%8C%96%E6%97%A5%E5%BF%97%E5%92%8C%E8%BF%BD%E8%B8%AA/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -277,7 +309,7 @@ TL;DR： 设置 json 格式日志并通过 OpenTelemetry 在每条日志里注�
 探索 开源框架探索 flowise</p>
   </div>
   <footer class="entry-footer"><span title='2025-08-27 00:00:00 +0000 UTC'>August 27, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to 关于ai助手前端界面的新构建方案构思" href="http://localhost:1313/jeanblog/posts/%E5%85%B3%E4%BA%8Eai%E5%8A%A9%E6%89%8B%E5%89%8D%E7%AB%AF%E7%95%8C%E9%9D%A2%E7%9A%84%E6%96%B0%E6%9E%84%E5%BB%BA%E6%96%B9%E6%A1%88%E6%9E%84%E6%80%9D/"></a>
+  <a class="entry-link" aria-label="post link to 关于ai助手前端界面的新构建方案构思" href="http://localhost:1313/jeanblog/posts/thoughts/%E5%85%B3%E4%BA%8Eai%E5%8A%A9%E6%89%8B%E5%89%8D%E7%AB%AF%E7%95%8C%E9%9D%A2%E7%9A%84%E6%96%B0%E6%9E%84%E5%BB%BA%E6%96%B9%E6%A1%88%E6%9E%84%E6%80%9D/"></a>
 </article>
 
 <article class="post-entry"> 
@@ -293,32 +325,7 @@ TL;DR： 设置 json 格式日志并通过 OpenTelemetry 在每条日志里注�
 </p>
   </div>
   <footer class="entry-footer"><span title='2025-08-26 00:00:00 +0000 UTC'>August 26, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to mastering paper" href="http://localhost:1313/jeanblog/posts/mastering-paper/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
-    <h2 class="entry-hint-parent">如何创建mermaid图像并进行编辑
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>Introduction Mermaid是一个用于使用代码创建图像的框架,今天的博客,我们将会简单介绍如何在自己的服务器上安装相关的框架,并对代码进行渲染生成图像
-具体步骤 如何安装渲染框架 使用
-npm install -g @mermaid-js/mermaid-cli 就可以安装
-需要注意的是该框架使用的npm版本需要大于20,所以我们需要切换npm版本,推荐使用nvm管理npm的版本
-如果没有nvm的话,使用下列命令进行安装
-curl -o https://raw.githubusercontent.com/nvm-sh/nvim/v0.39.4/install.sh | bash 然后对shell进行重启
-然后使用
-nvm install 20 nvm use 20 nvm alias default 20 进行安装,并把默认npm切换为20
-可以使用
-node -v npm -v 确认版本
-如何进行渲染 将需要渲染的代码放置在以.mmd结尾的文件中
-然后使用
-mmdc -i diagrams/example.mmd -o images/example.svg 即可
-</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-08-26 00:00:00 +0000 UTC'>August 26, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to 如何创建mermaid图像并进行编辑" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BAmermaid%E5%9B%BE%E5%83%8F%E5%B9%B6%E8%BF%9B%E8%A1%8C%E7%BC%96%E8%BE%91/"></a>
+  <a class="entry-link" aria-label="post link to mastering paper" href="http://localhost:1313/jeanblog/posts/thoughts/mastering-paper/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">

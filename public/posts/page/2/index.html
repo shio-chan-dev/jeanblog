@@ -147,27 +147,6 @@
 
 <article class="post-entry"> 
   <header class="entry-header">
-    <h2 class="entry-hint-parent">在本地使用git裸仓库实现开发环境和测试环境隔离
-    </h2>
-  </header>
-  <div class="entry-content">
-    <p>在本地使用 Git 裸仓库实现开发环境和测试环境隔离 在全栈开发的过程中，我们常常遇到一个问题：开发环境和测试环境如何隔离？ 很多人第一反应是用 GitHub 或 GitLab 来托管代码，但如果项目涉及隐私，不方便放在公共仓库，那该怎么办呢？
-其实，Git 是分布式的，我们完全可以在 本地电脑上建立一个“裸仓库 (bare repo)”，当作“远程仓库”来用，从而实现 开发环境 → 测试环境 的代码迁移和同步。
-什么是裸仓库 (bare repository) 普通 Git 仓库（git init）包含 工作区 &#43; .git 元数据，可以直接编辑文件。 裸仓库（git init --bare）只有 Git 的版本信息，没有工作区，不能直接编辑文件，通常作为 远程仓库 来存储和同步代码。 简单理解：
-开发仓库：我在这里写代码。 裸仓库：我用来存放代码历史，作为远程同步点。 测试仓库：从裸仓库克隆出来，模拟运行环境。 步骤一：创建裸仓库 在本机某个目录（比如 ~/.repos）下创建裸仓库：
-mkdir -p ~/.repos cd ~/.repos git init --bare scrapy.git 这样你得到一个路径 ~/.repos/scrapy.git，它就是本地的远程仓库。
-步骤二：在开发仓库里添加远程 假设你的开发仓库在 ~/scrapy：
-cd ~/scrapy git remote add local ~/.repos/scrapy.git 检查一下远程是否添加成功：
-git remote -v 输出类似：
-local	/home/gong/.repos/scrapy.git (fetch) local	/home/gong/.repos/scrapy.git (push) 说明配置成功。
-...</p>
-  </div>
-  <footer class="entry-footer"><span title='2025-10-20 00:00:00 +0000 UTC'>October 20, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
-  <a class="entry-link" aria-label="post link to 在本地使用git裸仓库实现开发环境和测试环境隔离" href="http://localhost:1313/jeanblog/posts/%E5%9C%A8%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8git%E8%A3%B8%E4%BB%93%E5%BA%93%E5%AE%9E%E7%8E%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB/"></a>
-</article>
-
-<article class="post-entry"> 
-  <header class="entry-header">
     <h2 class="entry-hint-parent">如何使用和配置typescript环境
     </h2>
   </header>
@@ -203,6 +182,42 @@ mmdc -i diagrams/example.mmd -o images/example.svg 即可
   </div>
   <footer class="entry-footer"><span title='2025-08-26 00:00:00 +0000 UTC'>August 26, 2025</span>&nbsp;·&nbsp;<span>1 min</span></footer>
   <a class="entry-link" aria-label="post link to 如何创建mermaid图像并进行编辑" href="http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BAmermaid%E5%9B%BE%E5%83%8F%E5%B9%B6%E8%BF%9B%E8%A1%8C%E7%BC%96%E8%BE%91/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Python
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer"><span title='2025-11-12 00:00:00 +0000 UTC'>November 12, 2025</span>&nbsp;·&nbsp;<span>0 min</span></footer>
+  <a class="entry-link" aria-label="post link to Python" href="http://localhost:1313/jeanblog/posts/python/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">随想
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-31 00:00:00 +0000 UTC'>October 31, 2025</span>&nbsp;·&nbsp;<span>0 min</span></footer>
+  <a class="entry-link" aria-label="post link to 随想" href="http://localhost:1313/jeanblog/posts/thoughts/"></a>
+</article>
+
+<article class="post-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Linux
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p></p>
+  </div>
+  <footer class="entry-footer"><span title='2025-10-24 00:00:00 +0000 UTC'>October 24, 2025</span>&nbsp;·&nbsp;<span>0 min</span></footer>
+  <a class="entry-link" aria-label="post link to Linux" href="http://localhost:1313/jeanblog/posts/linux/"></a>
 </article>
 <footer class="page-footer">
   <nav class="pagination">
