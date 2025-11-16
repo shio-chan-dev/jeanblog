@@ -50,8 +50,8 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     weight = 40
 
   [[menu.main]]
-    identifier = "cat-thoughts"
-    name = "随想"
-    url = "/categories/thoughts/"
+    identifier = "cat-leetcode"
+    name = "leetcode"
+    url = "/categories/leetcode/"
     weight = 50
 
