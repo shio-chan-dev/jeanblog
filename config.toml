@@ -55,3 +55,9 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     url = "/categories/leetcode/"
     weight = 50
 
+  [[menu.main]]
+    identifier = "cat-git"
+    name = "Git"
+    url = "/categories/git-notes/"
+    weight = 60
+
