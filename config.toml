@@ -54,3 +54,9 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     name = "leetcode"
     url = "/categories/leetcode/"
     weight = 50
+
+  [[menu.main]]
+    identifier = "cat-frontend"
+    name = "Frontend"
+    url = "/categories/frontend/"
+    weight = 60
