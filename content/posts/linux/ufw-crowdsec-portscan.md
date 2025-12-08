@@ -1,6 +1,6 @@
 ---
 title: "用 UFW + CrowdSec，彻底阻止恶意端口扫描：从 Fail2ban 踩坑到终极解决方案"
-date: 2025-11-14T12:00:00+08:00
+date: 2025-11-22T12:00:00+08:00
 slug: ufw-crowdsec-portscan
 categories: ["Linux", "Security"]
 tags: ["CrowdSec", "UFW", "Fail2ban", "FRP", "端口扫描", "服务器安全"]
