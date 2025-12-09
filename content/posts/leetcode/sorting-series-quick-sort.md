@@ -1,7 +1,7 @@
 ---
 title: "排序专题（五）：快速排序——枢轴策略、尾递归优化与工程实战"
 subtitle: "ACERS 深入快排：随机化、三数取中、重复元素处理、混合策略"
-date: 2025-12-08
+date: 2025-12-05
 summary: "全面讲解快速排序的核心思想、枢轴选择、重复元素分区、尾递归与混合排序实践，附多语言实现与工程选型建议。"
 tags: ["sorting", "quick-sort", "algorithms", "divide-and-conquer", "partition"]
 categories: ["leetcode"]

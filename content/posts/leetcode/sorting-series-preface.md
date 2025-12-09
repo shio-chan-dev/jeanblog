@@ -1,7 +1,7 @@
 ---
 title: "排序专题序章：如何选算法——时间/空间/稳定性/场景速查"
 subtitle: "ACERS 框架解读 10 大排序算法的选型标准与工程落地"
-date: 2025-12-08
+date: 2025-12-01
 summary: "用 ACERS 模板快速梳理常见排序算法的适用场景、复杂度、稳定性与工程实现，附多语言可运行示例与选型清单。"
 tags: ["sorting", "algorithms", "engineering", "complexity"]
 categories: ["leetcode"]

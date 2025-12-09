@@ -1,7 +1,7 @@
 ---
 title: "Emmet-Vim 极速指南：用缩写爆写 HTML/CSS"
 subtitle: "10 分钟装好 emmet-vim，掌握高频快捷键与最佳实践"
-date: 2025-11-14
+date: 2025-12-08
 summary: "给 Vim/Neovim 用户的 Emmet 实战笔记：安装、常用映射、可运行示例、验证清单与常见坑，帮助你在写页面/组件时提升 3 倍速度。"
 tags: ["vim", "neovim", "emmet", "frontend", "productivity"]
 categories: ["frontend"]

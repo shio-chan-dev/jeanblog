@@ -1,6 +1,6 @@
 ---
 title: "Svelte 按钮配置全攻略：状态、样式与无障碍实践"
-date: 2025-11-11
+date: 2025-12-07
 summary: "教你在 Svelte 中构建可复用的按钮：动态类名、可选链/空值合并、安全取值、状态样式映射、无障碍支持、测试与常见陷阱。"
 tags: ["svelte", "frontend", "ui-components", "accessibility"]
 categories: ["frontend"]

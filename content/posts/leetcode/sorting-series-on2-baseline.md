@@ -1,7 +1,7 @@
 ---
 title: "排序专题（二）：冒泡、选择、插入——三种 O(n^2) 基线的对比与取舍"
 subtitle: "ACERS 拆解基础排序：何时选谁、如何优化、工程怎么用"
-date: 2025-12-08
+date: 2025-12-02
 summary: "用 ACERS 模板系统讲解冒泡/选择/插入排序的原理、稳定性、适用场景与工程示例，并给出多语言实现与选型建议。"
 tags: ["sorting", "algorithms", "bubble-sort", "selection-sort", "insertion-sort"]
 categories: ["leetcode"]

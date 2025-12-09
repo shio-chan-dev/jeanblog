@@ -1,7 +1,7 @@
 ---
 title: "排序专题（七）：非比较排序——计数、桶、基数的范围与位数之战"
 subtitle: "ACERS 拆解 O(n+k) 排序：何时可用、如何实现、工程取舍"
-date: 2025-12-08
+date: 2025-12-07
 summary: "讲清非比较排序的适用前提、时间/空间复杂度、工程实现细节与常见坑，附计数/桶/基数排序的多语言示例。"
 tags: ["sorting", "counting-sort", "bucket-sort", "radix-sort", "non-comparison"]
 categories: ["leetcode"]

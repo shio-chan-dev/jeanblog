@@ -1,7 +1,7 @@
 ---
 title: "排序专题（六）：堆排序——原地 O(n log n) 的稳健方案"
 subtitle: "ACERS 解读堆排序：建堆、下滤、top-k 与工程应用"
-date: 2025-12-08
+date: 2025-12-06
 summary: "讲解堆排序的原理、复杂度与工程场景，对比快排/归并的取舍，附多语言实现和 top-k 应用示例。"
 tags: ["sorting", "heap-sort", "algorithms", "heap", "priority-queue"]
 categories: ["leetcode"]
