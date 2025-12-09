@@ -1,7 +1,7 @@
 ---
 title: "排序专题（终篇）：选型实战——按规模、稳定性、内存与分布选择排序算法"
 subtitle: "ACERS 速查：从 O(n²) 到混合/非比较/外部排序的决策清单"
-date: 2025-11-21
+date: 2025-12-08
 summary: "以实战视角整理排序选型：给出规模/分布/稳定性/内存维度的决策表、工程场景示例、测试清单与常见坑，快速落地前七篇内容。"
 tags: ["sorting", "selection", "guide", "engineering"]
 categories: ["leetcode"]

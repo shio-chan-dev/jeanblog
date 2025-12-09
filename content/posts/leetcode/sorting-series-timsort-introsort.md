@@ -1,7 +1,7 @@
 ---
 title: "排序专题（八）：TimSort 与 Introsort——语言内置排序的工程范式"
 subtitle: "ACERS 解读混合排序：插排/归并的 TimSort 与 快排/堆/插排的 Introsort"
-date: 2025-11-21
+date: 2025-12-08
 summary: "拆解 Python/Java 默认的 TimSort 与 C++ std::sort 的 Introsort：触发条件、稳定性、复杂度与工程取舍，附伪实现骨架与选型建议。"
 tags: ["sorting", "timsort", "introsort", "hybrid-sort", "algorithms"]
 categories: ["leetcode"]

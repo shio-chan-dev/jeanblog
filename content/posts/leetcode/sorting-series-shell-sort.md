@@ -1,7 +1,7 @@
 ---
 title: "排序专题（三）：希尔排序——从插入到分组增量的效率跃迁"
 subtitle: "ACERS 讲透希尔排序：增量序列、复杂度、工程实践与多语言实现"
-date: 2025-11-21
+date: 2025-12-08
 summary: "深入解析希尔排序的原理、增量策略与工程用法，附多场景示例和 Python/C/C++/Go/Rust/JS 实现，帮助理解从插入到 O(n log^2 n) 的过渡。"
 tags: ["sorting", "shell-sort", "algorithms", "increment", "gap-sequence"]
 categories: ["leetcode"]

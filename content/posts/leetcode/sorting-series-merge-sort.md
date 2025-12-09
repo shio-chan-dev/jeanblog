@@ -1,7 +1,7 @@
 ---
 title: "排序专题（四）：归并排序——稳定分治与外部排序的首选"
 subtitle: "ACERS 拆解归并排序：自顶向下/自底向上、稳定性、外部排序与多语言实现"
-date: 2025-11-21
+date: 2025-12-08
 summary: "系统讲解归并排序的分治原理、稳定性、空间取舍与工程场景，附 Python/C/C++/Go/Rust/JS 实现、外部排序思路与选型建议。"
 tags: ["sorting", "merge-sort", "algorithms", "divide-and-conquer", "external-sort"]
 categories: ["leetcode"]
