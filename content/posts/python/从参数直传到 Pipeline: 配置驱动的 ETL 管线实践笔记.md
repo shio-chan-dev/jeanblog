@@ -1,5 +1,5 @@
 ---
-title: "从参数直传到 Pipeline：一次可复现、可观测的数据处理管线改造实践"
+title: "从参数直传到Pipeline: 一次可复现可观测的数据处理管线改造实践"
 date: 2025-12-10
 draft: false
 ---
