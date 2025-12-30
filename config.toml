@@ -32,31 +32,31 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     weight = 10
 
   [[menu.main]]
-    identifier = "search"
-    name = "搜索"
-    url = "/search/"
+    identifier = "dev"
+    name = "开发"
+    url = "/dev/"
     weight = 20
 
   [[menu.main]]
-    identifier = "cat-linux"
-    name = "Linux"
-    url = "/categories/linux/"
+    identifier = "alg"
+    name = "算法"
+    url = "/alg/"
     weight = 30
 
   [[menu.main]]
-    identifier = "cat-python"
-    name = "Python"
-    url = "/categories/python/"
+    identifier = "search"
+    name = "搜索"
+    url = "/search/"
     weight = 40
 
   [[menu.main]]
-    identifier = "cat-leetcode"
-    name = "leetcode"
-    url = "/categories/leetcode/"
+    identifier = "categories"
+    name = "分类"
+    url = "/categories/"
     weight = 50
 
   [[menu.main]]
-    identifier = "cat-frontend"
-    name = "Frontend"
-    url = "/categories/frontend/"
+    identifier = "tags"
+    name = "标签"
+    url = "/tags/"
     weight = 60
