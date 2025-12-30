@@ -5,6 +5,19 @@ theme = "PaperMod"
 
 pagination.pagerSize = 10
 
+defaultContentLanguage = "zh"
+defaultContentLanguageInSubdir = false
+
+[languages]
+  [languages.zh]
+    languageName = "中文"
+    languageCode = "zh-cn"
+    weight = 1
+  [languages.en]
+    languageName = "English"
+    languageCode = "en-us"
+    weight = 2
+
 [taxonomies]
   category = "categories"
   tag = "tags"
