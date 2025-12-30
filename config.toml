@@ -24,6 +24,14 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
   showCodeCopyButtons = true
   showAllPostsArchive = true
 
+  [[params.socialIcons]]
+    name = "github"
+    url = "https://github.com/JeanphiloGong"
+
+  [[params.socialIcons]]
+    name = "telegram"
+    url = "https://t.me/Jeanphilo"
+
 [menu]
   [[menu.main]]
     identifier = "archives"
