@@ -49,72 +49,72 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
   [[languages.zh.menu.main]]
     identifier = "archives"
     name = "归档"
-    url = "/archives/"
+    pageRef = "/archives"
     weight = 10
 
   [[languages.zh.menu.main]]
     identifier = "dev"
     name = "开发"
-    url = "/dev/"
+    pageRef = "/dev"
     weight = 20
 
   [[languages.zh.menu.main]]
     identifier = "alg"
     name = "算法"
-    url = "/alg/"
+    pageRef = "/alg"
     weight = 30
 
   [[languages.zh.menu.main]]
     identifier = "search"
     name = "搜索"
-    url = "/search/"
+    pageRef = "/search"
     weight = 40
 
   [[languages.zh.menu.main]]
     identifier = "categories"
     name = "分类"
-    url = "/categories/"
+    pageRef = "/categories"
     weight = 50
 
   [[languages.zh.menu.main]]
     identifier = "tags"
     name = "标签"
-    url = "/tags/"
+    pageRef = "/tags"
     weight = 60
 
 [languages.en.menu]
   [[languages.en.menu.main]]
     identifier = "archives"
     name = "Archives"
-    url = "/en/archives/"
+    pageRef = "/archives"
     weight = 10
 
   [[languages.en.menu.main]]
     identifier = "dev"
     name = "Dev"
-    url = "/en/dev/"
+    pageRef = "/dev"
     weight = 20
 
   [[languages.en.menu.main]]
     identifier = "alg"
     name = "Algorithms"
-    url = "/en/alg/"
+    pageRef = "/alg"
     weight = 30
 
   [[languages.en.menu.main]]
     identifier = "search"
     name = "Search"
-    url = "/en/search/"
+    pageRef = "/search"
     weight = 40
 
   [[languages.en.menu.main]]
     identifier = "categories"
     name = "Categories"
-    url = "/en/categories/"
+    pageRef = "/categories"
     weight = 50
 
   [[languages.en.menu.main]]
     identifier = "tags"
     name = "Tags"
-    url = "/en/tags/"
+    pageRef = "/tags"
     weight = 60
