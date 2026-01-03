@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>连续1子串计数的刷题笔记与工程应用全解析 | Jeanphilo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="连续1子串计数的刷题笔记与工程应用全解析
+副标题 / 摘要
+本文从一道 LeetCode 算法题出发，深入解析“连续 1 子串计数算法”的原理，并展示其在真实工程中的多个典型应用场景（可运行示例附带）。适合希望从刷题过渡到工程能力提升的开发者。
+
+目标读者
+
+正在刷 LeetCode / 准备面试的同学
+想提升代码工程能力的开发者
+数据分析、系统监控、机器学习方向工程师
+需要分析连续事件序列的人（如日志分析、活跃度计算）
+
+
+背景 / 动机：为什么这题值得写一篇博客？
+很多人刷到这题，会以为它只是简单的数学推导：
+
+连续 1 的长度是 n
+贡献子串数 = n(n&#43;1)/2
+
+但实际上：
+
+连续事件统计是工程中极为常见的子任务
+日志监控、网络请求分析、图像处理、用户活跃度等都依赖它
+算法题是简化后的版本，工程中往往是流式数据、实时分析
+
+因此，把算法题的思想提炼出来，能直接提升工程能力。
+
+核心概念
+1. 连续段（Run）
+在一个 0/1 序列中，连续的 1 或 0 构成一个 &ldquo;run&rdquo;。
+例：
+11100111
+有两个长度为 3 和 3 的 1-run。
+2. 子串贡献公式
+连续 1 长度 = n
+所有只含 1 的子串数：
+[
+1 &#43; 2 &#43; &hellip; &#43; n = \frac{n(n&#43;1)}{2}
+]">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/alg/leetcode/count-consecutive-ones-substrings-notes/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/alg/leetcode/count-consecutive-ones-substrings-notes/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/alg/leetcode/count-consecutive-ones-substrings-notes/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="连续1子串计数的刷题笔记与工程应用全解析">
+  <meta property="og:description" content="连续1子串计数的刷题笔记与工程应用全解析 副标题 / 摘要 本文从一道 LeetCode 算法题出发，深入解析“连续 1 子串计数算法”的原理，并展示其在真实工程中的多个典型应用场景（可运行示例附带）。适合希望从刷题过渡到工程能力提升的开发者。
+目标读者 正在刷 LeetCode / 准备面试的同学 想提升代码工程能力的开发者 数据分析、系统监控、机器学习方向工程师 需要分析连续事件序列的人（如日志分析、活跃度计算） 背景 / 动机：为什么这题值得写一篇博客？ 很多人刷到这题，会以为它只是简单的数学推导：
+连续 1 的长度是 n 贡献子串数 = n(n&#43;1)/2
+但实际上：
+连续事件统计是工程中极为常见的子任务 日志监控、网络请求分析、图像处理、用户活跃度等都依赖它 算法题是简化后的版本，工程中往往是流式数据、实时分析 因此，把算法题的思想提炼出来，能直接提升工程能力。
+核心概念 1. 连续段（Run） 在一个 0/1 序列中，连续的 1 或 0 构成一个 “run”。
+例：
+11100111 有两个长度为 3 和 3 的 1-run。
+2. 子串贡献公式 连续 1 长度 = n 所有只含 1 的子串数：
+[ 1 &#43; 2 &#43; … &#43; n = \frac{n(n&#43;1)}{2} ]">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="alg">
+    <meta property="article:published_time" content="2025-11-16T22:58:57+08:00">
+    <meta property="article:modified_time" content="2025-11-16T22:58:57+08:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="连续1子串计数的刷题笔记与工程应用全解析">
+<meta name="twitter:description" content="连续1子串计数的刷题笔记与工程应用全解析
+副标题 / 摘要
+本文从一道 LeetCode 算法题出发，深入解析“连续 1 子串计数算法”的原理，并展示其在真实工程中的多个典型应用场景（可运行示例附带）。适合希望从刷题过渡到工程能力提升的开发者。
+
+目标读者
+
+正在刷 LeetCode / 准备面试的同学
+想提升代码工程能力的开发者
+数据分析、系统监控、机器学习方向工程师
+需要分析连续事件序列的人（如日志分析、活跃度计算）
+
+
+背景 / 动机：为什么这题值得写一篇博客？
+很多人刷到这题，会以为它只是简单的数学推导：
+
+连续 1 的长度是 n
+贡献子串数 = n(n&#43;1)/2
+
+但实际上：
+
+连续事件统计是工程中极为常见的子任务
+日志监控、网络请求分析、图像处理、用户活跃度等都依赖它
+算法题是简化后的版本，工程中往往是流式数据、实时分析
+
+因此，把算法题的思想提炼出来，能直接提升工程能力。
+
+核心概念
+1. 连续段（Run）
+在一个 0/1 序列中，连续的 1 或 0 构成一个 &ldquo;run&rdquo;。
+例：
+11100111
+有两个长度为 3 和 3 的 1-run。
+2. 子串贡献公式
+连续 1 长度 = n
+所有只含 1 的子串数：
+[
+1 &#43; 2 &#43; &hellip; &#43; n = \frac{n(n&#43;1)}{2}
+]">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "算法",
+      "item": "http://localhost:1313/alg/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "leetcode",
+      "item": "http://localhost:1313/alg/leetcode/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "连续1子串计数的刷题笔记与工程应用全解析",
+      "item": "http://localhost:1313/alg/leetcode/count-consecutive-ones-substrings-notes/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "连续1子串计数的刷题笔记与工程应用全解析",
+  "name": "连续1子串计数的刷题笔记与工程应用全解析",
+  "description": "连续1子串计数的刷题笔记与工程应用全解析 副标题 / 摘要 本文从一道 LeetCode 算法题出发，深入解析“连续 1 子串计数算法”的原理，并展示其在真实工程中的多个典型应用场景（可运行示例附带）。适合希望从刷题过渡到工程能力提升的开发者。\n目标读者 正在刷 LeetCode / 准备面试的同学 想提升代码工程能力的开发者 数据分析、系统监控、机器学习方向工程师 需要分析连续事件序列的人（如日志分析、活跃度计算） 背景 / 动机：为什么这题值得写一篇博客？ 很多人刷到这题，会以为它只是简单的数学推导：\n连续 1 的长度是 n 贡献子串数 = n(n+1)/2\n但实际上：\n连续事件统计是工程中极为常见的子任务 日志监控、网络请求分析、图像处理、用户活跃度等都依赖它 算法题是简化后的版本，工程中往往是流式数据、实时分析 因此，把算法题的思想提炼出来，能直接提升工程能力。\n核心概念 1. 连续段（Run） 在一个 0/1 序列中，连续的 1 或 0 构成一个 \u0026ldquo;run\u0026rdquo;。\n例：\n11100111 有两个长度为 3 和 3 的 1-run。\n2. 子串贡献公式 连续 1 长度 = n 所有只含 1 的子串数：\n[ 1 + 2 + \u0026hellip; + n = \\frac{n(n+1)}{2} ]\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "连续1子串计数的刷题笔记与工程应用全解析 副标题 / 摘要 本文从一道 LeetCode 算法题出发，深入解析“连续 1 子串计数算法”的原理，并展示其在真实工程中的多个典型应用场景（可运行示例附带）。适合希望从刷题过渡到工程能力提升的开发者。\n目标读者 正在刷 LeetCode / 准备面试的同学 想提升代码工程能力的开发者 数据分析、系统监控、机器学习方向工程师 需要分析连续事件序列的人（如日志分析、活跃度计算） 背景 / 动机：为什么这题值得写一篇博客？ 很多人刷到这题，会以为它只是简单的数学推导：\n连续 1 的长度是 n 贡献子串数 = n(n+1)/2\n但实际上：\n连续事件统计是工程中极为常见的子任务 日志监控、网络请求分析、图像处理、用户活跃度等都依赖它 算法题是简化后的版本，工程中往往是流式数据、实时分析 因此，把算法题的思想提炼出来，能直接提升工程能力。\n核心概念 1. 连续段（Run） 在一个 0/1 序列中，连续的 1 或 0 构成一个 “run”。\n例：\n11100111 有两个长度为 3 和 3 的 1-run。\n2. 子串贡献公式 连续 1 长度 = n 所有只含 1 的子串数：\n[ 1 + 2 + … + n = \\frac{n(n+1)}{2} ]\n这是全文最核心的数学结构。\n3. 在线统计（Online algorithm） 无需先找到所有连续段，而是边遍历边计算贡献。\n实践指南 / 步骤 算法步骤 遍历字符串\n使用 last0 记录最近出现的 '0'\n对每个 '1'：\n它作为结尾的合法子串数量 = i - last0 用 long long 防止溢出\n最后再取模\n可运行示例（题解代码） class Solution { public: int numSub(string s) { constexpr long long MOD = 1'000'000'007; long long ans = 0; int last0 = -1; for (int i = 0; i \u003c (int)s.size(); i++) { if (s[i] == '0') { last0 = i; } else { ans += i - last0; ans %= MOD; } } return (int)ans; } }; 解释与原理：为什么这样做？ 1. 为什么使用 long long？ 因为最极端情况：\n111111...(10 万次) 子串数接近：\n[ 5 \\times 10^9 \u003e 2^{31}-1 ]\nint 会溢出，提前模也救不回来。\n2. 为什么是 i - last0？ 以 i 为结尾的只含 1 的区间为：\n(last0+1, i) (last0+2, i) ... (i, i) 数量 = i - last0\n实际工程应用场景 + 实现示例 这部分是文章的重头戏，将算法与真实世界场景绑定。\n场景一：网络请求稳定性分析（SLA 监控） 背景 日志中记录每分钟请求是否成功：\n1 = 成功 0 = 失败 你要统计：\n整个期间内连续成功请求的总影响力（成功越连续越稳定）\n实现代码（C++） long long countSuccessStreaks(const vector\u003cint\u003e\u0026 log) { long long total = 0; int lastFail = -1; for (int i = 0; i \u003c log.size(); i++) { if (log[i] == 0) lastFail = i; else total += i - lastFail; } return total; } 用途 服务稳定性评分 降级/报警依据 部署质量监控 场景二：用户活跃天数分析（Growth/运营必备） 背景 每天是否打开 App：\n1 = 打开 0 = 未打开 连续活跃天数越长 → 用户粘性越强。\n代码示例（Python） def active_score(days): last_zero = -1 score = 0 for i, x in enumerate(days): if x == 0: last_zero = i else: score += i - last_zero return score 应用 活跃度评分 连续签到奖励 用户流失预测特征 场景三：图像处理（像素连续段长度） 在 1D 像素行中：\n1 = 高亮 0 = 背景 统计亮度连通段的贡献，用于：\n边缘检测 OCR 笔画长度统计 轮廓分析 示例代码（C++） int sumOfBrightSegments(const vector\u003cint\u003e\u0026 row) { int last0 = -1; long long sum = 0; for (int i = 0; i \u003c row.size(); i++) { if (row[i] == 0) last0 = i; else sum += i - last0; } return sum; } 场景四：DNA 序列分析（基因片段活跃区间） 基因表达序列：\n1 = 该基因在此位置被激活 0 = 未激活 统计活跃片段的数量和强度。\n示例（Python） def gene_active_score(seq): last_zero = -1 score = 0 for i, x in enumerate(seq): if x == 0: last_zero = i else: score += i - last_zero return score 场景五：故障诊断（硬盘健康监控 / 心跳监控） 系统每秒检测：\n1 = 正常 0 = 异常 你要计算连续正常区间（代表系统健康度）\n示例 long long healthScore(const vector\u003cint\u003e\u0026 heartbeat) { int lastAbnormal = -1; long long score = 0; for (int i = 0; i \u003c heartbeat.size(); i++) { if (heartbeat[i] == 0) lastAbnormal = i; else score += i - lastAbnormal; } return score; } 常见问题与注意事项 ❗ 1. 为什么不是用 n(n+1)/2？ 因为那需要先统计连续段，而本题可以 在线计算，速度更快。\n❗ 2. 为什么要用 long long？ 因为中间结果大于 2^31-1 会爆 int。\n❗ 3. 能否实时流式处理？ 是的，你的算法完全是 O(1) 空间、O(n) 单遍扫描，非常适合流式日志。\n❗ 4. 是否能用于浮点数或非二值？ 可以，只要先将数据转成 0/1（事件发生 / 未发生）。\n最佳实践与建议 使用 long long 避免溢出 对流式数据非常适用 可以作为机器学习特征（连续行为长度） 常用于探测系统稳定性与用户活跃度 “连续区间贡献统计”是一类非常常见的工程需求 小结 / 结论 本文通过一道经典算法题，扩展了以下能力：\n理解连续 1 子串计数的数学原理\n掌握在线 O(n) 的高效算法\n将刷题算法迁移到实际工程问题中：\nSLA 稳定性分析 用户活跃度特征 图像像素连通性 DNA 活跃片段 心跳/故障监控 刷题不是目的，把算法思想写进工程才是最终价值。\n参考与延伸阅读 LeetCode 1513 — Number of Substrings With Only 1s Run-Length Encoding（RLE）压缩算法 在线算法（Online Algorithm） 滑动窗口 / 前缀计数方法 Real-time Event Stream Analytics 元信息 阅读时长：12 分钟 标签：算法、工程实践、监控、数据分析 SEO 关键词：连续 1、子串计数、在线算法、系统监控、SLA、DNA 序列、活跃度分析 元描述：从 LeetCode 连续 1 子串问题出发，深入解析算法原理，并展示其在真实工程中的多个典型应用。 行动号召（CTA） 如果你觉得这篇文章有用：\n⭐ 收藏或点赞支持下我 💬 评论告诉我你最感兴趣的工程场景 🔔 关注我，后续我会写更多“算法 → 工程实践”的文章 ",
+  "wordCount" : "559",
+  "inLanguage": "zh",
+  "datePublished": "2025-11-16T22:58:57+08:00",
+  "dateModified": "2025-11-16T22:58:57+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/alg/leetcode/count-consecutive-ones-substrings-notes/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/en/" title="English"
+                                aria-label="English">En</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="文章归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/dev/" title="开发">
+                    <span>开发</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/alg/" title="算法">
+                    <span>算法</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>标签</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/alg/">算法</a>&nbsp;»&nbsp;<a href="http://localhost:1313/alg/leetcode/">leetcode</a></div>
+    <h1 class="post-title entry-hint-parent">
+      连续1子串计数的刷题笔记与工程应用全解析
+    </h1>
+    <div class="post-meta"><span title='2025-11-16 22:58:57 +0800 HKT'>2025年11月16日</span>&nbsp;·&nbsp;<span>3 分钟</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%bf%9e%e7%bb%ad1%e5%ad%90%e4%b8%b2%e8%ae%a1%e6%95%b0%e7%9a%84%e5%88%b7%e9%a2%98%e7%ac%94%e8%ae%b0%e4%b8%8e%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%85%a8%e8%a7%a3%e6%9e%90" aria-label="连续1子串计数的刷题笔记与工程应用全解析">连续1子串计数的刷题笔记与工程应用全解析</a><ul>
+                        
+                <li>
+                    <a href="#%e5%89%af%e6%a0%87%e9%a2%98--%e6%91%98%e8%a6%81" aria-label="副标题 / 摘要">副标题 / 摘要</a></li>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87%e8%af%bb%e8%80%85" aria-label="目标读者">目标读者</a></li>
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af--%e5%8a%a8%e6%9c%ba%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e9%a2%98%e5%80%bc%e5%be%97%e5%86%99%e4%b8%80%e7%af%87%e5%8d%9a%e5%ae%a2" aria-label="背景 / 动机：为什么这题值得写一篇博客？">背景 / 动机：为什么这题值得写一篇博客？</a></li>
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" aria-label="核心概念">核心概念</a><ul>
+                        
+                <li>
+                    <a href="#1-%e8%bf%9e%e7%bb%ad%e6%ae%b5run" aria-label="1. 连续段（Run）">1. 连续段（Run）</a></li>
+                <li>
+                    <a href="#2-%e5%ad%90%e4%b8%b2%e8%b4%a1%e7%8c%ae%e5%85%ac%e5%bc%8f" aria-label="2. 子串贡献公式">2. 子串贡献公式</a></li>
+                <li>
+                    <a href="#3-%e5%9c%a8%e7%ba%bf%e7%bb%9f%e8%ae%a1online-algorithm" aria-label="3. 在线统计（Online algorithm）">3. 在线统计（Online algorithm）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%9e%e8%b7%b5%e6%8c%87%e5%8d%97--%e6%ad%a5%e9%aa%a4" aria-label="实践指南 / 步骤">实践指南 / 步骤</a><ul>
+                        
+                <li>
+                    <a href="#%e7%ae%97%e6%b3%95%e6%ad%a5%e9%aa%a4" aria-label="算法步骤">算法步骤</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%8f%af%e8%bf%90%e8%a1%8c%e7%a4%ba%e4%be%8b%e9%a2%98%e8%a7%a3%e4%bb%a3%e7%a0%81" aria-label="可运行示例（题解代码）">可运行示例（题解代码）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%a7%a3%e9%87%8a%e4%b8%8e%e5%8e%9f%e7%90%86%e4%b8%ba%e4%bb%80%e4%b9%88%e8%bf%99%e6%a0%b7%e5%81%9a" aria-label="解释与原理：为什么这样做？">解释与原理：为什么这样做？</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#1-%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%bf%e7%94%a8-long-long" aria-label="1. 为什么使用 long long？">1. 为什么使用 long long？</a></li>
+                <li>
+                    <a href="#2-%e4%b8%ba%e4%bb%80%e4%b9%88%e6%98%af-i---last0" aria-label="2. 为什么是 i - last0？">2. 为什么是 i - last0？</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%9e%e9%99%85%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af--%e5%ae%9e%e7%8e%b0%e7%a4%ba%e4%be%8b" aria-label="实际工程应用场景 &#43; 实现示例">实际工程应用场景 + 实现示例</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af%e4%b8%80%e7%bd%91%e7%bb%9c%e8%af%b7%e6%b1%82%e7%a8%b3%e5%ae%9a%e6%80%a7%e5%88%86%e6%9e%90sla-%e7%9b%91%e6%8e%a7" aria-label="场景一：网络请求稳定性分析（SLA 监控）">场景一：网络请求稳定性分析（SLA 监控）</a><ul>
+                        
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af" aria-label="背景">背景</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e7%8e%b0%e4%bb%a3%e7%a0%81c" aria-label="实现代码（C&#43;&#43;）">实现代码（C++）</a></li>
+                <li>
+                    <a href="#%e7%94%a8%e9%80%94" aria-label="用途">用途</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af%e4%ba%8c%e7%94%a8%e6%88%b7%e6%b4%bb%e8%b7%83%e5%a4%a9%e6%95%b0%e5%88%86%e6%9e%90growth%e8%bf%90%e8%90%a5%e5%bf%85%e5%a4%87" aria-label="场景二：用户活跃天数分析（Growth/运营必备）">场景二：用户活跃天数分析（Growth/运营必备）</a><ul>
+                        
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af-1" aria-label="背景">背景</a></li>
+                <li>
+                    <a href="#%e4%bb%a3%e7%a0%81%e7%a4%ba%e4%be%8bpython" aria-label="代码示例（Python）">代码示例（Python）</a></li>
+                <li>
+                    <a href="#%e5%ba%94%e7%94%a8" aria-label="应用">应用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af%e4%b8%89%e5%9b%be%e5%83%8f%e5%a4%84%e7%90%86%e5%83%8f%e7%b4%a0%e8%bf%9e%e7%bb%ad%e6%ae%b5%e9%95%bf%e5%ba%a6" aria-label="场景三：图像处理（像素连续段长度）">场景三：图像处理（像素连续段长度）</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b%e4%bb%a3%e7%a0%81c" aria-label="示例代码（C&#43;&#43;）">示例代码（C++）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af%e5%9b%9bdna-%e5%ba%8f%e5%88%97%e5%88%86%e6%9e%90%e5%9f%ba%e5%9b%a0%e7%89%87%e6%ae%b5%e6%b4%bb%e8%b7%83%e5%8c%ba%e9%97%b4" aria-label="场景四：DNA 序列分析（基因片段活跃区间）">场景四：DNA 序列分析（基因片段活跃区间）</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8bpython" aria-label="示例（Python）">示例（Python）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af%e4%ba%94%e6%95%85%e9%9a%9c%e8%af%8a%e6%96%ad%e7%a1%ac%e7%9b%98%e5%81%a5%e5%ba%b7%e7%9b%91%e6%8e%a7--%e5%bf%83%e8%b7%b3%e7%9b%91%e6%8e%a7" aria-label="场景五：故障诊断（硬盘健康监控 / 心跳监控）">场景五：故障诊断（硬盘健康监控 / 心跳监控）</a><ul>
+                        
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b" aria-label="示例">示例</a></li></ul>
+                </li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="常见问题与注意事项">常见问题与注意事项</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#-1-%e4%b8%ba%e4%bb%80%e4%b9%88%e4%b8%8d%e6%98%af%e7%94%a8-nn12" aria-label="❗ 1. 为什么不是用 n(n&#43;1)/2？">❗ 1. 为什么不是用 n(n+1)/2？</a></li>
+                <li>
+                    <a href="#-2-%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e7%94%a8-long-long" aria-label="❗ 2. 为什么要用 long long？">❗ 2. 为什么要用 long long？</a></li>
+                <li>
+                    <a href="#-3-%e8%83%bd%e5%90%a6%e5%ae%9e%e6%97%b6%e6%b5%81%e5%bc%8f%e5%a4%84%e7%90%86" aria-label="❗ 3. 能否实时流式处理？">❗ 3. 能否实时流式处理？</a></li>
+                <li>
+                    <a href="#-4-%e6%98%af%e5%90%a6%e8%83%bd%e7%94%a8%e4%ba%8e%e6%b5%ae%e7%82%b9%e6%95%b0%e6%88%96%e9%9d%9e%e4%ba%8c%e5%80%bc" aria-label="❗ 4. 是否能用于浮点数或非二值？">❗ 4. 是否能用于浮点数或非二值？</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%bb%ba%e8%ae%ae" aria-label="最佳实践与建议">最佳实践与建议</a></li>
+                <li>
+                    <a href="#%e5%b0%8f%e7%bb%93--%e7%bb%93%e8%ae%ba" aria-label="小结 / 结论">小结 / 结论</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e4%b8%8e%e5%bb%b6%e4%bc%b8%e9%98%85%e8%af%bb" aria-label="参考与延伸阅读">参考与延伸阅读</a></li>
+                <li>
+                    <a href="#%e5%85%83%e4%bf%a1%e6%81%af" aria-label="元信息">元信息</a></li>
+                <li>
+                    <a href="#%e8%a1%8c%e5%8a%a8%e5%8f%b7%e5%8f%accta" aria-label="行动号召（CTA）">行动号召（CTA）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="连续1子串计数的刷题笔记与工程应用全解析"><strong>连续1子串计数的刷题笔记与工程应用全解析</strong><a hidden class="anchor" aria-hidden="true" href="#连续1子串计数的刷题笔记与工程应用全解析">#</a></h1>
+<h2 id="副标题--摘要"><strong>副标题 / 摘要</strong><a hidden class="anchor" aria-hidden="true" href="#副标题--摘要">#</a></h2>
+<p>本文从一道 LeetCode 算法题出发，深入解析“连续 1 子串计数算法”的原理，并展示其在真实工程中的多个典型应用场景（可运行示例附带）。适合希望从刷题过渡到工程能力提升的开发者。</p>
+<hr>
+<h2 id="目标读者"><strong>目标读者</strong><a hidden class="anchor" aria-hidden="true" href="#目标读者">#</a></h2>
+<ul>
+<li>正在刷 LeetCode / 准备面试的同学</li>
+<li>想提升代码工程能力的开发者</li>
+<li>数据分析、系统监控、机器学习方向工程师</li>
+<li>需要分析连续事件序列的人（如日志分析、活跃度计算）</li>
+</ul>
+<hr>
+<h2 id="背景--动机为什么这题值得写一篇博客"><strong>背景 / 动机：为什么这题值得写一篇博客？</strong><a hidden class="anchor" aria-hidden="true" href="#背景--动机为什么这题值得写一篇博客">#</a></h2>
+<p>很多人刷到这题，会以为它只是简单的数学推导：</p>
+<blockquote>
+<p>连续 1 的长度是 n
+贡献子串数 = n(n+1)/2</p>
+</blockquote>
+<p>但实际上：</p>
+<ul>
+<li><strong>连续事件统计是工程中极为常见的子任务</strong></li>
+<li>日志监控、网络请求分析、图像处理、用户活跃度等都依赖它</li>
+<li>算法题是简化后的版本，工程中往往是流式数据、实时分析</li>
+</ul>
+<p>因此，把算法题的思想提炼出来，能直接提升工程能力。</p>
+<hr>
+<h2 id="核心概念"><strong>核心概念</strong><a hidden class="anchor" aria-hidden="true" href="#核心概念">#</a></h2>
+<h3 id="1-连续段run"><strong>1. 连续段（Run）</strong><a hidden class="anchor" aria-hidden="true" href="#1-连续段run">#</a></h3>
+<p>在一个 0/1 序列中，连续的 1 或 0 构成一个 &ldquo;run&rdquo;。</p>
+<p>例：</p>
+<pre tabindex="0"><code>11100111
+</code></pre><p>有两个长度为 3 和 3 的 1-run。</p>
+<h3 id="2-子串贡献公式"><strong>2. 子串贡献公式</strong><a hidden class="anchor" aria-hidden="true" href="#2-子串贡献公式">#</a></h3>
+<p>连续 1 长度 = n
+所有只含 1 的子串数：</p>
+<p>[
+1 + 2 + &hellip; + n = \frac{n(n+1)}{2}
+]</p>
+<p>这是全文最核心的数学结构。</p>
+<h3 id="3-在线统计online-algorithm"><strong>3. 在线统计（Online algorithm）</strong><a hidden class="anchor" aria-hidden="true" href="#3-在线统计online-algorithm">#</a></h3>
+<p>无需先找到所有连续段，而是边遍历边计算贡献。</p>
+<hr>
+<h2 id="实践指南--步骤"><strong>实践指南 / 步骤</strong><a hidden class="anchor" aria-hidden="true" href="#实践指南--步骤">#</a></h2>
+<h3 id="算法步骤"><strong>算法步骤</strong><a hidden class="anchor" aria-hidden="true" href="#算法步骤">#</a></h3>
+<ol>
+<li>
+<p>遍历字符串</p>
+</li>
+<li>
+<p>使用 <code>last0</code> 记录最近出现的 <code>'0'</code></p>
+</li>
+<li>
+<p>对每个 <code>'1'</code>：</p>
+<ul>
+<li>它作为结尾的合法子串数量 = <code>i - last0</code></li>
+</ul>
+</li>
+<li>
+<p>用 <code>long long</code> 防止溢出</p>
+</li>
+<li>
+<p>最后再取模</p>
+</li>
+</ol>
+<hr>
+<h2 id="可运行示例题解代码"><strong>可运行示例（题解代码）</strong><a hidden class="anchor" aria-hidden="true" href="#可运行示例题解代码">#</a></h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Solution</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> numSub(string s) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">constexpr</span> <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> MOD <span style="color:#f92672">=</span> <span style="color:#ae81ff">1&#39;000&#39;000&#39;007</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> ans <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> last0 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> (<span style="color:#66d9ef">int</span>)s.size(); i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (s[i] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;0&#39;</span>) {
+</span></span><span style="display:flex;"><span>                last0 <span style="color:#f92672">=</span> i;
+</span></span><span style="display:flex;"><span>            } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                ans <span style="color:#f92672">+=</span> i <span style="color:#f92672">-</span> last0;
+</span></span><span style="display:flex;"><span>                ans <span style="color:#f92672">%=</span> MOD;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> (<span style="color:#66d9ef">int</span>)ans;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><hr>
+<h1 id="解释与原理为什么这样做"><strong>解释与原理：为什么这样做？</strong><a hidden class="anchor" aria-hidden="true" href="#解释与原理为什么这样做">#</a></h1>
+<h3 id="1-为什么使用-long-long"><strong>1. 为什么使用 long long？</strong><a hidden class="anchor" aria-hidden="true" href="#1-为什么使用-long-long">#</a></h3>
+<p>因为最极端情况：</p>
+<pre tabindex="0"><code>111111...(10 万次)
+</code></pre><p>子串数接近：</p>
+<p>[
+5 \times 10^9 &gt; 2^{31}-1
+]</p>
+<p><code>int</code> 会溢出，提前模也救不回来。</p>
+<h3 id="2-为什么是-i---last0"><strong>2. 为什么是 i - last0？</strong><a hidden class="anchor" aria-hidden="true" href="#2-为什么是-i---last0">#</a></h3>
+<p>以 <code>i</code> 为结尾的只含 1 的区间为：</p>
+<pre tabindex="0"><code>(last0+1, i)
+(last0+2, i)
+...
+(i, i)
+</code></pre><p>数量 = <strong>i - last0</strong></p>
+<hr>
+<h1 id="实际工程应用场景--实现示例"><strong>实际工程应用场景 + 实现示例</strong><a hidden class="anchor" aria-hidden="true" href="#实际工程应用场景--实现示例">#</a></h1>
+<p>这部分是文章的重头戏，将算法与真实世界场景绑定。</p>
+<hr>
+<h2 id="场景一网络请求稳定性分析sla-监控"><strong>场景一：网络请求稳定性分析（SLA 监控）</strong><a hidden class="anchor" aria-hidden="true" href="#场景一网络请求稳定性分析sla-监控">#</a></h2>
+<h3 id="背景">背景<a hidden class="anchor" aria-hidden="true" href="#背景">#</a></h3>
+<p>日志中记录每分钟请求是否成功：</p>
+<pre tabindex="0"><code>1 = 成功
+0 = 失败
+</code></pre><p>你要统计：</p>
+<blockquote>
+<p>整个期间内连续成功请求的总影响力（成功越连续越稳定）</p>
+</blockquote>
+<h3 id="实现代码c">实现代码（C++）<a hidden class="anchor" aria-hidden="true" href="#实现代码c">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">countSuccessStreaks</span>(<span style="color:#66d9ef">const</span> vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;&amp;</span> log) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> total <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> lastFail <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> log.size(); i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (log[i] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) lastFail <span style="color:#f92672">=</span> i;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> total <span style="color:#f92672">+=</span> i <span style="color:#f92672">-</span> lastFail;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> total;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="用途">用途<a hidden class="anchor" aria-hidden="true" href="#用途">#</a></h3>
+<ul>
+<li>服务稳定性评分</li>
+<li>降级/报警依据</li>
+<li>部署质量监控</li>
+</ul>
+<hr>
+<h2 id="场景二用户活跃天数分析growth运营必备"><strong>场景二：用户活跃天数分析（Growth/运营必备）</strong><a hidden class="anchor" aria-hidden="true" href="#场景二用户活跃天数分析growth运营必备">#</a></h2>
+<h3 id="背景-1">背景<a hidden class="anchor" aria-hidden="true" href="#背景-1">#</a></h3>
+<p>每天是否打开 App：</p>
+<pre tabindex="0"><code>1 = 打开
+0 = 未打开
+</code></pre><p>连续活跃天数越长 → 用户粘性越强。</p>
+<h3 id="代码示例python">代码示例（Python）<a hidden class="anchor" aria-hidden="true" href="#代码示例python">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">active_score</span>(days):
+</span></span><span style="display:flex;"><span>    last_zero <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    score <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i, x <span style="color:#f92672">in</span> enumerate(days):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            last_zero <span style="color:#f92672">=</span> i
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            score <span style="color:#f92672">+=</span> i <span style="color:#f92672">-</span> last_zero
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> score
+</span></span></code></pre></div><h3 id="应用">应用<a hidden class="anchor" aria-hidden="true" href="#应用">#</a></h3>
+<ul>
+<li>活跃度评分</li>
+<li>连续签到奖励</li>
+<li>用户流失预测特征</li>
+</ul>
+<hr>
+<h2 id="场景三图像处理像素连续段长度"><strong>场景三：图像处理（像素连续段长度）</strong><a hidden class="anchor" aria-hidden="true" href="#场景三图像处理像素连续段长度">#</a></h2>
+<p>在 1D 像素行中：</p>
+<pre tabindex="0"><code>1 = 高亮
+0 = 背景
+</code></pre><p>统计亮度连通段的贡献，用于：</p>
+<ul>
+<li>边缘检测</li>
+<li>OCR 笔画长度统计</li>
+<li>轮廓分析</li>
+</ul>
+<h3 id="示例代码c">示例代码（C++）<a hidden class="anchor" aria-hidden="true" href="#示例代码c">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sumOfBrightSegments</span>(<span style="color:#66d9ef">const</span> vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;&amp;</span> row) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> last0 <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> row.size(); i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (row[i] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) last0 <span style="color:#f92672">=</span> i;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> sum <span style="color:#f92672">+=</span> i <span style="color:#f92672">-</span> last0;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> sum;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h2 id="场景四dna-序列分析基因片段活跃区间"><strong>场景四：DNA 序列分析（基因片段活跃区间）</strong><a hidden class="anchor" aria-hidden="true" href="#场景四dna-序列分析基因片段活跃区间">#</a></h2>
+<p>基因表达序列：</p>
+<pre tabindex="0"><code>1 = 该基因在此位置被激活
+0 = 未激活
+</code></pre><p>统计活跃片段的数量和强度。</p>
+<h3 id="示例python">示例（Python）<a hidden class="anchor" aria-hidden="true" href="#示例python">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">gene_active_score</span>(seq):
+</span></span><span style="display:flex;"><span>    last_zero <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    score <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i, x <span style="color:#f92672">in</span> enumerate(seq):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>: last_zero <span style="color:#f92672">=</span> i
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>: score <span style="color:#f92672">+=</span> i <span style="color:#f92672">-</span> last_zero
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> score
+</span></span></code></pre></div><hr>
+<h2 id="场景五故障诊断硬盘健康监控--心跳监控"><strong>场景五：故障诊断（硬盘健康监控 / 心跳监控）</strong><a hidden class="anchor" aria-hidden="true" href="#场景五故障诊断硬盘健康监控--心跳监控">#</a></h2>
+<p>系统每秒检测：</p>
+<pre tabindex="0"><code>1 = 正常
+0 = 异常
+</code></pre><p>你要计算连续正常区间（代表系统健康度）</p>
+<h3 id="示例">示例<a hidden class="anchor" aria-hidden="true" href="#示例">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">healthScore</span>(<span style="color:#66d9ef">const</span> vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;&amp;</span> heartbeat) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> lastAbnormal <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> score <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> heartbeat.size(); i<span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (heartbeat[i] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) lastAbnormal <span style="color:#f92672">=</span> i;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> score <span style="color:#f92672">+=</span> i <span style="color:#f92672">-</span> lastAbnormal;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> score;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h1 id="常见问题与注意事项"><strong>常见问题与注意事项</strong><a hidden class="anchor" aria-hidden="true" href="#常见问题与注意事项">#</a></h1>
+<h3 id="-1-为什么不是用-nn12">❗ 1. 为什么不是用 n(n+1)/2？<a hidden class="anchor" aria-hidden="true" href="#-1-为什么不是用-nn12">#</a></h3>
+<p>因为那需要先统计连续段，而本题可以 <strong>在线计算</strong>，速度更快。</p>
+<h3 id="-2-为什么要用-long-long">❗ 2. 为什么要用 long long？<a hidden class="anchor" aria-hidden="true" href="#-2-为什么要用-long-long">#</a></h3>
+<p>因为中间结果大于 2^31-1 会爆 int。</p>
+<h3 id="-3-能否实时流式处理">❗ 3. 能否实时流式处理？<a hidden class="anchor" aria-hidden="true" href="#-3-能否实时流式处理">#</a></h3>
+<p>是的，你的算法完全是 O(1) 空间、O(n) 单遍扫描，非常适合流式日志。</p>
+<h3 id="-4-是否能用于浮点数或非二值">❗ 4. 是否能用于浮点数或非二值？<a hidden class="anchor" aria-hidden="true" href="#-4-是否能用于浮点数或非二值">#</a></h3>
+<p>可以，只要先将数据转成 0/1（事件发生 / 未发生）。</p>
+<hr>
+<h1 id="最佳实践与建议"><strong>最佳实践与建议</strong><a hidden class="anchor" aria-hidden="true" href="#最佳实践与建议">#</a></h1>
+<ul>
+<li>使用 <code>long long</code> 避免溢出</li>
+<li>对流式数据非常适用</li>
+<li>可以作为机器学习特征（连续行为长度）</li>
+<li>常用于探测系统稳定性与用户活跃度</li>
+<li>“连续区间贡献统计”是一类非常常见的工程需求</li>
+</ul>
+<hr>
+<h1 id="小结--结论"><strong>小结 / 结论</strong><a hidden class="anchor" aria-hidden="true" href="#小结--结论">#</a></h1>
+<p>本文通过一道经典算法题，扩展了以下能力：</p>
+<ol>
+<li>
+<p><strong>理解连续 1 子串计数的数学原理</strong></p>
+</li>
+<li>
+<p><strong>掌握在线 O(n) 的高效算法</strong></p>
+</li>
+<li>
+<p><strong>将刷题算法迁移到实际工程问题中</strong>：</p>
+<ul>
+<li>SLA 稳定性分析</li>
+<li>用户活跃度特征</li>
+<li>图像像素连通性</li>
+<li>DNA 活跃片段</li>
+<li>心跳/故障监控</li>
+</ul>
+</li>
+</ol>
+<p>刷题不是目的，<strong>把算法思想写进工程才是最终价值</strong>。</p>
+<hr>
+<h1 id="参考与延伸阅读"><strong>参考与延伸阅读</strong><a hidden class="anchor" aria-hidden="true" href="#参考与延伸阅读">#</a></h1>
+<ul>
+<li>LeetCode 1513 — Number of Substrings With Only 1s</li>
+<li>Run-Length Encoding（RLE）压缩算法</li>
+<li>在线算法（Online Algorithm）</li>
+<li>滑动窗口 / 前缀计数方法</li>
+<li>Real-time Event Stream Analytics</li>
+</ul>
+<hr>
+<h1 id="元信息"><strong>元信息</strong><a hidden class="anchor" aria-hidden="true" href="#元信息">#</a></h1>
+<ul>
+<li><strong>阅读时长</strong>：12 分钟</li>
+<li><strong>标签</strong>：算法、工程实践、监控、数据分析</li>
+<li><strong>SEO 关键词</strong>：连续 1、子串计数、在线算法、系统监控、SLA、DNA 序列、活跃度分析</li>
+<li><strong>元描述</strong>：从 LeetCode 连续 1 子串问题出发，深入解析算法原理，并展示其在真实工程中的多个典型应用。</li>
+</ul>
+<hr>
+<h1 id="行动号召cta"><strong>行动号召（CTA）</strong><a hidden class="anchor" aria-hidden="true" href="#行动号召cta">#</a></h1>
+<p>如果你觉得这篇文章有用：</p>
+<ul>
+<li>⭐ <strong>收藏或点赞支持下我</strong></li>
+<li>💬 <strong>评论告诉我你最感兴趣的工程场景</strong></li>
+<li>🔔 <strong>关注我，后续我会写更多“算法 → 工程实践”的文章</strong></li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 连续1子串计数的刷题笔记与工程应用全解析 on x"
+            href="https://x.com/intent/tweet/?text=%e8%bf%9e%e7%bb%ad1%e5%ad%90%e4%b8%b2%e8%ae%a1%e6%95%b0%e7%9a%84%e5%88%b7%e9%a2%98%e7%ac%94%e8%ae%b0%e4%b8%8e%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%85%a8%e8%a7%a3%e6%9e%90&amp;url=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2fcount-consecutive-ones-substrings-notes%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 连续1子串计数的刷题笔记与工程应用全解析 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2fcount-consecutive-ones-substrings-notes%2f&amp;title=%e8%bf%9e%e7%bb%ad1%e5%ad%90%e4%b8%b2%e8%ae%a1%e6%95%b0%e7%9a%84%e5%88%b7%e9%a2%98%e7%ac%94%e8%ae%b0%e4%b8%8e%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%85%a8%e8%a7%a3%e6%9e%90&amp;summary=%e8%bf%9e%e7%bb%ad1%e5%ad%90%e4%b8%b2%e8%ae%a1%e6%95%b0%e7%9a%84%e5%88%b7%e9%a2%98%e7%ac%94%e8%ae%b0%e4%b8%8e%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%85%a8%e8%a7%a3%e6%9e%90&amp;source=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2fcount-consecutive-ones-substrings-notes%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 连续1子串计数的刷题笔记与工程应用全解析 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2fcount-consecutive-ones-substrings-notes%2f&title=%e8%bf%9e%e7%bb%ad1%e5%ad%90%e4%b8%b2%e8%ae%a1%e6%95%b0%e7%9a%84%e5%88%b7%e9%a2%98%e7%ac%94%e8%ae%b0%e4%b8%8e%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%85%a8%e8%a7%a3%e6%9e%90">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 连续1子串计数的刷题笔记与工程应用全解析 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2fcount-consecutive-ones-substrings-notes%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 连续1子串计数的刷题笔记与工程应用全解析 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e8%bf%9e%e7%bb%ad1%e5%ad%90%e4%b8%b2%e8%ae%a1%e6%95%b0%e7%9a%84%e5%88%b7%e9%a2%98%e7%ac%94%e8%ae%b0%e4%b8%8e%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%85%a8%e8%a7%a3%e6%9e%90%20-%20http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2fcount-consecutive-ones-substrings-notes%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 连续1子串计数的刷题笔记与工程应用全解析 on telegram"
+            href="https://telegram.me/share/url?text=%e8%bf%9e%e7%bb%ad1%e5%ad%90%e4%b8%b2%e8%ae%a1%e6%95%b0%e7%9a%84%e5%88%b7%e9%a2%98%e7%ac%94%e8%ae%b0%e4%b8%8e%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%85%a8%e8%a7%a3%e6%9e%90&amp;url=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2fcount-consecutive-ones-substrings-notes%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 连续1子串计数的刷题笔记与工程应用全解析 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e8%bf%9e%e7%bb%ad1%e5%ad%90%e4%b8%b2%e8%ae%a1%e6%95%b0%e7%9a%84%e5%88%b7%e9%a2%98%e7%ac%94%e8%ae%b0%e4%b8%8e%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8%e5%85%a8%e8%a7%a3%e6%9e%90&u=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2fcount-consecutive-ones-substrings-notes%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

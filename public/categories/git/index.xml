@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Git on Jeanphilo Blog</title>
-    <link>http://localhost:1313/jeanblog/categories/git/</link>
+    <link>http://localhost:1313/categories/git/</link>
     <description>Recent content in Git on Jeanphilo Blog</description>
     <generator>Hugo -- 0.152.2</generator>
     <language>zh-cn</language>
     <lastBuildDate>Tue, 11 Nov 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/jeanblog/categories/git/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://localhost:1313/categories/git/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>用Issue把问题写清楚，从0到TEMPLATE</title>
-      <link>http://localhost:1313/jeanblog/posts/git-notes/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/</link>
+      <link>http://localhost:1313/notes/git-notes/write-clear-issues-from-zero-to-template/</link>
       <pubDate>Tue, 11 Nov 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E7%94%A8issue%E6%8A%8A%E9%97%AE%E9%A2%98%E5%86%99%E6%B8%85%E6%A5%9A%E4%BB%8E0%E5%88%B0template/</guid>
+      <guid>http://localhost:1313/notes/git-notes/write-clear-issues-from-zero-to-template/</guid>
       <description>&lt;h2 id=&#34;标题吸引且准确包含关键词&#34;&gt;标题（吸引且准确，包含关键词）&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;用 Issue 模板把需求写清楚：从 0 配置 GitHub Issue Template 的完整指南&lt;/strong&gt;&lt;/p&gt;
 &lt;hr&gt;
@@ -52,9 +52,9 @@
     </item>
     <item>
       <title>如何配置gitea</title>
-      <link>http://localhost:1313/jeanblog/posts/git-notes/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgitea/</link>
+      <link>http://localhost:1313/notes/git-notes/configure-gitea/</link>
       <pubDate>Tue, 28 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgitea/</guid>
+      <guid>http://localhost:1313/notes/git-notes/configure-gitea/</guid>
       <description>&lt;h1 id=&#34;-本地搭建-gitea打造你的私人-github含已有仓库导入指南&#34;&gt;🚀 本地搭建 Gitea：打造你的私人 GitHub（含已有仓库导入指南）&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;副标题 / 摘要：&lt;/strong&gt;
 本文将手把手教你在本地电脑上安装轻量级 Git 服务器 —— Gitea。
@@ -115,9 +115,9 @@
     </item>
     <item>
       <title>掌握git提交规范,让团队协作更高效率</title>
-      <link>http://localhost:1313/jeanblog/posts/git-notes/%E6%8E%8C%E6%8F%A1git%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83%E8%AE%A9%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E6%9B%B4%E9%AB%98%E6%95%88%E7%8E%87/</link>
+      <link>http://localhost:1313/notes/git-notes/git-commit-conventions-team-efficiency/</link>
       <pubDate>Sat, 25 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E6%8E%8C%E6%8F%A1git%E6%8F%90%E4%BA%A4%E8%A7%84%E8%8C%83%E8%AE%A9%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E6%9B%B4%E9%AB%98%E6%95%88%E7%8E%87/</guid>
+      <guid>http://localhost:1313/notes/git-notes/git-commit-conventions-team-efficiency/</guid>
       <description>&lt;h3 id=&#34;标题&#34;&gt;&lt;strong&gt;标题&lt;/strong&gt;&lt;/h3&gt;
 &lt;p&gt;🚀 从「feat」到「fix」：掌握 Git 提交规范，让团队协作与自动化更高效&lt;/p&gt;
 &lt;hr&gt;
@@ -164,9 +164,9 @@
     </item>
     <item>
       <title>局域网Git Bare</title>
-      <link>http://localhost:1313/jeanblog/posts/git-notes/%E5%B1%80%E5%9F%9F%E7%BD%91git-bare/</link>
+      <link>http://localhost:1313/notes/git-notes/lan-git-bare-repo/</link>
       <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E5%B1%80%E5%9F%9F%E7%BD%91git-bare/</guid>
+      <guid>http://localhost:1313/notes/git-notes/lan-git-bare-repo/</guid>
       <description>&lt;h1 id=&#34;在局域网访问-windows-wsl2-上的-git-bare-仓库&#34;&gt;在局域网访问 Windows WSL2 上的 Git Bare 仓库&lt;/h1&gt;
 &lt;p&gt;在开发中，我们经常需要在多台电脑之间共享 Git 仓库。如果你在 Windows 上使用 WSL2，并且想在同一局域网的其他电脑访问 WSL2 上的 Git bare 仓库，本文将一步步教你实现。&lt;/p&gt;
 &lt;hr&gt;
@@ -202,9 +202,9 @@
     </item>
     <item>
       <title>git分支管理方法</title>
-      <link>http://localhost:1313/jeanblog/posts/git-notes/git%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95/</link>
+      <link>http://localhost:1313/notes/git-notes/git-branching-workflow/</link>
       <pubDate>Mon, 20 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/git-notes/git%E5%88%86%E6%94%AF%E7%AE%A1%E7%90%86%E6%96%B9%E6%B3%95/</guid>
+      <guid>http://localhost:1313/notes/git-notes/git-branching-workflow/</guid>
       <description>&lt;h1 id=&#34;-简化-git-分支工作流个人--小团队&#34;&gt;🌿 简化 Git 分支工作流（个人 / 小团队）&lt;/h1&gt;
 &lt;p&gt;本工作流基于 Git Flow 精简而来，适合个人或小团队，既规范又不复杂。&lt;/p&gt;
 &lt;hr&gt;
@@ -257,9 +257,9 @@ feature/user-profile
     </item>
     <item>
       <title>在本地使用git裸仓库实现开发环境和测试环境隔离</title>
-      <link>http://localhost:1313/jeanblog/posts/git-notes/%E5%9C%A8%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8git%E8%A3%B8%E4%BB%93%E5%BA%93%E5%AE%9E%E7%8E%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB/</link>
+      <link>http://localhost:1313/notes/git-notes/git-bare-repo-dev-test-isolation/</link>
       <pubDate>Mon, 20 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/git-notes/%E5%9C%A8%E6%9C%AC%E5%9C%B0%E4%BD%BF%E7%94%A8git%E8%A3%B8%E4%BB%93%E5%BA%93%E5%AE%9E%E7%8E%B0%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E5%92%8C%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E9%9A%94%E7%A6%BB/</guid>
+      <guid>http://localhost:1313/notes/git-notes/git-bare-repo-dev-test-isolation/</guid>
       <description>&lt;h1 id=&#34;在本地使用-git-裸仓库实现开发环境和测试环境隔离&#34;&gt;在本地使用 Git 裸仓库实现开发环境和测试环境隔离&lt;/h1&gt;
 &lt;p&gt;在全栈开发的过程中，我们常常遇到一个问题：&lt;strong&gt;开发环境和测试环境如何隔离&lt;/strong&gt;？
 很多人第一反应是用 GitHub 或 GitLab 来托管代码，但如果项目涉及隐私，不方便放在公共仓库，那该怎么办呢？&lt;/p&gt;

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Emmet-Vim 极速指南：用缩写爆写 HTML/CSS | Jeanphilo Blog</title>
+<meta name="keywords" content="emmet-vim, Vim 插件, HTML 快捷, CSS 缩写, 前端效率">
+<meta name="description" content="给 Vim/Neovim 用户的 Emmet 实战笔记：安装、常用映射、可运行示例、验证清单与常见坑，帮助你在写页面/组件时提升 3 倍速度。">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/dev/frontend/emmet-vim-guide/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/dev/frontend/emmet-vim-guide/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/en/dev/frontend/emmet-vim-guide/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/dev/frontend/emmet-vim-guide/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="Emmet-Vim 极速指南：用缩写爆写 HTML/CSS">
+  <meta property="og:description" content="给 Vim/Neovim 用户的 Emmet 实战笔记：安装、常用映射、可运行示例、验证清单与常见坑，帮助你在写页面/组件时提升 3 倍速度。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="dev">
+    <meta property="article:published_time" content="2025-12-08T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-12-08T00:00:00+00:00">
+    <meta property="article:tag" content="Vim">
+    <meta property="article:tag" content="Neovim">
+    <meta property="article:tag" content="Emmet">
+    <meta property="article:tag" content="Frontend">
+    <meta property="article:tag" content="Productivity">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Emmet-Vim 极速指南：用缩写爆写 HTML/CSS">
+<meta name="twitter:description" content="给 Vim/Neovim 用户的 Emmet 实战笔记：安装、常用映射、可运行示例、验证清单与常见坑，帮助你在写页面/组件时提升 3 倍速度。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "开发",
+      "item": "http://localhost:1313/dev/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Frontend",
+      "item": "http://localhost:1313/dev/frontend/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Emmet-Vim 极速指南：用缩写爆写 HTML/CSS",
+      "item": "http://localhost:1313/dev/frontend/emmet-vim-guide/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Emmet-Vim 极速指南：用缩写爆写 HTML/CSS",
+  "name": "Emmet-Vim 极速指南：用缩写爆写 HTML\/CSS",
+  "description": "给 Vim/Neovim 用户的 Emmet 实战笔记：安装、常用映射、可运行示例、验证清单与常见坑，帮助你在写页面/组件时提升 3 倍速度。",
+  "keywords": [
+    "emmet-vim", "Vim 插件", "HTML 快捷", "CSS 缩写", "前端效率"
+  ],
+  "articleBody": " 这篇是给“已习惯 Vim/Neovim，但觉得写 HTML/CSS 过慢”的前端同学的 emmet-vim 实用手册：快速安装、必背快捷键、最小可运行示例、验证与排错清单，一篇拿走直接用。\n读者画像与前置 前端/全栈工程师，日常用 Vim/Neovim 做页面或组件开发。 熟悉基础 HTML/CSS，知道什么是缩写/自动补全；能编辑 ~/.vimrc 或 init.lua。 环境建议：Vim 8.2+（启用 +python3）或 Neovim 0.7+；已装 Git；包管理器如 Homebrew/Apt 可安装依赖。 背景与问题 场景：在 Vim 里手敲 太啰嗦，结构复杂时易漏闭合。 痛点： HTML/CSS 结构重复，手敲影响节奏。 需要记忆标签闭合、层级缩进，错误率高。 VS Code 自带 Emmet，用 Vim 时缺同等效率。 目标：用 Emmet 缩写 3 按键内展开完整结构；示例输入 ul.list\u003eli.item$*3\u003ea{click}，输出层级完好；成功标准是快捷键稳、展开准确、可按需配置。 核心概念速记 缩写 (abbreviation)：ul\u003eli*3 按快捷键一次性展开为完整标签树。 触发键：emmet-vim 默认 ,（先 Ctrl+y 再逗号）用于展开；d 包裹/调整标签。 上下文敏感：在 CSS buffer 输入 m10-20 展开为 margin: 10px 20px;；在 HTML buffer 识别标签结构。 可编号 $：li.item$*3 自动生成 item1/2/3；${} 支持占位或交互输入。 环境与依赖 Vim 8.2+ 且 :echo has('python3') 返回 1；或 Neovim 0.7+（自动有 Python3 provider）。 Python 3.8+（python3 --version）用于 Emmet 引擎。 插件管理器任选：vim-plug、dein、lazy.nvim、packer.nvim。 可选：Node 18+ 若你想用其他 Emmet CLI/格式化工具，但 emmet-vim 默认无需 Node。 典型安装命令（vim-plug）： \" ~/.vimrc 或 init.vim call plug#begin('~/.vim/plugged') Plug 'mattn/emmet-vim' call plug#end() let g:user_emmet_leader_key=',' \" 可改触发键，默认 安装后在 Vim 中执行 :PlugInstall。\n实践步骤（可复制） 1) 校验 Python 支持 :echo has('python3') 预期输出 1，否则需安装带 Python3 的 Vim 或配置 Neovim Python provider。\n2) 配置基础键位 \" 让 Emmet 触发更短：, 逗号作为前缀 let g:user_emmet_leader_key=',' \" 在 HTML/CSS/JSX 中启用 let g:user_emmet_settings = { \\ 'javascript.jsx' : { \\ 'extends' : 'html' \\ } \\} 预期：在 HTML/JSX buffer 输入缩写，按 ,+, 或 ,+;（等价于 ,）即可展开。\n3) HTML 列表示例 输入：\nul.list\u003eli.item$*3\u003ea{click me} 按 ,+, 展开，预期得到：\n\u003cul class=\"list\"\u003e \u003cli class=\"item1\"\u003e\u003ca href=\"\"\u003eclick me\u003c/a\u003e\u003c/li\u003e \u003cli class=\"item2\"\u003e\u003ca href=\"\"\u003eclick me\u003c/a\u003e\u003c/li\u003e \u003cli class=\"item3\"\u003e\u003ca href=\"\"\u003eclick me\u003c/a\u003e\u003c/li\u003e \u003c/ul\u003e 4) 包裹/重排标签 选中一段文本，输入 ul\u003eli*，按 ,+w（Wrap with abbreviation）会将选区包裹成列表。 在标签上按 ,+d 平衡选择父级，便于快速重排或复制。 5) CSS 缩写 输入：p10-20 bgc#0f172a c#e2e8f0，按触发键展开为：\npadding: 10px 20px; background-color: #0f172a; color: #e2e8f0; 6) JSX/TSX 使用 let g:user_emmet_settings 中扩展 javascriptreact / typescriptreact。 在 JSX 中输入 Button.primary\u003e{Submit} 按触发键，得到： \u003cButton className=\"primary\"\u003eSubmit\u003c/Button\u003e 提示：确保 filetype 识别为 javascriptreact/typescriptreact。\n更多常用缩写示例包（直接抄） 1) 语义化页面骨架 + 顶部导航 输入：\nheader.site\u003ediv.container\u003eh1.logo{Brand}+nav\u003eul\u003eli*3\u003ea{Nav $}+button.btn.primary{Sign up} 展开：\n\u003cheader class=\"site\"\u003e \u003cdiv class=\"container\"\u003e \u003ch1 class=\"logo\"\u003eBrand\u003c/h1\u003e \u003cnav\u003e \u003cul\u003e \u003cli\u003e\u003ca href=\"\"\u003eNav 1\u003c/a\u003e\u003c/li\u003e \u003cli\u003e\u003ca href=\"\"\u003eNav 2\u003c/a\u003e\u003c/li\u003e \u003cli\u003e\u003ca href=\"\"\u003eNav 3\u003c/a\u003e\u003c/li\u003e \u003c/ul\u003e \u003c/nav\u003e \u003cbutton class=\"btn primary\"\u003eSign up\u003c/button\u003e \u003c/div\u003e \u003c/header\u003e 2) 表单（含必填、标签、按钮） 输入：\nform#contact\u003elabel[for=name]{Name}+input#name[type=text required placeholder=Your name]+label[for=email]{Email}+input#email[type=email required placeholder=hi@example.com]+button.btn[type=submit]{Send} 展开：\n\u003cform id=\"contact\"\u003e \u003clabel for=\"name\"\u003eName\u003c/label\u003e \u003cinput id=\"name\" type=\"text\" required placeholder=\"Your name\"\u003e \u003clabel for=\"email\"\u003eEmail\u003c/label\u003e \u003cinput id=\"email\" type=\"email\" required placeholder=\"hi@example.com\"\u003e \u003cbutton class=\"btn\" type=\"submit\"\u003eSend\u003c/button\u003e \u003c/form\u003e 3) 卡片网格（博客/商品列表） 输入：\nsection.blog\u003eh2{Latest Posts}+div.grid\u003earticle.card$*3\u003eimg[alt=thumb$ src=/img/thumb$.jpg]+h3{Post $}+p{Short teaser}+a.read[href=/post$]{Read more} 展开（节选）：\n\u003csection class=\"blog\"\u003e \u003ch2\u003eLatest Posts\u003c/h2\u003e \u003cdiv class=\"grid\"\u003e \u003carticle class=\"card1\"\u003e \u003cimg alt=\"thumb1\" src=\"/img/thumb1.jpg\"\u003e \u003ch3\u003ePost 1\u003c/h3\u003e \u003cp\u003eShort teaser\u003c/p\u003e \u003ca class=\"read\" href=\"/post1\"\u003eRead more\u003c/a\u003e \u003c/article\u003e ... \u003c/div\u003e \u003c/section\u003e 4) 表格 + 行列自动编号 输入：\ntable.table\u003ethead\u003etr\u003eth*3{Col $}+tbody\u003etr*3\u003etd{Row $ Col 1}+td{Row $ Col 2}+td{Row $ Col 3} 展开：\n\u003ctable class=\"table\"\u003e \u003cthead\u003e \u003ctr\u003e \u003cth\u003eCol 1\u003c/th\u003e \u003cth\u003eCol 2\u003c/th\u003e \u003cth\u003eCol 3\u003c/th\u003e \u003c/tr\u003e \u003c/thead\u003e \u003ctbody\u003e \u003ctr\u003e \u003ctd\u003eRow 1 Col 1\u003c/td\u003e \u003ctd\u003eRow 1 Col 2\u003c/td\u003e \u003ctd\u003eRow 1 Col 3\u003c/td\u003e \u003c/tr\u003e \u003ctr\u003e \u003ctd\u003eRow 2 Col 1\u003c/td\u003e \u003ctd\u003eRow 2 Col 2\u003c/td\u003e \u003ctd\u003eRow 2 Col 3\u003c/td\u003e \u003c/tr\u003e \u003ctr\u003e \u003ctd\u003eRow 3 Col 1\u003c/td\u003e \u003ctd\u003eRow 3 Col 2\u003c/td\u003e \u003ctd\u003eRow 3 Col 3\u003c/td\u003e \u003c/tr\u003e \u003c/tbody\u003e \u003c/table\u003e 5) JSX/TSX 组件片段 输入：\nCard\u003eImage[src=/hero.png alt=Hero aria-label=Hero]+h3{Landing}+p{Faster HTML}+Button.primary{Get started} 在 React/TSX buffer 展开：\n\u003cCard\u003e \u003cImage src=\"/hero.png\" alt=\"Hero\" aria-label=\"Hero\" /\u003e \u003ch3\u003eLanding\u003c/h3\u003e \u003cp\u003eFaster HTML\u003c/p\u003e \u003cButton className=\"primary\"\u003eGet started\u003c/Button\u003e \u003c/Card\u003e 6) CSS 快速组合（符合 Emmet CSS 语法） 输入：\nd:f ai:c jc:sb g:16 p:16 m:0 bdrs:12px bgc:#0f172a c:#e2e8f0 展开：\ndisplay: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; margin: 0; border-radius: 12px; background-color: #0f172a; color: #e2e8f0; 7) Wrap with abbreviation 典型用法 选中文本 Item A、Item B 两行，输入 ul.list\u003eli*，按 ,+w，得到： \u003cul class=\"list\"\u003e \u003cli\u003eItem A\u003c/li\u003e \u003cli\u003eItem B\u003c/li\u003e \u003c/ul\u003e 适合把已有文本一键转换为列表/卡片容器。 最小可运行示例（本地验证） 新建文件 demo.html： \u003c!doctype html\u003e \u003chtml\u003e \u003chead\u003e\u003cmeta charset=\"UTF-8\"\u003e\u003ctitle\u003eEmmet Demo\u003c/title\u003e\u003c/head\u003e \u003cbody\u003e \u003c/body\u003e \u003c/html\u003e 用 Vim 打开，移动到 中输入 section.hero\u003eh1{Hello}+p{Speed up with emmet-vim}+ul.features\u003eli.feature$*3。 按触发键，预期生成完整语义化结构。用 :w 保存，浏览器打开应看到标题+三条列表。 解释与取舍 直接在 Vim 里用 emmet-vim vs. 通过 LSP/补全插件调用 Emmet：前者零依赖、即时展开；后者可能需要 Node/后端服务但可与补全统一。 触发键自定义：默认 避免与常用按键冲突，但两键组合稍长；改成 , 或 提速但需防止与其他插件抢占。 格式化：emmet-vim 展开不做格式化，如果团队要求 Prettier/ESLint，对展开结果再跑格式化即可。 常见坑与 FAQ 未生效：has('python3') 为 0；或没在正确 filetype；或未执行 :PlugInstall。 JSX 展开成 HTML 属性名：确保设置 javascript.jsx/javascriptreact 扩展自 html；必要时在缓冲区 :set filetype=javascriptreact。 触发键冲突：检查其他插件是否占用同样映射，用 :verbose imap , , 定位来源再改键位。 多光标编辑：emmet-vim 不原生支持，多光标可用 vim-visual-multi，展开前先插入缩写，再批量触发。 性能：大文件展开略慢，可在组件片段中使用，避免一次性展开巨量节点。 测试与验证清单 :echo has('python3') == 1。 新建 HTML buffer，输入 div#app\u003eheader\u003eh1{Hi}+nav\u003eul\u003eli*3\u003ea{link$}，触发后结构正确且缩进正常。 在 CSS buffer 输入 m10-20、bgc#333 能展开为合法声明。 在 JSX buffer 输入 Card\u003eButton.primary{Go}，展开为 Go。 无错误日志：messages 中无 emmet# 报错；触发键不被其他插件覆盖。 性能与可访问性 输出结构时优先用语义标签（header/nav/main/section），方便读屏与 SEO。 自动补全图片时记得加 alt：img[alt=avatar src=/avatar.png]。 列表/按钮类结构可提前加 aria-label 占位，避免后续忘记。 性能指标（CLS/LCP/FID）与 Emmet 本身无关，但保持展开模板简洁、减少不必要的嵌套能降低布局抖动。 最佳实践清单 为常用 filetype 显式配置 g:user_emmet_settings，确保 HTML/JSX/TSX 一致。 自定义 leader（如 ,）并写在 dotfiles 中同步多台机器。 与格式化链路结合：保存时跑 Prettier/StyLua/ESLint，保持展开后风格一致。 缩写先写“骨架”再加类/属性，例如 section.hero\u003ediv.container\u003eh1+p，减少返工。 记住 $ 自动编号和 {} 文本，是最省时的两个特性。 总结与下一步 你现在有：安装方法、键位定制、HTML/CSS/JSX 示例、验证清单与排错法。 下一步可尝试： 把团队常用片段写成 Emmet 自定义 snippets。 在 UltiSnips/LuaSnip 中调用 Emmet，打造组合片段。 结合 LSP/formatter，形成一致的保存即格式化流。 参考与链接 Emmet 官方文档：https://docs.emmet.io/ emmet-vim 仓库（mattn）：https://github.com/mattn/emmet-vim Vim Python3 provider 说明：https://github.com/neovim/neovim/wiki/FAQ#python-support 元信息 预计阅读：11 分钟；适合 Vim/Neovim + 前端工程师。 标签：vim、neovim、emmet、frontend、productivity；分类：frontend。 SEO 关键词：emmet-vim, Vim Emmet, HTML CSS 快速补全。 更新时间：2025-11-14。 CTA 试着在本地新建 demo.html 实打实展开一次； 如果有新场景/快捷键冲突，欢迎在仓库提交 issue 或评论交流； 觉得有用就给 mattn/emmet-vim 点个 Star，支持作者。 ",
+  "wordCount" : "676",
+  "inLanguage": "zh",
+  "datePublished": "2025-12-08T00:00:00Z",
+  "dateModified": "2025-12-08T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/dev/frontend/emmet-vim-guide/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/en/" title="English"
+                                aria-label="English">En</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="文章归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/dev/" title="开发">
+                    <span>开发</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/alg/" title="算法">
+                    <span>算法</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>标签</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/dev/">开发</a>&nbsp;»&nbsp;<a href="http://localhost:1313/dev/frontend/">Frontend</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Emmet-Vim 极速指南：用缩写爆写 HTML/CSS
+    </h1>
+    <div class="post-meta"><span title='2025-12-08 00:00:00 +0000 UTC'>2025年12月8日</span>&nbsp;·&nbsp;<span>4 分钟</span>&nbsp;|&nbsp;<span>语言:</span>
+<ul class="i18n_list">
+    <li>
+        <a href="http://localhost:1313/en/dev/frontend/emmet-vim-guide/">En</a>
+    </li>
+</ul>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e8%af%bb%e8%80%85%e7%94%bb%e5%83%8f%e4%b8%8e%e5%89%8d%e7%bd%ae" aria-label="读者画像与前置">读者画像与前置</a></li>
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af%e4%b8%8e%e9%97%ae%e9%a2%98" aria-label="背景与问题">背景与问题</a></li>
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5%e9%80%9f%e8%ae%b0" aria-label="核心概念速记">核心概念速记</a></li>
+                <li>
+                    <a href="#%e7%8e%af%e5%a2%83%e4%b8%8e%e4%be%9d%e8%b5%96" aria-label="环境与依赖">环境与依赖</a></li>
+                <li>
+                    <a href="#%e5%ae%9e%e8%b7%b5%e6%ad%a5%e9%aa%a4%e5%8f%af%e5%a4%8d%e5%88%b6" aria-label="实践步骤（可复制）">实践步骤（可复制）</a><ul>
+                        
+                <li>
+                    <a href="#1-%e6%a0%a1%e9%aa%8c-python-%e6%94%af%e6%8c%81" aria-label="1) 校验 Python 支持">1) 校验 Python 支持</a></li>
+                <li>
+                    <a href="#2-%e9%85%8d%e7%bd%ae%e5%9f%ba%e7%a1%80%e9%94%ae%e4%bd%8d" aria-label="2) 配置基础键位">2) 配置基础键位</a></li>
+                <li>
+                    <a href="#3-html-%e5%88%97%e8%a1%a8%e7%a4%ba%e4%be%8b" aria-label="3) HTML 列表示例">3) HTML 列表示例</a></li>
+                <li>
+                    <a href="#4-%e5%8c%85%e8%a3%b9%e9%87%8d%e6%8e%92%e6%a0%87%e7%ad%be" aria-label="4) 包裹/重排标签">4) 包裹/重排标签</a></li>
+                <li>
+                    <a href="#5-css-%e7%bc%a9%e5%86%99" aria-label="5) CSS 缩写">5) CSS 缩写</a></li>
+                <li>
+                    <a href="#6-jsxtsx-%e4%bd%bf%e7%94%a8" aria-label="6) JSX/TSX 使用">6) JSX/TSX 使用</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9b%b4%e5%a4%9a%e5%b8%b8%e7%94%a8%e7%bc%a9%e5%86%99%e7%a4%ba%e4%be%8b%e5%8c%85%e7%9b%b4%e6%8e%a5%e6%8a%84" aria-label="更多常用缩写示例包（直接抄）">更多常用缩写示例包（直接抄）</a><ul>
+                        
+                <li>
+                    <a href="#1-%e8%af%ad%e4%b9%89%e5%8c%96%e9%a1%b5%e9%9d%a2%e9%aa%a8%e6%9e%b6--%e9%a1%b6%e9%83%a8%e5%af%bc%e8%88%aa" aria-label="1) 语义化页面骨架 &#43; 顶部导航">1) 语义化页面骨架 + 顶部导航</a></li>
+                <li>
+                    <a href="#2-%e8%a1%a8%e5%8d%95%e5%90%ab%e5%bf%85%e5%a1%ab%e6%a0%87%e7%ad%be%e6%8c%89%e9%92%ae" aria-label="2) 表单（含必填、标签、按钮）">2) 表单（含必填、标签、按钮）</a></li>
+                <li>
+                    <a href="#3-%e5%8d%a1%e7%89%87%e7%bd%91%e6%a0%bc%e5%8d%9a%e5%ae%a2%e5%95%86%e5%93%81%e5%88%97%e8%a1%a8" aria-label="3) 卡片网格（博客/商品列表）">3) 卡片网格（博客/商品列表）</a></li>
+                <li>
+                    <a href="#4-%e8%a1%a8%e6%a0%bc--%e8%a1%8c%e5%88%97%e8%87%aa%e5%8a%a8%e7%bc%96%e5%8f%b7" aria-label="4) 表格 &#43; 行列自动编号">4) 表格 + 行列自动编号</a></li>
+                <li>
+                    <a href="#5-jsxtsx-%e7%bb%84%e4%bb%b6%e7%89%87%e6%ae%b5" aria-label="5) JSX/TSX 组件片段">5) JSX/TSX 组件片段</a></li>
+                <li>
+                    <a href="#6-css-%e5%bf%ab%e9%80%9f%e7%bb%84%e5%90%88%e7%ac%a6%e5%90%88-emmet-css-%e8%af%ad%e6%b3%95" aria-label="6) CSS 快速组合（符合 Emmet CSS 语法）">6) CSS 快速组合（符合 Emmet CSS 语法）</a></li>
+                <li>
+                    <a href="#7-wrap-with-abbreviation-%e5%85%b8%e5%9e%8b%e7%94%a8%e6%b3%95" aria-label="7) Wrap with abbreviation 典型用法">7) Wrap with abbreviation 典型用法</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e6%9c%80%e5%b0%8f%e5%8f%af%e8%bf%90%e8%a1%8c%e7%a4%ba%e4%be%8b%e6%9c%ac%e5%9c%b0%e9%aa%8c%e8%af%81" aria-label="最小可运行示例（本地验证）">最小可运行示例（本地验证）</a></li>
+                <li>
+                    <a href="#%e8%a7%a3%e9%87%8a%e4%b8%8e%e5%8f%96%e8%88%8d" aria-label="解释与取舍">解释与取舍</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e5%9d%91%e4%b8%8e-faq" aria-label="常见坑与 FAQ">常见坑与 FAQ</a></li>
+                <li>
+                    <a href="#%e6%b5%8b%e8%af%95%e4%b8%8e%e9%aa%8c%e8%af%81%e6%b8%85%e5%8d%95" aria-label="测试与验证清单">测试与验证清单</a></li>
+                <li>
+                    <a href="#%e6%80%a7%e8%83%bd%e4%b8%8e%e5%8f%af%e8%ae%bf%e9%97%ae%e6%80%a7" aria-label="性能与可访问性">性能与可访问性</a></li>
+                <li>
+                    <a href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e6%b8%85%e5%8d%95" aria-label="最佳实践清单">最佳实践清单</a></li>
+                <li>
+                    <a href="#%e6%80%bb%e7%bb%93%e4%b8%8e%e4%b8%8b%e4%b8%80%e6%ad%a5" aria-label="总结与下一步">总结与下一步</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e4%b8%8e%e9%93%be%e6%8e%a5" aria-label="参考与链接">参考与链接</a></li>
+                <li>
+                    <a href="#%e5%85%83%e4%bf%a1%e6%81%af" aria-label="元信息">元信息</a></li>
+                <li>
+                    <a href="#cta" aria-label="CTA">CTA</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>这篇是给“已习惯 Vim/Neovim，但觉得写 HTML/CSS 过慢”的前端同学的 emmet-vim 实用手册：快速安装、必背快捷键、最小可运行示例、验证与排错清单，一篇拿走直接用。</p>
+</blockquote>
+<h2 id="读者画像与前置">读者画像与前置<a hidden class="anchor" aria-hidden="true" href="#读者画像与前置">#</a></h2>
+<ul>
+<li>前端/全栈工程师，日常用 Vim/Neovim 做页面或组件开发。</li>
+<li>熟悉基础 HTML/CSS，知道什么是缩写/自动补全；能编辑 <code>~/.vimrc</code> 或 <code>init.lua</code>。</li>
+<li>环境建议：Vim 8.2+（启用 <code>+python3</code>）或 Neovim 0.7+；已装 Git；包管理器如 Homebrew/Apt 可安装依赖。</li>
+</ul>
+<h2 id="背景与问题">背景与问题<a hidden class="anchor" aria-hidden="true" href="#背景与问题">#</a></h2>
+<ul>
+<li>场景：在 Vim 里手敲 <code>&lt;div class=&quot;card&quot;&gt;&lt;img ...&gt;</code> 太啰嗦，结构复杂时易漏闭合。</li>
+<li>痛点：
+<ul>
+<li>HTML/CSS 结构重复，手敲影响节奏。</li>
+<li>需要记忆标签闭合、层级缩进，错误率高。</li>
+<li>VS Code 自带 Emmet，用 Vim 时缺同等效率。</li>
+</ul>
+</li>
+<li>目标：用 Emmet 缩写 3 按键内展开完整结构；示例输入 <code>ul.list&gt;li.item$*3&gt;a{click}</code>，输出层级完好；成功标准是快捷键稳、展开准确、可按需配置。</li>
+</ul>
+<h2 id="核心概念速记">核心概念速记<a hidden class="anchor" aria-hidden="true" href="#核心概念速记">#</a></h2>
+<ul>
+<li><strong>缩写 (abbreviation)</strong>：<code>ul&gt;li*3</code> 按快捷键一次性展开为完整标签树。</li>
+<li><strong>触发键</strong>：emmet-vim 默认 <code>&lt;C-y&gt;,</code>（先 Ctrl+y 再逗号）用于展开；<code>&lt;C-y&gt;d</code> 包裹/调整标签。</li>
+<li><strong>上下文敏感</strong>：在 CSS buffer 输入 <code>m10-20</code> 展开为 <code>margin: 10px 20px;</code>；在 HTML buffer 识别标签结构。</li>
+<li><strong>可编号 <code>$</code></strong>：<code>li.item$*3</code> 自动生成 <code>item1/2/3</code>；<code>${}</code> 支持占位或交互输入。</li>
+</ul>
+<h2 id="环境与依赖">环境与依赖<a hidden class="anchor" aria-hidden="true" href="#环境与依赖">#</a></h2>
+<ul>
+<li>Vim 8.2+ 且 <code>:echo has('python3')</code> 返回 1；或 Neovim 0.7+（自动有 Python3 provider）。</li>
+<li>Python 3.8+（<code>python3 --version</code>）用于 Emmet 引擎。</li>
+<li>插件管理器任选：vim-plug、dein、lazy.nvim、packer.nvim。</li>
+<li>可选：Node 18+ 若你想用其他 Emmet CLI/格式化工具，但 emmet-vim 默认无需 Node。</li>
+<li>典型安装命令（vim-plug）：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#75715e">&#34; ~/.vimrc 或 init.vim</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>(<span style="color:#e6db74">&#39;~/.vim/plugged&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;mattn/emmet-vim&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">user_emmet_leader_key</span>=<span style="color:#e6db74">&#39;,&#39;</span>   <span style="color:#75715e">&#34; 可改触发键，默认 &lt;C-y&gt;</span>
+</span></span></code></pre></div><p>安装后在 Vim 中执行 <code>:PlugInstall</code>。</p>
+<h2 id="实践步骤可复制">实践步骤（可复制）<a hidden class="anchor" aria-hidden="true" href="#实践步骤可复制">#</a></h2>
+<h3 id="1-校验-python-支持">1) 校验 Python 支持<a hidden class="anchor" aria-hidden="true" href="#1-校验-python-支持">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span>:<span style="color:#a6e22e">echo</span> <span style="color:#a6e22e">has</span>(<span style="color:#e6db74">&#39;python3&#39;</span>)
+</span></span></code></pre></div><p>预期输出 <code>1</code>，否则需安装带 Python3 的 Vim 或配置 Neovim Python provider。</p>
+<h3 id="2-配置基础键位">2) 配置基础键位<a hidden class="anchor" aria-hidden="true" href="#2-配置基础键位">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#75715e">&#34; 让 Emmet 触发更短：, 逗号作为前缀</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">user_emmet_leader_key</span>=<span style="color:#e6db74">&#39;,&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 在 HTML/CSS/JSX 中启用</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">user_emmet_settings</span> = {
+</span></span><span style="display:flex;"><span>\  <span style="color:#e6db74">&#39;javascript.jsx&#39;</span> : {
+</span></span><span style="display:flex;"><span>\    <span style="color:#e6db74">&#39;extends&#39;</span> : <span style="color:#e6db74">&#39;html&#39;</span>
+</span></span><span style="display:flex;"><span>\  }
+</span></span><span style="display:flex;"><span>\}
+</span></span></code></pre></div><p>预期：在 HTML/JSX buffer 输入缩写，按 <code>,</code>+<code>,</code> 或 <code>,</code>+<code>;</code>（等价于 <code>&lt;C-y&gt;,</code>）即可展开。</p>
+<h3 id="3-html-列表示例">3) HTML 列表示例<a hidden class="anchor" aria-hidden="true" href="#3-html-列表示例">#</a></h3>
+<p>输入：</p>
+<pre tabindex="0"><code>ul.list&gt;li.item$*3&gt;a{click me}
+</code></pre><p>按 <code>,</code>+<code>,</code> 展开，预期得到：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">ul</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;list&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">li</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;item1&#34;</span>&gt;&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>&gt;click me&lt;/<span style="color:#f92672">a</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">li</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;item2&#34;</span>&gt;&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>&gt;click me&lt;/<span style="color:#f92672">a</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">li</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;item3&#34;</span>&gt;&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>&gt;click me&lt;/<span style="color:#f92672">a</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">ul</span>&gt;
+</span></span></code></pre></div><h3 id="4-包裹重排标签">4) 包裹/重排标签<a hidden class="anchor" aria-hidden="true" href="#4-包裹重排标签">#</a></h3>
+<ul>
+<li>选中一段文本，输入 <code>ul&gt;li*</code>，按 <code>,</code>+<code>w</code>（Wrap with abbreviation）会将选区包裹成列表。</li>
+<li>在标签上按 <code>,</code>+<code>d</code> 平衡选择父级，便于快速重排或复制。</li>
+</ul>
+<h3 id="5-css-缩写">5) CSS 缩写<a hidden class="anchor" aria-hidden="true" href="#5-css-缩写">#</a></h3>
+<p>输入：<code>p10-20 bgc#0f172a c#e2e8f0</code>，按触发键展开为：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-css" data-lang="css"><span style="display:flex;"><span><span style="color:#f92672">padding</span><span style="color:#f92672">:</span> <span style="color:#f92672">10px</span> <span style="color:#f92672">20px</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">background-color</span><span style="color:#f92672">:</span> #0f172a<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">color</span><span style="color:#f92672">:</span> #e2e8f0<span style="color:#f92672">;</span>
+</span></span></code></pre></div><h3 id="6-jsxtsx-使用">6) JSX/TSX 使用<a hidden class="anchor" aria-hidden="true" href="#6-jsxtsx-使用">#</a></h3>
+<ul>
+<li><code>let g:user_emmet_settings</code> 中扩展 <code>javascriptreact</code> / <code>typescriptreact</code>。</li>
+<li>在 JSX 中输入 <code>Button.primary&gt;{Submit}</code> 按触发键，得到：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>&lt;<span style="color:#f92672">Button</span> <span style="color:#a6e22e">className</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;primary&#34;</span>&gt;<span style="color:#a6e22e">Submit</span>&lt;/<span style="color:#f92672">Button</span>&gt;
+</span></span></code></pre></div><p>提示：确保 <code>filetype</code> 识别为 <code>javascriptreact</code>/<code>typescriptreact</code>。</p>
+<h2 id="更多常用缩写示例包直接抄">更多常用缩写示例包（直接抄）<a hidden class="anchor" aria-hidden="true" href="#更多常用缩写示例包直接抄">#</a></h2>
+<h3 id="1-语义化页面骨架--顶部导航">1) 语义化页面骨架 + 顶部导航<a hidden class="anchor" aria-hidden="true" href="#1-语义化页面骨架--顶部导航">#</a></h3>
+<p>输入：</p>
+<pre tabindex="0"><code>header.site&gt;div.container&gt;h1.logo{Brand}+nav&gt;ul&gt;li*3&gt;a{Nav $}+button.btn.primary{Sign up}
+</code></pre><p>展开：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">header</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;site&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;container&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">h1</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;logo&#34;</span>&gt;Brand&lt;/<span style="color:#f92672">h1</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">nav</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">li</span>&gt;&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>&gt;Nav 1&lt;/<span style="color:#f92672">a</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">li</span>&gt;&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>&gt;Nav 2&lt;/<span style="color:#f92672">a</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>        &lt;<span style="color:#f92672">li</span>&gt;&lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>&gt;Nav 3&lt;/<span style="color:#f92672">a</span>&gt;&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;/<span style="color:#f92672">ul</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">nav</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;btn primary&#34;</span>&gt;Sign up&lt;/<span style="color:#f92672">button</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">header</span>&gt;
+</span></span></code></pre></div><h3 id="2-表单含必填标签按钮">2) 表单（含必填、标签、按钮）<a hidden class="anchor" aria-hidden="true" href="#2-表单含必填标签按钮">#</a></h3>
+<p>输入：</p>
+<pre tabindex="0"><code>form#contact&gt;label[for=name]{Name}+input#name[type=text required placeholder=Your name]+label[for=email]{Email}+input#email[type=email required placeholder=hi@example.com]+button.btn[type=submit]{Send}
+</code></pre><p>展开：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">form</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;contact&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">label</span> <span style="color:#a6e22e">for</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;name&#34;</span>&gt;Name&lt;/<span style="color:#f92672">label</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;name&#34;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span> <span style="color:#a6e22e">required</span> <span style="color:#a6e22e">placeholder</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Your name&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">label</span> <span style="color:#a6e22e">for</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;email&#34;</span>&gt;Email&lt;/<span style="color:#f92672">label</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">id</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;email&#34;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;email&#34;</span> <span style="color:#a6e22e">required</span> <span style="color:#a6e22e">placeholder</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;hi@example.com&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">button</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;btn&#34;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;submit&#34;</span>&gt;Send&lt;/<span style="color:#f92672">button</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">form</span>&gt;
+</span></span></code></pre></div><h3 id="3-卡片网格博客商品列表">3) 卡片网格（博客/商品列表）<a hidden class="anchor" aria-hidden="true" href="#3-卡片网格博客商品列表">#</a></h3>
+<p>输入：</p>
+<pre tabindex="0"><code>section.blog&gt;h2{Latest Posts}+div.grid&gt;article.card$*3&gt;img[alt=thumb$ src=/img/thumb$.jpg]+h3{Post $}+p{Short teaser}+a.read[href=/post$]{Read more}
+</code></pre><p>展开（节选）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">section</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;blog&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">h2</span>&gt;Latest Posts&lt;/<span style="color:#f92672">h2</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;grid&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">article</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;card1&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">img</span> <span style="color:#a6e22e">alt</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;thumb1&#34;</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/img/thumb1.jpg&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">h3</span>&gt;Post 1&lt;/<span style="color:#f92672">h3</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">p</span>&gt;Short teaser&lt;/<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">a</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;read&#34;</span> <span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/post1&#34;</span>&gt;Read more&lt;/<span style="color:#f92672">a</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">article</span>&gt;
+</span></span><span style="display:flex;"><span>    ...
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">div</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">section</span>&gt;
+</span></span></code></pre></div><h3 id="4-表格--行列自动编号">4) 表格 + 行列自动编号<a hidden class="anchor" aria-hidden="true" href="#4-表格--行列自动编号">#</a></h3>
+<p>输入：</p>
+<pre tabindex="0"><code>table.table&gt;thead&gt;tr&gt;th*3{Col $}+tbody&gt;tr*3&gt;td{Row $ Col 1}+td{Row $ Col 2}+td{Row $ Col 3}
+</code></pre><p>展开：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">table</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;table&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">thead</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">tr</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">th</span>&gt;Col 1&lt;/<span style="color:#f92672">th</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">th</span>&gt;Col 2&lt;/<span style="color:#f92672">th</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">th</span>&gt;Col 3&lt;/<span style="color:#f92672">th</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">tr</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">thead</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">tbody</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">tr</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 1 Col 1&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 1 Col 2&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 1 Col 3&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">tr</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">tr</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 2 Col 1&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 2 Col 2&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 2 Col 3&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">tr</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;<span style="color:#f92672">tr</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 3 Col 1&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 3 Col 2&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>      &lt;<span style="color:#f92672">td</span>&gt;Row 3 Col 3&lt;/<span style="color:#f92672">td</span>&gt;
+</span></span><span style="display:flex;"><span>    &lt;/<span style="color:#f92672">tr</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">tbody</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">table</span>&gt;
+</span></span></code></pre></div><h3 id="5-jsxtsx-组件片段">5) JSX/TSX 组件片段<a hidden class="anchor" aria-hidden="true" href="#5-jsxtsx-组件片段">#</a></h3>
+<p>输入：</p>
+<pre tabindex="0"><code>Card&gt;Image[src=/hero.png alt=Hero aria-label=Hero]+h3{Landing}+p{Faster HTML}+Button.primary{Get started}
+</code></pre><p>在 React/TSX buffer 展开：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-jsx" data-lang="jsx"><span style="display:flex;"><span>&lt;<span style="color:#f92672">Card</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">Image</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/hero.png&#34;</span> <span style="color:#a6e22e">alt</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Hero&#34;</span> <span style="color:#a6e22e">aria</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">label</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Hero&#34;</span> /&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">h3</span>&gt;<span style="color:#a6e22e">Landing</span>&lt;/<span style="color:#f92672">h3</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">p</span>&gt;<span style="color:#a6e22e">Faster</span> <span style="color:#a6e22e">HTML</span>&lt;/<span style="color:#f92672">p</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">Button</span> <span style="color:#a6e22e">className</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;primary&#34;</span>&gt;<span style="color:#a6e22e">Get</span> <span style="color:#a6e22e">started</span>&lt;/<span style="color:#f92672">Button</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">Card</span>&gt;
+</span></span></code></pre></div><h3 id="6-css-快速组合符合-emmet-css-语法">6) CSS 快速组合（符合 Emmet CSS 语法）<a hidden class="anchor" aria-hidden="true" href="#6-css-快速组合符合-emmet-css-语法">#</a></h3>
+<p>输入：</p>
+<pre tabindex="0"><code>d:f ai:c jc:sb g:16 p:16 m:0 bdrs:12px bgc:#0f172a c:#e2e8f0
+</code></pre><p>展开：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-css" data-lang="css"><span style="display:flex;"><span><span style="color:#f92672">display</span><span style="color:#f92672">:</span> <span style="color:#f92672">flex</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">align-items</span><span style="color:#f92672">:</span> <span style="color:#f92672">center</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">justify-content</span><span style="color:#f92672">:</span> <span style="color:#f92672">space-between</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">gap</span><span style="color:#f92672">:</span> <span style="color:#f92672">16px</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">padding</span><span style="color:#f92672">:</span> <span style="color:#f92672">16px</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">margin</span><span style="color:#f92672">:</span> <span style="color:#f92672">0</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">border-radius</span><span style="color:#f92672">:</span> <span style="color:#f92672">12px</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">background-color</span><span style="color:#f92672">:</span> #0f172a<span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">color</span><span style="color:#f92672">:</span> #e2e8f0<span style="color:#f92672">;</span>
+</span></span></code></pre></div><h3 id="7-wrap-with-abbreviation-典型用法">7) Wrap with abbreviation 典型用法<a hidden class="anchor" aria-hidden="true" href="#7-wrap-with-abbreviation-典型用法">#</a></h3>
+<ul>
+<li>选中文本 <code>Item A</code>、<code>Item B</code> 两行，输入 <code>ul.list&gt;li*</code>，按 <code>,</code>+<code>w</code>，得到：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">ul</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;list&#34;</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">li</span>&gt;Item A&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">li</span>&gt;Item B&lt;/<span style="color:#f92672">li</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">ul</span>&gt;
+</span></span></code></pre></div><ul>
+<li>适合把已有文本一键转换为列表/卡片容器。</li>
+</ul>
+<h2 id="最小可运行示例本地验证">最小可运行示例（本地验证）<a hidden class="anchor" aria-hidden="true" href="#最小可运行示例本地验证">#</a></h2>
+<ol>
+<li>新建文件 <code>demo.html</code>：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!doctype html&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">html</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">head</span>&gt;&lt;<span style="color:#f92672">meta</span> <span style="color:#a6e22e">charset</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;UTF-8&#34;</span>&gt;&lt;<span style="color:#f92672">title</span>&gt;Emmet Demo&lt;/<span style="color:#f92672">title</span>&gt;&lt;/<span style="color:#f92672">head</span>&gt;
+</span></span><span style="display:flex;"><span>  &lt;<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">&lt;!-- 在这里输入 emmet 缩写后按触发键 --&gt;</span>
+</span></span><span style="display:flex;"><span>  &lt;/<span style="color:#f92672">body</span>&gt;
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">html</span>&gt;
+</span></span></code></pre></div><ol start="2">
+<li>用 Vim 打开，移动到 <code>&lt;body&gt;</code> 中输入 <code>section.hero&gt;h1{Hello}+p{Speed up with emmet-vim}+ul.features&gt;li.feature$*3</code>。</li>
+<li>按触发键，预期生成完整语义化结构。用 <code>:w</code> 保存，浏览器打开应看到标题+三条列表。</li>
+</ol>
+<h2 id="解释与取舍">解释与取舍<a hidden class="anchor" aria-hidden="true" href="#解释与取舍">#</a></h2>
+<ul>
+<li>直接在 Vim 里用 emmet-vim vs. 通过 LSP/补全插件调用 Emmet：前者零依赖、即时展开；后者可能需要 Node/后端服务但可与补全统一。</li>
+<li>触发键自定义：默认 <code>&lt;C-y&gt;</code> 避免与常用按键冲突，但两键组合稍长；改成 <code>,</code> 或 <code>&lt;C-e&gt;</code> 提速但需防止与其他插件抢占。</li>
+<li>格式化：emmet-vim 展开不做格式化，如果团队要求 Prettier/ESLint，对展开结果再跑格式化即可。</li>
+</ul>
+<h2 id="常见坑与-faq">常见坑与 FAQ<a hidden class="anchor" aria-hidden="true" href="#常见坑与-faq">#</a></h2>
+<ul>
+<li><strong>未生效</strong>：<code>has('python3')</code> 为 0；或没在正确 filetype；或未执行 <code>:PlugInstall</code>。</li>
+<li><strong>JSX 展开成 HTML 属性名</strong>：确保设置 <code>javascript.jsx</code>/<code>javascriptreact</code> 扩展自 <code>html</code>；必要时在缓冲区 <code>:set filetype=javascriptreact</code>。</li>
+<li><strong>触发键冲突</strong>：检查其他插件是否占用同样映射，用 <code>:verbose imap , ,</code> 定位来源再改键位。</li>
+<li><strong>多光标编辑</strong>：emmet-vim 不原生支持，多光标可用 <code>vim-visual-multi</code>，展开前先插入缩写，再批量触发。</li>
+<li><strong>性能</strong>：大文件展开略慢，可在组件片段中使用，避免一次性展开巨量节点。</li>
+</ul>
+<h2 id="测试与验证清单">测试与验证清单<a hidden class="anchor" aria-hidden="true" href="#测试与验证清单">#</a></h2>
+<ul>
+<li><code>:echo has('python3') == 1</code>。</li>
+<li>新建 HTML buffer，输入 <code>div#app&gt;header&gt;h1{Hi}+nav&gt;ul&gt;li*3&gt;a{link$}</code>，触发后结构正确且缩进正常。</li>
+<li>在 CSS buffer 输入 <code>m10-20</code>、<code>bgc#333</code> 能展开为合法声明。</li>
+<li>在 JSX buffer 输入 <code>Card&gt;Button.primary{Go}</code>，展开为 <code>&lt;Card&gt;&lt;Button className=&quot;primary&quot;&gt;Go&lt;/Button&gt;&lt;/Card&gt;</code>。</li>
+<li>无错误日志：<code>messages</code> 中无 <code>emmet#</code> 报错；触发键不被其他插件覆盖。</li>
+</ul>
+<h2 id="性能与可访问性">性能与可访问性<a hidden class="anchor" aria-hidden="true" href="#性能与可访问性">#</a></h2>
+<ul>
+<li>输出结构时优先用语义标签（<code>header</code>/<code>nav</code>/<code>main</code>/<code>section</code>），方便读屏与 SEO。</li>
+<li>自动补全图片时记得加 <code>alt</code>：<code>img[alt=avatar src=/avatar.png]</code>。</li>
+<li>列表/按钮类结构可提前加 <code>aria-label</code> 占位，避免后续忘记。</li>
+<li>性能指标（CLS/LCP/FID）与 Emmet 本身无关，但保持展开模板简洁、减少不必要的嵌套能降低布局抖动。</li>
+</ul>
+<h2 id="最佳实践清单">最佳实践清单<a hidden class="anchor" aria-hidden="true" href="#最佳实践清单">#</a></h2>
+<ul>
+<li>为常用 filetype 显式配置 <code>g:user_emmet_settings</code>，确保 HTML/JSX/TSX 一致。</li>
+<li>自定义 leader（如 <code>,</code>）并写在 dotfiles 中同步多台机器。</li>
+<li>与格式化链路结合：保存时跑 Prettier/StyLua/ESLint，保持展开后风格一致。</li>
+<li>缩写先写“骨架”再加类/属性，例如 <code>section.hero&gt;div.container&gt;h1+p</code>，减少返工。</li>
+<li>记住 <code>$</code> 自动编号和 <code>{}</code> 文本，是最省时的两个特性。</li>
+</ul>
+<h2 id="总结与下一步">总结与下一步<a hidden class="anchor" aria-hidden="true" href="#总结与下一步">#</a></h2>
+<ul>
+<li>你现在有：安装方法、键位定制、HTML/CSS/JSX 示例、验证清单与排错法。</li>
+<li>下一步可尝试：
+<ol>
+<li>把团队常用片段写成 Emmet 自定义 snippets。</li>
+<li>在 <code>UltiSnips</code>/<code>LuaSnip</code> 中调用 Emmet，打造组合片段。</li>
+<li>结合 LSP/formatter，形成一致的保存即格式化流。</li>
+</ol>
+</li>
+</ul>
+<h2 id="参考与链接">参考与链接<a hidden class="anchor" aria-hidden="true" href="#参考与链接">#</a></h2>
+<ul>
+<li>Emmet 官方文档：https://docs.emmet.io/</li>
+<li>emmet-vim 仓库（mattn）：https://github.com/mattn/emmet-vim</li>
+<li>Vim Python3 provider 说明：https://github.com/neovim/neovim/wiki/FAQ#python-support</li>
+</ul>
+<h2 id="元信息">元信息<a hidden class="anchor" aria-hidden="true" href="#元信息">#</a></h2>
+<ul>
+<li>预计阅读：11 分钟；适合 Vim/Neovim + 前端工程师。</li>
+<li>标签：vim、neovim、emmet、frontend、productivity；分类：frontend。</li>
+<li>SEO 关键词：emmet-vim, Vim Emmet, HTML CSS 快速补全。</li>
+<li>更新时间：2025-11-14。</li>
+</ul>
+<h2 id="cta">CTA<a hidden class="anchor" aria-hidden="true" href="#cta">#</a></h2>
+<ul>
+<li>试着在本地新建 <code>demo.html</code> 实打实展开一次；</li>
+<li>如果有新场景/快捷键冲突，欢迎在仓库提交 issue 或评论交流；</li>
+<li>觉得有用就给 <code>mattn/emmet-vim</code> 点个 Star，支持作者。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/vim/">Vim</a></li>
+      <li><a href="http://localhost:1313/tags/neovim/">Neovim</a></li>
+      <li><a href="http://localhost:1313/tags/emmet/">Emmet</a></li>
+      <li><a href="http://localhost:1313/tags/frontend/">Frontend</a></li>
+      <li><a href="http://localhost:1313/tags/productivity/">Productivity</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/dev/python/pydantic-vs-dataclass-vs-typeddict/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Pydantic vs dataclass vs TypedDict：谁负责什么，怎么组合？</span>
+  </a>
+  <a class="next" href="http://localhost:1313/dev/frontend/svelte-button-config-guide/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>Svelte 按钮配置全攻略：状态、样式与无障碍实践</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Emmet-Vim 极速指南：用缩写爆写 HTML/CSS on x"
+            href="https://x.com/intent/tweet/?text=Emmet-Vim%20%e6%9e%81%e9%80%9f%e6%8c%87%e5%8d%97%ef%bc%9a%e7%94%a8%e7%bc%a9%e5%86%99%e7%88%86%e5%86%99%20HTML%2fCSS&amp;url=http%3a%2f%2flocalhost%3a1313%2fdev%2ffrontend%2femmet-vim-guide%2f&amp;hashtags=vim%2cneovim%2cemmet%2cfrontend%2cproductivity">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Emmet-Vim 极速指南：用缩写爆写 HTML/CSS on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fdev%2ffrontend%2femmet-vim-guide%2f&amp;title=Emmet-Vim%20%e6%9e%81%e9%80%9f%e6%8c%87%e5%8d%97%ef%bc%9a%e7%94%a8%e7%bc%a9%e5%86%99%e7%88%86%e5%86%99%20HTML%2fCSS&amp;summary=Emmet-Vim%20%e6%9e%81%e9%80%9f%e6%8c%87%e5%8d%97%ef%bc%9a%e7%94%a8%e7%bc%a9%e5%86%99%e7%88%86%e5%86%99%20HTML%2fCSS&amp;source=http%3a%2f%2flocalhost%3a1313%2fdev%2ffrontend%2femmet-vim-guide%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Emmet-Vim 极速指南：用缩写爆写 HTML/CSS on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fdev%2ffrontend%2femmet-vim-guide%2f&title=Emmet-Vim%20%e6%9e%81%e9%80%9f%e6%8c%87%e5%8d%97%ef%bc%9a%e7%94%a8%e7%bc%a9%e5%86%99%e7%88%86%e5%86%99%20HTML%2fCSS">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Emmet-Vim 极速指南：用缩写爆写 HTML/CSS on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fdev%2ffrontend%2femmet-vim-guide%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Emmet-Vim 极速指南：用缩写爆写 HTML/CSS on whatsapp"
+            href="https://api.whatsapp.com/send?text=Emmet-Vim%20%e6%9e%81%e9%80%9f%e6%8c%87%e5%8d%97%ef%bc%9a%e7%94%a8%e7%bc%a9%e5%86%99%e7%88%86%e5%86%99%20HTML%2fCSS%20-%20http%3a%2f%2flocalhost%3a1313%2fdev%2ffrontend%2femmet-vim-guide%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Emmet-Vim 极速指南：用缩写爆写 HTML/CSS on telegram"
+            href="https://telegram.me/share/url?text=Emmet-Vim%20%e6%9e%81%e9%80%9f%e6%8c%87%e5%8d%97%ef%bc%9a%e7%94%a8%e7%bc%a9%e5%86%99%e7%88%86%e5%86%99%20HTML%2fCSS&amp;url=http%3a%2f%2flocalhost%3a1313%2fdev%2ffrontend%2femmet-vim-guide%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Emmet-Vim 极速指南：用缩写爆写 HTML/CSS on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Emmet-Vim%20%e6%9e%81%e9%80%9f%e6%8c%87%e5%8d%97%ef%bc%9a%e7%94%a8%e7%bc%a9%e5%86%99%e7%88%86%e5%86%99%20HTML%2fCSS&u=http%3a%2f%2flocalhost%3a1313%2fdev%2ffrontend%2femmet-vim-guide%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

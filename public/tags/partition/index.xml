@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Partition on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/partition/</link>
+    <description>Recent content in Partition on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 05 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/partition/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>排序专题（五）：快速排序——枢轴策略、尾递归优化与工程实战</title>
+      <link>http://localhost:1313/alg/leetcode/5.sorting-series-quick-sort/</link>
+      <pubDate>Fri, 05 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/5.sorting-series-quick-sort/</guid>
+      <description>全面讲解快速排序的核心思想、枢轴选择、重复元素分区、尾递归与混合排序实践，附多语言实现与工程选型建议。</description>
+    </item>
+  </channel>
+</rss>

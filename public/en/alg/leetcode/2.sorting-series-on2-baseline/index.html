@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines | Jeanphilo Blog</title>
+<meta name="keywords" content="bubble sort, selection sort, insertion sort, O(n^2) sorting, ACERS">
+<meta name="description" content="Systematic ACERS explanation of bubble/selection/insertion sorts: principles, stability, scenarios, and multilingual implementations with selection guidance.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/en/alg/leetcode/2.sorting-series-on2-baseline/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/alg/leetcode/2.sorting-series-on2-baseline/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/en/alg/leetcode/2.sorting-series-on2-baseline/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/en/alg/leetcode/2.sorting-series-on2-baseline/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines">
+  <meta property="og:description" content="Systematic ACERS explanation of bubble/selection/insertion sorts: principles, stability, scenarios, and multilingual implementations with selection guidance.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="alg">
+    <meta property="article:published_time" content="2025-12-02T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-12-02T00:00:00+00:00">
+    <meta property="article:tag" content="Sorting">
+    <meta property="article:tag" content="Algorithms">
+    <meta property="article:tag" content="Bubble-Sort">
+    <meta property="article:tag" content="Selection-Sort">
+    <meta property="article:tag" content="Insertion-Sort">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines">
+<meta name="twitter:description" content="Systematic ACERS explanation of bubble/selection/insertion sorts: principles, stability, scenarios, and multilingual implementations with selection guidance.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Algorithms",
+      "item": "http://localhost:1313/en/alg/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "LeetCode",
+      "item": "http://localhost:1313/en/alg/leetcode/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines",
+      "item": "http://localhost:1313/en/alg/leetcode/2.sorting-series-on2-baseline/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines",
+  "name": "Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines",
+  "description": "Systematic ACERS explanation of bubble/selection/insertion sorts: principles, stability, scenarios, and multilingual implementations with selection guidance.",
+  "keywords": [
+    "bubble sort", "selection sort", "insertion sort", "O(n^2) sorting", "ACERS"
+  ],
+  "articleBody": " This is the second post in the sorting series, focusing on three O(n^2) baseline algorithms: bubble, selection, and insertion. They are simple and foundational, useful for understanding higher-level sorts and still valuable on small or nearly sorted data.\nTarget Readers Practice and teaching: need to master baseline sorts and explain them. Engineers: small-scale, embedded, or code-size-sensitive scenarios. Learners: want to understand stability, in-place behavior, and complexity sources. Background and Motivation Pain points: O(n^2) sorts are often ignored, but they represent the three core ideas: swap, select, insert. On small or nearly sorted data, insertion sort can outperform O(n log n) algorithms. We need a side-by-side comparison of stability, swaps/moves, and engineering use. A - Algorithm Theme: Compare bubble (swap-driven), selection (min selection), and insertion (prefix insertion) with a basic example.\nExample array: [5, 2, 4, 6, 1]\nBubble: adjacent swaps bubble the max to the end; repeat n passes. Selection: pick min each pass and swap into place; at most n swaps. Insertion: maintain a sorted prefix and insert current element; efficient when nearly sorted. Illustration (first two insertion passes):\nPass 1: |5| 2 4 6 1 -\u003e 2 5 4 6 1 Pass 2: 2 |5| 4 6 1 -\u003e 2 4 5 6 1 C - Concepts Algorithm Idea Stable In-place Comparisons (avg) Swaps/Moves Bubble Adjacent swaps Yes Yes O(n^2) O(n^2) swaps Selection Select min each pass No Yes O(n^2) O(n) swaps Insertion Insert into sorted prefix Yes Yes O(n^2) O(n^2) moves; O(n) when nearly sorted Where they fit\nBubble: teaching, stability requirement, tiny arrays. Selection: high swap cost (large objects), comparisons are acceptable. Insertion: small arrays, nearly sorted; also used as a subroutine in TimSort/Shell. E - Engineering Scenario 1: Embedded firmware small arrays (C) Background: microcontroller sorting at most tens of integers. Why: short code, in-place, no extra memory; selection sort has few swaps.\n// Selection sort, in-place O(1) space void selection_sort(int *a, int n) { for (int i = 0; i \u003c n - 1; ++i) { int min_i = i; for (int j = i + 1; j \u003c n; ++j) if (a[j] \u003c a[min_i]) min_i = j; if (min_i != i) { int tmp = a[i]; a[i] = a[min_i]; a[min_i] = tmp; } } } Scenario 2: Nearly sorted small lists (Python) Background: UI list receives a few new items; data is mostly ordered. Why: insertion sort runs close to O(n) when inversions are small.\ndef insertion_sort(arr): for i in range(1, len(arr)): key = arr[i] j = i - 1 while j \u003e= 0 and arr[j] \u003e key: arr[j + 1] = arr[j] j -= 1 arr[j + 1] = key return arr data = [1, 2, 3, 5, 4] print(insertion_sort(data)) Scenario 3: Teaching visualization (JavaScript) Background: show swap vs insert in a classroom or demo. Why: bubble sort is stable and intuitive; JS is short and visual.\nfunction bubbleSort(arr) { const a = [...arr]; for (let i = 0; i \u003c a.length; i++) { let swapped = false; for (let j = 0; j \u003c a.length - i - 1; j++) { if (a[j] \u003e a[j + 1]) { [a[j], a[j + 1]] = [a[j + 1], a[j]]; swapped = true; } } if (!swapped) break; // small optimization } return a; } console.log(bubbleSort([5, 2, 4, 6, 1])); Scenario 4: Small batch sorting (Go) Background: request payload size \u003c 64, prefer smaller constants. Why: Go sort switches to insertion for small segments; show a minimal implementation.\npackage main import \"fmt\" func insertionSort(a []int) { for i := 1; i \u003c len(a); i++ { key := a[i] j := i - 1 for j \u003e= 0 \u0026\u0026 a[j] \u003e key { a[j+1] = a[j] j-- } a[j+1] = key } } func main() { arr := []int{5, 2, 4, 6, 1} insertionSort(arr) fmt.Println(arr) } R - Reflection Complexity: all three have O(n^2) time in worst/avg, O(1) space. Stability: bubble and insertion are stable; selection is not (swap can break order). Alternatives: Small arrays: insertion beats bubble/selection; also used as fallback in TimSort/Introsort. Large arrays: switch to O(n log n) (quick/merge/heap) or non-comparison. Why keep them: Teaching value: clear view of comparisons, swaps, and moves. Engineering value: tiny input, nearly sorted, code size constraints, or as hybrid submodules. S - Summary Bubble/selection/insertion represent swap/select/insert ideas and are core to understanding sorting. Stability: bubble and insertion are stable; selection is not but uses few swaps. On small or nearly sorted data, insertion often beats O(n log n) algorithms. Modern sort implementations use hybrids: large segments use quick/heap/merge, small segments fall back to insertion. Choose based on size, degree of order, stability, and swap cost. Practice Guide / Steps If n \u003c 64 and nearly sorted, prefer insertion. Need stability and visualization: bubble with early-exit optimization. Swap cost is high: selection reduces swaps. Use insertion as a subroutine in quick/merge for small segments. Runnable Examples (Multilang Baselines) Python - Insertion def insertion_sort(a): for i in range(1, len(a)): key = a[i]; j = i - 1 while j \u003e= 0 and a[j] \u003e key: a[j+1] = a[j]; j -= 1 a[j+1] = key return a print(insertion_sort([5,2,4,6,1])) C - Selection void selection_sort(int *a, int n) { for (int i = 0; i \u003c n - 1; ++i) { int min_i = i; for (int j = i + 1; j \u003c n; ++j) if (a[j] \u003c a[min_i]) min_i = j; if (min_i != i) { int t=a[i]; a[i]=a[min_i]; a[min_i]=t; } } } C++ - Bubble #include using namespace std; void bubble(vector\u003cint\u003e\u0026 a){ for(size_t i=0;i\u003ca.size();++i){ bool swapped=false; for(size_t j=0;j+1\u003ca.size()-i;++j){ if(a[j]\u003ea[j+1]){swap(a[j],a[j+1]);swapped=true;} } if(!swapped) break; } } int main(){vector\u003cint\u003e a={5,2,4,6,1}; bubble(a); for(int x:a) cout\u003c\u003cx\u003c\u003c\" \";} Go - Insertion func insertion(a []int){ for i:=1;i",
+  "wordCount" : "1303",
+  "inLanguage": "en",
+  "datePublished": "2025-12-02T00:00:00Z",
+  "dateModified": "2025-12-02T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/en/alg/leetcode/2.sorting-series-on2-baseline/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/en/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/" title="中文"
+                                aria-label="中文">Zh</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/en/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/dev/" title="Development">
+                    <span>Dev</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/alg/" title="Algorithms">
+                    <span>Algorithms</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/en/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/en/alg/">Algorithms</a>&nbsp;»&nbsp;<a href="http://localhost:1313/en/alg/leetcode/">LeetCode</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines
+    </h1>
+    <div class="post-meta"><span title='2025-12-02 00:00:00 +0000 UTC'>December 2, 2025</span>&nbsp;·&nbsp;<span>7 min</span>&nbsp;|&nbsp;<span>Translations:</span>
+<ul class="i18n_list">
+    <li>
+        <a href="http://localhost:1313/alg/leetcode/2.sorting-series-on2-baseline/">Zh</a>
+    </li>
+</ul>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul><ul>
+                <li>
+                    <a href="#target-readers" aria-label="Target Readers">Target Readers</a></li>
+                <li>
+                    <a href="#background-and-motivation" aria-label="Background and Motivation">Background and Motivation</a></li></ul>
+                    
+                <li>
+                    <a href="#a---algorithm" aria-label="A - Algorithm">A - Algorithm</a></li>
+                <li>
+                    <a href="#c---concepts" aria-label="C - Concepts">C - Concepts</a></li>
+                <li>
+                    <a href="#e---engineering" aria-label="E - Engineering">E - Engineering</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#scenario-1-embedded-firmware-small-arrays-c" aria-label="Scenario 1: Embedded firmware small arrays (C)">Scenario 1: Embedded firmware small arrays (C)</a></li>
+                <li>
+                    <a href="#scenario-2-nearly-sorted-small-lists-python" aria-label="Scenario 2: Nearly sorted small lists (Python)">Scenario 2: Nearly sorted small lists (Python)</a></li>
+                <li>
+                    <a href="#scenario-3-teaching-visualization-javascript" aria-label="Scenario 3: Teaching visualization (JavaScript)">Scenario 3: Teaching visualization (JavaScript)</a></li>
+                <li>
+                    <a href="#scenario-4-small-batch-sorting-go" aria-label="Scenario 4: Small batch sorting (Go)">Scenario 4: Small batch sorting (Go)</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#r---reflection" aria-label="R - Reflection">R - Reflection</a></li>
+                <li>
+                    <a href="#s---summary" aria-label="S - Summary">S - Summary</a><ul>
+                        
+                <li>
+                    <a href="#practice-guide--steps" aria-label="Practice Guide / Steps">Practice Guide / Steps</a></li>
+                <li>
+                    <a href="#runnable-examples-multilang-baselines" aria-label="Runnable Examples (Multilang Baselines)">Runnable Examples (Multilang Baselines)</a><ul>
+                        
+                <li>
+                    <a href="#python---insertion" aria-label="Python - Insertion">Python - Insertion</a></li>
+                <li>
+                    <a href="#c---selection" aria-label="C - Selection">C - Selection</a></li>
+                <li>
+                    <a href="#c---bubble" aria-label="C&#43;&#43; - Bubble">C++ - Bubble</a></li>
+                <li>
+                    <a href="#go---insertion" aria-label="Go - Insertion">Go - Insertion</a></li>
+                <li>
+                    <a href="#rust---insertion" aria-label="Rust - Insertion">Rust - Insertion</a></li>
+                <li>
+                    <a href="#javascript---bubble" aria-label="JavaScript - Bubble">JavaScript - Bubble</a></li></ul>
+                </li>
+                <li>
+                    <a href="#explanation-and-trade-offs" aria-label="Explanation and Trade-offs">Explanation and Trade-offs</a></li>
+                <li>
+                    <a href="#common-pitfalls-and-notes" aria-label="Common Pitfalls and Notes">Common Pitfalls and Notes</a></li>
+                <li>
+                    <a href="#best-practices" aria-label="Best Practices">Best Practices</a></li>
+                <li>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a></li>
+                <li>
+                    <a href="#references-and-further-reading" aria-label="References and Further Reading">References and Further Reading</a></li>
+                <li>
+                    <a href="#meta" aria-label="Meta">Meta</a></li>
+                <li>
+                    <a href="#call-to-action-cta" aria-label="Call to Action (CTA)">Call to Action (CTA)</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>This is the second post in the sorting series, focusing on three O(n^2) baseline algorithms: bubble, selection, and insertion. They are simple and foundational, useful for understanding higher-level sorts and still valuable on small or nearly sorted data.</p>
+</blockquote>
+<h2 id="target-readers">Target Readers<a hidden class="anchor" aria-hidden="true" href="#target-readers">#</a></h2>
+<ul>
+<li>Practice and teaching: need to master baseline sorts and explain them.</li>
+<li>Engineers: small-scale, embedded, or code-size-sensitive scenarios.</li>
+<li>Learners: want to understand stability, in-place behavior, and complexity sources.</li>
+</ul>
+<h2 id="background-and-motivation">Background and Motivation<a hidden class="anchor" aria-hidden="true" href="#background-and-motivation">#</a></h2>
+<ul>
+<li>Pain points:
+<ul>
+<li>O(n^2) sorts are often ignored, but they represent the three core ideas: swap, select, insert.</li>
+<li>On small or nearly sorted data, insertion sort can outperform O(n log n) algorithms.</li>
+<li>We need a side-by-side comparison of stability, swaps/moves, and engineering use.</li>
+</ul>
+</li>
+</ul>
+<h1 id="a---algorithm">A - Algorithm<a hidden class="anchor" aria-hidden="true" href="#a---algorithm">#</a></h1>
+<p><strong>Theme</strong>: Compare bubble (swap-driven), selection (min selection), and insertion (prefix insertion) with a basic example.</p>
+<p><strong>Example array</strong>: <code>[5, 2, 4, 6, 1]</code></p>
+<ul>
+<li>Bubble: adjacent swaps bubble the max to the end; repeat n passes.</li>
+<li>Selection: pick min each pass and swap into place; at most n swaps.</li>
+<li>Insertion: maintain a sorted prefix and insert current element; efficient when nearly sorted.</li>
+</ul>
+<p><strong>Illustration</strong> (first two insertion passes):</p>
+<pre tabindex="0"><code>Pass 1: |5| 2 4 6 1 -&gt; 2 5 4 6 1
+Pass 2: 2 |5| 4 6 1 -&gt; 2 4 5 6 1
+</code></pre><h1 id="c---concepts">C - Concepts<a hidden class="anchor" aria-hidden="true" href="#c---concepts">#</a></h1>
+<table>
+  <thead>
+      <tr>
+          <th>Algorithm</th>
+          <th>Idea</th>
+          <th>Stable</th>
+          <th>In-place</th>
+          <th>Comparisons (avg)</th>
+          <th>Swaps/Moves</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Bubble</td>
+          <td>Adjacent swaps</td>
+          <td>Yes</td>
+          <td>Yes</td>
+          <td>O(n^2)</td>
+          <td>O(n^2) swaps</td>
+      </tr>
+      <tr>
+          <td>Selection</td>
+          <td>Select min each pass</td>
+          <td>No</td>
+          <td>Yes</td>
+          <td>O(n^2)</td>
+          <td>O(n) swaps</td>
+      </tr>
+      <tr>
+          <td>Insertion</td>
+          <td>Insert into sorted prefix</td>
+          <td>Yes</td>
+          <td>Yes</td>
+          <td>O(n^2)</td>
+          <td>O(n^2) moves; O(n) when nearly sorted</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Where they fit</strong></p>
+<ul>
+<li>Bubble: teaching, stability requirement, tiny arrays.</li>
+<li>Selection: high swap cost (large objects), comparisons are acceptable.</li>
+<li>Insertion: small arrays, nearly sorted; also used as a subroutine in TimSort/Shell.</li>
+</ul>
+<h1 id="e---engineering">E - Engineering<a hidden class="anchor" aria-hidden="true" href="#e---engineering">#</a></h1>
+<h3 id="scenario-1-embedded-firmware-small-arrays-c">Scenario 1: Embedded firmware small arrays (C)<a hidden class="anchor" aria-hidden="true" href="#scenario-1-embedded-firmware-small-arrays-c">#</a></h3>
+<p>Background: microcontroller sorting at most tens of integers.
+Why: short code, in-place, no extra memory; selection sort has few swaps.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// Selection sort, in-place O(1) space
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">selection_sort</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>a, <span style="color:#66d9ef">int</span> n) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> min_i <span style="color:#f92672">=</span> i;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>; j <span style="color:#f92672">&lt;</span> n; <span style="color:#f92672">++</span>j)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (a[j] <span style="color:#f92672">&lt;</span> a[min_i]) min_i <span style="color:#f92672">=</span> j;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (min_i <span style="color:#f92672">!=</span> i) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> tmp <span style="color:#f92672">=</span> a[i]; a[i] <span style="color:#f92672">=</span> a[min_i]; a[min_i] <span style="color:#f92672">=</span> tmp;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="scenario-2-nearly-sorted-small-lists-python">Scenario 2: Nearly sorted small lists (Python)<a hidden class="anchor" aria-hidden="true" href="#scenario-2-nearly-sorted-small-lists-python">#</a></h3>
+<p>Background: UI list receives a few new items; data is mostly ordered.
+Why: insertion sort runs close to O(n) when inversions are small.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">insertion_sort</span>(arr):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, len(arr)):
+</span></span><span style="display:flex;"><span>        key <span style="color:#f92672">=</span> arr[i]
+</span></span><span style="display:flex;"><span>        j <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> j <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> arr[j] <span style="color:#f92672">&gt;</span> key:
+</span></span><span style="display:flex;"><span>            arr[j <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> arr[j]
+</span></span><span style="display:flex;"><span>            j <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        arr[j <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> key
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> arr
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">4</span>]
+</span></span><span style="display:flex;"><span>print(insertion_sort(data))
+</span></span></code></pre></div><h3 id="scenario-3-teaching-visualization-javascript">Scenario 3: Teaching visualization (JavaScript)<a hidden class="anchor" aria-hidden="true" href="#scenario-3-teaching-visualization-javascript">#</a></h3>
+<p>Background: show swap vs insert in a classroom or demo.
+Why: bubble sort is stable and intuitive; JS is short and visual.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">bubbleSort</span>(<span style="color:#a6e22e">arr</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">=</span> [...<span style="color:#a6e22e">arr</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">length</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">swapped</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">j</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">j</span><span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>] <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]) {
+</span></span><span style="display:flex;"><span>        [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>], <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>]] <span style="color:#f92672">=</span> [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>], <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]];
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">swapped</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">swapped</span>) <span style="color:#66d9ef">break</span>; <span style="color:#75715e">// small optimization
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">bubbleSort</span>([<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">1</span>]));
+</span></span></code></pre></div><h3 id="scenario-4-small-batch-sorting-go">Scenario 4: Small batch sorting (Go)<a hidden class="anchor" aria-hidden="true" href="#scenario-4-small-batch-sorting-go">#</a></h3>
+<p>Background: request payload size &lt; 64, prefer smaller constants.
+Why: Go sort switches to insertion for small segments; show a minimal implementation.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">insertionSort</span>(<span style="color:#a6e22e">a</span> []<span style="color:#66d9ef">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span> &lt; len(<span style="color:#a6e22e">a</span>); <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">key</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>] &gt; <span style="color:#a6e22e">key</span> {
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] = <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span>
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] = <span style="color:#a6e22e">key</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">arr</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">6</span>, <span style="color:#ae81ff">1</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">insertionSort</span>(<span style="color:#a6e22e">arr</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">arr</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="r---reflection">R - Reflection<a hidden class="anchor" aria-hidden="true" href="#r---reflection">#</a></h1>
+<ul>
+<li><strong>Complexity</strong>: all three have O(n^2) time in worst/avg, O(1) space.</li>
+<li><strong>Stability</strong>: bubble and insertion are stable; selection is not (swap can break order).</li>
+<li><strong>Alternatives</strong>:
+<ul>
+<li>Small arrays: insertion beats bubble/selection; also used as fallback in TimSort/Introsort.</li>
+<li>Large arrays: switch to O(n log n) (quick/merge/heap) or non-comparison.</li>
+</ul>
+</li>
+<li><strong>Why keep them</strong>:
+<ul>
+<li>Teaching value: clear view of comparisons, swaps, and moves.</li>
+<li>Engineering value: tiny input, nearly sorted, code size constraints, or as hybrid submodules.</li>
+</ul>
+</li>
+</ul>
+<h1 id="s---summary">S - Summary<a hidden class="anchor" aria-hidden="true" href="#s---summary">#</a></h1>
+<ul>
+<li>Bubble/selection/insertion represent swap/select/insert ideas and are core to understanding sorting.</li>
+<li>Stability: bubble and insertion are stable; selection is not but uses few swaps.</li>
+<li>On small or nearly sorted data, insertion often beats O(n log n) algorithms.</li>
+<li>Modern sort implementations use hybrids: large segments use quick/heap/merge, small segments fall back to insertion.</li>
+<li>Choose based on size, degree of order, stability, and swap cost.</li>
+</ul>
+<h2 id="practice-guide--steps">Practice Guide / Steps<a hidden class="anchor" aria-hidden="true" href="#practice-guide--steps">#</a></h2>
+<ul>
+<li>If n &lt; 64 and nearly sorted, prefer insertion.</li>
+<li>Need stability and visualization: bubble with early-exit optimization.</li>
+<li>Swap cost is high: selection reduces swaps.</li>
+<li>Use insertion as a subroutine in quick/merge for small segments.</li>
+</ul>
+<h2 id="runnable-examples-multilang-baselines">Runnable Examples (Multilang Baselines)<a hidden class="anchor" aria-hidden="true" href="#runnable-examples-multilang-baselines">#</a></h2>
+<h3 id="python---insertion">Python - Insertion<a hidden class="anchor" aria-hidden="true" href="#python---insertion">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">insertion_sort</span>(a):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, len(a)):
+</span></span><span style="display:flex;"><span>        key <span style="color:#f92672">=</span> a[i]; j <span style="color:#f92672">=</span> i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> j <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">and</span> a[j] <span style="color:#f92672">&gt;</span> key:
+</span></span><span style="display:flex;"><span>            a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> a[j]; j <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> key
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> a
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(insertion_sort([<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">1</span>]))
+</span></span></code></pre></div><h3 id="c---selection">C - Selection<a hidden class="anchor" aria-hidden="true" href="#c---selection">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">selection_sort</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>a, <span style="color:#66d9ef">int</span> n) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> min_i <span style="color:#f92672">=</span> i;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> j <span style="color:#f92672">=</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>; j <span style="color:#f92672">&lt;</span> n; <span style="color:#f92672">++</span>j)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (a[j] <span style="color:#f92672">&lt;</span> a[min_i]) min_i <span style="color:#f92672">=</span> j;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (min_i <span style="color:#f92672">!=</span> i) { <span style="color:#66d9ef">int</span> t<span style="color:#f92672">=</span>a[i]; a[i]<span style="color:#f92672">=</span>a[min_i]; a[min_i]<span style="color:#f92672">=</span>t; }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="c---bubble">C++ - Bubble<a hidden class="anchor" aria-hidden="true" href="#c---bubble">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;bits/stdc++.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">bubble</span>(vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;&amp;</span> a){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(size_t i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>a.size();<span style="color:#f92672">++</span>i){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">bool</span> swapped<span style="color:#f92672">=</span>false;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span>(size_t j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#f92672">&lt;</span>a.size()<span style="color:#f92672">-</span>i;<span style="color:#f92672">++</span>j){
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(a[j]<span style="color:#f92672">&gt;</span>a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]){swap(a[j],a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]);swapped<span style="color:#f92672">=</span>true;}
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>swapped) <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(){vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> a<span style="color:#f92672">=</span>{<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">1</span>}; bubble(a); <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> x:a) cout<span style="color:#f92672">&lt;&lt;</span>x<span style="color:#f92672">&lt;&lt;</span><span style="color:#e6db74">&#34; &#34;</span>;}
+</span></span></code></pre></div><h3 id="go---insertion">Go - Insertion<a hidden class="anchor" aria-hidden="true" href="#go---insertion">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">insertion</span>(<span style="color:#a6e22e">a</span> []<span style="color:#66d9ef">int</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">:=</span><span style="color:#ae81ff">1</span>;<span style="color:#a6e22e">i</span>&lt;len(<span style="color:#a6e22e">a</span>);<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">key</span><span style="color:#f92672">:=</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]; <span style="color:#a6e22e">j</span><span style="color:#f92672">:=</span><span style="color:#a6e22e">i</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span><span style="color:#f92672">&gt;=</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]&gt;<span style="color:#a6e22e">key</span> { <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]=<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]; <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span> }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]=<span style="color:#a6e22e">key</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="rust---insertion">Rust - Insertion<a hidden class="anchor" aria-hidden="true" href="#rust---insertion">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">insertion_sort</span>(a: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> [<span style="color:#66d9ef">i32</span>]) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">..</span>a.len() {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> key <span style="color:#f92672">=</span> a[i];
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> j <span style="color:#f92672">=</span> i <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> j <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> a[j <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>] <span style="color:#f92672">&gt;</span> key {
+</span></span><span style="display:flex;"><span>            a[(j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>] <span style="color:#f92672">=</span> a[j <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>];
+</span></span><span style="display:flex;"><span>            j <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        a[(j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>] <span style="color:#f92672">=</span> key;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> v <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec!</span>[<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>    insertion_sort(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> v);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">println!</span>(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{:?}</span><span style="color:#e6db74">&#34;</span>, v);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="javascript---bubble">JavaScript - Bubble<a hidden class="anchor" aria-hidden="true" href="#javascript---bubble">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">bubbleSort</span>(<span style="color:#a6e22e">a</span>){
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">length</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">swapped</span><span style="color:#f92672">=</span><span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">j</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;<span style="color:#a6e22e">j</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">length</span><span style="color:#f92672">-</span><span style="color:#a6e22e">i</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;<span style="color:#a6e22e">j</span><span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]<span style="color:#f92672">&gt;</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]){[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]];<span style="color:#a6e22e">swapped</span><span style="color:#f92672">=</span><span style="color:#66d9ef">true</span>;}
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span><span style="color:#a6e22e">swapped</span>) <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">bubbleSort</span>([<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">6</span>,<span style="color:#ae81ff">1</span>]));
+</span></span></code></pre></div><h2 id="explanation-and-trade-offs">Explanation and Trade-offs<a hidden class="anchor" aria-hidden="true" href="#explanation-and-trade-offs">#</a></h2>
+<ul>
+<li>Bubble vs Selection: bubble is stable but swaps more; selection swaps less but is unstable.</li>
+<li>Insertion vs Bubble: insertion does fewer moves; nearly sorted arrays can drop to O(n).</li>
+<li>Hybrid strategy: quick/heap for large segments, insertion for small segments.</li>
+</ul>
+<h2 id="common-pitfalls-and-notes">Common Pitfalls and Notes<a hidden class="anchor" aria-hidden="true" href="#common-pitfalls-and-notes">#</a></h2>
+<ul>
+<li>Bubble without early exit wastes O(n^2) on already sorted input.</li>
+<li>Selection with large structs: fewer swaps but each swap is costly; for stability use index arrays.</li>
+<li>Insertion degrades on large arrays; best for small or nearly sorted segments.</li>
+</ul>
+<h2 id="best-practices">Best Practices<a hidden class="anchor" aria-hidden="true" href="#best-practices">#</a></h2>
+<ul>
+<li>Keep a comparison table for stability, swaps/moves, and constants.</li>
+<li>Write an insertion helper and reuse it in custom quick/merge sorts.</li>
+<li>Test with sorted, reversed, many duplicates, and nearly sorted to observe early-exit behavior.</li>
+</ul>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<ul>
+<li>The O(n^2) trio is the foundation and a key component of hybrid sorting.</li>
+<li>For nearly sorted or small inputs, insertion remains a strong choice.</li>
+<li>Stable needs -&gt; bubble or insertion; swap cost sensitive -&gt; selection or stable variants.</li>
+</ul>
+<h2 id="references-and-further-reading">References and Further Reading<a hidden class="anchor" aria-hidden="true" href="#references-and-further-reading">#</a></h2>
+<ul>
+<li>CLRS chapters on insertion/bubble/selection sort</li>
+<li>CPython TimSort implementation notes (insertion thresholds)</li>
+<li>Intel/AMD notes on cache effects for small array sorting</li>
+</ul>
+<h2 id="meta">Meta<a hidden class="anchor" aria-hidden="true" href="#meta">#</a></h2>
+<ul>
+<li>Reading time: approx. 14 min</li>
+<li>SEO keywords: bubble sort, selection sort, insertion sort, O(n^2) sorting, stability</li>
+<li>Meta description: sorting series (2) comparing bubble/selection/insertion principles, stability, scenarios, and multilingual implementations for small or nearly sorted data.</li>
+</ul>
+<h2 id="call-to-action-cta">Call to Action (CTA)<a hidden class="anchor" aria-hidden="true" href="#call-to-action-cta">#</a></h2>
+<ul>
+<li>Benchmark a small dataset (e.g., 50 log rows) with all three algorithms.</li>
+<li>Add a &ldquo;&lt;= 32 switch to insertion&rdquo; optimization in your quick/merge and measure the gain.</li>
+<li>Follow the series: shell, merge, quick, heap, non-comparison, TimSort/Introsort, selection guide.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/en/tags/sorting/">Sorting</a></li>
+      <li><a href="http://localhost:1313/en/tags/algorithms/">Algorithms</a></li>
+      <li><a href="http://localhost:1313/en/tags/bubble-sort/">Bubble-Sort</a></li>
+      <li><a href="http://localhost:1313/en/tags/selection-sort/">Selection-Sort</a></li>
+      <li><a href="http://localhost:1313/en/tags/insertion-sort/">Insertion-Sort</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/en/alg/leetcode/3.sorting-series-shell-sort/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Sorting Series (3): Shell Sort - From Insertion to Gap-Based Efficiency</span>
+  </a>
+  <a class="next" href="http://localhost:1313/en/alg/leetcode/1.sorting-series-preface/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Sorting Series (1): How to Choose an Algorithm - Time, Space, Stability, Scenarios</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines on x"
+            href="https://x.com/intent/tweet/?text=Sorting%20Series%20%282%29%3a%20Bubble%2c%20Selection%2c%20Insertion%20-%20Three%20O%28n%5e2%29%20Baselines&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f2.sorting-series-on2-baseline%2f&amp;hashtags=sorting%2calgorithms%2cbubble-sort%2cselection-sort%2cinsertion-sort">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f2.sorting-series-on2-baseline%2f&amp;title=Sorting%20Series%20%282%29%3a%20Bubble%2c%20Selection%2c%20Insertion%20-%20Three%20O%28n%5e2%29%20Baselines&amp;summary=Sorting%20Series%20%282%29%3a%20Bubble%2c%20Selection%2c%20Insertion%20-%20Three%20O%28n%5e2%29%20Baselines&amp;source=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f2.sorting-series-on2-baseline%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f2.sorting-series-on2-baseline%2f&title=Sorting%20Series%20%282%29%3a%20Bubble%2c%20Selection%2c%20Insertion%20-%20Three%20O%28n%5e2%29%20Baselines">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f2.sorting-series-on2-baseline%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines on whatsapp"
+            href="https://api.whatsapp.com/send?text=Sorting%20Series%20%282%29%3a%20Bubble%2c%20Selection%2c%20Insertion%20-%20Three%20O%28n%5e2%29%20Baselines%20-%20http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f2.sorting-series-on2-baseline%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines on telegram"
+            href="https://telegram.me/share/url?text=Sorting%20Series%20%282%29%3a%20Bubble%2c%20Selection%2c%20Insertion%20-%20Three%20O%28n%5e2%29%20Baselines&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f2.sorting-series-on2-baseline%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (2): Bubble, Selection, Insertion - Three O(n^2) Baselines on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Sorting%20Series%20%282%29%3a%20Bubble%2c%20Selection%2c%20Insertion%20-%20Three%20O%28n%5e2%29%20Baselines&u=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f2.sorting-series-on2-baseline%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/en/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>LeetCode | Jeanphilo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/categories/leetcode/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="http://localhost:1313/categories/leetcode/index.xml" title="rss">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/categories/leetcode/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/en/categories/leetcode/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/categories/leetcode/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="LeetCode">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LeetCode">
+<meta name="twitter:description" content="">
+
+</head>
+<body class="list" id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/en/" title="English"
+                                aria-label="English">En</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="文章归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/dev/" title="开发">
+                    <span>开发</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/alg/" title="算法">
+                    <span>算法</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>标签</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+<header class="page-header"><div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/categories/">Categories</a></div>
+  <h1>
+    LeetCode
+  </h1>
+</header>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">数据结构基础：好数对计数（Number of Good Pairs）哈希统计 ACERS 解析
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 副标题 / 摘要
+这是“数据结构基础”系列第 2 题：好数对计数。通过“频次统计 &#43; 组合计数”，把 O(n^2) 直接降到 O(n)，并给出可直接迁移到工程的实现方式。
+预计阅读时长：8~10 分钟 标签：哈希表、计数、数组 SEO 关键词：Good Pairs, 好数对, hash map, frequency, 计数 元描述：好数对计数的哈希表解法与工程化应用，含复杂度分析与多语言代码。 目标读者 刚开始学习哈希表与计数思想的初学者 希望把刷题方法迁移到业务统计的中级工程师 准备面试，想掌握基础计数模型的同学 背景 / 动机 “找出相同元素的两两组合数量”是一个常见的计数类问题。
+在数据去重、行为分析、错误归因等场景里，这类问题通常会被反复遇到。
+若用双重循环计算，复杂度是 O(n^2)；一旦数据规模扩大就会变慢。
+因此需要一个可线性扩展的方案。
+A — Algorithm（题目与算法） 题目还原 给你一个整数数组 nums。
+如果一组数字 (i, j) 满足 nums[i] == nums[j] 且 i &lt; j，就称为一个 好数对。
+返回好数对的数目。
+输入输出 名称 类型 描述 nums int[] 整数数组 返回 int 好数对数量 基础示例 nums 输出 说明 [1, 2, 3, 1, 1, 3] 4 (0,3) (0,4) (3,4) (2,5) [1, 1, 1, 1] 6 C(4,2) = 6 [1, 2, 3] 0 无重复 直观图示（示例 1）
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-30 11:40:00 +0800 HKT'>2025年12月30日</span>&nbsp;·&nbsp;<span>5 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 数据结构基础：好数对计数（Number of Good Pairs）哈希统计 ACERS 解析" href="http://localhost:1313/alg/leetcode/good-pairs-count-acers/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">Two Sum 两数之和：哈希表一遍扫描与 ACERS 工程化解析
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 副标题 / 摘要
+Two Sum（两数之和）是最经典的数组哈希题：用“补数 &#43; 哈希表”把 O(n^2) 降到 O(n)。本文按 ACERS 结构拆解题意、原理与工程迁移，并给出多语言可运行实现。
+预计阅读时长：10~12 分钟 标签：哈希表、数组、补数、面试高频 SEO 关键词：Two Sum, 两数之和, hash map, 补数, O(n) 元描述：两数之和的哈希表解法与工程应用解析，含复杂度对比与多语言代码。 目标读者 刚开始刷题，希望建立“补数 &#43; 哈希表”基本模型的初学者 需要把算法思路迁移到工程问题的中级开发者 准备面试、想快速掌握高频题的求职者 背景 / 动机 “在一堆数字里找出两数之和”等价于一个快速配对问题，常见于对账、预算、风控、推荐等场景。
+朴素暴力法虽然简单，但在数据量上来后会直接超时；哈希表一遍扫描能把复杂度从 O(n^2) 降到 O(n)，是最工程可行的做法之一。
+A — Algorithm（题目与算法） 题目还原 给定一个整数数组 nums 和一个整数目标值 target，请在该数组中找出和为目标值的 两个 整数，并返回它们的数组下标。
+每种输入只会对应一个答案，并且你不能使用两次相同的元素。答案可以按任意顺序返回。
+输入输出 名称 类型 描述 nums int[] 整数数组 target int 目标和 返回 int[] 满足 nums[i] &#43; nums[j] == target 的下标 基础示例 nums target 输出 [2, 7, 11, 15] 9 [0, 1] [3, 2, 4] 6 [1, 2] 补数图示（示例 1）
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-28 10:00:00 +0800 HKT'>2025年12月28日</span>&nbsp;·&nbsp;<span>5 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to Two Sum 两数之和：哈希表一遍扫描与 ACERS 工程化解析" href="http://localhost:1313/alg/leetcode/two-sum-hash-map-acers/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">排序专题（终篇）：选型实战——按规模、稳定性、内存与分布选择排序算法
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>以实战视角整理排序选型：给出规模/分布/稳定性/内存维度的决策表、工程场景示例、测试清单与常见坑，快速落地前七篇内容。</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-09 00:00:00 +0000 UTC'>2025年12月9日</span>&nbsp;·&nbsp;<span>2 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 排序专题（终篇）：选型实战——按规模、稳定性、内存与分布选择排序算法" href="http://localhost:1313/alg/leetcode/9.sorting-series-selection-guide/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">排序专题（八）：TimSort 与 Introsort——语言内置排序的工程范式
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>拆解 Python/Java 默认的 TimSort 与 C&#43;&#43; std::sort 的 Introsort：触发条件、稳定性、复杂度与工程取舍，附伪实现骨架与选型建议。</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-08 00:00:00 +0000 UTC'>2025年12月8日</span>&nbsp;·&nbsp;<span>3 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 排序专题（八）：TimSort 与 Introsort——语言内置排序的工程范式" href="http://localhost:1313/alg/leetcode/8.sorting-series-timsort-introsort/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">排序专题（七）：非比较排序——计数、桶、基数的范围与位数之战
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>讲清非比较排序的适用前提、时间/空间复杂度、工程实现细节与常见坑，附计数/桶/基数排序的多语言示例。</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-07 00:00:00 +0000 UTC'>2025年12月7日</span>&nbsp;·&nbsp;<span>3 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 排序专题（七）：非比较排序——计数、桶、基数的范围与位数之战" href="http://localhost:1313/alg/leetcode/7.sorting-series-non-comparison/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">排序专题（六）：堆排序——原地 O(n log n) 的稳健方案
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>讲解堆排序的原理、复杂度与工程场景，对比快排/归并的取舍，附多语言实现和 top-k 应用示例。</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-06 00:00:00 +0000 UTC'>2025年12月6日</span>&nbsp;·&nbsp;<span>3 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 排序专题（六）：堆排序——原地 O(n log n) 的稳健方案" href="http://localhost:1313/alg/leetcode/6.sorting-series-heap-sort/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">排序专题（五）：快速排序——枢轴策略、尾递归优化与工程实战
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>全面讲解快速排序的核心思想、枢轴选择、重复元素分区、尾递归与混合排序实践，附多语言实现与工程选型建议。</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-05 00:00:00 +0000 UTC'>2025年12月5日</span>&nbsp;·&nbsp;<span>6 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 排序专题（五）：快速排序——枢轴策略、尾递归优化与工程实战" href="http://localhost:1313/alg/leetcode/5.sorting-series-quick-sort/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">最大正负数计数：用二分在排序数组中统计正整数和负整数数量的最大值
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 副标题 / 摘要
+给定一个有序整数数组，如何在 O(log n) 时间内分别统计负数和正数的个数，并返回两者中的较大值？这道「Maximum Count of Positive &amp; Negative Integers」正是边界型二分的练习题。本文用上下界二分一次性搞定负数结束和正数起点。
+预计阅读时长：8~10 分钟 适用场景标签：二分查找、边界计数、排序数组 SEO 关键词：maximum count, positive negative, 二分统计, 上下界, 有序数组计数 目标读者与背景 目标读者
+已经会写 basic binary search，希望进阶到“计数型二分”的同学； 在工程中有基于排序数据做区间计数需求的工程师； 准备面试，想把二分查找的上下界技巧练熟的开发者。 背景 / 动机
+在各种日志 / 指标 / 数据分析场景中，我们经常会对有序数据做计数：
+比如统计小于 0 的条目数量； 统计大于某个阈值的条目数量； 找到“负数段结束”和“正数段开始”的位置。 这道 LeetCode 题「Maximum Count of Positive &amp; Negative Integers」是这类需求的简化模型，非常适合作为上下界二分的练习。
+A — Algorithm（题目与算法） 题目重述 给定一个按非降序排序的整数数组 nums。
+数组中可能包含负数、0 和正数。
+定义：
+countNeg = 数组中小于 0 的元素数量； countPos = 数组中大于 0 的元素数量。
+请返回 max(countNeg, countPos)。 输入
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-04 11:40:00 +0800 HKT'>2025年12月4日</span>&nbsp;·&nbsp;<span>8 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 最大正负数计数：用二分在排序数组中统计正整数和负整数数量的最大值" href="http://localhost:1313/alg/leetcode/binary-search-maximum-count-positive-negative/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">比目标字母大的最小字母：有序字符数组上的二分查找技巧
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 副标题 / 摘要
+这道题看似只是“找一个比目标大的字母”，本质上是经典的上界二分（upper_bound）问题：在有序字符数组中找到第一个 &gt; target 的元素，并在找不到时从头环绕。本文给出完整的二分模板和多语言实现，帮你稳拿这类边界题。
+预计阅读时长：8~10 分钟 适用场景标签：二分查找进阶、字符数组、上界查找 SEO 关键词：find smallest letter greater than target, upper_bound, 二分查找字符数组 目标读者与背景 目标读者
+已经掌握基本二分查找，想进一步熟悉上下界（upper/lower bound）的同学； 在工程中需要在有序集合中找到“下一个更大值”的开发者； 准备中高级面试，想通过一道题统一上界二分写法的工程师。 背景 / 动机
+很多系统都会用到“环形有序列表”的概念：
+比如按字母排序的标签、按时间排序的分片； 想要找“比当前值更大的下一个值”，找不到就从头开始。 这道题「Find Smallest Letter Greater Than Target」正是这种模式的简化版，是练习上界二分的好题。
+A — Algorithm（题目与算法） 题目重述 给定一个按非降序排序的字符数组 letters，数组中的字母都是小写英文字母。
+给定一个字符 target，请你找到数组中严格大于 target 的最小字母并返回。
+注意：letters 数组是环绕的——如果不存在这样的字母，则返回数组的第一个元素。
+输入
+letters: 排序好的小写字母数组，长度为 n，且 letters 中至少有两个不同的字母； target: 一个小写字母。 输出
+字符：数组中比 target 大的最小字母；若不存在，则为 letters[0]。 示例 1 letters = [&#39;c&#39;, &#39;f&#39;, &#39;j&#39;] target = &#39;a&#39; 所有比 &#39;a&#39; 大的字母有 [&#39;c&#39;, &#39;f&#39;, &#39;j&#39;]； 其中最小的是 &#39;c&#39;。 输出：&#39;c&#39;
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-04 11:30:00 +0800 HKT'>2025年12月4日</span>&nbsp;·&nbsp;<span>6 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 比目标字母大的最小字母：有序字符数组上的二分查找技巧" href="http://localhost:1313/alg/leetcode/binary-search-smallest-letter-greater-than-target/"></a>
+</article>
+
+<article class="post-entry tag-entry"> 
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">经典 Binary Search：在排序数组中查找目标值索引的统一模板
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p> 副标题 / 摘要
+二分查找是所有算法面试和工程系统中的“必修课”。本文以最基础的「在有序数组中查找目标值」为例，从题意、边界到统一模板，系统整理 Binary Search 的写法，并配套多语言实现，帮助你彻底告别二分边界恐惧症。
+预计阅读时长：8~10 分钟 适用场景标签：二分查找基础、数组检索、性能优化 SEO 关键词：binary search, LeetCode 704, 二分查找模板, 有序数组目标索引 目标读者与背景 目标读者
+刚开始系统刷题、希望夯实基础二分查找的同学； 在工程中经常需要在有序列表中查找、定位数据的后端 / 前端工程师； 曾经被二分查找的边界条件困扰、希望形成统一模板的开发者。 为什么这题值得认真学？
+它是 LeetCode 704：Binary Search，二分查找的最基础版本； 几乎所有高级二分题（Search Range、插入位置、求上下界）都以此为内核； 大量工程场景（有序列表查找、策略表、时间线等）都可以套用这个模板。 A — Algorithm（题目与算法） 题目重述 给定一个按非降序排序的整数数组 nums 和一个整数 target。
+请你在数组中查找 target，如果存在，则返回其下标；否则，返回 -1。
+要求算法的时间复杂度为 O(log n)。
+输入
+nums: 已排序（非降序）的整数数组，长度为 n target: 要查找的整数 输出
+若 target 存在于 nums 中，则返回其下标； 否则返回 -1。 示例 1 nums = [-1, 0, 3, 5, 9, 12] target = 9 数组中存在 9，且在下标 4：
+...</p>
+  </div>
+  <footer class="entry-footer"><span title='2025-12-04 11:20:00 +0800 HKT'>2025年12月4日</span>&nbsp;·&nbsp;<span>6 分钟</span></footer>
+  <a class="entry-link" aria-label="post link to 经典 Binary Search：在排序数组中查找目标值索引的统一模板" href="http://localhost:1313/alg/leetcode/binary-search-find-target-index/"></a>
+</article>
+<footer class="page-footer">
+  <nav class="pagination">
+    <a class="next" href="http://localhost:1313/categories/leetcode/page/2/">下一页&nbsp;&nbsp;»
+    </a>
+  </nav>
+</footer>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

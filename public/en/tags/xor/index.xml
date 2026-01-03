@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Xor on Jeanphilo Blog</title>
+    <link>http://localhost:1313/en/tags/xor/</link>
+    <description>Recent content in Xor on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 16 Dec 2025 18:12:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/tags/xor/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>XOR and RC4: From Principles to Go Practice (with Safer Alternatives)</title>
+      <link>http://localhost:1313/en/dev/go/xor-rec4-primer/</link>
+      <pubDate>Tue, 16 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/dev/go/xor-rec4-primer/</guid>
+      <description>An intro to XOR and RC4 for Go/backend engineers, with runnable examples and safer alternatives.</description>
+    </item>
+  </channel>
+</rss>

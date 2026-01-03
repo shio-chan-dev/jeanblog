@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice | Jeanphilo Blog</title>
+<meta name="keywords" content="quicksort, pivot selection, median of three, three-way partition, tail recursion optimization">
+<meta name="description" content="Comprehensive quicksort guide: pivot selection, three-way partitioning, tail recursion optimization, hybrid sorting practices, with multilingual implementations and engineering guidance.">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/en/alg/leetcode/5.sorting-series-quick-sort/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/alg/leetcode/5.sorting-series-quick-sort/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/en/alg/leetcode/5.sorting-series-quick-sort/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/en/alg/leetcode/5.sorting-series-quick-sort/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice">
+  <meta property="og:description" content="Comprehensive quicksort guide: pivot selection, three-way partitioning, tail recursion optimization, hybrid sorting practices, with multilingual implementations and engineering guidance.">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="alg">
+    <meta property="article:published_time" content="2025-12-05T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-12-05T00:00:00+00:00">
+    <meta property="article:tag" content="Sorting">
+    <meta property="article:tag" content="Quick-Sort">
+    <meta property="article:tag" content="Algorithms">
+    <meta property="article:tag" content="Divide-and-Conquer">
+    <meta property="article:tag" content="Partition">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice">
+<meta name="twitter:description" content="Comprehensive quicksort guide: pivot selection, three-way partitioning, tail recursion optimization, hybrid sorting practices, with multilingual implementations and engineering guidance.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Algorithms",
+      "item": "http://localhost:1313/en/alg/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "LeetCode",
+      "item": "http://localhost:1313/en/alg/leetcode/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice",
+      "item": "http://localhost:1313/en/alg/leetcode/5.sorting-series-quick-sort/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice",
+  "name": "Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice",
+  "description": "Comprehensive quicksort guide: pivot selection, three-way partitioning, tail recursion optimization, hybrid sorting practices, with multilingual implementations and engineering guidance.",
+  "keywords": [
+    "quicksort", "pivot selection", "median of three", "three-way partition", "tail recursion optimization"
+  ],
+  "articleBody": " Sorting series post 5 focuses on quicksort: average O(n log n), in-place, low constant factors, but it needs pivot strategy and tail recursion optimization to avoid worst-case O(n^2) and deep stacks. This is the ACERS view from theory to engineering practice.\nTarget Readers Developers who want a production-ready quicksort. Readers curious about pivot choice, duplicates handling, tail-recursion/hybrid strategies. People who want to understand std::sort / Introsort design motivation. Background and Motivation Quicksort is often the default because it is in-place, cache-friendly, and fast, but worst-case O(n^2) and duplicates can hurt. Engineering practice uses random pivot, median-of-three, three-way partition, tail recursion, and insertion for small segments. A - Algorithm Theme: Achieve average O(n log n) with in-place and low constants, while mitigating degeneration.\nBasic example Array [3, 5, 2, 2, 8], pivot = 3:\nAfter partition -\u003e [2,2,3,5,8], left \u003c 3, right \u003e= 3. Recurse on left and right segments. C - Concepts Key Concept Description Pivot selection Random, median-of-three (first/mid/last), or median-of-five to reduce degeneration. Partition strategy Lomuto (single side) is simple but swaps more; Hoare (two-side) swaps less; three-way partition handles duplicates. Duplicates Three-way partition (\u003c, =, \u003e) prevents degeneration with many equal keys. Tail recursion Always recurse on smaller side and iterate on larger side to keep stack O(log n). Hybrid strategy Use insertion for small segments; fall back to heap sort when recursion depth is too high (Introsort). Complexity\nAverage time O(n log n), worst-case O(n^2) with extreme pivots. Space: average recursion stack O(log n), worst-case O(n); tail recursion reduces risk. Unstable, in-place. E - Engineering Scenario 1: General backend sorting (Go) Background: dataset ~1e5, random distribution. Why: Go sort.Slice uses quick/heap hybrid; example includes insertion for small segments.\npackage main import \"fmt\" func insertion(a []int, l, r int) { for i := l+1; i \u003c= r; i++ { key := a[i]; j := i-1 for j \u003e= l \u0026\u0026 a[j] \u003e key { a[j+1]=a[j]; j-- } a[j+1]=key } } func partition(a []int, l, r int) int { pivot := a[(l+r)\u003e\u003e1] i, j := l, r for i \u003c= j { for a[i] \u003c pivot { i++ } for a[j] \u003e pivot { j-- } if i \u003c= j { a[i], a[j] = a[j], a[i]; i++; j-- } } return i } func quick(a []int, l, r int) { for r-l+1 \u003e 16 { p := partition(a, l, r) if p-l \u003c r-p { quick(a, l, p-1); l = p } else { quick(a, p, r); r = p-1 } } insertion(a, l, r) } func main(){ arr := []int{3,5,2,2,8,1,7} quick(arr,0,len(arr)-1) fmt.Println(arr) } Scenario 2: Many duplicates (Python three-way) Background: many equal values (e.g., bucketed IDs), two-way partition degrades. Why: three-way partition handles equal keys in one pass.\ndef quick3(a, l=0, r=None): if r is None: r = len(a)-1 while l \u003c r: if r - l + 1 \u003c= 16: for i in range(l+1, r+1): key=a[i]; j=i-1 while j\u003e=l and a[j]\u003ekey: a[j+1]=a[j]; j-=1 a[j+1]=key return pivot = a[(l+r)//2] lt, i, gt = l, l, r while i \u003c= gt: if a[i] \u003c pivot: a[lt], a[i] = a[i], a[lt]; lt+=1; i+=1 elif a[i] \u003e pivot: a[i], a[gt] = a[gt], a[i]; gt-=1 else: i+=1 if lt-l \u003c r-gt: quick3(a, l, lt-1); l = gt+1 else: quick3(a, gt+1, r); r = lt-1 return a arr=[3,5,2,2,8,1,7,2,2] quick3(arr) print(arr) Scenario 3: C++ performance-sensitive partition (Hoare + median-of-three) Background: performance-sensitive, need fewer swaps and more robust pivot.\n#include using namespace std; int median3(vector\u003cint\u003e\u0026 a, int l, int r){ int m = l + (r-l)/2; if(a[m] \u003c a[l]) swap(a[m], a[l]); if(a[r] \u003c a[l]) swap(a[r], a[l]); if(a[m] \u003c a[r]) swap(a[m], a[r]); // a[r] = median return a[r]; } int partition(vector\u003cint\u003e\u0026 a, int l, int r){ int pivot = median3(a,l,r); int i=l-1, j=r; while(true){ do{ i++; } while(a[i] \u003c pivot); do{ j--; } while(a[j] \u003e pivot); if(i\u003e=j) break; swap(a[i], a[j]); } swap(a[i], a[r]); return i; } void quick(vector\u003cint\u003e\u0026 a, int l, int r){ while(l \u003c r){ if(r-l+1 \u003c= 16){ for(int i=l+1;i\u003c=r;++i){int key=a[i], j=i-1; while(j\u003e=l \u0026\u0026 a[j]\u003ekey){a[j+1]=a[j]; j--;} a[j+1]=key;} return; } int p = partition(a,l,r); if(p-l \u003c r-p){ quick(a,l,p-1); l=p+1; } else{ quick(a,p+1,r); r=p-1; } } } Scenario 4: JavaScript small arrays with median-of-three Background: mid-size arrays, use median-of-three + insertion threshold.\nfunction insertion(a,l,r){ for(let i=l+1;i\u003c=r;i++){ const key=a[i]; let j=i-1; while(j\u003e=l \u0026\u0026 a[j]\u003ekey){ a[j+1]=a[j]; j--; } a[j+1]=key; } } function partition(a,l,r){ const m = l + ((r-l)\u003e\u003e1); if(a[m]\u003ca[l]) [a[m],a[l]]=[a[l],a[m]]; if(a[r]\u003ca[l]) [a[r],a[l]]=[a[l],a[r]]; if(a[r]\u003ca[m]) [a[r],a[m]]=[a[m],a[r]]; const pivot = a[r]; let i=l-1; for(let j=l;j\u003cr;j++) if(a[j]\u003c=pivot){ i++; [a[i],a[j]]=[a[j],a[i]]; } [a[i+1],a[r]]=[a[r],a[i+1]]; return i+1; } function quick(a,l=0,r=a.length-1){ while(l\u003cr){ if(r-l+1\u003c=16){ insertion(a,l,r); return; } const p=partition(a,l,r); if(p-l \u003c r-p){ quick(a,l,p-1); l=p+1; } else{ quick(a,p+1,r); r=p-1; } } return a; } console.log(quick([3,5,2,2,8,1,7])); R - Reflection Complexity: average O(n log n), worst O(n^2); stack depth O(log n) avg; tail recursion + insertion threshold keep it bounded. Alternatives: Need stability or guaranteed upper bound -\u003e merge/heap/TimSort. Known range -\u003e counting/bucket/radix. Standard libraries: C++ std::sort uses Introsort (quick + heap + insertion); Python/Java use TimSort (stable). Why this works: Random/median-of-three reduces degeneration. Three-way partition handles duplicates. Tail recursion + insertion threshold reduces stack depth and constants. S - Summary Quicksort strengths: in-place, low constants, cache-friendly, average O(n log n). Risks: extreme pivot -\u003e O(n^2); duplicates -\u003e degeneration; unstable. Robust strategy: random/median-of-three pivot, three-way partition, insertion for small segments, tail recursion; use Introsort ideas when needed. Selection: stability/external -\u003e merge/TimSort; memory tight + random -\u003e quick/Introsort; duplicates -\u003e three-way. Practice Guide / Steps Pivot: random or median-of-three; median-of-five for extra robustness. Duplicates: use three-way partition; otherwise two-way is fine. Set small segment threshold (e.g., 16/24) and insert; set depth limit to fall back to heap (Introsort). Test sets: random, reverse, all equal, many duplicates, large arrays. Common Pitfalls and Notes Lomuto partition swaps more; Hoare partition returns an index that changes recursion boundaries. Deep recursion can overflow stack: use tail recursion or iterative loops. Not handling duplicates causes degeneration; three-way is critical. Fixed first-element pivot degenerates on sorted data. Runnable Examples: Minimal Multilang Python (random pivot + three-way) import random def quick3(a, l=0, r=None): if r is None: r = len(a)-1 while l \u003c r: if r-l+1 \u003c= 16: for i in range(l+1, r+1): key=a[i]; j=i-1 while j\u003e=l and a[j]\u003ekey: a[j+1]=a[j]; j-=1 a[j+1]=key return a pivot_i = random.randint(l, r) a[l], a[pivot_i] = a[pivot_i], a[l] pivot = a[l] lt, i, gt = l, l+1, r while i \u003c= gt: if a[i] \u003c pivot: a[lt], a[i] = a[i], a[lt]; lt+=1; i+=1 elif a[i] \u003e pivot: a[i], a[gt] = a[gt], a[i]; gt-=1 else: i+=1 if lt-l \u003c r-gt: quick3(a, l, lt-1); l = gt+1 else: quick3(a, gt+1, r); r = lt-1 return a arr=[3,5,2,2,8,1,7,2,2] quick3(arr); print(arr) C (Hoare partition + insertion threshold) #include void insertion(int *a,int l,int r){ for(int i=l+1;i\u003c=r;i++){ int key=a[i], j=i-1; while(j\u003e=l \u0026\u0026 a[j]\u003ekey){ a[j+1]=a[j]; j--; } a[j+1]=key; } } int partition(int *a,int l,int r){ int pivot=a[(l+r)/2]; int i=l-1, j=r+1; while(1){ do{ i++; } while(a[i]\u003cpivot); do{ j--; } while(a[j]\u003epivot); if(i\u003e=j) return j; int t=a[i]; a[i]=a[j]; a[j]=t; } } void quick(int *a,int l,int r){ while(l\u003cr){ if(r-l+1\u003c=16){ insertion(a,l,r); return; } int p=partition(a,l,r); if(p-l \u003c r-p){ quick(a,l,p); l=p+1; } else{ quick(a,p+1,r); r=p; } } } C++ (median-of-three + Hoare) int partition(vector\u003cint\u003e\u0026 a,int l,int r){ int m=l+(r-l)/2; if(a[m]\u003ca[l]) swap(a[m],a[l]); if(a[r]\u003ca[l]) swap(a[r],a[l]); if(a[r]\u003ca[m]) swap(a[r],a[m]); int pivot=a[m]; int i=l-1,j=r+1; while(true){ do{i++;}while(a[i]\u003cpivot); do{j--;}while(a[j]\u003epivot); if(i\u003e=j) return j; swap(a[i],a[j]); } } Go (two-way, simplified) func Quick(a []int, l, r int){ for l\u003cr { if r-l+1 \u003c= 16 { insertion(a,l,r); return } p := partition(a,l,r) if p-l \u003c r-p { Quick(a,l,p-1); l=p } else { Quick(a,p,r); r=p-1 } } } Rust (three-way) pub fn quick3(a: \u0026mut [i32]) { fn insertion(a: \u0026mut [i32]) { for i in 1..a.len() { let key=a[i]; let mut j=i as i32-1; while j\u003e=0 \u0026\u0026 a[j as usize]\u003ekey { a[(j+1) as usize]=a[j as usize]; j-=1; } a[(j+1) as usize]=key; } } fn sort(a: \u0026mut [i32]) { let n=a.len(); if n\u003c=16 { insertion(a); return; } let pivot=a[n/2]; let (mut lt, mut i, mut gt) = (0,0,n-1); while i\u003c=gt { if a[i]\u003cpivot { a.swap(lt,i); lt+=1; i+=1; } else if a[i]\u003epivot { a.swap(i,gt); if gt==0 {break;} gt-=1; } else { i+=1; } } sort(\u0026mut a[..lt]); sort(\u0026mut a[gt+1..]); } if !a.is_empty() { sort(a); } } JavaScript (median-of-three + insertion) function insertion(a,l,r){ for(let i=l+1;i\u003c=r;i++){ const key=a[i]; let j=i-1; while(j\u003e=l \u0026\u0026 a[j]\u003ekey){ a[j+1]=a[j]; j--; } a[j+1]=key; } } function quick(a,l=0,r=a.length-1){ while(l\u003cr){ if(r-l+1\u003c=16){ insertion(a,l,r); return a; } const m=l+((r-l)\u003e\u003e1); if(a[m]\u003ca[l]) [a[m],a[l]]=[a[l],a[m]]; if(a[r]\u003ca[l]) [a[r],a[l]]=[a[l],a[r]]; if(a[r]\u003ca[m]) [a[r],a[m]]=[a[m],a[r]]; const pivot=a[m]; let i=l, j=r; while(i\u003c=j){ while(a[i]\u003cpivot) i++; while(a[j]\u003epivot) j--; if(i\u003c=j){ [a[i],a[j]]=[a[j],a[i]]; i++; j--; } } if(j-l \u003c r-i){ quick(a,l,j); l=i; } else { quick(a,i,r); r=j; } } return a; } console.log(quick([3,5,2,2,8,1,7])); Best Practices Default to language built-in sort; if custom, include random/median-of-three, three-way for duplicates, insertion threshold, tail recursion. Use merge/TimSort for stability; consider Introsort for strict upper bounds. Benchmark on random, reverse, all equal, many duplicates, and large arrays. Conclusion Quicksort is fast and in-place but must use pivot strategy and three-way partition to avoid degeneration. Tail recursion + insertion thresholds are standard engineering practice; fall back to heap if depth grows (Introsort). Selection rules: stability/external -\u003e merge/TimSort; memory-tight random -\u003e quick/Introsort; many duplicates -\u003e three-way. References and Further Reading Hoare, “Quicksort” (1961) Bentley \u0026 McIlroy, “Engineering a Sort Function” (1993) C++ std::sort and std::stable_sort implementation notes Meta Reading time: approx. 16 min SEO keywords: quicksort, pivot selection, three-way partition, tail recursion, Introsort Meta description: sorting series (5) explaining pivot strategies, duplicate handling, tail recursion, and hybrid optimizations with multilingual implementations. Call to Action (CTA) Benchmark random vs fixed pivots on your real data; compare performance. Add “insertion threshold + tail recursion” to your implementation and measure stack depth and time. Follow the series: heap sort, non-comparison, TimSort/Introsort, selection guide. ",
+  "wordCount" : "1595",
+  "inLanguage": "en",
+  "datePublished": "2025-12-05T00:00:00Z",
+  "dateModified": "2025-12-05T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/en/alg/leetcode/5.sorting-series-quick-sort/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/en/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/" title="中文"
+                                aria-label="中文">Zh</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/en/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/dev/" title="Development">
+                    <span>Dev</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/alg/" title="Algorithms">
+                    <span>Algorithms</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/en/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/en/alg/">Algorithms</a>&nbsp;»&nbsp;<a href="http://localhost:1313/en/alg/leetcode/">LeetCode</a></div>
+    <h1 class="post-title entry-hint-parent">
+      Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice
+    </h1>
+    <div class="post-meta"><span title='2025-12-05 00:00:00 +0000 UTC'>December 5, 2025</span>&nbsp;·&nbsp;<span>8 min</span>&nbsp;|&nbsp;<span>Translations:</span>
+<ul class="i18n_list">
+    <li>
+        <a href="http://localhost:1313/alg/leetcode/5.sorting-series-quick-sort/">Zh</a>
+    </li>
+</ul>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul><ul>
+                <li>
+                    <a href="#target-readers" aria-label="Target Readers">Target Readers</a></li>
+                <li>
+                    <a href="#background-and-motivation" aria-label="Background and Motivation">Background and Motivation</a></li></ul>
+                    
+                <li>
+                    <a href="#a---algorithm" aria-label="A - Algorithm">A - Algorithm</a></li>
+                <li>
+                    <a href="#c---concepts" aria-label="C - Concepts">C - Concepts</a></li>
+                <li>
+                    <a href="#e---engineering" aria-label="E - Engineering">E - Engineering</a><ul>
+                        <ul>
+                        
+                <li>
+                    <a href="#scenario-1-general-backend-sorting-go" aria-label="Scenario 1: General backend sorting (Go)">Scenario 1: General backend sorting (Go)</a></li>
+                <li>
+                    <a href="#scenario-2-many-duplicates-python-three-way" aria-label="Scenario 2: Many duplicates (Python three-way)">Scenario 2: Many duplicates (Python three-way)</a></li>
+                <li>
+                    <a href="#scenario-3-c-performance-sensitive-partition-hoare--median-of-three" aria-label="Scenario 3: C&#43;&#43; performance-sensitive partition (Hoare &#43; median-of-three)">Scenario 3: C++ performance-sensitive partition (Hoare + median-of-three)</a></li>
+                <li>
+                    <a href="#scenario-4-javascript-small-arrays-with-median-of-three" aria-label="Scenario 4: JavaScript small arrays with median-of-three">Scenario 4: JavaScript small arrays with median-of-three</a></li></ul>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#r---reflection" aria-label="R - Reflection">R - Reflection</a></li>
+                <li>
+                    <a href="#s---summary" aria-label="S - Summary">S - Summary</a><ul>
+                        
+                <li>
+                    <a href="#practice-guide--steps" aria-label="Practice Guide / Steps">Practice Guide / Steps</a></li>
+                <li>
+                    <a href="#common-pitfalls-and-notes" aria-label="Common Pitfalls and Notes">Common Pitfalls and Notes</a></li>
+                <li>
+                    <a href="#runnable-examples-minimal-multilang" aria-label="Runnable Examples: Minimal Multilang">Runnable Examples: Minimal Multilang</a><ul>
+                        
+                <li>
+                    <a href="#python-random-pivot--three-way" aria-label="Python (random pivot &#43; three-way)">Python (random pivot + three-way)</a></li>
+                <li>
+                    <a href="#c-hoare-partition--insertion-threshold" aria-label="C (Hoare partition &#43; insertion threshold)">C (Hoare partition + insertion threshold)</a></li>
+                <li>
+                    <a href="#c-median-of-three--hoare" aria-label="C&#43;&#43; (median-of-three &#43; Hoare)">C++ (median-of-three + Hoare)</a></li>
+                <li>
+                    <a href="#go-two-way-simplified" aria-label="Go (two-way, simplified)">Go (two-way, simplified)</a></li>
+                <li>
+                    <a href="#rust-three-way" aria-label="Rust (three-way)">Rust (three-way)</a></li>
+                <li>
+                    <a href="#javascript-median-of-three--insertion" aria-label="JavaScript (median-of-three &#43; insertion)">JavaScript (median-of-three + insertion)</a></li></ul>
+                </li>
+                <li>
+                    <a href="#best-practices" aria-label="Best Practices">Best Practices</a></li>
+                <li>
+                    <a href="#conclusion" aria-label="Conclusion">Conclusion</a></li>
+                <li>
+                    <a href="#references-and-further-reading" aria-label="References and Further Reading">References and Further Reading</a></li>
+                <li>
+                    <a href="#meta" aria-label="Meta">Meta</a></li>
+                <li>
+                    <a href="#call-to-action-cta" aria-label="Call to Action (CTA)">Call to Action (CTA)</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>Sorting series post 5 focuses on quicksort: average O(n log n), in-place, low constant factors, but it needs pivot strategy and tail recursion optimization to avoid worst-case O(n^2) and deep stacks. This is the ACERS view from theory to engineering practice.</p>
+</blockquote>
+<h2 id="target-readers">Target Readers<a hidden class="anchor" aria-hidden="true" href="#target-readers">#</a></h2>
+<ul>
+<li>Developers who want a production-ready quicksort.</li>
+<li>Readers curious about pivot choice, duplicates handling, tail-recursion/hybrid strategies.</li>
+<li>People who want to understand std::sort / Introsort design motivation.</li>
+</ul>
+<h2 id="background-and-motivation">Background and Motivation<a hidden class="anchor" aria-hidden="true" href="#background-and-motivation">#</a></h2>
+<ul>
+<li>Quicksort is often the default because it is in-place, cache-friendly, and fast, but worst-case O(n^2) and duplicates can hurt.</li>
+<li>Engineering practice uses random pivot, median-of-three, three-way partition, tail recursion, and insertion for small segments.</li>
+</ul>
+<h1 id="a---algorithm">A - Algorithm<a hidden class="anchor" aria-hidden="true" href="#a---algorithm">#</a></h1>
+<p><strong>Theme</strong>: Achieve average O(n log n) with in-place and low constants, while mitigating degeneration.</p>
+<p><strong>Basic example</strong>
+Array <code>[3, 5, 2, 2, 8]</code>, pivot = 3:</p>
+<ul>
+<li>After partition -&gt; <code>[2,2,3,5,8]</code>, left &lt; 3, right &gt;= 3.</li>
+<li>Recurse on left and right segments.</li>
+</ul>
+<h1 id="c---concepts">C - Concepts<a hidden class="anchor" aria-hidden="true" href="#c---concepts">#</a></h1>
+<table>
+  <thead>
+      <tr>
+          <th>Key Concept</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Pivot selection</td>
+          <td>Random, median-of-three (first/mid/last), or median-of-five to reduce degeneration.</td>
+      </tr>
+      <tr>
+          <td>Partition strategy</td>
+          <td>Lomuto (single side) is simple but swaps more; Hoare (two-side) swaps less; three-way partition handles duplicates.</td>
+      </tr>
+      <tr>
+          <td>Duplicates</td>
+          <td>Three-way partition (&lt;, =, &gt;) prevents degeneration with many equal keys.</td>
+      </tr>
+      <tr>
+          <td>Tail recursion</td>
+          <td>Always recurse on smaller side and iterate on larger side to keep stack O(log n).</td>
+      </tr>
+      <tr>
+          <td>Hybrid strategy</td>
+          <td>Use insertion for small segments; fall back to heap sort when recursion depth is too high (Introsort).</td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Complexity</strong></p>
+<ul>
+<li>Average time O(n log n), worst-case O(n^2) with extreme pivots.</li>
+<li>Space: average recursion stack O(log n), worst-case O(n); tail recursion reduces risk.</li>
+<li>Unstable, in-place.</li>
+</ul>
+<h1 id="e---engineering">E - Engineering<a hidden class="anchor" aria-hidden="true" href="#e---engineering">#</a></h1>
+<h3 id="scenario-1-general-backend-sorting-go">Scenario 1: General backend sorting (Go)<a hidden class="anchor" aria-hidden="true" href="#scenario-1-general-backend-sorting-go">#</a></h3>
+<p>Background: dataset ~1e5, random distribution.
+Why: Go <code>sort.Slice</code> uses quick/heap hybrid; example includes insertion for small segments.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">insertion</span>(<span style="color:#a6e22e">a</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">r</span> <span style="color:#66d9ef">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">l</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">r</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">key</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]; <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">j</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">l</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>] &gt; <span style="color:#a6e22e">key</span> { <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]=<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]; <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span> }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]=<span style="color:#a6e22e">key</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">partition</span>(<span style="color:#a6e22e">a</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">r</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">pivot</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[(<span style="color:#a6e22e">l</span><span style="color:#f92672">+</span><span style="color:#a6e22e">r</span>)<span style="color:#f92672">&gt;&gt;</span><span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">i</span>, <span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">r</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">j</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>] &lt; <span style="color:#a6e22e">pivot</span> { <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>] &gt; <span style="color:#a6e22e">pivot</span> { <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span> }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">j</span> { <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>], <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>] = <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>], <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>; <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span> }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">i</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">r</span> <span style="color:#66d9ef">int</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> &gt; <span style="color:#ae81ff">16</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">partition</span>(<span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span> &lt; <span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> { <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); <span style="color:#a6e22e">l</span> = <span style="color:#a6e22e">p</span> } <span style="color:#66d9ef">else</span> { <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">p</span>, <span style="color:#a6e22e">r</span>); <span style="color:#a6e22e">r</span> = <span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">insertion</span>(<span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>(){
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">arr</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">8</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">7</span>}
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">arr</span>,<span style="color:#ae81ff">0</span>,len(<span style="color:#a6e22e">arr</span>)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">arr</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="scenario-2-many-duplicates-python-three-way">Scenario 2: Many duplicates (Python three-way)<a hidden class="anchor" aria-hidden="true" href="#scenario-2-many-duplicates-python-three-way">#</a></h3>
+<p>Background: many equal values (e.g., bucketed IDs), two-way partition degrades.
+Why: three-way partition handles equal keys in one pass.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">quick3</span>(a, l<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, r<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> r <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>: r <span style="color:#f92672">=</span> len(a)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> l <span style="color:#f92672">&lt;</span> r:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> r <span style="color:#f92672">-</span> l <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">16</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(l<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, r<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>                key<span style="color:#f92672">=</span>a[i]; j<span style="color:#f92672">=</span>i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">while</span> j<span style="color:#f92672">&gt;=</span>l <span style="color:#f92672">and</span> a[j]<span style="color:#f92672">&gt;</span>key:
+</span></span><span style="display:flex;"><span>                    a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>a[j]; j<span style="color:#f92672">-=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>key
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>        pivot <span style="color:#f92672">=</span> a[(l<span style="color:#f92672">+</span>r)<span style="color:#f92672">//</span><span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>        lt, i, gt <span style="color:#f92672">=</span> l, l, r
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> i <span style="color:#f92672">&lt;=</span> gt:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> a[i] <span style="color:#f92672">&lt;</span> pivot:
+</span></span><span style="display:flex;"><span>                a[lt], a[i] <span style="color:#f92672">=</span> a[i], a[lt]; lt<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>; i<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">elif</span> a[i] <span style="color:#f92672">&gt;</span> pivot:
+</span></span><span style="display:flex;"><span>                a[i], a[gt] <span style="color:#f92672">=</span> a[gt], a[i]; gt<span style="color:#f92672">-=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                i<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> lt<span style="color:#f92672">-</span>l <span style="color:#f92672">&lt;</span> r<span style="color:#f92672">-</span>gt: quick3(a, l, lt<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); l <span style="color:#f92672">=</span> gt<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>: quick3(a, gt<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, r); r <span style="color:#f92672">=</span> lt<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> a
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>arr<span style="color:#f92672">=</span>[<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">8</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>quick3(arr)
+</span></span><span style="display:flex;"><span>print(arr)
+</span></span></code></pre></div><h3 id="scenario-3-c-performance-sensitive-partition-hoare--median-of-three">Scenario 3: C++ performance-sensitive partition (Hoare + median-of-three)<a hidden class="anchor" aria-hidden="true" href="#scenario-3-c-performance-sensitive-partition-hoare--median-of-three">#</a></h3>
+<p>Background: performance-sensitive, need fewer swaps and more robust pivot.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;bits/stdc++.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">median3</span>(vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;&amp;</span> a, <span style="color:#66d9ef">int</span> l, <span style="color:#66d9ef">int</span> r){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> m <span style="color:#f92672">=</span> l <span style="color:#f92672">+</span> (r<span style="color:#f92672">-</span>l)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(a[m] <span style="color:#f92672">&lt;</span> a[l]) swap(a[m], a[l]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(a[r] <span style="color:#f92672">&lt;</span> a[l]) swap(a[r], a[l]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(a[m] <span style="color:#f92672">&lt;</span> a[r]) swap(a[m], a[r]); <span style="color:#75715e">// a[r] = median
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> a[r];
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">partition</span>(vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;&amp;</span> a, <span style="color:#66d9ef">int</span> l, <span style="color:#66d9ef">int</span> r){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> pivot <span style="color:#f92672">=</span> median3(a,l,r);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>l<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, j<span style="color:#f92672">=</span>r;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(true){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span>{ i<span style="color:#f92672">++</span>; } <span style="color:#66d9ef">while</span>(a[i] <span style="color:#f92672">&lt;</span> pivot);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span>{ j<span style="color:#f92672">--</span>; } <span style="color:#66d9ef">while</span>(a[j] <span style="color:#f92672">&gt;</span> pivot);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(i<span style="color:#f92672">&gt;=</span>j) <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        swap(a[i], a[j]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    swap(a[i], a[r]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> i;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">quick</span>(vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;&amp;</span> a, <span style="color:#66d9ef">int</span> l, <span style="color:#66d9ef">int</span> r){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(l <span style="color:#f92672">&lt;</span> r){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(r<span style="color:#f92672">-</span>l<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">16</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>l<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;i<span style="color:#f92672">&lt;=</span>r;<span style="color:#f92672">++</span>i){<span style="color:#66d9ef">int</span> key<span style="color:#f92672">=</span>a[i], j<span style="color:#f92672">=</span>i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>; <span style="color:#66d9ef">while</span>(j<span style="color:#f92672">&gt;=</span>l <span style="color:#f92672">&amp;&amp;</span> a[j]<span style="color:#f92672">&gt;</span>key){a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>a[j]; j<span style="color:#f92672">--</span>;} a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>key;}
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> p <span style="color:#f92672">=</span> partition(a,l,r);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(p<span style="color:#f92672">-</span>l <span style="color:#f92672">&lt;</span> r<span style="color:#f92672">-</span>p){ quick(a,l,p<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); l<span style="color:#f92672">=</span>p<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>{ quick(a,p<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>,r); r<span style="color:#f92672">=</span>p<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="scenario-4-javascript-small-arrays-with-median-of-three">Scenario 4: JavaScript small arrays with median-of-three<a hidden class="anchor" aria-hidden="true" href="#scenario-4-javascript-small-arrays-with-median-of-three">#</a></h3>
+<p>Background: mid-size arrays, use median-of-three + insertion threshold.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">insertion</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">r</span>){
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">=</span><span style="color:#a6e22e">l</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;=</span><span style="color:#a6e22e">r</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]; <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">j</span><span style="color:#f92672">=</span><span style="color:#a6e22e">i</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(<span style="color:#a6e22e">j</span><span style="color:#f92672">&gt;=</span><span style="color:#a6e22e">l</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]<span style="color:#f92672">&gt;</span><span style="color:#a6e22e">key</span>){ <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]; <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span><span style="color:#a6e22e">key</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">partition</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">r</span>){
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">m</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">l</span> <span style="color:#f92672">+</span> ((<span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span>)<span style="color:#f92672">&gt;&gt;</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>]<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>]) [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>]];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>]) [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>]) [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">pivot</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">=</span><span style="color:#a6e22e">l</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">j</span><span style="color:#f92672">=</span><span style="color:#a6e22e">l</span>;<span style="color:#a6e22e">j</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">r</span>;<span style="color:#a6e22e">j</span><span style="color:#f92672">++</span>) <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]<span style="color:#f92672">&lt;=</span><span style="color:#a6e22e">pivot</span>){ <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>; [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]]; }
+</span></span><span style="display:flex;"><span>  [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,<span style="color:#a6e22e">r</span><span style="color:#f92672">=</span><span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">length</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>){
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span>(<span style="color:#a6e22e">l</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">r</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">16</span>){ <span style="color:#a6e22e">insertion</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">r</span>); <span style="color:#66d9ef">return</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">p</span><span style="color:#f92672">=</span><span style="color:#a6e22e">partition</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">r</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">p</span>){ <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); <span style="color:#a6e22e">l</span><span style="color:#f92672">=</span><span style="color:#a6e22e">p</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>{ <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">p</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>,<span style="color:#a6e22e">r</span>); <span style="color:#a6e22e">r</span><span style="color:#f92672">=</span><span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">quick</span>([<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">8</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">7</span>]));
+</span></span></code></pre></div><h1 id="r---reflection">R - Reflection<a hidden class="anchor" aria-hidden="true" href="#r---reflection">#</a></h1>
+<ul>
+<li><strong>Complexity</strong>: average O(n log n), worst O(n^2); stack depth O(log n) avg; tail recursion + insertion threshold keep it bounded.</li>
+<li><strong>Alternatives</strong>:
+<ul>
+<li>Need stability or guaranteed upper bound -&gt; merge/heap/TimSort.</li>
+<li>Known range -&gt; counting/bucket/radix.</li>
+<li>Standard libraries: C++ <code>std::sort</code> uses Introsort (quick + heap + insertion); Python/Java use TimSort (stable).</li>
+</ul>
+</li>
+<li><strong>Why this works</strong>:
+<ul>
+<li>Random/median-of-three reduces degeneration.</li>
+<li>Three-way partition handles duplicates.</li>
+<li>Tail recursion + insertion threshold reduces stack depth and constants.</li>
+</ul>
+</li>
+</ul>
+<h1 id="s---summary">S - Summary<a hidden class="anchor" aria-hidden="true" href="#s---summary">#</a></h1>
+<ul>
+<li>Quicksort strengths: in-place, low constants, cache-friendly, average O(n log n).</li>
+<li>Risks: extreme pivot -&gt; O(n^2); duplicates -&gt; degeneration; unstable.</li>
+<li>Robust strategy: random/median-of-three pivot, three-way partition, insertion for small segments, tail recursion; use Introsort ideas when needed.</li>
+<li>Selection: stability/external -&gt; merge/TimSort; memory tight + random -&gt; quick/Introsort; duplicates -&gt; three-way.</li>
+</ul>
+<h2 id="practice-guide--steps">Practice Guide / Steps<a hidden class="anchor" aria-hidden="true" href="#practice-guide--steps">#</a></h2>
+<ul>
+<li>Pivot: random or median-of-three; median-of-five for extra robustness.</li>
+<li>Duplicates: use three-way partition; otherwise two-way is fine.</li>
+<li>Set small segment threshold (e.g., 16/24) and insert; set depth limit to fall back to heap (Introsort).</li>
+<li>Test sets: random, reverse, all equal, many duplicates, large arrays.</li>
+</ul>
+<h2 id="common-pitfalls-and-notes">Common Pitfalls and Notes<a hidden class="anchor" aria-hidden="true" href="#common-pitfalls-and-notes">#</a></h2>
+<ul>
+<li>Lomuto partition swaps more; Hoare partition returns an index that changes recursion boundaries.</li>
+<li>Deep recursion can overflow stack: use tail recursion or iterative loops.</li>
+<li>Not handling duplicates causes degeneration; three-way is critical.</li>
+<li>Fixed first-element pivot degenerates on sorted data.</li>
+</ul>
+<h2 id="runnable-examples-minimal-multilang">Runnable Examples: Minimal Multilang<a hidden class="anchor" aria-hidden="true" href="#runnable-examples-minimal-multilang">#</a></h2>
+<h3 id="python-random-pivot--three-way">Python (random pivot + three-way)<a hidden class="anchor" aria-hidden="true" href="#python-random-pivot--three-way">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> random
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">quick3</span>(a, l<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, r<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> r <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>: r <span style="color:#f92672">=</span> len(a)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> l <span style="color:#f92672">&lt;</span> r:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> r<span style="color:#f92672">-</span>l<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">16</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(l<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, r<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>                key<span style="color:#f92672">=</span>a[i]; j<span style="color:#f92672">=</span>i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">while</span> j<span style="color:#f92672">&gt;=</span>l <span style="color:#f92672">and</span> a[j]<span style="color:#f92672">&gt;</span>key:
+</span></span><span style="display:flex;"><span>                    a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>a[j]; j<span style="color:#f92672">-=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>                a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>key
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> a
+</span></span><span style="display:flex;"><span>        pivot_i <span style="color:#f92672">=</span> random<span style="color:#f92672">.</span>randint(l, r)
+</span></span><span style="display:flex;"><span>        a[l], a[pivot_i] <span style="color:#f92672">=</span> a[pivot_i], a[l]
+</span></span><span style="display:flex;"><span>        pivot <span style="color:#f92672">=</span> a[l]
+</span></span><span style="display:flex;"><span>        lt, i, gt <span style="color:#f92672">=</span> l, l<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, r
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> i <span style="color:#f92672">&lt;=</span> gt:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> a[i] <span style="color:#f92672">&lt;</span> pivot:
+</span></span><span style="display:flex;"><span>                a[lt], a[i] <span style="color:#f92672">=</span> a[i], a[lt]; lt<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>; i<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">elif</span> a[i] <span style="color:#f92672">&gt;</span> pivot:
+</span></span><span style="display:flex;"><span>                a[i], a[gt] <span style="color:#f92672">=</span> a[gt], a[i]; gt<span style="color:#f92672">-=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>                i<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> lt<span style="color:#f92672">-</span>l <span style="color:#f92672">&lt;</span> r<span style="color:#f92672">-</span>gt: quick3(a, l, lt<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); l <span style="color:#f92672">=</span> gt<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>: quick3(a, gt<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, r); r <span style="color:#f92672">=</span> lt<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> a
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>arr<span style="color:#f92672">=</span>[<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">8</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>quick3(arr); print(arr)
+</span></span></code></pre></div><h3 id="c-hoare-partition--insertion-threshold">C (Hoare partition + insertion threshold)<a hidden class="anchor" aria-hidden="true" href="#c-hoare-partition--insertion-threshold">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">insertion</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>a,<span style="color:#66d9ef">int</span> l,<span style="color:#66d9ef">int</span> r){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>l<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;i<span style="color:#f92672">&lt;=</span>r;i<span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> key<span style="color:#f92672">=</span>a[i], j<span style="color:#f92672">=</span>i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span>(j<span style="color:#f92672">&gt;=</span>l <span style="color:#f92672">&amp;&amp;</span> a[j]<span style="color:#f92672">&gt;</span>key){ a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>a[j]; j<span style="color:#f92672">--</span>; }
+</span></span><span style="display:flex;"><span>        a[j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span>key;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">partition</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>a,<span style="color:#66d9ef">int</span> l,<span style="color:#66d9ef">int</span> r){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> pivot<span style="color:#f92672">=</span>a[(l<span style="color:#f92672">+</span>r)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>l<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>, j<span style="color:#f92672">=</span>r<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(<span style="color:#ae81ff">1</span>){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span>{ i<span style="color:#f92672">++</span>; } <span style="color:#66d9ef">while</span>(a[i]<span style="color:#f92672">&lt;</span>pivot);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span>{ j<span style="color:#f92672">--</span>; } <span style="color:#66d9ef">while</span>(a[j]<span style="color:#f92672">&gt;</span>pivot);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(i<span style="color:#f92672">&gt;=</span>j) <span style="color:#66d9ef">return</span> j;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> t<span style="color:#f92672">=</span>a[i]; a[i]<span style="color:#f92672">=</span>a[j]; a[j]<span style="color:#f92672">=</span>t;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">quick</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>a,<span style="color:#66d9ef">int</span> l,<span style="color:#66d9ef">int</span> r){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(l<span style="color:#f92672">&lt;</span>r){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(r<span style="color:#f92672">-</span>l<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">16</span>){ <span style="color:#a6e22e">insertion</span>(a,l,r); <span style="color:#66d9ef">return</span>; }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> p<span style="color:#f92672">=</span><span style="color:#a6e22e">partition</span>(a,l,r);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(p<span style="color:#f92672">-</span>l <span style="color:#f92672">&lt;</span> r<span style="color:#f92672">-</span>p){ <span style="color:#a6e22e">quick</span>(a,l,p); l<span style="color:#f92672">=</span>p<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>{ <span style="color:#a6e22e">quick</span>(a,p<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>,r); r<span style="color:#f92672">=</span>p; }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="c-median-of-three--hoare">C++ (median-of-three + Hoare)<a hidden class="anchor" aria-hidden="true" href="#c-median-of-three--hoare">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">partition</span>(vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;&amp;</span> a,<span style="color:#66d9ef">int</span> l,<span style="color:#66d9ef">int</span> r){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> m<span style="color:#f92672">=</span>l<span style="color:#f92672">+</span>(r<span style="color:#f92672">-</span>l)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(a[m]<span style="color:#f92672">&lt;</span>a[l]) swap(a[m],a[l]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(a[r]<span style="color:#f92672">&lt;</span>a[l]) swap(a[r],a[l]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(a[r]<span style="color:#f92672">&lt;</span>a[m]) swap(a[r],a[m]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> pivot<span style="color:#f92672">=</span>a[m];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span>l<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,j<span style="color:#f92672">=</span>r<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(true){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span>{i<span style="color:#f92672">++</span>;}<span style="color:#66d9ef">while</span>(a[i]<span style="color:#f92672">&lt;</span>pivot);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">do</span>{j<span style="color:#f92672">--</span>;}<span style="color:#66d9ef">while</span>(a[j]<span style="color:#f92672">&gt;</span>pivot);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(i<span style="color:#f92672">&gt;=</span>j) <span style="color:#66d9ef">return</span> j;
+</span></span><span style="display:flex;"><span>        swap(a[i],a[j]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="go-two-way-simplified">Go (two-way, simplified)<a hidden class="anchor" aria-hidden="true" href="#go-two-way-simplified">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Quick</span>(<span style="color:#a6e22e">a</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">r</span> <span style="color:#66d9ef">int</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">l</span>&lt;<span style="color:#a6e22e">r</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">16</span> { <span style="color:#a6e22e">insertion</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">r</span>); <span style="color:#66d9ef">return</span> }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">partition</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span> &lt; <span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">p</span> { <span style="color:#a6e22e">Quick</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>); <span style="color:#a6e22e">l</span>=<span style="color:#a6e22e">p</span> }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span> { <span style="color:#a6e22e">Quick</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">p</span>,<span style="color:#a6e22e">r</span>); <span style="color:#a6e22e">r</span>=<span style="color:#a6e22e">p</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="rust-three-way">Rust (three-way)<a hidden class="anchor" aria-hidden="true" href="#rust-three-way">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">pub</span> <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">quick3</span>(a: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> [<span style="color:#66d9ef">i32</span>]) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">insertion</span>(a: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> [<span style="color:#66d9ef">i32</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">..</span>a.len() {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> key<span style="color:#f92672">=</span>a[i]; <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> j<span style="color:#f92672">=</span>i <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i32</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> j<span style="color:#f92672">&gt;=</span><span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> a[j <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>]<span style="color:#f92672">&gt;</span>key { a[(j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>]<span style="color:#f92672">=</span>a[j <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>]; j<span style="color:#f92672">-=</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>            a[(j<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>]<span style="color:#f92672">=</span>key;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">sort</span>(a: <span style="color:#66d9ef">&amp;</span><span style="color:#a6e22e">mut</span> [<span style="color:#66d9ef">i32</span>]) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> n<span style="color:#f92672">=</span>a.len();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> n<span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">16</span> { insertion(a); <span style="color:#66d9ef">return</span>; }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> pivot<span style="color:#f92672">=</span>a[n<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> (<span style="color:#66d9ef">mut</span> lt, <span style="color:#66d9ef">mut</span> i, <span style="color:#66d9ef">mut</span> gt) <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,n<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> i<span style="color:#f92672">&lt;=</span>gt {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> a[i]<span style="color:#f92672">&lt;</span>pivot { a.swap(lt,i); lt<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>; i<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> a[i]<span style="color:#f92672">&gt;</span>pivot { a.swap(i,gt); <span style="color:#66d9ef">if</span> gt<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span> {<span style="color:#66d9ef">break</span>;} gt<span style="color:#f92672">-=</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">else</span> { i<span style="color:#f92672">+=</span><span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        sort(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> a[<span style="color:#f92672">..</span>lt]);
+</span></span><span style="display:flex;"><span>        sort(<span style="color:#f92672">&amp;</span><span style="color:#66d9ef">mut</span> a[gt<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#f92672">..</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">!</span>a.is_empty() { sort(a); }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="javascript-median-of-three--insertion">JavaScript (median-of-three + insertion)<a hidden class="anchor" aria-hidden="true" href="#javascript-median-of-three--insertion">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">insertion</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">r</span>){
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">=</span><span style="color:#a6e22e">l</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;=</span><span style="color:#a6e22e">r</span>;<span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">key</span><span style="color:#f92672">=</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]; <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">j</span><span style="color:#f92672">=</span><span style="color:#a6e22e">i</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(<span style="color:#a6e22e">j</span><span style="color:#f92672">&gt;=</span><span style="color:#a6e22e">l</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]<span style="color:#f92672">&gt;</span><span style="color:#a6e22e">key</span>){ <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]; <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span><span style="color:#a6e22e">key</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,<span style="color:#a6e22e">r</span><span style="color:#f92672">=</span><span style="color:#a6e22e">a</span>.<span style="color:#a6e22e">length</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>){
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span>(<span style="color:#a6e22e">l</span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">r</span>){
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span><span style="color:#f92672">+</span><span style="color:#ae81ff">1</span><span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">16</span>){ <span style="color:#a6e22e">insertion</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">r</span>); <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">m</span><span style="color:#f92672">=</span><span style="color:#a6e22e">l</span><span style="color:#f92672">+</span>((<span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span>)<span style="color:#f92672">&gt;&gt;</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>]<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>]) [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>]];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>]) [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">l</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>]) [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">r</span>]];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">pivot</span><span style="color:#f92672">=</span><span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">m</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span><span style="color:#f92672">=</span><span style="color:#a6e22e">l</span>, <span style="color:#a6e22e">j</span><span style="color:#f92672">=</span><span style="color:#a6e22e">r</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>(<span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;=</span><span style="color:#a6e22e">j</span>){
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">while</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">pivot</span>) <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">while</span>(<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]<span style="color:#f92672">&gt;</span><span style="color:#a6e22e">pivot</span>) <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">i</span><span style="color:#f92672">&lt;=</span><span style="color:#a6e22e">j</span>){ [<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>]]<span style="color:#f92672">=</span>[<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">j</span>],<span style="color:#a6e22e">a</span>[<span style="color:#a6e22e">i</span>]]; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>; <span style="color:#a6e22e">j</span><span style="color:#f92672">--</span>; }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">j</span><span style="color:#f92672">-</span><span style="color:#a6e22e">l</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">r</span><span style="color:#f92672">-</span><span style="color:#a6e22e">i</span>){ <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">l</span>,<span style="color:#a6e22e">j</span>); <span style="color:#a6e22e">l</span><span style="color:#f92672">=</span><span style="color:#a6e22e">i</span>; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span> { <span style="color:#a6e22e">quick</span>(<span style="color:#a6e22e">a</span>,<span style="color:#a6e22e">i</span>,<span style="color:#a6e22e">r</span>); <span style="color:#a6e22e">r</span><span style="color:#f92672">=</span><span style="color:#a6e22e">j</span>; }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">quick</span>([<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">8</span>,<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">7</span>]));
+</span></span></code></pre></div><h2 id="best-practices">Best Practices<a hidden class="anchor" aria-hidden="true" href="#best-practices">#</a></h2>
+<ul>
+<li>Default to language built-in sort; if custom, include random/median-of-three, three-way for duplicates, insertion threshold, tail recursion.</li>
+<li>Use merge/TimSort for stability; consider Introsort for strict upper bounds.</li>
+<li>Benchmark on random, reverse, all equal, many duplicates, and large arrays.</li>
+</ul>
+<h2 id="conclusion">Conclusion<a hidden class="anchor" aria-hidden="true" href="#conclusion">#</a></h2>
+<ul>
+<li>Quicksort is fast and in-place but must use pivot strategy and three-way partition to avoid degeneration.</li>
+<li>Tail recursion + insertion thresholds are standard engineering practice; fall back to heap if depth grows (Introsort).</li>
+<li>Selection rules: stability/external -&gt; merge/TimSort; memory-tight random -&gt; quick/Introsort; many duplicates -&gt; three-way.</li>
+</ul>
+<h2 id="references-and-further-reading">References and Further Reading<a hidden class="anchor" aria-hidden="true" href="#references-and-further-reading">#</a></h2>
+<ul>
+<li>Hoare, &ldquo;Quicksort&rdquo; (1961)</li>
+<li>Bentley &amp; McIlroy, &ldquo;Engineering a Sort Function&rdquo; (1993)</li>
+<li>C++ <code>std::sort</code> and <code>std::stable_sort</code> implementation notes</li>
+</ul>
+<h2 id="meta">Meta<a hidden class="anchor" aria-hidden="true" href="#meta">#</a></h2>
+<ul>
+<li>Reading time: approx. 16 min</li>
+<li>SEO keywords: quicksort, pivot selection, three-way partition, tail recursion, Introsort</li>
+<li>Meta description: sorting series (5) explaining pivot strategies, duplicate handling, tail recursion, and hybrid optimizations with multilingual implementations.</li>
+</ul>
+<h2 id="call-to-action-cta">Call to Action (CTA)<a hidden class="anchor" aria-hidden="true" href="#call-to-action-cta">#</a></h2>
+<ul>
+<li>Benchmark random vs fixed pivots on your real data; compare performance.</li>
+<li>Add &ldquo;insertion threshold + tail recursion&rdquo; to your implementation and measure stack depth and time.</li>
+<li>Follow the series: heap sort, non-comparison, TimSort/Introsort, selection guide.</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/en/tags/sorting/">Sorting</a></li>
+      <li><a href="http://localhost:1313/en/tags/quick-sort/">Quick-Sort</a></li>
+      <li><a href="http://localhost:1313/en/tags/algorithms/">Algorithms</a></li>
+      <li><a href="http://localhost:1313/en/tags/divide-and-conquer/">Divide-and-Conquer</a></li>
+      <li><a href="http://localhost:1313/en/tags/partition/">Partition</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/en/alg/leetcode/6.sorting-series-heap-sort/">
+    <span class="title">« Prev</span>
+    <br>
+    <span>Sorting Series (6): Heap Sort - In-place O(n log n) with Worst-Case Guarantees</span>
+  </a>
+  <a class="next" href="http://localhost:1313/en/alg/leetcode/binary-search-search-range-start-end/">
+    <span class="title">Next »</span>
+    <br>
+    <span>Find First and Last Position of Element in Sorted Array</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice on x"
+            href="https://x.com/intent/tweet/?text=Sorting%20Series%20%285%29%3a%20Quick%20Sort%20-%20Pivot%20Strategy%2c%20Tail%20Recursion%2c%20Engineering%20Practice&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f5.sorting-series-quick-sort%2f&amp;hashtags=sorting%2cquick-sort%2calgorithms%2cdivide-and-conquer%2cpartition">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f5.sorting-series-quick-sort%2f&amp;title=Sorting%20Series%20%285%29%3a%20Quick%20Sort%20-%20Pivot%20Strategy%2c%20Tail%20Recursion%2c%20Engineering%20Practice&amp;summary=Sorting%20Series%20%285%29%3a%20Quick%20Sort%20-%20Pivot%20Strategy%2c%20Tail%20Recursion%2c%20Engineering%20Practice&amp;source=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f5.sorting-series-quick-sort%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f5.sorting-series-quick-sort%2f&title=Sorting%20Series%20%285%29%3a%20Quick%20Sort%20-%20Pivot%20Strategy%2c%20Tail%20Recursion%2c%20Engineering%20Practice">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f5.sorting-series-quick-sort%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice on whatsapp"
+            href="https://api.whatsapp.com/send?text=Sorting%20Series%20%285%29%3a%20Quick%20Sort%20-%20Pivot%20Strategy%2c%20Tail%20Recursion%2c%20Engineering%20Practice%20-%20http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f5.sorting-series-quick-sort%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice on telegram"
+            href="https://telegram.me/share/url?text=Sorting%20Series%20%285%29%3a%20Quick%20Sort%20-%20Pivot%20Strategy%2c%20Tail%20Recursion%2c%20Engineering%20Practice&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f5.sorting-series-quick-sort%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share Sorting Series (5): Quick Sort - Pivot Strategy, Tail Recursion, Engineering Practice on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=Sorting%20Series%20%285%29%3a%20Quick%20Sort%20-%20Pivot%20Strategy%2c%20Tail%20Recursion%2c%20Engineering%20Practice&u=http%3a%2f%2flocalhost%3a1313%2fen%2falg%2fleetcode%2f5.sorting-series-quick-sort%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/en/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

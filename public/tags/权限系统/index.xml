@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>权限系统 on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/%E6%9D%83%E9%99%90%E7%B3%BB%E7%BB%9F/</link>
+    <description>Recent content in 权限系统 on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 01 Dec 2025 10:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E6%9D%83%E9%99%90%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>从表结构到领域模型：用聚合仓储设计权限系统</title>
+      <link>http://localhost:1313/dev/python/permission-architecture-aggregate-repository/</link>
+      <pubDate>Mon, 01 Dec 2025 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/dev/python/permission-architecture-aggregate-repository/</guid>
+      <description>本文通过 FastAPI &#43; SQLAlchemy &#43; Alembic 的权限组管理示例，讲解如何用领域模型和仓储抽象设计权限系统，为什么仓储可以一次操作多张表，以及 service 层和 repository 层各自应该承担的职责。</description>
+    </item>
+  </channel>
+</rss>

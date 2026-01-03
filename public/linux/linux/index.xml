@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Linux on Jeanphilo Blog</title>
+    <link>http://localhost:1313/linux/linux/</link>
+    <description>Recent content in Linux on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 22 Nov 2025 12:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/linux/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>用 UFW &#43; CrowdSec，彻底阻止恶意端口扫描：从 Fail2ban 踩坑到终极解决方案</title>
+      <link>http://localhost:1313/linux/linux/ufw-crowdsec-portscan/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/linux/linux/ufw-crowdsec-portscan/</guid>
+      <description>&lt;h1 id=&#34;-用-ufw--crowdsec彻底阻止恶意端口扫描&#34;&gt;🛡️ 用 UFW + CrowdSec，彻底阻止恶意端口扫描&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;副标题 / 摘要：&lt;/strong&gt; 如何安全防护你的服务器暴露端口？本文带你从 Fail2ban 的正则地狱走出，构建一个稳定、自动化、智能化的端口扫描防御系统。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-目标读者&#34;&gt;🎯 目标读者&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 FRP / 内网穿透的开发者&lt;/li&gt;
+&lt;li&gt;管理云服务器（腾讯云、阿里云、AWS 等）的运维人员&lt;/li&gt;
+&lt;li&gt;想防御端口扫描、SSH 暴力破解的新手或中级 Linux 用户&lt;/li&gt;
+&lt;li&gt;对 Fail2ban 感兴趣、想升级到更现代安全体系的人&lt;/li&gt;
+&lt;li&gt;想完善服务器安全方案的个人开发者&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景--动机为什么需要端口扫描防护&#34;&gt;💢 背景 / 动机：为什么需要端口扫描防护？&lt;/h2&gt;
+&lt;p&gt;在运行 FRP（frps + frpc）或开放多个端口时，你的服务器通常会遭遇：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;海量扫描：每秒多次 SYN 探测&lt;/li&gt;
+&lt;li&gt;恶意连接尝试：get a user connection [&amp;hellip;]&lt;/li&gt;
+&lt;li&gt;SSH 密码爆破&lt;/li&gt;
+&lt;li&gt;自动化脚本扫描 6001–6010、7000、22、8080 等常见端口&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;传统做法存在痛点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;防火墙（UFW）只能被动拒绝&lt;/li&gt;
+&lt;li&gt;Fail2ban 配置复杂、依赖正则、容易误判、不支持高级行为分析&lt;/li&gt;
+&lt;li&gt;FRPS 日志格式特殊，Fail2ban 很难匹配&lt;/li&gt;
+&lt;li&gt;攻击会占用 frps/sshd 资源，最终导致卡顿、断流&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，我们需要一个&lt;strong&gt;无需写正则、能自动检测扫描、智能封禁恶意 IP 的现代防御体系&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-核心概念&#34;&gt;📘 核心概念&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;FRP（frps / frpc）&lt;/strong&gt;：用于内网穿透，常暴露大量 TCP 端口（如 6001–6010），容易被扫描。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;UFW（Uncomplicated Firewall）&lt;/strong&gt;：Ubuntu 默认防火墙，但缺乏智能检测功能。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Fail2ban&lt;/strong&gt;：传统日志匹配型封禁工具，需要手写正则，踩坑概率高。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CrowdSec（推荐）&lt;/strong&gt;：新一代开放式入侵防御系统 (IPS)，自动检测端口扫描和暴力破解，事件驱动 + 行为分析，资源消耗极低，是 Fail2ban 的现代替代。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-实践指南使用-crowdsec-自动阻止端口扫描ubuntudebian&#34;&gt;🛠 实践指南：使用 CrowdSec 自动阻止端口扫描（Ubuntu/Debian）&lt;/h2&gt;
+&lt;h3 id=&#34;1-安装-crowdsec&#34;&gt;1) 安装 CrowdSec&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | sudo bash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install crowdsec -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2-安装防火墙封禁组件iptables--ufw-自动配合&#34;&gt;2) 安装防火墙封禁组件（iptables / ufw 自动配合）&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install crowdsec-firewall-bouncer-iptables
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;CrowdSec 会自动接管封禁动作。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>🛡️ WireGuard 全面指南：构建安全高速的私人内网（VPN 实战教程） </title>
+      <link>http://localhost:1313/linux/linux/wireguard-vpn-neiwang/</link>
+      <pubDate>Thu, 20 Nov 2025 07:55:02 +0800</pubDate>
+      <guid>http://localhost:1313/linux/linux/wireguard-vpn-neiwang/</guid>
+      <description>&lt;h1 id=&#34;-wireguard-全面指南构建安全高速的私人内网vpn-实战教程&#34;&gt;🛡️ WireGuard 全面指南：构建安全高速的私人内网（VPN 实战教程）&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;副标题 / 摘要：&lt;/strong&gt;
+本文是一篇适合初学者与中级用户的 WireGuard VPN 入门与实战指南。你将学会如何搭建高速、安全、现代化的内网，并实现“服务不暴露公网，只能通过 VPN 访问”的零信任式安全架构。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-目标读者&#34;&gt;👤 目标读者&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;想用 VPN 隐藏自己服务器/电脑端口的人&lt;/li&gt;
+&lt;li&gt;想提高服务器安全性、避免被扫描的人&lt;/li&gt;
+&lt;li&gt;希望构建私人内网 / 远程访问家庭电脑的人&lt;/li&gt;
+&lt;li&gt;Linux / Windows / 开发者 / 运维初学者&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景与动机为什么你需要-wireguard&#34;&gt;🎯 背景与动机：为什么你需要 WireGuard？&lt;/h2&gt;
+&lt;p&gt;现代互联网环境下，一旦你的服务器开放端口到公网（SSH、数据库、后台服务），就会：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;持续被扫描&lt;/li&gt;
+&lt;li&gt;遭遇密码爆破&lt;/li&gt;
+&lt;li&gt;被爬虫探测漏洞&lt;/li&gt;
+&lt;li&gt;面临潜在入侵风险&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;传统解决方案如 OpenVPN 虽然成熟，但复杂、速度慢、配置烦琐。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;WireGuard 是为现代安全而生的 VPN：&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;小巧、安全、快，如同“下一代 VPN 协议”&lt;/li&gt;
+&lt;li&gt;代码量 &amp;lt; 4000 行（OpenVPN 是 40 万+）&lt;/li&gt;
+&lt;li&gt;极易配置&lt;/li&gt;
+&lt;li&gt;延迟低、带宽高&lt;/li&gt;
+&lt;li&gt;适合自建内网、服务器保护、远程办公&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;本文将教你如何用 WireGuard 构建一个&lt;strong&gt;完全隐藏在互联网上的私人内网&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;-核心概念&#34;&gt;🔑 核心概念&lt;/h1&gt;
+&lt;h2 id=&#34;wireguard-是什么&#34;&gt;&lt;strong&gt;WireGuard 是什么？&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;WireGuard 是一种现代化、极简、安全的 VPN 协议，运行在 Linux 内核中，使用最先进的加密算法（ChaCha20、Curve25519 等）。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>开启sshsystem进程失败怎么解决</title>
+      <link>http://localhost:1313/linux/linux/fix-sshsystem-process-start-failure/</link>
+      <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/linux/linux/fix-sshsystem-process-start-failure/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;标题：&lt;/strong&gt;
+🚀 在无 sudo 环境下让 sshd 常驻运行：从错误排查到 nohup 与 systemd 双方案实战&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;副标题 / 摘要：&lt;/strong&gt;
+本文讲述如何在普通用户权限下运行 OpenSSH 服务，逐步解决“连接被拒绝”“密码认证失败”“systemd start-limit-hit”等典型问题，并最终用 nohup 与 systemd 实现持久运行。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;目标读者：&lt;/strong&gt;
+Linux 中级用户、科研或企业多用户服务器使用者、无 root 权限的 SSH 自部署者。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;一背景--动机&#34;&gt;一、背景 / 动机&lt;/h2&gt;
+&lt;p&gt;在部分高校实验室或云主机环境中，普通账户没有 sudo 权限，默认 sshd 服务无法启动。
+当我们需要：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;远程访问自己的 Linux 主机；&lt;/li&gt;
+&lt;li&gt;使用 VS Code Remote 或 SCP 传文件；&lt;/li&gt;
+&lt;li&gt;但又无法修改系统级配置；
+就必须在&lt;strong&gt;用户态&lt;/strong&gt;自行运行 sshd。
+然而这会引发一系列问题：端口冲突、防火墙、认证失败、&lt;code&gt;start-limit-hit&lt;/code&gt; 等。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;二核心概念&#34;&gt;二、核心概念&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;名称&lt;/th&gt;
+          &lt;th&gt;含义&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;sshd&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;OpenSSH 守护进程，负责处理 SSH 登录请求&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;用户态 sshd&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;非 root 用户手动启动的 sshd 实例，仅有用户权限&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;authorized_keys&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;存放允许登录的公钥&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;nohup&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;让程序脱离终端后台运行&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;systemd &amp;ndash;user&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;用户级 systemd 实例，可管理自启服务&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;start-limit-hit&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;systemd 检测到服务频繁退出后自动暂停重启&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;三实践指南--全流程步骤&#34;&gt;三、实践指南 / 全流程步骤&lt;/h2&gt;
+&lt;h3 id=&#34;1-生成并配置-ssh-密钥&#34;&gt;1️⃣ 生成并配置 SSH 密钥&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ssh-keygen -t ed25519 -C &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt; -f ~/.ssh/id_ed25519_noemail
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cat ~/.ssh/id_ed25519_noemail.pub &amp;gt;&amp;gt; ~/.ssh/authorized_keys
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;chmod &lt;span style=&#34;color:#ae81ff&#34;&gt;700&lt;/span&gt; ~/.ssh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;chmod &lt;span style=&#34;color:#ae81ff&#34;&gt;600&lt;/span&gt; ~/.ssh/authorized_keys
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;确保 &lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt; 权限正确。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>没有sudo权限开启ssh</title>
+      <link>http://localhost:1313/linux/linux/enable-ssh-without-sudo/</link>
+      <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/linux/linux/enable-ssh-without-sudo/</guid>
+      <description>&lt;p&gt;以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;-在无-sudo-权限的-linux-环境下启动-ssh-服务用户态-sshd-全攻略&#34;&gt;🧠 在无 &lt;code&gt;sudo&lt;/code&gt; 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略）&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;副标题 / 摘要：&lt;/strong&gt;
+当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 &lt;code&gt;sshd&lt;/code&gt;，支持密钥登录并实现远程连接。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阅读时长：&lt;/strong&gt; 10 分钟
+&lt;strong&gt;目标读者：&lt;/strong&gt; 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者
+&lt;strong&gt;标签：&lt;/strong&gt; SSH、sshd、Linux、远程连接、非 root、系统配置
+&lt;strong&gt;SEO 关键词：&lt;/strong&gt; SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景与动机&#34;&gt;🎯 背景与动机&lt;/h2&gt;
+&lt;p&gt;很多科研服务器、学校实验室或共享主机都不给普通用户 &lt;code&gt;sudo&lt;/code&gt; 权限。
+然而我们仍常常需要：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;远程登录自己的账户；&lt;/li&gt;
+&lt;li&gt;上传/下载文件；&lt;/li&gt;
+&lt;li&gt;或从另一台机器访问自己的进程。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;默认情况下，&lt;code&gt;sshd&lt;/code&gt; 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 &lt;strong&gt;用户目录&lt;/strong&gt; 下运行一个“用户态 SSH 服务”，无需修改系统配置。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-核心概念&#34;&gt;🧩 核心概念&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;名词&lt;/th&gt;
+          &lt;th&gt;含义&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;sshd&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;SSH 服务端程序，负责接收和验证 SSH 连接。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;用户态（user-space）sshd&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;普通用户自行启动的 sshd 进程，不使用 root 权限。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;HostKey&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;服务器用于加密连接的密钥对。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;AuthorizedKeys&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;被允许登录该账户的公钥列表。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;/etc/shadow&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;系统密码哈希存储文件，非 root 用户无法访问。&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-实践指南从零启动用户态-ssh-服务&#34;&gt;⚙️ 实践指南：从零启动用户态 SSH 服务&lt;/h2&gt;
+&lt;h3 id=&#34;-第一步准备配置文件&#34;&gt;🪜 第一步：准备配置文件&lt;/h3&gt;
+&lt;p&gt;创建配置目录：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程</title>
+      <link>http://localhost:1313/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/</link>
+      <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/</guid>
+      <description>&lt;h1 id=&#34;为什么能-ping-通却-ssh-不通一次假-ssh-真-vnc-的排查过程&#34;&gt;&lt;strong&gt;为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程&lt;/strong&gt;&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;副标题：&lt;/strong&gt; 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别
+&lt;strong&gt;阅读时长：&lt;/strong&gt; 7 分钟
+&lt;strong&gt;标签：&lt;/strong&gt; 网络排查、SSH、VNC、Linux、远程连接
+&lt;strong&gt;SEO 关键词：&lt;/strong&gt; SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-目标读者&#34;&gt;🎯 目标读者&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Linux 使用者、开发者、服务器维护人员&lt;/li&gt;
+&lt;li&gt;想学习网络排错思路的中级工程师&lt;/li&gt;
+&lt;li&gt;对 SSH/VNC 协议机制有兴趣的读者&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景与动机&#34;&gt;💡 背景与动机&lt;/h2&gt;
+&lt;p&gt;你是否遇到过这样的情况：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“服务器能 ping 通，但 SSH 连不上？”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。
+本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-问题现象&#34;&gt;🔍 问题现象&lt;/h2&gt;
+&lt;p&gt;执行命令：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ssh chenhm@101.6.142.82 -p &lt;span style=&#34;color:#ae81ff&#34;&gt;5905&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;输出：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kex_exchange_identification: Connection closed by remote host
+Connection closed by 101.6.142.82 port 5905
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;尝试 &lt;code&gt;ping&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ping 101.6.142.82
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;能通，没有丢包。&lt;/p&gt;
+&lt;p&gt;于是我们知道：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>在Ubuntu上让frp内网穿透服务开机自启</title>
+      <link>http://localhost:1313/linux/linux/frp-auto-start-on-ubuntu/</link>
+      <pubDate>Thu, 23 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/linux/linux/frp-auto-start-on-ubuntu/</guid>
+      <description>&lt;h1 id=&#34;-在-ubuntu-上让-frp-内网穿透服务开机自启完整指南&#34;&gt;🚀 在 Ubuntu 上让 frp 内网穿透服务开机自启：完整指南&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;
+通过 systemd 将 frp（Fast Reverse Proxy）设置为系统服务，实现稳定、安全、可监控的开机自动启动方案，避免每次手动运行。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阅读时长&lt;/strong&gt;：8 分钟
+&lt;strong&gt;标签&lt;/strong&gt;：frp、内网穿透、systemd、自启、Linux、Ubuntu
+&lt;strong&gt;SEO 关键词&lt;/strong&gt;：frp 开机自启、Ubuntu frp 配置、frpc systemd、frps 服务端启动、内网穿透配置
+&lt;strong&gt;元描述&lt;/strong&gt;：手把手教你在 Ubuntu 上使用 systemd 将 frp（frpc / frps）设置为开机自启服务，附配置文件模板与常见问题排查。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-目标读者&#34;&gt;🎯 目标读者&lt;/h2&gt;
+&lt;p&gt;适合：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;想在云服务器上部署 frps 的开发者&lt;/li&gt;
+&lt;li&gt;想让家中/办公内网机器长期稳定穿透的中级 Linux 用户&lt;/li&gt;
+&lt;li&gt;DevOps / 自建服务爱好者&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景与动机&#34;&gt;🧩 背景与动机&lt;/h2&gt;
+&lt;p&gt;许多开发者使用 &lt;strong&gt;frp&lt;/strong&gt; 实现内网穿透，让内网服务（如 SSH、Web、NAS）可以安全地从外部访问。
+问题是：手动运行 &lt;code&gt;./frpc -c frpc.ini&lt;/code&gt; 既麻烦又不稳定，机器重启后容易忘记启动。&lt;/p&gt;
+&lt;p&gt;因此，我们希望通过 &lt;strong&gt;systemd 服务&lt;/strong&gt; 实现“&lt;strong&gt;自动随系统启动 + 失败自动重启 + 集中日志管理&lt;/strong&gt;”的效果。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-核心概念&#34;&gt;💡 核心概念&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;frps / frpc&lt;/strong&gt;：frp 的服务端与客户端可执行程序。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;systemd&lt;/strong&gt;：现代 Linux 系统的服务管理器，用于定义和控制后台服务。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;unit 文件&lt;/strong&gt;：定义服务的配置（如启动命令、依赖、重启策略）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-实践步骤指南&#34;&gt;🛠️ 实践步骤指南&lt;/h2&gt;
+&lt;h3 id=&#34;1-安装与准备&#34;&gt;1️⃣ 安装与准备&lt;/h3&gt;
+&lt;p&gt;将二进制文件与配置文件放入系统路径：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>WSL解决内网和windows不共享</title>
+      <link>http://localhost:1313/linux/linux/wsl-intranet-not-shared-with-windows/</link>
+      <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/linux/linux/wsl-intranet-not-shared-with-windows/</guid>
+      <description>&lt;h1 id=&#34;-windows--wsl2-端口转发教程访问-flask-5000&#34;&gt;📝 Windows + WSL2 端口转发教程（访问 Flask 5000）&lt;/h1&gt;
+&lt;h2 id=&#34;前提条件&#34;&gt;前提条件&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;你正在使用 &lt;strong&gt;WSL2&lt;/strong&gt;（Ubuntu 或其他 Linux 发行版）&lt;/li&gt;
+&lt;li&gt;Windows 主机能访问局域网（Wi-Fi 或以太网）&lt;/li&gt;
+&lt;li&gt;Flask 服务在 WSL2 中运行，并监听：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;app&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;run(host&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.0.0.0&amp;#34;&lt;/span&gt;, port&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5000&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;⚠️ &lt;code&gt;host=&amp;quot;0.0.0.0&amp;quot;&lt;/code&gt; 必须，否则外部无法访问&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;第-1-步确认-wsl2-的-ip&#34;&gt;第 1 步：确认 WSL2 的 IP&lt;/h2&gt;
+&lt;p&gt;在 WSL2 中运行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip addr show eth0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;你会看到类似：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;inet 172.26.209.37/20
+&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
+&lt;p&gt;记下 &lt;code&gt;inet&lt;/code&gt; 后面的 IP（本例是 &lt;code&gt;172.26.209.37&lt;/code&gt;），这是 WSL2 内部 IP。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;第-2-步打开-powershell管理员模式&#34;&gt;第 2 步：打开 PowerShell（管理员模式）&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;按 &lt;code&gt;Win + X&lt;/code&gt; → 选择 &lt;strong&gt;Windows PowerShell (管理员)&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;确认管理员权限，必要时允许 UAC 提示&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;第-3-步设置端口转发&#34;&gt;第 3 步：设置端口转发&lt;/h2&gt;
+&lt;p&gt;在 PowerShell 中执行以下命令，将 Windows 的 5000 端口转发到 WSL2：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>如何使用wrk进行压测</title>
+      <link>http://localhost:1313/linux/linux/wrk-load-testing-guide/</link>
+      <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/linux/linux/wrk-load-testing-guide/</guid>
+      <description>&lt;h1 id=&#34;-使用-wrk-对接口进行高性能压力测试超详细教程&#34;&gt;🚀 使用 wrk 对接口进行高性能压力测试（超详细教程）&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;本文介绍如何在 Ubuntu 环境中使用 &lt;code&gt;wrk&lt;/code&gt; 对后端接口（如 Flask / FastAPI / Spring Boot 等）进行高并发压力测试，并结合结果分析性能瓶颈。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-一什么是-wrk&#34;&gt;🧰 一、什么是 wrk？&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/wg/wrk&#34;&gt;&lt;code&gt;wrk&lt;/code&gt;&lt;/a&gt; 是一个现代化、高性能的 HTTP 压测工具，由 C 语言编写，具有以下特点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;高并发能力强&lt;/strong&gt;：支持成千上万的并发连接&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;支持多线程&lt;/strong&gt;：充分利用多核 CPU&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;可自定义 Lua 脚本&lt;/strong&gt;：适合复杂场景（如自定义请求头、Body、Token 等）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;比 Apache Benchmark (ab)&lt;/strong&gt; 更轻量、更快、更稳定&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-二安装-wrk&#34;&gt;⚙️ 二、安装 wrk&lt;/h2&gt;
+&lt;p&gt;在 Ubuntu / Debian 上安装：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt update
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install wrk -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;验证安装是否成功：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;wrk --version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;输出类似：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;wrk 4.2.0 [epoll]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;表示安装成功 ✅&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-三快速开始压测&#34;&gt;🧪 三、快速开始压测&lt;/h2&gt;
+&lt;p&gt;假设你的服务运行在：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;http://192.168.1.224:5000/api/tenders
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;运行：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;wrk -t4 -c100 -d30s http://192.168.1.224:5000/api/tenders
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;参数说明&#34;&gt;参数说明：&lt;/h3&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;参数&lt;/th&gt;
+          &lt;th&gt;含义&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;-t4&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;启动 4 个线程（利用多核 CPU）&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;-c100&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;模拟 100 个并发连接&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;-d30s&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;持续压测 30 秒&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;最后一个参数&lt;/td&gt;
+          &lt;td&gt;目标 URL&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-四示例输出结果解读&#34;&gt;📊 四、示例输出结果解读&lt;/h2&gt;
+&lt;p&gt;假设输出如下：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>如何创建mermaid图像并进行编辑</title>
+      <link>http://localhost:1313/linux/linux/create-and-edit-mermaid-diagrams/</link>
+      <pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/linux/linux/create-and-edit-mermaid-diagrams/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Mermaid是一个用于使用代码创建图像的框架,今天的博客,我们将会简单介绍如何在自己的服务器上安装相关的框架,并对代码进行渲染生成图像&lt;/p&gt;
+&lt;h1 id=&#34;具体步骤&#34;&gt;具体步骤&lt;/h1&gt;
+&lt;h2 id=&#34;如何安装渲染框架&#34;&gt;如何安装渲染框架&lt;/h2&gt;
+&lt;p&gt;使用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;npm install -g @mermaid-js/mermaid-cli
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;就可以安装&lt;/p&gt;
+&lt;p&gt;需要注意的是该框架使用的npm版本需要大于20,所以我们需要切换npm版本,推荐使用nvm管理npm的版本&lt;/p&gt;
+&lt;p&gt;如果没有nvm的话,使用下列命令进行安装&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -o https://raw.githubusercontent.com/nvm-sh/nvim/v0.39.4/install.sh | bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后对shell进行重启&lt;/p&gt;
+&lt;p&gt;然后使用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nvm install &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nvm use &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nvm alias default &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;进行安装,并把默认npm切换为20&lt;/p&gt;
+&lt;p&gt;可以使用&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;node -v
+npm -v
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;确认版本&lt;/p&gt;
+&lt;h2 id=&#34;如何进行渲染&#34;&gt;如何进行渲染&lt;/h2&gt;
+&lt;p&gt;将需要渲染的代码放置在以.mmd结尾的文件中&lt;/p&gt;
+&lt;p&gt;然后使用&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mmdc -i diagrams/example.mmd -o images/example.svg
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;即可&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

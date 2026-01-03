@@ -2,261 +2,43 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Posts on Jeanphilo Blog</title>
-    <link>http://localhost:1313/jeanblog/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on Jeanphilo Blog</description>
     <generator>Hugo -- 0.152.2</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Fri, 14 Nov 2025 15:04:02 +0800</lastBuildDate>
-    <atom:link href="http://localhost:1313/jeanblog/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 30 Dec 2025 11:31:37 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>How to Build a Blog System</title>
-      <link>http://localhost:1313/jeanblog/posts/how-to-build-a-blog-system/</link>
-      <pubDate>Fri, 14 Nov 2025 15:04:02 +0800</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/how-to-build-a-blog-system/</guid>
-      <description>&lt;h1 id=&#34;标题用-hugo--github-pages-十分钟上线个人博客超详细新手指南&#34;&gt;&lt;strong&gt;标题：用 Hugo + GitHub Pages 十分钟上线个人博客（超详细新手指南）&lt;/strong&gt;&lt;/h1&gt;
-&lt;h2 id=&#34;副标题--摘要&#34;&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;&lt;/h2&gt;
-&lt;p&gt;本教程带你从零开始，将本地 Hugo 博客部署到 GitHub Pages，全程只需 10 分钟，适合想快速上线技术博客、文档站点的开发者。确保你不仅能跑起来，还能理解背后的工作原理。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;目标读者&#34;&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/h2&gt;
+      <title>size_t 有什么用？为什么 C&#43;&#43; 循环初始化更偏爱 size_t 而不是 int</title>
+      <link>http://localhost:1313/posts/c&#43;&#43;/size_t-why-not-int-loop/</link>
+      <pubDate>Tue, 30 Dec 2025 11:31:37 +0800</pubDate>
+      <guid>http://localhost:1313/posts/c&#43;&#43;/size_t-why-not-int-loop/</guid>
+      <description>&lt;h1 id=&#34;size_&#34;&gt;&lt;strong&gt;size_t 有什么用？为什么 C++ 循环初始化更偏爱 size_t 而不是 int&lt;/strong&gt;&lt;/h1&gt;
+&lt;h3 id=&#34;副标题--摘要&#34;&gt;副标题 / 摘要&lt;/h3&gt;
+&lt;p&gt;当你写 &lt;code&gt;for&lt;/code&gt; 循环初始化索引时，&lt;code&gt;size_t&lt;/code&gt; 往往比 &lt;code&gt;int&lt;/code&gt; 更安全、更贴合语义。本文用 ACERS 结构讲清楚 &lt;code&gt;size_t&lt;/code&gt; 的定义、使用理由、风险点与工程实践，适合写 C++ 的你快速落地。&lt;/p&gt;
+&lt;h3 id=&#34;元信息&#34;&gt;元信息&lt;/h3&gt;
 &lt;ul&gt;
-&lt;li&gt;Hugo 初学者&lt;/li&gt;
-&lt;li&gt;想快速上线个人技术博客的开发者&lt;/li&gt;
-&lt;li&gt;想了解 GitHub Pages + GitHub Actions 部署的用户&lt;/li&gt;
-&lt;li&gt;想要零成本托管静态网站的同学&lt;/li&gt;
+&lt;li&gt;阅读时长：8-10 分钟&lt;/li&gt;
+&lt;li&gt;标签：C++，size_t，类型系统，循环，初始化，STL&lt;/li&gt;
+&lt;li&gt;SEO 关键词：size_t 用途，size_t 和 int 区别，C++ 循环初始化，size_t 下溢&lt;/li&gt;
+&lt;li&gt;元描述：解释 size_t 的定义与用途，说明为什么循环初始化常用 size_t，并给出安全写法与工程场景。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;背景--动机为什么要用-hugo--github-pages&#34;&gt;&lt;strong&gt;背景 / 动机：为什么要用 Hugo + GitHub Pages？&lt;/strong&gt;&lt;/h2&gt;
-&lt;p&gt;许多人写博客时面临这些痛点：&lt;/p&gt;
+&lt;h3 id=&#34;目标读者&#34;&gt;目标读者&lt;/h3&gt;
 &lt;ul&gt;
-&lt;li&gt;发布文章要手动上传，不自动化&lt;/li&gt;
-&lt;li&gt;静态站点生成器很多，但部署步骤零散&lt;/li&gt;
-&lt;li&gt;GitHub Pages 文档不够清晰，新手容易踩坑&lt;/li&gt;
-&lt;li&gt;主题（如 PaperMod）需要正确处理资源（SCSS）才能编译成功&lt;/li&gt;
+&lt;li&gt;C++ 初学者：对 &lt;code&gt;size_t&lt;/code&gt;、&lt;code&gt;sizeof&lt;/code&gt;、容器 &lt;code&gt;size()&lt;/code&gt; 的返回类型不熟悉&lt;/li&gt;
+&lt;li&gt;中级工程师：遇到过 &lt;code&gt;-Wsign-compare&lt;/code&gt; 警告或下溢 bug&lt;/li&gt;
+&lt;li&gt;需要写跨平台/高性能 C++ 代码的人&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Hugo + GitHub Pages + GitHub Actions 组合&lt;/strong&gt; 完美解决了这些问题：&lt;/p&gt;
+&lt;h3 id=&#34;背景--动机&#34;&gt;背景 / 动机&lt;/h3&gt;
+&lt;p&gt;在 C++ 代码里，你经常能看到这样的循环初始化：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (size_t i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; vec.size(); &lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;i) { ... }
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;不少人疑惑：&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;Hugo 构建速度极快（上千文章依旧瞬间生成）&lt;/li&gt;
-&lt;li&gt;GitHub Pages 完全免费，不需要服务器&lt;/li&gt;
-&lt;li&gt;GitHub Actions 自动部署，写完文章 push 即上线&lt;/li&gt;
+&lt;li&gt;为什么不用更“直观”的 &lt;code&gt;int&lt;/code&gt;？&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;size_t&lt;/code&gt; 到底是什么？为什么是无符号？&lt;/li&gt;
+&lt;li&gt;什么时候会踩坑？&lt;/li&gt;
 &lt;/ul&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;核心概念必须理解&#34;&gt;&lt;strong&gt;核心概念（必须理解）&lt;/strong&gt;&lt;/h2&gt;
-&lt;h3 id=&#34;1-hugo&#34;&gt;&lt;strong&gt;1. Hugo&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;一个超快的静态博客生成器，通过 Markdown 生成 HTML。&lt;/p&gt;
-&lt;h3 id=&#34;2-github-pages&#34;&gt;&lt;strong&gt;2. GitHub Pages&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;GitHub 提供的免费静态网站托管。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>How to Publish by Hugo</title>
-      <link>http://localhost:1313/jeanblog/posts/how-to-publish-by-hugo/</link>
-      <pubDate>Fri, 14 Nov 2025 15:01:32 +0800</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/how-to-publish-by-hugo/</guid>
-      <description>&lt;h1 id=&#34;标题如何使用-hugo-发布文章从-markdown-到线上博客的全流程指南&#34;&gt;&lt;strong&gt;标题：如何使用 Hugo 发布文章：从 Markdown 到线上博客的全流程指南&lt;/strong&gt;&lt;/h1&gt;
-&lt;h2 id=&#34;副标题--摘要&#34;&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;&lt;/h2&gt;
-&lt;p&gt;这篇文章教你如何使用 Hugo 创建、管理与发布文章，包括 front matter 设置、草稿管理、图片处理、目录结构、预览与上线，让你从零掌握完整写作流程。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;目标读者&#34;&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Hugo 初学者&lt;/li&gt;
-&lt;li&gt;想用 Hugo 搭建技术博客的人&lt;/li&gt;
-&lt;li&gt;想学习 Markdown + 静态站点写作流程的开发者&lt;/li&gt;
-&lt;li&gt;使用 PaperMod、DoIt 等主题的用户&lt;/li&gt;
-&lt;/ul&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;背景--动机&#34;&gt;&lt;strong&gt;背景 / 动机&lt;/strong&gt;&lt;/h2&gt;
-&lt;p&gt;很多人在成功搭建 Hugo 博客后会遇到新的困惑：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;文章应该放在哪个目录？&lt;/li&gt;
-&lt;li&gt;front matter 要怎么写？&lt;/li&gt;
-&lt;li&gt;图片要放哪？&lt;/li&gt;
-&lt;li&gt;为什么本地能看到文章但线上看不到？&lt;/li&gt;
-&lt;li&gt;草稿 / 发布时间如何控制？&lt;/li&gt;
-&lt;li&gt;怎样让文章自动出现在首页？&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;这些都是 Hugo 新手非常常见的痛点。
-本教程用&lt;strong&gt;实战步骤 + 最佳实践&lt;/strong&gt;帮助你完全掌握“如何发布文章”的整个流程。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;核心概念&#34;&gt;&lt;strong&gt;核心概念&lt;/strong&gt;&lt;/h2&gt;
-&lt;h3 id=&#34;1-hugo-content内容目录&#34;&gt;&lt;strong&gt;1. Hugo Content（内容目录）&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;Hugo 的文章都放在 &lt;code&gt;content/&lt;/code&gt; 目录下，比如：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;content/
-  posts/
-    my-first-post.md
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;2-front-matter&#34;&gt;&lt;strong&gt;2. Front Matter&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;文章头部的三段 YAML/TOML/JSON，用来控制文章：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;---
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;title&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;文章标题&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;date&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;2024-08-26&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;draft&lt;/span&gt;: &lt;span style=&#34;color:#66d9ef&#34;&gt;false&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#f92672&#34;&gt;tags&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;hugo&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;blog&amp;#34;&lt;/span&gt;]
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;---
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;3-draft草稿&#34;&gt;&lt;strong&gt;3. Draft（草稿）&lt;/strong&gt;&lt;/h3&gt;
-&lt;p&gt;草稿不会被构建，只能在本地用 &lt;code&gt;hugo server -D&lt;/code&gt; 查看。&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>api标准</title>
-      <link>http://localhost:1313/jeanblog/posts/api%E6%A0%87%E5%87%86/</link>
-      <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/api%E6%A0%87%E5%87%86/</guid>
-      <description>&lt;h1 id=&#34;-标题&#34;&gt;🧭 标题：&lt;/h1&gt;
-&lt;p&gt;&lt;strong&gt;如何编写一份合格的 API 文档：从 Tony Tam 的 Swagger 到现代 OpenAPI 实践&lt;/strong&gt;&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-副标题--摘要&#34;&gt;✍️ 副标题 / 摘要&lt;/h2&gt;
-&lt;p&gt;想让你的 API 被开发者真正用得舒服？这篇文章将带你从理念到实践，全面掌握一份高质量 API 文档的结构、示例与最佳规范，基于 Tony Tam 提出的 Swagger / OpenAPI 标准。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-目标读者&#34;&gt;🎯 目标读者&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;初学者：想了解 API 文档标准结构的人。&lt;/li&gt;
-&lt;li&gt;中级开发者：希望提升接口文档可维护性与规范性的人。&lt;/li&gt;
-&lt;li&gt;架构师 / 技术负责人：负责 API 设计规范制定与团队协作的人。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-背景--动机&#34;&gt;💡 背景 / 动机&lt;/h2&gt;
-&lt;p&gt;许多开发团队的 API 文档存在以下痛点：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;信息零散，缺乏统一格式；&lt;/li&gt;
-&lt;li&gt;更新滞后，开发与文档脱节；&lt;/li&gt;
-&lt;li&gt;无法直接用于自动生成或测试。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Tony Tam 于 2010 年提出的 &lt;strong&gt;Swagger 规范（后更名为 OpenAPI）&lt;/strong&gt; 正是为了解决这些问题。如今，它已成为 RESTful API 文档的事实标准，被 Google、Amazon、Stripe 等公司广泛采用。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-核心概念&#34;&gt;🔍 核心概念&lt;/h2&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;概念&lt;/th&gt;
-          &lt;th&gt;说明&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;API 文档&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;描述应用程序接口如何被调用、请求与响应的技术说明书。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;Swagger / OpenAPI&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;一种用于定义、生成、测试 REST API 的标准化规范。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;Endpoint（端点）&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;API 中可访问的具体路径（如 &lt;code&gt;/users/{id}&lt;/code&gt;）。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;Schema（数据模型）&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;定义请求与响应的字段结构。&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-实践指南--步骤&#34;&gt;🧰 实践指南 / 步骤&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;明确文档结构&lt;/strong&gt;&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>如何使用wrk进行压测</title>
-      <link>http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8wrk%E8%BF%9B%E8%A1%8C%E5%8E%8B%E6%B5%8B/</link>
-      <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8wrk%E8%BF%9B%E8%A1%8C%E5%8E%8B%E6%B5%8B/</guid>
-      <description>&lt;h1 id=&#34;-使用-wrk-对接口进行高性能压力测试超详细教程&#34;&gt;🚀 使用 wrk 对接口进行高性能压力测试（超详细教程）&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;本文介绍如何在 Ubuntu 环境中使用 &lt;code&gt;wrk&lt;/code&gt; 对后端接口（如 Flask / FastAPI / Spring Boot 等）进行高并发压力测试，并结合结果分析性能瓶颈。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-一什么是-wrk&#34;&gt;🧰 一、什么是 wrk？&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/wg/wrk&#34;&gt;&lt;code&gt;wrk&lt;/code&gt;&lt;/a&gt; 是一个现代化、高性能的 HTTP 压测工具，由 C 语言编写，具有以下特点：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;高并发能力强&lt;/strong&gt;：支持成千上万的并发连接&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;支持多线程&lt;/strong&gt;：充分利用多核 CPU&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;可自定义 Lua 脚本&lt;/strong&gt;：适合复杂场景（如自定义请求头、Body、Token 等）&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;比 Apache Benchmark (ab)&lt;/strong&gt; 更轻量、更快、更稳定&lt;/li&gt;
-&lt;/ul&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-二安装-wrk&#34;&gt;⚙️ 二、安装 wrk&lt;/h2&gt;
-&lt;p&gt;在 Ubuntu / Debian 上安装：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt update
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install wrk -y
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;验证安装是否成功：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;wrk --version
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;输出类似：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;wrk 4.2.0 [epoll]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;表示安装成功 ✅&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-三快速开始压测&#34;&gt;🧪 三、快速开始压测&lt;/h2&gt;
-&lt;p&gt;假设你的服务运行在：&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;http://192.168.1.224:5000/api/tenders
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;运行：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;wrk -t4 -c100 -d30s http://192.168.1.224:5000/api/tenders
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;参数说明&#34;&gt;参数说明：&lt;/h3&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;参数&lt;/th&gt;
-          &lt;th&gt;含义&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;-t4&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;启动 4 个线程（利用多核 CPU）&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;-c100&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;模拟 100 个并发连接&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;code&gt;-d30s&lt;/code&gt;&lt;/td&gt;
-          &lt;td&gt;持续压测 30 秒&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;最后一个参数&lt;/td&gt;
-          &lt;td&gt;目标 URL&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-四示例输出结果解读&#34;&gt;📊 四、示例输出结果解读&lt;/h2&gt;
-&lt;p&gt;假设输出如下：&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>如何使用和配置typescript环境</title>
-      <link>http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E5%92%8C%E9%85%8D%E7%BD%AEtypescript%E7%8E%AF%E5%A2%83/</link>
-      <pubDate>Thu, 28 Aug 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%E5%92%8C%E9%85%8D%E7%BD%AEtypescript%E7%8E%AF%E5%A2%83/</guid>
-      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-&lt;p&gt;对于typescript以.ts为后缀的文件,我们是不能直接编译运行的,我们需要把typescript文件转译为js文件然后再进行运行&lt;/p&gt;
-&lt;p&gt;我们可以选择两种方式,把ts文件传到服务器上使用ci工具进行编译,或者直接在本地转译后上传js文件到生产环境,如果我们想要在开发环境中直接进行运行测试的话,可以使用ts-node进行运行,但是开发环境之中还是需要编译&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>如何创建mermaid图像并进行编辑</title>
-      <link>http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BAmermaid%E5%9B%BE%E5%83%8F%E5%B9%B6%E8%BF%9B%E8%A1%8C%E7%BC%96%E8%BE%91/</link>
-      <pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/%E5%A6%82%E4%BD%95%E5%88%9B%E5%BB%BAmermaid%E5%9B%BE%E5%83%8F%E5%B9%B6%E8%BF%9B%E8%A1%8C%E7%BC%96%E8%BE%91/</guid>
-      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-&lt;p&gt;Mermaid是一个用于使用代码创建图像的框架,今天的博客,我们将会简单介绍如何在自己的服务器上安装相关的框架,并对代码进行渲染生成图像&lt;/p&gt;
-&lt;h1 id=&#34;具体步骤&#34;&gt;具体步骤&lt;/h1&gt;
-&lt;h2 id=&#34;如何安装渲染框架&#34;&gt;如何安装渲染框架&lt;/h2&gt;
-&lt;p&gt;使用&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;npm install -g @mermaid-js/mermaid-cli
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;就可以安装&lt;/p&gt;
-&lt;p&gt;需要注意的是该框架使用的npm版本需要大于20,所以我们需要切换npm版本,推荐使用nvm管理npm的版本&lt;/p&gt;
-&lt;p&gt;如果没有nvm的话,使用下列命令进行安装&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -o https://raw.githubusercontent.com/nvm-sh/nvim/v0.39.4/install.sh | bash
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后对shell进行重启&lt;/p&gt;
-&lt;p&gt;然后使用&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nvm install &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nvm use &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nvm alias default &lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;进行安装,并把默认npm切换为20&lt;/p&gt;
-&lt;p&gt;可以使用&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;node -v
-npm -v
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;确认版本&lt;/p&gt;
-&lt;h2 id=&#34;如何进行渲染&#34;&gt;如何进行渲染&lt;/h2&gt;
-&lt;p&gt;将需要渲染的代码放置在以.mmd结尾的文件中&lt;/p&gt;
-&lt;p&gt;然后使用&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mmdc -i diagrams/example.mmd -o images/example.svg
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;即可&lt;/p&gt;</description>
+&lt;p&gt;这一篇把这些问题一次讲清楚。&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>

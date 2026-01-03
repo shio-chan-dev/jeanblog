@@ -2,17 +2,206 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Python on Jeanphilo Blog</title>
-    <link>http://localhost:1313/jeanblog/categories/python/</link>
+    <link>http://localhost:1313/categories/python/</link>
     <description>Recent content in Python on Jeanphilo Blog</description>
     <generator>Hugo -- 0.152.2</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 12 Nov 2025 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/jeanblog/categories/python/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Dec 2025 23:52:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/python/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Python 抽象基类 ABC vs ABCMeta：什么时候用哪个？</title>
+      <link>http://localhost:1313/dev/python/abc-vs-abcmeta-hugo/</link>
+      <pubDate>Fri, 12 Dec 2025 23:52:00 +0800</pubDate>
+      <guid>http://localhost:1313/dev/python/abc-vs-abcmeta-hugo/</guid>
+      <description>用可运行示例讲清 ABC 与 ABCMeta 的区别：一个是便捷基类，一个是元类；分别适合接口约束与类创建期的自动注入/校验。</description>
+    </item>
+    <item>
+      <title>从参数直传到Pipeline: 一次可复现可观测的数据处理管线改造实践</title>
+      <link>http://localhost:1313/dev/python/from-direct-params-to-config-driven-etl-pipeline/</link>
+      <pubDate>Wed, 10 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/from-direct-params-to-config-driven-etl-pipeline/</guid>
+      <description>&lt;h1 id=&#34;从参数直传到-pipeline一次可复现可观测的数据处理管线改造实践&#34;&gt;从参数直传到 Pipeline：一次可复现、可观测的数据处理管线改造实践&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;副标题：&lt;/strong&gt; 为什么当处理链变得越来越长时，“配置驱动 + 上下文 + 外部存储”的 Pipeline 模式会比“参数直传”更适合工作？&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;标签：&lt;/strong&gt; Python / Pipeline / ETL / 数据工程 / 架构设计
+&lt;strong&gt;适读人群：&lt;/strong&gt; 后端开发、数据工程师、做文档处理/Embedding/索引构建的同学
+&lt;strong&gt;阅读时间：&lt;/strong&gt; 10–15 min
+&lt;strong&gt;摘要：&lt;/strong&gt; 本文记录我从“领域模型传来传去”的后端式写法，迁移到“配置驱动 Pipeline”模式的过程，总结落地要点、踩过的坑，以及为什么这种模式更适合复杂的数据加工链。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;-写这篇文章的动机&#34;&gt;🧭 写这篇文章的动机&lt;/h1&gt;
+&lt;p&gt;做后端时，我长期习惯一种简单粗暴的风格：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;需要什么参数就一直往下传，函数链一路 call 下去。&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;很多业务都是这么写的：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;输入是个模型/DTO&lt;/li&gt;
+&lt;li&gt;处理完传下一个函数&lt;/li&gt;
+&lt;li&gt;大对象在链路里飘来飘去&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;但当我开始做 &lt;strong&gt;文档处理、Embedding、实体提取、索引构建&lt;/strong&gt; 这种“多步骤、可重跑、需观测”的任务时，这种写法很快失效：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;需要重跑某一步时必须重建整条调用链&lt;/li&gt;
+&lt;li&gt;中间产物无法落地检查&lt;/li&gt;
+&lt;li&gt;改一个策略需要改一堆函数签名&lt;/li&gt;
+&lt;li&gt;并发 / 异常恢复都难处理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;后来接触到构建数据处理 Workflow / ETL Pipeline 的方式，发现它的核心思路完全不一样：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;配置驱动策略 → 上下文承载运行态 → 外部存储承载数据流。&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这套体系让多步处理链突然变得可插拔、能恢复、能观测、能重放。
+于是就有了这篇文章，把我的心智迁移过程与实践要点记录下来。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;-tldr你只看这一屏也能理解本文核心&#34;&gt;⚡ TL;DR（你只看这一屏也能理解本文核心）&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;配置驱动：&lt;/strong&gt; 路径、模型、超参都写 config，而不是塞进函数参数里。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;上下文 context：&lt;/strong&gt; 统一管理 I/O 句柄、缓存、回调、统计、运行时标志。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;外部存储：&lt;/strong&gt; 步骤间不传大对象，读写约定表名：&lt;code&gt;documents → text_units → entities → index&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;可插拔 Pipeline：&lt;/strong&gt; “步骤名 → 函数指针”的顺序列表，可一键切换 Standard/Fast 等方案。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;幂等与恢复：&lt;/strong&gt; 中间表持久化，可覆盖或版本化，崩溃后能断点续跑。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;观测与回调：&lt;/strong&gt; start/end/进度统一上报，产出 stats.json，定位问题更快。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;异步友好：&lt;/strong&gt; 步骤 await 执行，内部可分片并发或调用 LLM。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;取舍：&lt;/strong&gt; 成本是心智负担增加；收益是可观察、可重跑、可替换、低耦合。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;-目标读者&#34;&gt;👥 目标读者&lt;/h1&gt;
+&lt;p&gt;适合以下同学阅读：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Pydantic vs dataclass vs TypedDict：谁负责什么，怎么组合？</title>
+      <link>http://localhost:1313/dev/python/pydantic-vs-dataclass-vs-typeddict/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/pydantic-vs-dataclass-vs-typeddict/</guid>
+      <description>&lt;h3 id=&#34;标题&#34;&gt;标题&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Pydantic vs dataclass vs TypedDict：谁负责什么，怎么组合？&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;副标题--摘要&#34;&gt;副标题 / 摘要&lt;/h3&gt;
+&lt;p&gt;承接《别让 Pydantic 占领你的整个项目》，这一篇用对比视角把 Pydantic、dataclass、TypedDict 的定位、取舍和组合方式讲清楚：&lt;strong&gt;谁用于 API 校验、谁承载业务状态、谁只做类型提示&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;目标读者&#34;&gt;目标读者&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;FastAPI / Pydantic 用户，想搞清楚“数据类”该放在哪一层&lt;/li&gt;
+&lt;li&gt;有 0–5 年经验、在做服务端建模的 Python 工程师&lt;/li&gt;
+&lt;li&gt;已读过前一篇分层文章，想进一步对比具体工具&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;背景--动机为什么要区分三者&#34;&gt;背景 / 动机：为什么要区分三者？&lt;/h3&gt;
+&lt;p&gt;在上一篇里，我们强调“Pydantic 应该停留在 API/外围”。很多同学随后会问：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;“那 Python 原生 dataclass 呢？和 Pydantic 有什么差？”&lt;/li&gt;
+&lt;li&gt;“TypedDict 是不是又一个‘数据类’，要不要取代 dataclass？”&lt;/li&gt;
+&lt;li&gt;“什么时候该用 Pydantic dataclasses，什么时候用标准库？”&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;不区分清楚，常见后果有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用 TypedDict 写业务逻辑，测试时才发现它根本不做运行时校验；&lt;/li&gt;
+&lt;li&gt;用 Pydantic BaseModel 传来传去，导致 Domain 强绑定外部依赖；&lt;/li&gt;
+&lt;li&gt;dataclass 和 Pydantic 混用，序列化和校验边界越来越模糊。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;核心概念一句话定位&#34;&gt;核心概念：一句话定位&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Pydantic BaseModel&lt;/strong&gt;：运行时校验 + 类型转换 + JSON 友好；属于“对外/边界”。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;dataclass（标准库）&lt;/strong&gt;：轻量数据载体，可承载业务方法；不做自动校验，属于“领域/内部”。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;TypedDict&lt;/strong&gt;：仅提供静态类型提示，运行时就是普通 dict；属于“静态约束/外部协议”。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;主要差异：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Alembic 入门：第一次用 SQLAlchemy 做数据库迁移</title>
+      <link>http://localhost:1313/dev/python/alembic-intro-sqlalchemy-migrations/</link>
+      <pubDate>Fri, 28 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/alembic-intro-sqlalchemy-migrations/</guid>
+      <description>&lt;h1 id=&#34;-alembic-入门第一次用-sqlalchemy-做数据库迁移&#34;&gt;🐣 Alembic 入门：第一次用 SQLAlchemy 做数据库迁移&lt;/h1&gt;
+&lt;h2 id=&#34;-副标题--摘要&#34;&gt;💡 副标题 / 摘要&lt;/h2&gt;
+&lt;p&gt;如果你已经在用 SQLAlchemy 操作数据库，却还在靠“手工改表结构 + 导出导入 SQL”来维护 schema，这篇文章会带你用最小成本上手 Alembic。&lt;br&gt;
+我们会从 &lt;strong&gt;0 配置 Alembic&lt;/strong&gt; 开始，一步步完成：生成迁移、升级/回滚数据库、和 SQLAlchemy 模型联动。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-目标读者&#34;&gt;🎯 目标读者&lt;/h2&gt;
+&lt;p&gt;适合这样的你：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;已经在项目中使用 &lt;strong&gt;SQLAlchemy&lt;/strong&gt;（ORM 或 Core 都行）；&lt;/li&gt;
+&lt;li&gt;从未使用过 Alembic，或只懂 &lt;code&gt;alembic upgrade head&lt;/code&gt; 这几个命令；&lt;/li&gt;
+&lt;li&gt;想为自己的项目加上 &lt;strong&gt;可回滚、可追踪、可审计&lt;/strong&gt; 的数据库结构变更；&lt;/li&gt;
+&lt;li&gt;以 Python / Web 后端为主（Flask / FastAPI / 自研框架均可）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景--动机为什么需要数据库迁移工具&#34;&gt;🔥 背景 / 动机：为什么需要数据库迁移工具？&lt;/h2&gt;
+&lt;p&gt;没有 Alembic 时，我们通常怎么改数据库结构？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在本地手改表结构（改字段、加索引）；&lt;/li&gt;
+&lt;li&gt;导出 SQL 发给同事 / DBA；&lt;/li&gt;
+&lt;li&gt;生产环境再手工执行一次；&lt;/li&gt;
+&lt;li&gt;一旦出错，回滚非常痛苦。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;常见痛点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;多人协作困难&lt;/strong&gt;：谁先改？谁后改？改了什么？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;环境不一致&lt;/strong&gt;：本地、测试、生产的表结构经常不一样；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;难以回滚&lt;/strong&gt;：一旦上线发现问题，很难安全退回之前版本；&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;审计困难&lt;/strong&gt;：几年后根本不知道这个表为什么多了几个字段。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Alembic 做的事情可以总结为一句话：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>如何干预 Alembic：从自动生成到精细控制</title>
+      <link>http://localhost:1313/dev/python/alembic-autogenerate-to-manual-control/</link>
+      <pubDate>Fri, 28 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/alembic-autogenerate-to-manual-control/</guid>
+      <description>&lt;h1 id=&#34;-如何干预-alembic从自动生成到精细控制&#34;&gt;🧬 如何干预 Alembic：从自动生成到精细控制&lt;/h1&gt;
+&lt;h2 id=&#34;-副标题--摘要&#34;&gt;💡 副标题 / 摘要&lt;/h2&gt;
+&lt;p&gt;大多数人用 Alembic 的方式是：改 SQLAlchemy 模型 → &lt;code&gt;alembic revision --autogenerate&lt;/code&gt; → &lt;code&gt;alembic upgrade head&lt;/code&gt;。&lt;br&gt;
+但在真实项目里，你往往需要“插手”这条流水线：控制生成的迁移内容、插入数据迁移、在生产环境加保护、按分支管理多套 Schema……&lt;/p&gt;
+&lt;p&gt;这篇文章会带你系统认识 &lt;strong&gt;“如何干预 Alembic”&lt;/strong&gt;：&lt;br&gt;
+从 &lt;code&gt;env.py&lt;/code&gt; 到单个迁移脚本，从自动生成到手写数据迁移，让你能放心地在生产库上使用 Alembic，而不是被它“牵着走”。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-目标读者&#34;&gt;🎯 目标读者&lt;/h2&gt;
+&lt;p&gt;适合以下读者：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;已在项目中使用 &lt;strong&gt;SQLAlchemy + Alembic&lt;/strong&gt;；&lt;/li&gt;
+&lt;li&gt;希望从“只会用 autogenerate”进阶到“懂得控制 Alembic 行为”；&lt;/li&gt;
+&lt;li&gt;有生产库 / 多环境（dev、staging、prod）场景，需要更安全的迁移控制；&lt;/li&gt;
+&lt;li&gt;想把 &lt;strong&gt;数据迁移&lt;/strong&gt;、&lt;strong&gt;自定义检查&lt;/strong&gt;、&lt;strong&gt;安全保护&lt;/strong&gt; 加进 Alembic 流程的后端工程师。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景--动机为什么要干预-alembic&#34;&gt;🔥 背景 / 动机：为什么要“干预” Alembic？&lt;/h2&gt;
+&lt;p&gt;只使用 Alembic 的默认玩法，很容易遇到这些问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--autogenerate&lt;/code&gt; 生成了一堆你不理解的操作，不敢在生产上跑；&lt;/li&gt;
+&lt;li&gt;模型删了字段，自动生成的迁移脚本也直接删列，但生产上其实还有老数据需要兜底；&lt;/li&gt;
+&lt;li&gt;想在迁移时顺便初始化一些字典表、配置表，但不知放在哪；&lt;/li&gt;
+&lt;li&gt;有些表只在测试 / demo 环境需要，生产环境不想创建；&lt;/li&gt;
+&lt;li&gt;多个服务共享一个数据库，需要 &lt;strong&gt;按分支/模块控制迁移范围&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;要解决这些问题，你就必须学会：&lt;br&gt;
+&lt;strong&gt;在 Alembic 的各个“接缝处”插入自己的逻辑&lt;/strong&gt;。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>让 FastAPI 异步真正‘不卡’：asyncio.create_task &#43; to_thread 并发实践（含 MySQL 写入）</title>
+      <link>http://localhost:1313/dev/python/fastapi-asyncio-create-task-to-thread-mysql/</link>
+      <pubDate>Wed, 19 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/fastapi-asyncio-create-task-to-thread-mysql/</guid>
+      <description>把同步重活丢给线程、把可并行的子流程拆出来并发执行，让 FastAPI WebSocket/HTTP 服务在高并发文件处理场景下保持流畅与可靠。</description>
+    </item>
+    <item>
+      <title>现代加密替代方案：AES‑GCM 与 ChaCha20‑Poly1305 实战指南（附 Python 示例）</title>
+      <link>http://localhost:1313/dev/python/modern-crypto-aes-gcm-chacha20-poly1305-guide/</link>
+      <pubDate>Wed, 19 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/modern-crypto-aes-gcm-chacha20-poly1305-guide/</guid>
+      <description>聚焦现代 AEAD：为何替代 RC4、如何安全落地 AES‑GCM 与 ChaCha20‑Poly1305，附可复制的 Python 代码与最佳实践。</description>
+    </item>
+    <item>
+      <title>用 Python 还原 RC4 &#43; JWT &#43; 自定义 SSO Token 加解密（含可运行示例）</title>
+      <link>http://localhost:1313/dev/python/recreate-rc4-jwt-custom-sso-token-in-python/</link>
+      <pubDate>Wed, 19 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/recreate-rc4-jwt-custom-sso-token-in-python/</guid>
+      <description>从核心概念到可运行代码，演示用 Python 实现 RC4 加/解密、JWT 与自定义 SSO Token，并讨论风险与替代方案。示例中密钥与发行方均为占位值。</description>
+    </item>
     <item>
       <title>用一段优雅的python代码，把sqlalchemy模型高效转为字典</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E7%94%A8%E4%B8%80%E6%AE%B5%E4%BC%98%E9%9B%85%E7%9A%84python%E4%BB%A3%E7%A0%81%E6%8A%8Asqlalchemy%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E8%BD%AC%E4%B8%BA%E5%AD%97%E5%85%B8/</link>
+      <link>http://localhost:1313/dev/python/sqlalchemy-model-to-dict-python/</link>
       <pubDate>Wed, 12 Nov 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E7%94%A8%E4%B8%80%E6%AE%B5%E4%BC%98%E9%9B%85%E7%9A%84python%E4%BB%A3%E7%A0%81%E6%8A%8Asqlalchemy%E6%A8%A1%E5%9E%8B%E9%AB%98%E6%95%88%E8%BD%AC%E4%B8%BA%E5%AD%97%E5%85%B8/</guid>
+      <guid>http://localhost:1313/dev/python/sqlalchemy-model-to-dict-python/</guid>
       <description>&lt;p&gt;&lt;strong&gt;标题&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;用一段优雅的 Python 代码，把 SQLAlchemy 模型安全、高效地序列化成字典&lt;/p&gt;
 &lt;hr&gt;
@@ -52,9 +241,9 @@
     </item>
     <item>
       <title>别让Pydantic占领你的整个项目:聊聊API校验,Domain模型和数据库之间的边界</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E5%88%AB%E8%AE%A9pydantic%E5%8D%A0%E9%A2%86%E4%BD%A0%E7%9A%84%E6%95%B4%E4%B8%AA%E9%A1%B9%E7%9B%AE%E8%81%8A%E8%81%8Aapi%E6%A0%A1%E9%AA%8Cdomain%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BE%B9%E7%95%8C/</link>
+      <link>http://localhost:1313/dev/python/pydantic-boundaries-api-domain-db/</link>
       <pubDate>Sun, 09 Nov 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E5%88%AB%E8%AE%A9pydantic%E5%8D%A0%E9%A2%86%E4%BD%A0%E7%9A%84%E6%95%B4%E4%B8%AA%E9%A1%B9%E7%9B%AE%E8%81%8A%E8%81%8Aapi%E6%A0%A1%E9%AA%8Cdomain%E6%A8%A1%E5%9E%8B%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BE%B9%E7%95%8C/</guid>
+      <guid>http://localhost:1313/dev/python/pydantic-boundaries-api-domain-db/</guid>
       <description>&lt;h3 id=&#34;标题&#34;&gt;标题&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;别让 Pydantic 占领你的整个项目：聊聊 API 校验、Domain 模型和数据库之间的边界&lt;/strong&gt;&lt;/p&gt;
 &lt;hr&gt;
@@ -88,9 +277,9 @@
     </item>
     <item>
       <title>从写路由到写&#34;大脑&#34;:Python工程师如何先搞定核心逻辑,再考虑API</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/</link>
+      <link>http://localhost:1313/dev/python/core-logic-before-api-for-python-engineers/</link>
       <pubDate>Sat, 08 Nov 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%86%99%E8%B7%AF%E7%94%B1%E5%88%B0%E5%86%99%E5%A4%A7%E8%84%91python%E5%B7%A5%E7%A8%8B%E5%B8%88%E5%A6%82%E4%BD%95%E5%85%88%E6%90%9E%E5%AE%9A%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91%E5%86%8D%E8%80%83%E8%99%91api/</guid>
+      <guid>http://localhost:1313/dev/python/core-logic-before-api-for-python-engineers/</guid>
       <description>&lt;h1 id=&#34;标题&#34;&gt;&lt;strong&gt;标题&lt;/strong&gt;&lt;/h1&gt;
 &lt;p&gt;从写路由到写“大脑”：Python 工程师如何先搞定核心逻辑，再考虑 API&lt;/p&gt;
 &lt;hr&gt;
@@ -126,89 +315,10 @@
 &lt;strong&gt;“那 AI 回复到底是怎么生成的？”&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     <item>
-      <title>为什么让前端完成Chat Completion: 一套通用的多模型流式对话架构设计</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%A9%E5%89%8D%E7%AB%AF%E5%AE%8C%E6%88%90chat-completion-%E4%B8%80%E5%A5%97%E9%80%9A%E7%94%A8%E7%9A%84%E5%A4%9A%E6%A8%A1%E5%9E%8B%E6%B5%81%E5%BC%8F%E5%AF%B9%E8%AF%9D%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/</link>
-      <pubDate>Sun, 02 Nov 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E4%B8%BA%E4%BB%80%E4%B9%88%E8%AE%A9%E5%89%8D%E7%AB%AF%E5%AE%8C%E6%88%90chat-completion-%E4%B8%80%E5%A5%97%E9%80%9A%E7%94%A8%E7%9A%84%E5%A4%9A%E6%A8%A1%E5%9E%8B%E6%B5%81%E5%BC%8F%E5%AF%B9%E8%AF%9D%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/</guid>
-      <description>&lt;h1 id=&#34;-为什么让前端执行-chat-completion一套通用的多模型流式对话架构设计&#34;&gt;🔌 为什么让前端执行 Chat Completion：一套通用的多模型流式对话架构设计&lt;/h1&gt;
-&lt;p&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;
-在现代 AI 聊天系统中，很多人会问：为什么不直接在后端调用 OpenAI API？
-本文将带你理解一种更灵活的架构——让前端承担推理执行，后端负责调度和状态同步。适合需要支持多模型、本地推理或用户自带 API Key 的开发者。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;AI 聊天应用开发者&lt;/li&gt;
-&lt;li&gt;WebSocket / Socket.IO 实践者&lt;/li&gt;
-&lt;li&gt;想构建多模型、多端协作聊天系统的架构师&lt;/li&gt;
-&lt;/ul&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-背景--动机&#34;&gt;🧠 背景 / 动机&lt;/h2&gt;
-&lt;p&gt;传统的聊天后端往往直接在服务器调用 OpenAI API：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;resp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; client&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;chat&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;completions&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;create(model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gpt-4o&amp;#34;&lt;/span&gt;, messages&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;messages)
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;虽然简单，但带来几个现实问题：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;所有请求都消耗服务器的 Key，成本高且难追踪；&lt;/li&gt;
-&lt;li&gt;无法支持用户自定义 Key（BYOK 模式）；&lt;/li&gt;
-&lt;li&gt;无法连接用户本地推理（如 Ollama、LM Studio）；&lt;/li&gt;
-&lt;li&gt;无法切换不同模型或 API Base URL；&lt;/li&gt;
-&lt;li&gt;前后端状态不同步，不利于流式消息推送。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;为了解决这些问题，一些开源系统（如 Open-WebUI、Chatbot-UI 增强版）采用了更灵活的 &lt;strong&gt;Socket.IO 双向通信架构&lt;/strong&gt;。
-服务端负责「调度与状态流」，前端负责「执行与回传」。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-核心概念&#34;&gt;🧩 核心概念&lt;/h2&gt;
-&lt;table&gt;
-  &lt;thead&gt;
-      &lt;tr&gt;
-          &lt;th&gt;概念&lt;/th&gt;
-          &lt;th&gt;说明&lt;/th&gt;
-      &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;Socket.IO&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;基于 WebSocket 的实时双向通信库，支持事件与回调。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;event_emitter&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;服务端向前端广播事件（推送消息/状态）。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;event_caller (sio.call)&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;服务端请求前端执行任务（RPC），并等待前端 callback 返回。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;request:chat:completion&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;一种自定义事件类型，用于请求前端执行 chat completion。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;BYOK 模式&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;“Bring Your Own Key”，用户使用自己的 OpenAI Key 调用 API。&lt;/td&gt;
-      &lt;/tr&gt;
-      &lt;tr&gt;
-          &lt;td&gt;&lt;strong&gt;Executor 架构&lt;/strong&gt;&lt;/td&gt;
-          &lt;td&gt;前端承担推理任务的执行者，后端作为协调者。&lt;/td&gt;
-      &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;-实践指南--步骤&#34;&gt;🧭 实践指南 / 步骤&lt;/h2&gt;
-&lt;h3 id=&#34;1-服务端发送调用请求&#34;&gt;1️⃣ 服务端发送调用请求&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;res &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;await&lt;/span&gt; event_caller({
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;request:chat:completion&amp;#34;&lt;/span&gt;,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt;: {
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;form_data&amp;#34;&lt;/span&gt;: form_data,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;model&amp;#34;&lt;/span&gt;: models[form_data[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;model&amp;#34;&lt;/span&gt;]],
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;channel&amp;#34;&lt;/span&gt;: channel,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;session_id&amp;#34;&lt;/span&gt;: session_id,
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    },
-&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;})
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这里的 &lt;code&gt;event_caller&lt;/code&gt; 使用 &lt;code&gt;sio.call()&lt;/code&gt; 发送事件给指定客户端，并等待 callback 返回。&lt;/p&gt;</description>
-    </item>
-    <item>
       <title>从堵塞到异步:为什么上传文件接口不该等文件处理完</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%A0%B5%E5%A1%9E%E5%88%B0%E5%BC%82%E6%AD%A5%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E6%8E%A5%E5%8F%A3%E4%B8%8D%E8%AF%A5%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E5%AE%8C/</link>
+      <link>http://localhost:1313/dev/python/from-blocking-to-async-file-upload-processing/</link>
       <pubDate>Sun, 02 Nov 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E4%BB%8E%E5%A0%B5%E5%A1%9E%E5%88%B0%E5%BC%82%E6%AD%A5%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E6%8E%A5%E5%8F%A3%E4%B8%8D%E8%AF%A5%E7%AD%89%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86%E5%AE%8C/</guid>
+      <guid>http://localhost:1313/dev/python/from-blocking-to-async-file-upload-processing/</guid>
       <description>&lt;h1 id=&#34;-从阻塞到异步为什么上传接口不该等文件处理完&#34;&gt;🚀 从阻塞到异步：为什么上传接口不该等文件处理完？&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;—— 用异步任务和状态跟踪构建高性能文件处理系统&lt;/strong&gt;&lt;/p&gt;
 &lt;hr&gt;
@@ -349,10 +459,89 @@
 &lt;p&gt;取舍原则：&lt;/p&gt;</description>
     </item>
     <item>
+      <title>为什么让前端完成Chat Completion: 一套通用的多模型流式对话架构设计</title>
+      <link>http://localhost:1313/dev/python/frontend-chat-completion-multimodel-streaming-architecture/</link>
+      <pubDate>Sun, 02 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/frontend-chat-completion-multimodel-streaming-architecture/</guid>
+      <description>&lt;h1 id=&#34;-为什么让前端执行-chat-completion一套通用的多模型流式对话架构设计&#34;&gt;🔌 为什么让前端执行 Chat Completion：一套通用的多模型流式对话架构设计&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;
+在现代 AI 聊天系统中，很多人会问：为什么不直接在后端调用 OpenAI API？
+本文将带你理解一种更灵活的架构——让前端承担推理执行，后端负责调度和状态同步。适合需要支持多模型、本地推理或用户自带 API Key 的开发者。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;AI 聊天应用开发者&lt;/li&gt;
+&lt;li&gt;WebSocket / Socket.IO 实践者&lt;/li&gt;
+&lt;li&gt;想构建多模型、多端协作聊天系统的架构师&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景--动机&#34;&gt;🧠 背景 / 动机&lt;/h2&gt;
+&lt;p&gt;传统的聊天后端往往直接在服务器调用 OpenAI API：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;resp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; client&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;chat&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;completions&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;create(model&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;gpt-4o&amp;#34;&lt;/span&gt;, messages&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;messages)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;虽然简单，但带来几个现实问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;所有请求都消耗服务器的 Key，成本高且难追踪；&lt;/li&gt;
+&lt;li&gt;无法支持用户自定义 Key（BYOK 模式）；&lt;/li&gt;
+&lt;li&gt;无法连接用户本地推理（如 Ollama、LM Studio）；&lt;/li&gt;
+&lt;li&gt;无法切换不同模型或 API Base URL；&lt;/li&gt;
+&lt;li&gt;前后端状态不同步，不利于流式消息推送。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;为了解决这些问题，一些开源系统（如 Open-WebUI、Chatbot-UI 增强版）采用了更灵活的 &lt;strong&gt;Socket.IO 双向通信架构&lt;/strong&gt;。
+服务端负责「调度与状态流」，前端负责「执行与回传」。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-核心概念&#34;&gt;🧩 核心概念&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;概念&lt;/th&gt;
+          &lt;th&gt;说明&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Socket.IO&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;基于 WebSocket 的实时双向通信库，支持事件与回调。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;event_emitter&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;服务端向前端广播事件（推送消息/状态）。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;event_caller (sio.call)&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;服务端请求前端执行任务（RPC），并等待前端 callback 返回。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;request:chat:completion&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;一种自定义事件类型，用于请求前端执行 chat completion。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;BYOK 模式&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;“Bring Your Own Key”，用户使用自己的 OpenAI Key 调用 API。&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;strong&gt;Executor 架构&lt;/strong&gt;&lt;/td&gt;
+          &lt;td&gt;前端承担推理任务的执行者，后端作为协调者。&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-实践指南--步骤&#34;&gt;🧭 实践指南 / 步骤&lt;/h2&gt;
+&lt;h3 id=&#34;1-服务端发送调用请求&#34;&gt;1️⃣ 服务端发送调用请求&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;res &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#66d9ef&#34;&gt;await&lt;/span&gt; event_caller({
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;type&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;request:chat:completion&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;form_data&amp;#34;&lt;/span&gt;: form_data,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;model&amp;#34;&lt;/span&gt;: models[form_data[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;model&amp;#34;&lt;/span&gt;]],
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;channel&amp;#34;&lt;/span&gt;: channel,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;session_id&amp;#34;&lt;/span&gt;: session_id,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    },
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;})
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这里的 &lt;code&gt;event_caller&lt;/code&gt; 使用 &lt;code&gt;sio.call()&lt;/code&gt; 发送事件给指定客户端，并等待 callback 返回。&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>webSocket深入理解:为什么要保持一个永远在线的连接</title>
-      <link>http://localhost:1313/jeanblog/posts/python/websocket%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E4%B8%AA%E6%B0%B8%E8%BF%9C%E5%9C%A8%E7%BA%BF%E7%9A%84%E8%BF%9E%E6%8E%A5/</link>
+      <link>http://localhost:1313/dev/python/websocket-why-keep-alive/</link>
       <pubDate>Fri, 31 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/websocket%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BF%9D%E6%8C%81%E4%B8%80%E4%B8%AA%E6%B0%B8%E8%BF%9C%E5%9C%A8%E7%BA%BF%E7%9A%84%E8%BF%9E%E6%8E%A5/</guid>
+      <guid>http://localhost:1313/dev/python/websocket-why-keep-alive/</guid>
       <description>&lt;h1 id=&#34;-websocket-深入理解为什么要保持一个永远在线的连接&#34;&gt;🛰️ WebSocket 深入理解：为什么要保持一个“永远在线”的连接？&lt;/h1&gt;
 &lt;h2 id=&#34;-副标题--摘要&#34;&gt;✨ 副标题 / 摘要&lt;/h2&gt;
 &lt;p&gt;这篇文章带你彻底搞懂 WebSocket：
@@ -422,9 +611,9 @@
     </item>
     <item>
       <title>从 Pip 到 UV：一站式 Python 包管理与依赖同步指南</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E4%BB%8E-pip-%E5%88%B0-uv%E4%B8%80%E7%AB%99%E5%BC%8F-python-%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%90%8C%E6%AD%A5%E6%8C%87%E5%8D%97/</link>
+      <link>http://localhost:1313/dev/python/pip-to-uv-python-package-management/</link>
       <pubDate>Fri, 31 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E4%BB%8E-pip-%E5%88%B0-uv%E4%B8%80%E7%AB%99%E5%BC%8F-python-%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8E%E4%BE%9D%E8%B5%96%E5%90%8C%E6%AD%A5%E6%8C%87%E5%8D%97/</guid>
+      <guid>http://localhost:1313/dev/python/pip-to-uv-python-package-management/</guid>
       <description>&lt;h1 id=&#34;-从-pip-到-uv一站式-python-包管理与依赖同步指南&#34;&gt;🚀 从 Pip 到 UV：一站式 Python 包管理与依赖同步指南&lt;/h1&gt;
 &lt;h2 id=&#34;-副标题--摘要&#34;&gt;💡 副标题 / 摘要&lt;/h2&gt;
 &lt;p&gt;想让你的 Python 环境更干净、更快、更可靠？本文将带你从传统的 &lt;code&gt;pip + venv + requirements.txt&lt;/code&gt; 迁移到现代的 &lt;code&gt;uv&lt;/code&gt; 包管理系统，并教你如何在两者之间无缝同步。&lt;/p&gt;
@@ -488,9 +677,9 @@
     </item>
     <item>
       <title>如何高效审核后端fastapi代码</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E5%A6%82%E4%BD%95%E9%AB%98%E6%95%88%E5%AE%A1%E6%A0%B8%E5%90%8E%E7%AB%AFfastapi%E4%BB%A3%E7%A0%81/</link>
+      <link>http://localhost:1313/dev/python/efficient-fastapi-code-review/</link>
       <pubDate>Thu, 30 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E5%A6%82%E4%BD%95%E9%AB%98%E6%95%88%E5%AE%A1%E6%A0%B8%E5%90%8E%E7%AB%AFfastapi%E4%BB%A3%E7%A0%81/</guid>
+      <guid>http://localhost:1313/dev/python/efficient-fastapi-code-review/</guid>
       <description>&lt;h1 id=&#34;-如何高效审核-fastapi-后端项目的-pull-requestpr&#34;&gt;🧩 如何高效审核 FastAPI 后端项目的 Pull Request（PR）&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;副标题 / 摘要：&lt;/strong&gt;
 本文为你系统梳理了在 Python FastAPI 项目中如何进行专业的代码审核流程，从逻辑正确性到安全、性能与架构一致性，附带实用审查清单与示例，助你成为团队中更高效的 Reviewer。&lt;/p&gt;
@@ -562,9 +751,9 @@
     </item>
     <item>
       <title>如何配置orm管理数据</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEorm%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE/</link>
+      <link>http://localhost:1313/dev/python/configure-orm-data-management/</link>
       <pubDate>Thu, 23 Oct 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEorm%E7%AE%A1%E7%90%86%E6%95%B0%E6%8D%AE/</guid>
+      <guid>http://localhost:1313/dev/python/configure-orm-data-management/</guid>
       <description>&lt;h1 id=&#34;-从零到生产如何优雅地设计-orm-层管理以-sqlalchemy-为核心&#34;&gt;🧱 从零到生产：如何优雅地设计 ORM 层管理（以 SQLAlchemy 为核心）&lt;/h1&gt;
 &lt;blockquote&gt;
 &lt;p&gt;本文将带你从数据库表结构出发，构建一套高内聚、低耦合的 ORM 层架构。
@@ -650,9 +839,9 @@
     </item>
     <item>
       <title>结构化日志和追踪</title>
-      <link>http://localhost:1313/jeanblog/posts/python/%E7%BB%93%E6%9E%84%E5%8C%96%E6%97%A5%E5%BF%97%E5%92%8C%E8%BF%BD%E8%B8%AA/</link>
+      <link>http://localhost:1313/dev/python/structured-logging-and-tracing/</link>
       <pubDate>Thu, 28 Aug 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/jeanblog/posts/python/%E7%BB%93%E6%9E%84%E5%8C%96%E6%97%A5%E5%BF%97%E5%92%8C%E8%BF%BD%E8%B8%AA/</guid>
+      <guid>http://localhost:1313/dev/python/structured-logging-and-tracing/</guid>
       <description>&lt;p&gt;Python 日志与追踪
 Python 日志追踪实践
 结构化日志与追踪&lt;/p&gt;

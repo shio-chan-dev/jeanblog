@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>UFW on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/ufw/</link>
+    <description>Recent content in UFW on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 22 Nov 2025 12:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/ufw/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>用 UFW &#43; CrowdSec，彻底阻止恶意端口扫描：从 Fail2ban 踩坑到终极解决方案</title>
+      <link>http://localhost:1313/linux/linux/ufw-crowdsec-portscan/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/linux/linux/ufw-crowdsec-portscan/</guid>
+      <description>&lt;h1 id=&#34;-用-ufw--crowdsec彻底阻止恶意端口扫描&#34;&gt;🛡️ 用 UFW + CrowdSec，彻底阻止恶意端口扫描&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;副标题 / 摘要：&lt;/strong&gt; 如何安全防护你的服务器暴露端口？本文带你从 Fail2ban 的正则地狱走出，构建一个稳定、自动化、智能化的端口扫描防御系统。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-目标读者&#34;&gt;🎯 目标读者&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 FRP / 内网穿透的开发者&lt;/li&gt;
+&lt;li&gt;管理云服务器（腾讯云、阿里云、AWS 等）的运维人员&lt;/li&gt;
+&lt;li&gt;想防御端口扫描、SSH 暴力破解的新手或中级 Linux 用户&lt;/li&gt;
+&lt;li&gt;对 Fail2ban 感兴趣、想升级到更现代安全体系的人&lt;/li&gt;
+&lt;li&gt;想完善服务器安全方案的个人开发者&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-背景--动机为什么需要端口扫描防护&#34;&gt;💢 背景 / 动机：为什么需要端口扫描防护？&lt;/h2&gt;
+&lt;p&gt;在运行 FRP（frps + frpc）或开放多个端口时，你的服务器通常会遭遇：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;海量扫描：每秒多次 SYN 探测&lt;/li&gt;
+&lt;li&gt;恶意连接尝试：get a user connection [&amp;hellip;]&lt;/li&gt;
+&lt;li&gt;SSH 密码爆破&lt;/li&gt;
+&lt;li&gt;自动化脚本扫描 6001–6010、7000、22、8080 等常见端口&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;传统做法存在痛点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;防火墙（UFW）只能被动拒绝&lt;/li&gt;
+&lt;li&gt;Fail2ban 配置复杂、依赖正则、容易误判、不支持高级行为分析&lt;/li&gt;
+&lt;li&gt;FRPS 日志格式特殊，Fail2ban 很难匹配&lt;/li&gt;
+&lt;li&gt;攻击会占用 frps/sshd 资源，最终导致卡顿、断流&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，我们需要一个&lt;strong&gt;无需写正则、能自动检测扫描、智能封禁恶意 IP 的现代防御体系&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-核心概念&#34;&gt;📘 核心概念&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;FRP（frps / frpc）&lt;/strong&gt;：用于内网穿透，常暴露大量 TCP 端口（如 6001–6010），容易被扫描。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;UFW（Uncomplicated Firewall）&lt;/strong&gt;：Ubuntu 默认防火墙，但缺乏智能检测功能。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Fail2ban&lt;/strong&gt;：传统日志匹配型封禁工具，需要手写正则，踩坑概率高。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CrowdSec（推荐）&lt;/strong&gt;：新一代开放式入侵防御系统 (IPS)，自动检测端口扫描和暴力破解，事件驱动 + 行为分析，资源消耗极低，是 Fail2ban 的现代替代。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;-实践指南使用-crowdsec-自动阻止端口扫描ubuntudebian&#34;&gt;🛠 实践指南：使用 CrowdSec 自动阻止端口扫描（Ubuntu/Debian）&lt;/h2&gt;
+&lt;h3 id=&#34;1-安装-crowdsec&#34;&gt;1) 安装 CrowdSec&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | sudo bash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install crowdsec -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;2-安装防火墙封禁组件iptables--ufw-自动配合&#34;&gt;2) 安装防火墙封禁组件（iptables / ufw 自动配合）&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install crowdsec-firewall-bouncer-iptables
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;CrowdSec 会自动接管封禁动作。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

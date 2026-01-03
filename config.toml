@@ -1,4 +1,4 @@
-baseURL = "https://shio-chan-dev.github.io/jeanblog/"
+baseURL = "https://shio-chan-dev.github.io/"
 languageCode = "zh-cn"
 title = "Jeanphilo Blog"
 theme = "PaperMod"

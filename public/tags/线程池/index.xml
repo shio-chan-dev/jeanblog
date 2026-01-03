@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>线程池 on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/</link>
+    <description>Recent content in 线程池 on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 19 Nov 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E7%BA%BF%E7%A8%8B%E6%B1%A0/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>让 FastAPI 异步真正‘不卡’：asyncio.create_task &#43; to_thread 并发实践（含 MySQL 写入）</title>
+      <link>http://localhost:1313/dev/python/fastapi-asyncio-create-task-to-thread-mysql/</link>
+      <pubDate>Wed, 19 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/python/fastapi-asyncio-create-task-to-thread-mysql/</guid>
+      <description>把同步重活丢给线程、把可并行的子流程拆出来并发执行，让 FastAPI WebSocket/HTTP 服务在高并发文件处理场景下保持流畅与可靠。</description>
+    </item>
+  </channel>
+</rss>

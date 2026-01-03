@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Tags on Jeanphilo Blog</title>
+    <link>http://localhost:1313/en/tags/</link>
+    <description>Recent content in Tags on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 30 Dec 2025 18:12:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C&#43;&#43;</title>
+      <link>http://localhost:1313/en/tags/c&#43;&#43;/</link>
+      <pubDate>Tue, 30 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/c&#43;&#43;/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Loops</title>
+      <link>http://localhost:1313/en/tags/loops/</link>
+      <pubDate>Tue, 30 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/loops/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Size_t</title>
+      <link>http://localhost:1313/en/tags/size_t/</link>
+      <pubDate>Tue, 30 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/size_t/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Type-System</title>
+      <link>http://localhost:1313/en/tags/type-system/</link>
+      <pubDate>Tue, 30 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/type-system/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>ACERS</title>
+      <link>http://localhost:1313/en/tags/acers/</link>
+      <pubDate>Tue, 30 Dec 2025 11:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/acers/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Array</title>
+      <link>http://localhost:1313/en/tags/array/</link>
+      <pubDate>Tue, 30 Dec 2025 11:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/array/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Counting</title>
+      <link>http://localhost:1313/en/tags/counting/</link>
+      <pubDate>Tue, 30 Dec 2025 11:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/counting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Good-Pairs</title>
+      <link>http://localhost:1313/en/tags/good-pairs/</link>
+      <pubDate>Tue, 30 Dec 2025 11:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/good-pairs/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Hash-Table</title>
+      <link>http://localhost:1313/en/tags/hash-table/</link>
+      <pubDate>Tue, 30 Dec 2025 11:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/hash-table/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>LeetCode 1512</title>
+      <link>http://localhost:1313/en/tags/leetcode-1512/</link>
+      <pubDate>Tue, 30 Dec 2025 11:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/leetcode-1512/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Crypto</title>
+      <link>http://localhost:1313/en/tags/crypto/</link>
+      <pubDate>Tue, 16 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/crypto/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Go</title>
+      <link>http://localhost:1313/en/tags/go/</link>
+      <pubDate>Tue, 16 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/go/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Rc4</title>
+      <link>http://localhost:1313/en/tags/rc4/</link>
+      <pubDate>Tue, 16 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/rc4/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Security</title>
+      <link>http://localhost:1313/en/tags/security/</link>
+      <pubDate>Tue, 16 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Xor</title>
+      <link>http://localhost:1313/en/tags/xor/</link>
+      <pubDate>Tue, 16 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/xor/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Engineering</title>
+      <link>http://localhost:1313/en/tags/engineering/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/engineering/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Guide</title>
+      <link>http://localhost:1313/en/tags/guide/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/guide/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Selection</title>
+      <link>http://localhost:1313/en/tags/selection/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/selection/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Sorting</title>
+      <link>http://localhost:1313/en/tags/sorting/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/sorting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>AI Assistant</title>
+      <link>http://localhost:1313/en/tags/ai-assistant/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/ai-assistant/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Algorithms</title>
+      <link>http://localhost:1313/en/tags/algorithms/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/algorithms/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Deliberate-Practice</title>
+      <link>http://localhost:1313/en/tags/deliberate-practice/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/deliberate-practice/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Emmet</title>
+      <link>http://localhost:1313/en/tags/emmet/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/emmet/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Feynman</title>
+      <link>http://localhost:1313/en/tags/feynman/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/feynman/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Frontend</title>
+      <link>http://localhost:1313/en/tags/frontend/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/frontend/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Hybrid-Sort</title>
+      <link>http://localhost:1313/en/tags/hybrid-sort/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/hybrid-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Introsort</title>
+      <link>http://localhost:1313/en/tags/introsort/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/introsort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Learning</title>
+      <link>http://localhost:1313/en/tags/learning/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/learning/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Neovim</title>
+      <link>http://localhost:1313/en/tags/neovim/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/neovim/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Productivity</title>
+      <link>http://localhost:1313/en/tags/productivity/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/productivity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Timsort</title>
+      <link>http://localhost:1313/en/tags/timsort/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/timsort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Vim</title>
+      <link>http://localhost:1313/en/tags/vim/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/vim/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Accessibility</title>
+      <link>http://localhost:1313/en/tags/accessibility/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/accessibility/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Bucket-Sort</title>
+      <link>http://localhost:1313/en/tags/bucket-sort/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/bucket-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Counting-Sort</title>
+      <link>http://localhost:1313/en/tags/counting-sort/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/counting-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Non-Comparison</title>
+      <link>http://localhost:1313/en/tags/non-comparison/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/non-comparison/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Radix-Sort</title>
+      <link>http://localhost:1313/en/tags/radix-sort/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/radix-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Svelte</title>
+      <link>http://localhost:1313/en/tags/svelte/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/svelte/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ui-Components</title>
+      <link>http://localhost:1313/en/tags/ui-components/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/ui-components/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Heap</title>
+      <link>http://localhost:1313/en/tags/heap/</link>
+      <pubDate>Sat, 06 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/heap/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Heap-Sort</title>
+      <link>http://localhost:1313/en/tags/heap-sort/</link>
+      <pubDate>Sat, 06 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/heap-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Priority-Queue</title>
+      <link>http://localhost:1313/en/tags/priority-queue/</link>
+      <pubDate>Sat, 06 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/priority-queue/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Divide-and-Conquer</title>
+      <link>http://localhost:1313/en/tags/divide-and-conquer/</link>
+      <pubDate>Fri, 05 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/divide-and-conquer/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Partition</title>
+      <link>http://localhost:1313/en/tags/partition/</link>
+      <pubDate>Fri, 05 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/partition/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Quick-Sort</title>
+      <link>http://localhost:1313/en/tags/quick-sort/</link>
+      <pubDate>Fri, 05 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/quick-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>External-Sort</title>
+      <link>http://localhost:1313/en/tags/external-sort/</link>
+      <pubDate>Thu, 04 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/external-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Merge-Sort</title>
+      <link>http://localhost:1313/en/tags/merge-sort/</link>
+      <pubDate>Thu, 04 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/merge-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Gap-Sequence</title>
+      <link>http://localhost:1313/en/tags/gap-sequence/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/gap-sequence/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Increment</title>
+      <link>http://localhost:1313/en/tags/increment/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/increment/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Shell-Sort</title>
+      <link>http://localhost:1313/en/tags/shell-sort/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/shell-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Bubble-Sort</title>
+      <link>http://localhost:1313/en/tags/bubble-sort/</link>
+      <pubDate>Tue, 02 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/bubble-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Insertion-Sort</title>
+      <link>http://localhost:1313/en/tags/insertion-sort/</link>
+      <pubDate>Tue, 02 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/insertion-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Selection-Sort</title>
+      <link>http://localhost:1313/en/tags/selection-sort/</link>
+      <pubDate>Tue, 02 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/selection-sort/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Complexity</title>
+      <link>http://localhost:1313/en/tags/complexity/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/tags/complexity/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>CrowdSec</title>
+      <link>http://localhost:1313/en/tags/crowdsec/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/crowdsec/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Fail2ban</title>
+      <link>http://localhost:1313/en/tags/fail2ban/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/fail2ban/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>FRP</title>
+      <link>http://localhost:1313/en/tags/frp/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/frp/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Port-Scan</title>
+      <link>http://localhost:1313/en/tags/port-scan/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/port-scan/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Server-Security</title>
+      <link>http://localhost:1313/en/tags/server-security/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/server-security/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>UFW</title>
+      <link>http://localhost:1313/en/tags/ufw/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/tags/ufw/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Feynman on Jeanphilo Blog</title>
+    <link>http://localhost:1313/en/tags/feynman/</link>
+    <description>Recent content in Feynman on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 08 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/tags/feynman/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Do Not Let AI Drive You: Keep the Ability to Build Independently</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/ai-usage-self-control/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/ai-usage-self-control/</guid>
+      <description>How to avoid copy-paste dependence when using AI for coding: Feynman technique, deliberate practice, retrieval practice, and a practical self-check workflow.</description>
+    </item>
+  </channel>
+</rss>

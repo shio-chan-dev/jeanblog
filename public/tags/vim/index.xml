@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Vim on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/vim/</link>
+    <description>Recent content in Vim on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 08 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/vim/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Emmet-Vim 极速指南：用缩写爆写 HTML/CSS</title>
+      <link>http://localhost:1313/dev/frontend/emmet-vim-guide/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/frontend/emmet-vim-guide/</guid>
+      <description>给 Vim/Neovim 用户的 Emmet 实战笔记：安装、常用映射、可运行示例、验证清单与常见坑，帮助你在写页面/组件时提升 3 倍速度。</description>
+    </item>
+  </channel>
+</rss>

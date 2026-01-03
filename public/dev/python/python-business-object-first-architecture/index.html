@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>以业务对象为核心的 Python 架构实践 | Jeanphilo Blog</title>
+<meta name="keywords" content="Python 业务对象, 领域模型设计, 仓储模式, FastAPI 架构, DDD 实践">
+<meta name="description" content="通过一个工单（Ticket）示例，讲解在 Python &#43; FastAPI &#43; SQLAlchemy 项目中，如何先定义清晰的业务对象（领域模型），再围绕它设计接口 DTO、仓储抽象和应用服务，避免业务代码直接围绕表结构和框架 API 打转。">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/dev/python/python-business-object-first-architecture/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/dev/python/python-business-object-first-architecture/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/dev/python/python-business-object-first-architecture/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="以业务对象为核心的 Python 架构实践">
+  <meta property="og:description" content="通过一个工单（Ticket）示例，讲解在 Python &#43; FastAPI &#43; SQLAlchemy 项目中，如何先定义清晰的业务对象（领域模型），再围绕它设计接口 DTO、仓储抽象和应用服务，避免业务代码直接围绕表结构和框架 API 打转。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="dev">
+    <meta property="article:published_time" content="2025-12-01T11:00:00+08:00">
+    <meta property="article:modified_time" content="2025-12-01T11:00:00+08:00">
+    <meta property="article:tag" content="Python">
+    <meta property="article:tag" content="架构设计">
+    <meta property="article:tag" content="DDD">
+    <meta property="article:tag" content="FastAPI">
+    <meta property="article:tag" content="仓储模式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="以业务对象为核心的 Python 架构实践">
+<meta name="twitter:description" content="通过一个工单（Ticket）示例，讲解在 Python &#43; FastAPI &#43; SQLAlchemy 项目中，如何先定义清晰的业务对象（领域模型），再围绕它设计接口 DTO、仓储抽象和应用服务，避免业务代码直接围绕表结构和框架 API 打转。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "开发",
+      "item": "http://localhost:1313/dev/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Python",
+      "item": "http://localhost:1313/dev/python/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "以业务对象为核心的 Python 架构实践",
+      "item": "http://localhost:1313/dev/python/python-business-object-first-architecture/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "以业务对象为核心的 Python 架构实践",
+  "name": "以业务对象为核心的 Python 架构实践",
+  "description": "通过一个工单（Ticket）示例，讲解在 Python + FastAPI + SQLAlchemy 项目中，如何先定义清晰的业务对象（领域模型），再围绕它设计接口 DTO、仓储抽象和应用服务，避免业务代码直接围绕表结构和框架 API 打转。",
+  "keywords": [
+    "Python 业务对象", "领域模型设计", "仓储模式", "FastAPI 架构", "DDD 实践"
+  ],
+  "articleBody": " 本文想传达一个简单的观点：\n在 Python 项目中，一切都应该从“业务对象”开始，而不是从数据库表、ORM 模型或接口 JSON 开始。\n我们以一个极其常见的场景——工单（Ticket）系统——为例，演示如何：\n先定义业务对象（领域模型）； 再围绕它设计接口层的 DTO； 再设计仓储抽象（Repository）； 最后再补上 Service 层和具体的数据库实现。 目标读者 使用 Python（尤其是 FastAPI / Flask）做业务开发的同学 对“代码结构越来越乱、改个字段要全项目找引用”感到疲惫的人 想从“表驱动 / JSON 驱动”逐步过渡到以业务对象为核心设计的后端工程师 背景：为什么“先表结构 / 先接口 JSON”容易失控？ 在很多项目里，一个新需求的典型流程是：\n先画接口文档（Swagger/Apifox）； 然后设计数据库表结构； 再按表结构生成 ORM 模型； Controller 里直接拿 ORM 当业务对象用； 业务逻辑散落在 Controller / ORM / Service / SQL 里。 短期内很快，长期有几个典型问题：\n业务概念被表结构绑死：一旦表结构有历史包袱，新需求都要绕着旧表结构打补丁； 接口 DTO = ORM = 业务对象：一个字段改名，要修改接口、表、代码一大圈； 测试困难：没有清晰的“业务对象”，只能靠集成测试+真数据库。 而我们想要的是：\n先想清楚“业务世界”里有什么对象，它们长什么样、有哪些行为，\n再考虑“这些对象要通过什么接口暴露出去”、“要存到什么表里”。\n核心理念：一切从业务对象（领域模型）开始 所谓“以业务对象为核心”，可以粗暴地理解为：\n每个核心业务场景，都应该有对应的领域模型（Domain Model）； 领域模型不依赖框架、不依赖 ORM、不关心 HTTP 细节； 接口 DTO、仓储、Service、ORM，全是围绕这个模型展开的“适配层”。 这跟经典的 DDD 完整体系还有差距，但足以让项目结构从“表驱动 CRUD”升级到“领域对象驱动”。\n下面用一个“工单（Ticket）”场景开刀。\n第一步：定义业务对象（领域模型） 假设需求是这样的：\n工单包含标题、描述、状态（待处理/处理中/已完成）、优先级、创建时间、最后更新时间； 工单可以被指派给某个处理人； 后续可能扩展标签、评论、附件等。 我们先不管表、不管接口，先写“业务世界里的 Ticket”：\nfrom dataclasses import dataclass from enum import Enum from typing import Optional import time class TicketStatus(str, Enum): OPEN = \"open\" IN_PROGRESS = \"in_progress\" RESOLVED = \"resolved\" class TicketPriority(str, Enum): LOW = \"low\" MEDIUM = \"medium\" HIGH = \"high\" @dataclass class Ticket: id: str title: str description: str status: TicketStatus priority: TicketPriority creator_id: str assignee_id: Optional[str] created_at: int updated_at: int def start_progress(self, assignee_id: str) -\u003e None: \"\"\"开始处理工单：设置处理人并将状态置为处理中。\"\"\" self.assignee_id = assignee_id self.status = TicketStatus.IN_PROGRESS self.updated_at = int(time.time()) def resolve(self) -\u003e None: \"\"\"将工单标记为已完成。\"\"\" self.status = TicketStatus.RESOLVED self.updated_at = int(time.time()) 几点观察：\n这个 Ticket 不关心数据库，不继承任何 ORM 基类； 行为（start_progress / resolve）挂在业务对象自身上，而不是散在 Controller 里； 将来如果换框架（FastAPI → Flask）或换数据库（SQLite → MySQL），这个类可以完全不动。 第二步：围绕业务对象设计接口 DTO 在有了 Ticket 之后，我们再反过来思考接口层：\n接口需要哪些字段？ 哪些字段是只读的（比如 created_at）？ 哪些字段是客户端输入的？ 可以用 Pydantic 定义 API 层的 Request / Response 模型：\nfrom pydantic import BaseModel from typing import Optional class CreateTicketRequest(BaseModel): title: str description: str priority: TicketPriority = TicketPriority.MEDIUM class TicketResponse(BaseModel): id: str title: str description: str status: TicketStatus priority: TicketPriority creator_id: str assignee_id: Optional[str] created_at: int updated_at: int @classmethod def from_domain(cls, ticket: Ticket) -\u003e \"TicketResponse\": return cls( id=ticket.id, title=ticket.title, description=ticket.description, status=ticket.status, priority=ticket.priority, creator_id=ticket.creator_id, assignee_id=ticket.assignee_id, created_at=ticket.created_at, updated_at=ticket.updated_at, ) 接口层做的是：\n把 HTTP 世界的 JSON 转成领域世界的 CreateTicketRequest； 调用 Service / 仓储拿到 Ticket； 用 TicketResponse.from_domain 包装成返回值。 第三步：为业务对象设计仓储抽象（Repository） 有了业务对象之后，仓储只需要回答一个问题：\n“我怎么把 Ticket 读出来 / 写回去？”\n先定义仓储接口，不管具体怎么实现：\nfrom abc import ABC, abstractmethod from typing import List, Tuple, Optional class TicketRepository(ABC): \"\"\"Ticket 的持久化抽象，返回/接收的都是 Ticket 领域对象。\"\"\" @abstractmethod def get(self, ticket_id: str) -\u003e Optional[Ticket]: ... @abstractmethod def list( self, page: int, page_size: int, status: Optional[TicketStatus] = None, ) -\u003e Tuple[List[Ticket], int]: ... @abstractmethod def save(self, ticket: Ticket) -\u003e None: \"\"\"创建或更新 Ticket。\"\"\" ... 上层完全不关心“用的 SQLite 还是 MySQL、SQLAlchemy 还是 raw SQL”，\n只要有一个对象满足 TicketRepository 的接口就行。\n你可以：\n写一个 InMemoryTicketRepository 做单测 / demo； 写一个 SqlAlchemyTicketRepository 做生产使用。 第四步：围绕业务对象设计 Service 层 Service 层的职责可以简单理解为：\n组合多个业务对象和仓储，执行一个完整的业务用例。\n比如“创建工单并自动分配默认处理人”：\nimport time import uuid from typing import Optional class TicketService: def __init__(self, repo: TicketRepository) -\u003e None: self.repo = repo def create_ticket( self, creator_id: str, req: CreateTicketRequest, default_assignee_id: Optional[str] = None, ) -\u003e Ticket: now = int(time.time()) ticket = Ticket( id=uuid.uuid4().hex, title=req.title, description=req.description, status=TicketStatus.OPEN, priority=req.priority, creator_id=creator_id, assignee_id=None, created_at=now, updated_at=now, ) if default_assignee_id: ticket.start_progress(default_assignee_id) self.repo.save(ticket) return ticket 这里有几个关键点：\nService 接收的也是业务对象或 DTO，调用的是 Ticket 上的方法（行为）； Service 不关心 HTTP，不关心 ORM，只依赖 TicketRepository 抽象； Service 可以很容易被单元测试：传入一个 Fake 仓储就行。 第五步：接口层只是“适配器”，围绕业务对象展开 最后才轮到 Controller（以 FastAPI 为例）：\nfrom fastapi import APIRouter, Depends router = APIRouter() def get_ticket_service() -\u003e TicketService: # 实际项目中可以通过依赖注入管理 repo = SqlAlchemyTicketRepository(...) return TicketService(repo) @router.post(\"/tickets\", response_model=TicketResponse) async def create_ticket_endpoint( req: CreateTicketRequest, current_user_id: str = Depends(...), service: TicketService = Depends(get_ticket_service), ): ticket = service.create_ticket( creator_id=current_user_id, req=req, ) return TicketResponse.from_domain(ticket) 可以看到：\n接口不再直接操作 ORM，不再直接写 SQL； 接口只是“HTTP 世界”和“领域世界”的适配层； 核心逻辑在 Ticket / TicketService / TicketRepository 这一条链路上。 与“每表一个 DAO + 大 Service”相比的取舍 很多项目的常见模式是：\n每张表一个 DAO； Service 里注入一堆 DAO； Service 既负责业务流程，又写了大量 session.query(...)。 问题在于：\nService 很容易变成“大泥球”：既懂表结构，又懂业务细节； 业务对象没有清晰边界：任何地方都在 new dict/list 拼数据； 很难做到“换存储实现而不影响业务代码”。 而本文这种“业务对象优先”的方式：\n业务对象 (Ticket) 作为中心抽象，统一承载状态和行为； 仓储负责“怎么把 Ticket 存起来”，可以有多种实现； Service 负责“用 Ticket 完成一个业务用例”； 接口只是适配层，负责 JSON ↔ 业务对象的互转。 取舍在于：\n你多写了一点“模型”和“接口”，但换来了更清晰的边界和更易维护的结构； 初期可能看起来“啰嗦”，但在需求越来越多时，收益会越来越明显。 常见问题与注意事项 Q1：业务对象和 ORM 模型可以是同一个类吗？\n可以，但不建议。\nORM 通常关注的是“表结构 + 关系 + 性能”，而业务对象关注的是“行为 + 不变量”。长期来看，分离更健康。\nQ2：Service 一定要有吗？能不能 Controller 直接用仓储？\n小项目可以，但随着需求复杂，很快 Controller 会堆满业务逻辑。\nService 是承载“用例”的天然落点，值得保留。\nQ3：领域模型要不要一开始就设计得很复杂？\n不用。一开始可以很简，随着需求演化再拆 Value Object / 子聚合。\n关键是“有一个相对稳定的地方来承载业务概念”，而不是满世界 dict。\nQ4：Fake 仓储是不是浪费时间？\n相反，它非常实用：\n本地可以不用连数据库就跑通大部分逻辑； 单元测试可以只依赖内存实现； 切换真实仓储时，业务代码可以不用动。 最佳实践小结 任何新模块，先写业务对象（领域模型），再考虑表和接口。 使用 dataclass / 枚举等原生手段建模，不要一上来就绑死在 ORM 上。 接口层的模型（Pydantic）只负责输入/输出校验和序列化，领域模型负责行为。 仓储只关心“如何持久化领域对象”，不要泄漏 ORM/SQL 到业务层。 Service 负责完整的业务用例，组合多个业务对象和仓储。 多用 Fake 仓储支撑开发和测试，真实实现可以后置。 小结与下一步 这篇文章用一个简单的工单系统例子，展示了“以业务对象为核心”的一条路径：\n先定义领域模型 Ticket 及其行为； 围绕它设计接口 DTO（Pydantic 模型）； 定义 TicketRepository 抽象，隐藏存储细节； 用 TicketService 封装完整用例； 最后再在接口层做适配。 如果你手上有一个正在维护的项目，可以尝试：\n先挑一个子模块（比如“权限组管理”、“工单管理”），\n按上面的步骤抽出一个业务对象 + 仓储 + Service； 保持对其他模块的侵入尽量小，逐步迁移，不必一次性“大重构”。 参考与延伸阅读 Eric Evans，《领域驱动设计：软件核心复杂性应对之道》 Vaughn Vernon，《实现领域驱动设计》 Martin Fowler: Anemic Domain Model / Rich Domain Model FastAPI 官方文档：关于依赖注入与测试部分 SQLAlchemy / Alembic 官方文档：模型与迁移 行动号召（CTA） 回到你当前的项目里，挑一个“最核心的业务概念”，尝试给它写一个独立的 @dataclass 领域模型。 围绕这个模型画一张小图：接口 DTO、仓储、Service 各自应该怎么依赖它。 如果你愿意，可以把你设计的业务对象和依赖关系贴出来，我们可以一起 review 一下，看看还能如何优化边界划分。 ",
+  "wordCount" : "639",
+  "inLanguage": "zh",
+  "datePublished": "2025-12-01T11:00:00+08:00",
+  "dateModified": "2025-12-01T11:00:00+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/dev/python/python-business-object-first-architecture/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/en/" title="English"
+                                aria-label="English">En</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="文章归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/dev/" title="开发">
+                    <span>开发</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/alg/" title="算法">
+                    <span>算法</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>标签</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/dev/">开发</a>&nbsp;»&nbsp;<a href="http://localhost:1313/dev/python/">Python</a></div>
+    <h1 class="post-title entry-hint-parent">
+      以业务对象为核心的 Python 架构实践
+    </h1>
+    <div class="post-description">
+      通过一个工单（Ticket）示例，讲解在 Python &#43; FastAPI &#43; SQLAlchemy 项目中，如何先定义清晰的业务对象（领域模型），再围绕它设计接口 DTO、仓储抽象和应用服务，避免业务代码直接围绕表结构和框架 API 打转。
+    </div>
+    <div class="post-meta"><span title='2025-12-01 11:00:00 +0800 HKT'>2025年12月1日</span>&nbsp;·&nbsp;<span>3 分钟</span>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87%e8%af%bb%e8%80%85" aria-label="目标读者">目标读者</a></li>
+                <li>
+                    <a href="#%e8%83%8c%e6%99%af%e4%b8%ba%e4%bb%80%e4%b9%88%e5%85%88%e8%a1%a8%e7%bb%93%e6%9e%84--%e5%85%88%e6%8e%a5%e5%8f%a3-json%e5%ae%b9%e6%98%93%e5%a4%b1%e6%8e%a7" aria-label="背景：为什么“先表结构 / 先接口 JSON”容易失控？">背景：为什么“先表结构 / 先接口 JSON”容易失控？</a></li>
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e7%90%86%e5%bf%b5%e4%b8%80%e5%88%87%e4%bb%8e%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e9%a2%86%e5%9f%9f%e6%a8%a1%e5%9e%8b%e5%bc%80%e5%a7%8b" aria-label="核心理念：一切从业务对象（领域模型）开始">核心理念：一切从业务对象（领域模型）开始</a></li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%ae%9a%e4%b9%89%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e9%a2%86%e5%9f%9f%e6%a8%a1%e5%9e%8b" aria-label="第一步：定义业务对象（领域模型）">第一步：定义业务对象（领域模型）</a></li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e5%9b%b4%e7%bb%95%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e8%ae%be%e8%ae%a1%e6%8e%a5%e5%8f%a3-dto" aria-label="第二步：围绕业务对象设计接口 DTO">第二步：围绕业务对象设计接口 DTO</a></li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%b8%89%e6%ad%a5%e4%b8%ba%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e8%ae%be%e8%ae%a1%e4%bb%93%e5%82%a8%e6%8a%bd%e8%b1%a1repository" aria-label="第三步：为业务对象设计仓储抽象（Repository）">第三步：为业务对象设计仓储抽象（Repository）</a></li>
+                <li>
+                    <a href="#%e7%ac%ac%e5%9b%9b%e6%ad%a5%e5%9b%b4%e7%bb%95%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e8%ae%be%e8%ae%a1-service-%e5%b1%82" aria-label="第四步：围绕业务对象设计 Service 层">第四步：围绕业务对象设计 Service 层</a></li>
+                <li>
+                    <a href="#%e7%ac%ac%e4%ba%94%e6%ad%a5%e6%8e%a5%e5%8f%a3%e5%b1%82%e5%8f%aa%e6%98%af%e9%80%82%e9%85%8d%e5%99%a8%e5%9b%b4%e7%bb%95%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e5%b1%95%e5%bc%80" aria-label="第五步：接口层只是“适配器”，围绕业务对象展开">第五步：接口层只是“适配器”，围绕业务对象展开</a></li>
+                <li>
+                    <a href="#%e4%b8%8e%e6%af%8f%e8%a1%a8%e4%b8%80%e4%b8%aa-dao--%e5%a4%a7-service%e7%9b%b8%e6%af%94%e7%9a%84%e5%8f%96%e8%88%8d" aria-label="与“每表一个 DAO &#43; 大 Service”相比的取舍">与“每表一个 DAO + 大 Service”相比的取舍</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="常见问题与注意事项">常见问题与注意事项</a></li>
+                <li>
+                    <a href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e5%b0%8f%e7%bb%93" aria-label="最佳实践小结">最佳实践小结</a></li>
+                <li>
+                    <a href="#%e5%b0%8f%e7%bb%93%e4%b8%8e%e4%b8%8b%e4%b8%80%e6%ad%a5" aria-label="小结与下一步">小结与下一步</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e4%b8%8e%e5%bb%b6%e4%bc%b8%e9%98%85%e8%af%bb" aria-label="参考与延伸阅读">参考与延伸阅读</a></li>
+                <li>
+                    <a href="#%e8%a1%8c%e5%8a%a8%e5%8f%b7%e5%8f%accta" aria-label="行动号召（CTA）">行动号召（CTA）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p>本文想传达一个简单的观点：<br>
+<strong>在 Python 项目中，一切都应该从“业务对象”开始，而不是从数据库表、ORM 模型或接口 JSON 开始。</strong></p>
+</blockquote>
+<p>我们以一个极其常见的场景——<strong>工单（Ticket）系统</strong>——为例，演示如何：</p>
+<ul>
+<li>先定义业务对象（领域模型）；</li>
+<li>再围绕它设计接口层的 DTO；</li>
+<li>再设计仓储抽象（Repository）；</li>
+<li>最后再补上 Service 层和具体的数据库实现。</li>
+</ul>
+<hr>
+<h2 id="目标读者">目标读者<a hidden class="anchor" aria-hidden="true" href="#目标读者">#</a></h2>
+<ul>
+<li>使用 Python（尤其是 FastAPI / Flask）做业务开发的同学</li>
+<li>对“代码结构越来越乱、改个字段要全项目找引用”感到疲惫的人</li>
+<li>想从“表驱动 / JSON 驱动”逐步过渡到<strong>以业务对象为核心</strong>设计的后端工程师</li>
+</ul>
+<hr>
+<h2 id="背景为什么先表结构--先接口-json容易失控">背景：为什么“先表结构 / 先接口 JSON”容易失控？<a hidden class="anchor" aria-hidden="true" href="#背景为什么先表结构--先接口-json容易失控">#</a></h2>
+<p>在很多项目里，一个新需求的典型流程是：</p>
+<ol>
+<li>先画接口文档（Swagger/Apifox）；</li>
+<li>然后设计数据库表结构；</li>
+<li>再按表结构生成 ORM 模型；</li>
+<li>Controller 里直接拿 ORM 当业务对象用；</li>
+<li>业务逻辑散落在 Controller / ORM / Service / SQL 里。</li>
+</ol>
+<p>短期内很快，长期有几个典型问题：</p>
+<ul>
+<li><strong>业务概念被表结构绑死</strong>：一旦表结构有历史包袱，新需求都要绕着旧表结构打补丁；</li>
+<li><strong>接口 DTO = ORM = 业务对象</strong>：一个字段改名，要修改接口、表、代码一大圈；</li>
+<li><strong>测试困难</strong>：没有清晰的“业务对象”，只能靠集成测试+真数据库。</li>
+</ul>
+<p>而我们想要的是：</p>
+<blockquote>
+<p>先想清楚“业务世界”里有什么对象，它们长什么样、有哪些行为，<br>
+再考虑“这些对象要通过什么接口暴露出去”、“要存到什么表里”。</p>
+</blockquote>
+<hr>
+<h2 id="核心理念一切从业务对象领域模型开始">核心理念：一切从业务对象（领域模型）开始<a hidden class="anchor" aria-hidden="true" href="#核心理念一切从业务对象领域模型开始">#</a></h2>
+<p>所谓“以业务对象为核心”，可以粗暴地理解为：</p>
+<ol>
+<li>每个核心业务场景，都应该有对应的<strong>领域模型</strong>（Domain Model）；</li>
+<li>领域模型<strong>不依赖</strong>框架、不依赖 ORM、不关心 HTTP 细节；</li>
+<li>接口 DTO、仓储、Service、ORM，全是围绕这个模型展开的“适配层”。</li>
+</ol>
+<p>这跟经典的 DDD 完整体系还有差距，但足以让项目结构从“表驱动 CRUD”升级到“领域对象驱动”。</p>
+<p>下面用一个“工单（Ticket）”场景开刀。</p>
+<hr>
+<h2 id="第一步定义业务对象领域模型">第一步：定义业务对象（领域模型）<a hidden class="anchor" aria-hidden="true" href="#第一步定义业务对象领域模型">#</a></h2>
+<p>假设需求是这样的：</p>
+<ul>
+<li>工单包含标题、描述、状态（待处理/处理中/已完成）、优先级、创建时间、最后更新时间；</li>
+<li>工单可以被指派给某个处理人；</li>
+<li>后续可能扩展标签、评论、附件等。</li>
+</ul>
+<p>我们先不管表、不管接口，先写“业务世界里的 Ticket”：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> dataclasses <span style="color:#f92672">import</span> dataclass
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> enum <span style="color:#f92672">import</span> Enum
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> Optional
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TicketStatus</span>(str, Enum):
+</span></span><span style="display:flex;"><span>    OPEN <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;open&#34;</span>
+</span></span><span style="display:flex;"><span>    IN_PROGRESS <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;in_progress&#34;</span>
+</span></span><span style="display:flex;"><span>    RESOLVED <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;resolved&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TicketPriority</span>(str, Enum):
+</span></span><span style="display:flex;"><span>    LOW <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;low&#34;</span>
+</span></span><span style="display:flex;"><span>    MEDIUM <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;medium&#34;</span>
+</span></span><span style="display:flex;"><span>    HIGH <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;high&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@dataclass</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Ticket</span>:
+</span></span><span style="display:flex;"><span>    id: str
+</span></span><span style="display:flex;"><span>    title: str
+</span></span><span style="display:flex;"><span>    description: str
+</span></span><span style="display:flex;"><span>    status: TicketStatus
+</span></span><span style="display:flex;"><span>    priority: TicketPriority
+</span></span><span style="display:flex;"><span>    creator_id: str
+</span></span><span style="display:flex;"><span>    assignee_id: Optional[str]
+</span></span><span style="display:flex;"><span>    created_at: int
+</span></span><span style="display:flex;"><span>    updated_at: int
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">start_progress</span>(self, assignee_id: str) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;开始处理工单：设置处理人并将状态置为处理中。&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>assignee_id <span style="color:#f92672">=</span> assignee_id
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>status <span style="color:#f92672">=</span> TicketStatus<span style="color:#f92672">.</span>IN_PROGRESS
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>updated_at <span style="color:#f92672">=</span> int(time<span style="color:#f92672">.</span>time())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">resolve</span>(self) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;将工单标记为已完成。&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>status <span style="color:#f92672">=</span> TicketStatus<span style="color:#f92672">.</span>RESOLVED
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>updated_at <span style="color:#f92672">=</span> int(time<span style="color:#f92672">.</span>time())
+</span></span></code></pre></div><p>几点观察：</p>
+<ul>
+<li>这个 <code>Ticket</code> 不关心数据库，不继承任何 ORM 基类；</li>
+<li>行为（<code>start_progress</code> / <code>resolve</code>）<strong>挂在业务对象自身上</strong>，而不是散在 Controller 里；</li>
+<li>将来如果换框架（FastAPI → Flask）或换数据库（SQLite → MySQL），这个类可以完全不动。</li>
+</ul>
+<hr>
+<h2 id="第二步围绕业务对象设计接口-dto">第二步：围绕业务对象设计接口 DTO<a hidden class="anchor" aria-hidden="true" href="#第二步围绕业务对象设计接口-dto">#</a></h2>
+<p>在有了 <code>Ticket</code> 之后，我们再反过来思考接口层：</p>
+<ul>
+<li>接口需要哪些字段？</li>
+<li>哪些字段是只读的（比如 <code>created_at</code>）？</li>
+<li>哪些字段是客户端输入的？</li>
+</ul>
+<p>可以用 Pydantic 定义 API 层的 Request / Response 模型：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> pydantic <span style="color:#f92672">import</span> BaseModel
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> Optional
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CreateTicketRequest</span>(BaseModel):
+</span></span><span style="display:flex;"><span>    title: str
+</span></span><span style="display:flex;"><span>    description: str
+</span></span><span style="display:flex;"><span>    priority: TicketPriority <span style="color:#f92672">=</span> TicketPriority<span style="color:#f92672">.</span>MEDIUM
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TicketResponse</span>(BaseModel):
+</span></span><span style="display:flex;"><span>    id: str
+</span></span><span style="display:flex;"><span>    title: str
+</span></span><span style="display:flex;"><span>    description: str
+</span></span><span style="display:flex;"><span>    status: TicketStatus
+</span></span><span style="display:flex;"><span>    priority: TicketPriority
+</span></span><span style="display:flex;"><span>    creator_id: str
+</span></span><span style="display:flex;"><span>    assignee_id: Optional[str]
+</span></span><span style="display:flex;"><span>    created_at: int
+</span></span><span style="display:flex;"><span>    updated_at: int
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@classmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">from_domain</span>(cls, ticket: Ticket) <span style="color:#f92672">-&gt;</span> <span style="color:#e6db74">&#34;TicketResponse&#34;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> cls(
+</span></span><span style="display:flex;"><span>            id<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>id,
+</span></span><span style="display:flex;"><span>            title<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>title,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>description,
+</span></span><span style="display:flex;"><span>            status<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>status,
+</span></span><span style="display:flex;"><span>            priority<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>priority,
+</span></span><span style="display:flex;"><span>            creator_id<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>creator_id,
+</span></span><span style="display:flex;"><span>            assignee_id<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>assignee_id,
+</span></span><span style="display:flex;"><span>            created_at<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>created_at,
+</span></span><span style="display:flex;"><span>            updated_at<span style="color:#f92672">=</span>ticket<span style="color:#f92672">.</span>updated_at,
+</span></span><span style="display:flex;"><span>        )
+</span></span></code></pre></div><p>接口层做的是：</p>
+<ul>
+<li>把 HTTP 世界的 JSON 转成领域世界的 <code>CreateTicketRequest</code>；</li>
+<li>调用 Service / 仓储拿到 <code>Ticket</code>；</li>
+<li>用 <code>TicketResponse.from_domain</code> 包装成返回值。</li>
+</ul>
+<hr>
+<h2 id="第三步为业务对象设计仓储抽象repository">第三步：为业务对象设计仓储抽象（Repository）<a hidden class="anchor" aria-hidden="true" href="#第三步为业务对象设计仓储抽象repository">#</a></h2>
+<p>有了业务对象之后，仓储只需要回答一个问题：</p>
+<blockquote>
+<p>“我怎么把 Ticket 读出来 / 写回去？”</p>
+</blockquote>
+<p>先定义仓储接口，不管具体怎么实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> abc <span style="color:#f92672">import</span> ABC, abstractmethod
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> List, Tuple, Optional
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TicketRepository</span>(ABC):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;Ticket 的持久化抽象，返回/接收的都是 Ticket 领域对象。&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@abstractmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get</span>(self, ticket_id: str) <span style="color:#f92672">-&gt;</span> Optional[Ticket]:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@abstractmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">list</span>(
+</span></span><span style="display:flex;"><span>        self,
+</span></span><span style="display:flex;"><span>        page: int,
+</span></span><span style="display:flex;"><span>        page_size: int,
+</span></span><span style="display:flex;"><span>        status: Optional[TicketStatus] <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    ) <span style="color:#f92672">-&gt;</span> Tuple[List[Ticket], int]:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@abstractmethod</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">save</span>(self, ticket: Ticket) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;&#34;&#34;创建或更新 Ticket。&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>上层完全不关心“用的 SQLite 还是 MySQL、SQLAlchemy 还是 raw SQL”，<br>
+只要有一个对象满足 <code>TicketRepository</code> 的接口就行。</p>
+<p>你可以：</p>
+<ul>
+<li>写一个 <code>InMemoryTicketRepository</code> 做单测 / demo；</li>
+<li>写一个 <code>SqlAlchemyTicketRepository</code> 做生产使用。</li>
+</ul>
+<hr>
+<h2 id="第四步围绕业务对象设计-service-层">第四步：围绕业务对象设计 Service 层<a hidden class="anchor" aria-hidden="true" href="#第四步围绕业务对象设计-service-层">#</a></h2>
+<p>Service 层的职责可以简单理解为：</p>
+<blockquote>
+<p>组合多个业务对象和仓储，执行一个完整的业务用例。</p>
+</blockquote>
+<p>比如“创建工单并自动分配默认处理人”：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> uuid
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> Optional
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TicketService</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">__init__</span>(self, repo: TicketRepository) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>repo <span style="color:#f92672">=</span> repo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_ticket</span>(
+</span></span><span style="display:flex;"><span>        self,
+</span></span><span style="display:flex;"><span>        creator_id: str,
+</span></span><span style="display:flex;"><span>        req: CreateTicketRequest,
+</span></span><span style="display:flex;"><span>        default_assignee_id: Optional[str] <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>    ) <span style="color:#f92672">-&gt;</span> Ticket:
+</span></span><span style="display:flex;"><span>        now <span style="color:#f92672">=</span> int(time<span style="color:#f92672">.</span>time())
+</span></span><span style="display:flex;"><span>        ticket <span style="color:#f92672">=</span> Ticket(
+</span></span><span style="display:flex;"><span>            id<span style="color:#f92672">=</span>uuid<span style="color:#f92672">.</span>uuid4()<span style="color:#f92672">.</span>hex,
+</span></span><span style="display:flex;"><span>            title<span style="color:#f92672">=</span>req<span style="color:#f92672">.</span>title,
+</span></span><span style="display:flex;"><span>            description<span style="color:#f92672">=</span>req<span style="color:#f92672">.</span>description,
+</span></span><span style="display:flex;"><span>            status<span style="color:#f92672">=</span>TicketStatus<span style="color:#f92672">.</span>OPEN,
+</span></span><span style="display:flex;"><span>            priority<span style="color:#f92672">=</span>req<span style="color:#f92672">.</span>priority,
+</span></span><span style="display:flex;"><span>            creator_id<span style="color:#f92672">=</span>creator_id,
+</span></span><span style="display:flex;"><span>            assignee_id<span style="color:#f92672">=</span><span style="color:#66d9ef">None</span>,
+</span></span><span style="display:flex;"><span>            created_at<span style="color:#f92672">=</span>now,
+</span></span><span style="display:flex;"><span>            updated_at<span style="color:#f92672">=</span>now,
+</span></span><span style="display:flex;"><span>        )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> default_assignee_id:
+</span></span><span style="display:flex;"><span>            ticket<span style="color:#f92672">.</span>start_progress(default_assignee_id)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>repo<span style="color:#f92672">.</span>save(ticket)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> ticket
+</span></span></code></pre></div><p>这里有几个关键点：</p>
+<ul>
+<li>Service 接收的也是<strong>业务对象或 DTO</strong>，调用的是 <code>Ticket</code> 上的方法（行为）；</li>
+<li>Service 不关心 HTTP，不关心 ORM，只依赖 <code>TicketRepository</code> 抽象；</li>
+<li>Service 可以很容易被单元测试：传入一个 Fake 仓储就行。</li>
+</ul>
+<hr>
+<h2 id="第五步接口层只是适配器围绕业务对象展开">第五步：接口层只是“适配器”，围绕业务对象展开<a hidden class="anchor" aria-hidden="true" href="#第五步接口层只是适配器围绕业务对象展开">#</a></h2>
+<p>最后才轮到 Controller（以 FastAPI 为例）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> fastapi <span style="color:#f92672">import</span> APIRouter, Depends
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>router <span style="color:#f92672">=</span> APIRouter()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_ticket_service</span>() <span style="color:#f92672">-&gt;</span> TicketService:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 实际项目中可以通过依赖注入管理</span>
+</span></span><span style="display:flex;"><span>    repo <span style="color:#f92672">=</span> SqlAlchemyTicketRepository(<span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> TicketService(repo)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@router.post</span>(<span style="color:#e6db74">&#34;/tickets&#34;</span>, response_model<span style="color:#f92672">=</span>TicketResponse)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">async</span> <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_ticket_endpoint</span>(
+</span></span><span style="display:flex;"><span>    req: CreateTicketRequest,
+</span></span><span style="display:flex;"><span>    current_user_id: str <span style="color:#f92672">=</span> Depends(<span style="color:#f92672">...</span>),
+</span></span><span style="display:flex;"><span>    service: TicketService <span style="color:#f92672">=</span> Depends(get_ticket_service),
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>    ticket <span style="color:#f92672">=</span> service<span style="color:#f92672">.</span>create_ticket(
+</span></span><span style="display:flex;"><span>        creator_id<span style="color:#f92672">=</span>current_user_id,
+</span></span><span style="display:flex;"><span>        req<span style="color:#f92672">=</span>req,
+</span></span><span style="display:flex;"><span>    )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> TicketResponse<span style="color:#f92672">.</span>from_domain(ticket)
+</span></span></code></pre></div><p>可以看到：</p>
+<ul>
+<li>接口不再直接操作 ORM，不再直接写 SQL；</li>
+<li>接口只是“HTTP 世界”和“领域世界”的适配层；</li>
+<li>核心逻辑在 Ticket / TicketService / TicketRepository 这一条链路上。</li>
+</ul>
+<hr>
+<h2 id="与每表一个-dao--大-service相比的取舍">与“每表一个 DAO + 大 Service”相比的取舍<a hidden class="anchor" aria-hidden="true" href="#与每表一个-dao--大-service相比的取舍">#</a></h2>
+<p>很多项目的常见模式是：</p>
+<ul>
+<li>每张表一个 DAO；</li>
+<li>Service 里注入一堆 DAO；</li>
+<li>Service 既负责业务流程，又写了大量 <code>session.query(...)</code>。</li>
+</ul>
+<p>问题在于：</p>
+<ul>
+<li>Service 很容易变成“大泥球”：既懂表结构，又懂业务细节；</li>
+<li>业务对象没有清晰边界：任何地方都在 new dict/list 拼数据；</li>
+<li>很难做到“换存储实现而不影响业务代码”。</li>
+</ul>
+<p>而本文这种“业务对象优先”的方式：</p>
+<ul>
+<li>业务对象 (<code>Ticket</code>) 作为<strong>中心抽象</strong>，统一承载状态和行为；</li>
+<li>仓储负责“怎么把 Ticket 存起来”，可以有多种实现；</li>
+<li>Service 负责“用 Ticket 完成一个业务用例”；</li>
+<li>接口只是适配层，负责 JSON ↔ 业务对象的互转。</li>
+</ul>
+<p>取舍在于：</p>
+<ul>
+<li>你多写了一点“模型”和“接口”，但换来了更清晰的边界和更易维护的结构；</li>
+<li>初期可能看起来“啰嗦”，但在需求越来越多时，收益会越来越明显。</li>
+</ul>
+<hr>
+<h2 id="常见问题与注意事项">常见问题与注意事项<a hidden class="anchor" aria-hidden="true" href="#常见问题与注意事项">#</a></h2>
+<p><strong>Q1：业务对象和 ORM 模型可以是同一个类吗？</strong><br>
+可以，但不建议。<br>
+ORM 通常关注的是“表结构 + 关系 + 性能”，而业务对象关注的是“行为 + 不变量”。长期来看，分离更健康。</p>
+<p><strong>Q2：Service 一定要有吗？能不能 Controller 直接用仓储？</strong><br>
+小项目可以，但随着需求复杂，很快 Controller 会堆满业务逻辑。<br>
+Service 是承载“用例”的天然落点，值得保留。</p>
+<p><strong>Q3：领域模型要不要一开始就设计得很复杂？</strong><br>
+不用。一开始可以很简，随着需求演化再拆 Value Object / 子聚合。<br>
+关键是“有一个相对稳定的地方来承载业务概念”，而不是满世界 dict。</p>
+<p><strong>Q4：Fake 仓储是不是浪费时间？</strong><br>
+相反，它非常实用：</p>
+<ul>
+<li>本地可以不用连数据库就跑通大部分逻辑；</li>
+<li>单元测试可以只依赖内存实现；</li>
+<li>切换真实仓储时，业务代码可以不用动。</li>
+</ul>
+<hr>
+<h2 id="最佳实践小结">最佳实践小结<a hidden class="anchor" aria-hidden="true" href="#最佳实践小结">#</a></h2>
+<ul>
+<li><strong>任何新模块，先写业务对象（领域模型），再考虑表和接口。</strong></li>
+<li>使用 <code>dataclass</code> / 枚举等原生手段建模，不要一上来就绑死在 ORM 上。</li>
+<li>接口层的模型（Pydantic）只负责输入/输出校验和序列化，领域模型负责行为。</li>
+<li>仓储只关心“如何持久化领域对象”，不要泄漏 ORM/SQL 到业务层。</li>
+<li>Service 负责完整的业务用例，组合多个业务对象和仓储。</li>
+<li>多用 Fake 仓储支撑开发和测试，真实实现可以后置。</li>
+</ul>
+<hr>
+<h2 id="小结与下一步">小结与下一步<a hidden class="anchor" aria-hidden="true" href="#小结与下一步">#</a></h2>
+<p>这篇文章用一个简单的工单系统例子，展示了“以业务对象为核心”的一条路径：</p>
+<ol>
+<li>先定义领域模型 <code>Ticket</code> 及其行为；</li>
+<li>围绕它设计接口 DTO（Pydantic 模型）；</li>
+<li>定义 <code>TicketRepository</code> 抽象，隐藏存储细节；</li>
+<li>用 <code>TicketService</code> 封装完整用例；</li>
+<li>最后再在接口层做适配。</li>
+</ol>
+<p>如果你手上有一个正在维护的项目，可以尝试：</p>
+<ul>
+<li>先挑一个子模块（比如“权限组管理”、“工单管理”），<br>
+按上面的步骤抽出一个业务对象 + 仓储 + Service；</li>
+<li>保持对其他模块的侵入尽量小，逐步迁移，不必一次性“大重构”。</li>
+</ul>
+<hr>
+<h2 id="参考与延伸阅读">参考与延伸阅读<a hidden class="anchor" aria-hidden="true" href="#参考与延伸阅读">#</a></h2>
+<ul>
+<li>Eric Evans，《领域驱动设计：软件核心复杂性应对之道》</li>
+<li>Vaughn Vernon，《实现领域驱动设计》</li>
+<li>Martin Fowler: Anemic Domain Model / Rich Domain Model</li>
+<li>FastAPI 官方文档：关于依赖注入与测试部分</li>
+<li>SQLAlchemy / Alembic 官方文档：模型与迁移</li>
+</ul>
+<hr>
+<h2 id="行动号召cta">行动号召（CTA）<a hidden class="anchor" aria-hidden="true" href="#行动号召cta">#</a></h2>
+<ul>
+<li>回到你当前的项目里，挑一个“最核心的业务概念”，尝试给它写一个独立的 <code>@dataclass</code> 领域模型。</li>
+<li>围绕这个模型画一张小图：接口 DTO、仓储、Service 各自应该怎么依赖它。</li>
+<li>如果你愿意，可以把你设计的业务对象和依赖关系贴出来，我们可以一起 review 一下，看看还能如何优化边界划分。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/python/">Python</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1/">架构设计</a></li>
+      <li><a href="http://localhost:1313/tags/ddd/">DDD</a></li>
+      <li><a href="http://localhost:1313/tags/fastapi/">FastAPI</a></li>
+      <li><a href="http://localhost:1313/tags/%E4%BB%93%E5%82%A8%E6%A8%A1%E5%BC%8F/">仓储模式</a></li>
+    </ul>
+<nav class="paginav">
+  <a class="prev" href="http://localhost:1313/dev/frontend/svelte-button-config-guide/">
+    <span class="title">« 上一页</span>
+    <br>
+    <span>Svelte 按钮配置全攻略：状态、样式与无障碍实践</span>
+  </a>
+  <a class="next" href="http://localhost:1313/dev/python/permission-architecture-aggregate-repository/">
+    <span class="title">下一页 »</span>
+    <br>
+    <span>从表结构到领域模型：用聚合仓储设计权限系统</span>
+  </a>
+</nav>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 以业务对象为核心的 Python 架构实践 on x"
+            href="https://x.com/intent/tweet/?text=%e4%bb%a5%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e4%b8%ba%e6%a0%b8%e5%bf%83%e7%9a%84%20Python%20%e6%9e%b6%e6%9e%84%e5%ae%9e%e8%b7%b5&amp;url=http%3a%2f%2flocalhost%3a1313%2fdev%2fpython%2fpython-business-object-first-architecture%2f&amp;hashtags=Python%2c%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%2cDDD%2cFastAPI%2c%e4%bb%93%e5%82%a8%e6%a8%a1%e5%bc%8f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 以业务对象为核心的 Python 架构实践 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fdev%2fpython%2fpython-business-object-first-architecture%2f&amp;title=%e4%bb%a5%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e4%b8%ba%e6%a0%b8%e5%bf%83%e7%9a%84%20Python%20%e6%9e%b6%e6%9e%84%e5%ae%9e%e8%b7%b5&amp;summary=%e4%bb%a5%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e4%b8%ba%e6%a0%b8%e5%bf%83%e7%9a%84%20Python%20%e6%9e%b6%e6%9e%84%e5%ae%9e%e8%b7%b5&amp;source=http%3a%2f%2flocalhost%3a1313%2fdev%2fpython%2fpython-business-object-first-architecture%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 以业务对象为核心的 Python 架构实践 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fdev%2fpython%2fpython-business-object-first-architecture%2f&title=%e4%bb%a5%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e4%b8%ba%e6%a0%b8%e5%bf%83%e7%9a%84%20Python%20%e6%9e%b6%e6%9e%84%e5%ae%9e%e8%b7%b5">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 以业务对象为核心的 Python 架构实践 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fdev%2fpython%2fpython-business-object-first-architecture%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 以业务对象为核心的 Python 架构实践 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%bb%a5%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e4%b8%ba%e6%a0%b8%e5%bf%83%e7%9a%84%20Python%20%e6%9e%b6%e6%9e%84%e5%ae%9e%e8%b7%b5%20-%20http%3a%2f%2flocalhost%3a1313%2fdev%2fpython%2fpython-business-object-first-architecture%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 以业务对象为核心的 Python 架构实践 on telegram"
+            href="https://telegram.me/share/url?text=%e4%bb%a5%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e4%b8%ba%e6%a0%b8%e5%bf%83%e7%9a%84%20Python%20%e6%9e%b6%e6%9e%84%e5%ae%9e%e8%b7%b5&amp;url=http%3a%2f%2flocalhost%3a1313%2fdev%2fpython%2fpython-business-object-first-architecture%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 以业务对象为核心的 Python 架构实践 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%bb%a5%e4%b8%9a%e5%8a%a1%e5%af%b9%e8%b1%a1%e4%b8%ba%e6%a0%b8%e5%bf%83%e7%9a%84%20Python%20%e6%9e%b6%e6%9e%84%e5%ae%9e%e8%b7%b5&u=http%3a%2f%2flocalhost%3a1313%2fdev%2fpython%2fpython-business-object-first-architecture%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

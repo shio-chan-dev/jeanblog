@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Crypto on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/crypto/</link>
+    <description>Recent content in Crypto on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 16 Dec 2025 18:12:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/crypto/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>XOR 与 RC5：从原理到 Go 实战（含安全替代建议）</title>
+      <link>http://localhost:1313/dev/go/xor-rec4-primer/</link>
+      <pubDate>Tue, 16 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/dev/go/xor-rec4-primer/</guid>
+      <description>面向 Go/后端工程师的 XOR 与 RC4 入门与实践，包含可运行示例与安全替代建议。</description>
+    </item>
+  </channel>
+</rss>

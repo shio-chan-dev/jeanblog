@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Thoughts on Jeanphilo Blog</title>
+    <link>http://localhost:1313/en/categories/thoughts/</link>
+    <description>Recent content in Thoughts on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 08 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/categories/thoughts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Do Not Let AI Drive You: Keep the Ability to Build Independently</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/ai-usage-self-control/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/ai-usage-self-control/</guid>
+      <description>How to avoid copy-paste dependence when using AI for coding: Feynman technique, deliberate practice, retrieval practice, and a practical self-check workflow.</description>
+    </item>
+    <item>
+      <title>How to Build a Blog System</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/how-to-build-a-blog-system/</link>
+      <pubDate>Fri, 14 Nov 2025 15:04:02 +0800</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/how-to-build-a-blog-system/</guid>
+      <description>&lt;h1 id=&#34;build-a-hugo-blog-with-github-pages-in-10-minutes&#34;&gt;Build a Hugo Blog with GitHub Pages in 10 Minutes&lt;/h1&gt;
+&lt;h2 id=&#34;subtitle--abstract&#34;&gt;Subtitle / Abstract&lt;/h2&gt;
+&lt;p&gt;This guide takes you from zero to a deployed Hugo blog on GitHub Pages with GitHub Actions. It is beginner-friendly and explains the key moving parts.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;target-readers&#34;&gt;Target readers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Hugo beginners&lt;/li&gt;
+&lt;li&gt;Developers who want a quick technical blog&lt;/li&gt;
+&lt;li&gt;Users of GitHub Pages and GitHub Actions&lt;/li&gt;
+&lt;li&gt;Anyone who wants free static hosting&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;background--motivation&#34;&gt;Background / Motivation&lt;/h2&gt;
+&lt;p&gt;Common pain points when publishing a blog:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to Publish with Hugo</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/how-to-publish-by-hugo/</link>
+      <pubDate>Fri, 14 Nov 2025 15:01:32 +0800</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/how-to-publish-by-hugo/</guid>
+      <description>&lt;h1 id=&#34;how-to-publish-with-hugo-from-markdown-to-online-blog&#34;&gt;How to Publish with Hugo: From Markdown to Online Blog&lt;/h1&gt;
+&lt;h2 id=&#34;subtitle--abstract&#34;&gt;Subtitle / Abstract&lt;/h2&gt;
+&lt;p&gt;This guide explains how to create, manage, and publish Hugo posts: front matter, drafts, images, directory structure, local preview, and deployment.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;target-readers&#34;&gt;Target readers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Hugo beginners&lt;/li&gt;
+&lt;li&gt;Developers building a technical blog with Hugo&lt;/li&gt;
+&lt;li&gt;Writers using Markdown + static sites&lt;/li&gt;
+&lt;li&gt;Users of PaperMod, DoIt, and similar themes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;background--motivation&#34;&gt;Background / Motivation&lt;/h2&gt;
+&lt;p&gt;After setting up a Hugo site, common questions include:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>API Standards</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/api-standards/</link>
+      <pubDate>Thu, 06 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/api-standards/</guid>
+      <description>&lt;h1 id=&#34;title&#34;&gt;Title&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;How to Write a Qualified API Document: From Swagger to Modern OpenAPI&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;subtitle--abstract&#34;&gt;Subtitle / Abstract&lt;/h2&gt;
+&lt;p&gt;Want developers to actually enjoy using your API? This article covers the structure, examples, and best practices of high-quality API documentation based on Swagger/OpenAPI (originally by Tony Tam).&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;target-readers&#34;&gt;Target readers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Beginners who want a standard API doc structure&lt;/li&gt;
+&lt;li&gt;Mid-level developers improving maintainability&lt;/li&gt;
+&lt;li&gt;Architects and leads defining API standards&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;background--motivation&#34;&gt;Background / Motivation&lt;/h2&gt;
+&lt;p&gt;Common problems in API docs:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Thoughts on AI Systems</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/thoughts-on-ai-systems/</link>
+      <pubDate>Fri, 31 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/thoughts-on-ai-systems/</guid>
+      <description>&lt;p&gt;For a system, a single thread should be a single assistant. We should provide each user with one assistant and optimize that assistant.&lt;/p&gt;
+&lt;p&gt;Providing many parallel threads per user is too expensive and unnecessary.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to Write a Perfect Machine Learning Document</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/how-to-write-a-perfect-ml-document/</link>
+      <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/how-to-write-a-perfect-ml-document/</guid>
+      <description>&lt;h1 id=&#34;bengio-style-ml-task-specification-from-research-to-engineering&#34;&gt;Bengio-style ML Task Specification: From Research to Engineering&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Subtitle:&lt;/strong&gt;
+How to write a reproducible, explainable, and comparable fine-tuning task document based on Yoshua Bengio&amp;rsquo;s methodology.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Reading time:&lt;/strong&gt; 10 minutes
+&lt;strong&gt;Tags:&lt;/strong&gt; ML documentation, fine-tuning, technical standards, deep learning practice
+&lt;strong&gt;Audience:&lt;/strong&gt; mid to senior ML engineers, researchers, technical writers&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-why-do-we-need-this-document&#34;&gt;1. Why do we need this document?&lt;/h2&gt;
+&lt;p&gt;In ML projects, teams often run fine-tuning experiments. Months later, nobody can reproduce results or explain why a learning rate or LoRA layer was chosen.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>A New Frontend Idea for AI Assistants</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/ai-assistant-frontend-rebuild-ideas/</link>
+      <pubDate>Wed, 27 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/ai-assistant-frontend-rebuild-ideas/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;I want to build an AI system that supports tree-shaped or graph-shaped Q&amp;amp;A, instead of a traditional single-thread chat flow.&lt;/p&gt;
+&lt;h1 id=&#34;exploration&#34;&gt;Exploration&lt;/h1&gt;
+&lt;h2 id=&#34;open-source-framework-research&#34;&gt;Open-source framework research&lt;/h2&gt;
+&lt;h3 id=&#34;flowise&#34;&gt;flowise&lt;/h3&gt;</description>
+    </item>
+    <item>
+      <title>Mastering a Paper</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/mastering-paper/</link>
+      <pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/mastering-paper/</guid>
+      <description>&lt;h1 id=&#34;how-to-truly-master-a-paper&#34;&gt;How to Truly Master a Paper&lt;/h1&gt;
+&lt;h1 id=&#34;conclusion&#34;&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;To truly master a paper, reading once is not enough. You need to decompose, verify, and reconstruct it, and then express the key points in your own words or implementation. The goal: explain the core contribution in 5 minutes, derive key formulas by hand, and reproduce a core experiment.&lt;/p&gt;
+&lt;h1 id=&#34;principles-and-background&#34;&gt;Principles and background&lt;/h1&gt;
+&lt;p&gt;A paper is a compressed expression of a problem. It omits background, intuition, failed attempts, and many details. Mastery requires &amp;ldquo;decompressing&amp;rdquo; that information into your own knowledge network: assumptions, derivations, engineering steps, and the limits of the results. Only then can you judge when to use it and when not to.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Reading an NVIDIA Paper on Small Language Models</title>
+      <link>http://localhost:1313/en/thoughts/thoughts/reading-nvidia-small-models-paper/</link>
+      <pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/thoughts/thoughts/reading-nvidia-small-models-paper/</guid>
+      <description>&lt;h1 id=&#34;what-problem-does-this-paper-solve-and-what-are-the-results&#34;&gt;What problem does this paper solve, and what are the results?&lt;/h1&gt;
+&lt;p&gt;We know AI systems are expanding and can solve general tasks. But many AI agent applications today target small tasks. NVIDIA argues that small language models (SLMs) are capable, more suitable, and cheaper, and should be a main direction for future agents.&lt;/p&gt;
+&lt;p&gt;The paper discusses:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;What tasks current SLMs can handle&lt;/li&gt;
+&lt;li&gt;Where general language ability matters&lt;/li&gt;
+&lt;li&gt;The limits of SLMs as agents&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Conclusion: moving from LLMs to SLMs has advantages in both capability and cost.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

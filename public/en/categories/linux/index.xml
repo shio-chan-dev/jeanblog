@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Linux on Jeanphilo Blog</title>
+    <link>http://localhost:1313/en/categories/linux/</link>
+    <description>Recent content in Linux on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 22 Nov 2025 12:00:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>UFW &#43; CrowdSec: Stop Malicious Port Scans (From Fail2ban Pain to a Modern Solution)</title>
+      <link>http://localhost:1313/en/linux/linux/ufw-crowdsec-portscan/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/ufw-crowdsec-portscan/</guid>
+      <description>&lt;h1 id=&#34;ufw--crowdsec-stop-malicious-port-scans&#34;&gt;UFW + CrowdSec: Stop Malicious Port Scans&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Subtitle / Abstract:&lt;/strong&gt; How do you protect exposed server ports? This guide shows how to move past Fail2ban regex hell and build a stable, automated, intelligent port-scan defense system.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;target-readers&#34;&gt;Target readers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Developers using FRP or reverse tunnels&lt;/li&gt;
+&lt;li&gt;Operators of cloud servers (Tencent, Alibaba, AWS, etc.)&lt;/li&gt;
+&lt;li&gt;Linux users who want to stop port scans and SSH brute force&lt;/li&gt;
+&lt;li&gt;People using Fail2ban who want a modern alternative&lt;/li&gt;
+&lt;li&gt;Anyone improving personal server security&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;background--motivation-why-you-need-port-scan-defense&#34;&gt;Background / Motivation: Why you need port-scan defense&lt;/h2&gt;
+&lt;p&gt;When you run FRP (frps + frpc) or expose multiple ports, you will often see:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>WireGuard Full Guide: Build a Secure High-Speed Private Network (VPN Tutorial)</title>
+      <link>http://localhost:1313/en/linux/linux/wireguard-vpn-neiwang/</link>
+      <pubDate>Thu, 20 Nov 2025 07:55:02 +0800</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/wireguard-vpn-neiwang/</guid>
+      <description>&lt;h1 id=&#34;wireguard-full-guide-build-a-secure-high-speed-private-network-vpn-tutorial&#34;&gt;WireGuard Full Guide: Build a Secure High-Speed Private Network (VPN Tutorial)&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Subtitle / Abstract:&lt;/strong&gt;
+A beginner-to-intermediate WireGuard VPN guide. Learn to build a fast, secure private network and enforce a zero-exposure model where services are only reachable through VPN.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;target-readers&#34;&gt;Target readers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;People who want to hide server or PC ports behind a VPN&lt;/li&gt;
+&lt;li&gt;Users who want to reduce scanning and brute force risk&lt;/li&gt;
+&lt;li&gt;Anyone building a private LAN or remote access to home&lt;/li&gt;
+&lt;li&gt;Linux/Windows users, developers, and ops beginners&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;background-and-motivation-why-wireguard&#34;&gt;Background and motivation: Why WireGuard?&lt;/h2&gt;
+&lt;p&gt;If you expose ports to the public internet (SSH, databases, admin panels), you will face:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Ping Works but SSH Fails: A Real Case of SSH vs VNC</title>
+      <link>http://localhost:1313/en/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/</link>
+      <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/</guid>
+      <description>&lt;h1 id=&#34;ping-works-but-ssh-fails-a-real-case-of-ssh-vs-vnc&#34;&gt;Ping Works but SSH Fails: A Real Case of SSH vs VNC&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Subtitle:&lt;/strong&gt; From connection refusal to protocol identification: understand TCP, SSH, and VNC
+&lt;strong&gt;Reading time:&lt;/strong&gt; 7 minutes
+&lt;strong&gt;Tags:&lt;/strong&gt; network troubleshooting, SSH, VNC, Linux, remote access
+&lt;strong&gt;SEO keywords:&lt;/strong&gt; SSH connection failed, kex_exchange_identification, VNC port 5905, RFB 003.008, SSH vs VNC&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;target-readers&#34;&gt;Target readers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Linux users, developers, and server admins&lt;/li&gt;
+&lt;li&gt;Engineers learning systematic network troubleshooting&lt;/li&gt;
+&lt;li&gt;Readers interested in SSH/VNC protocol behavior&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;background-and-motivation&#34;&gt;Background and motivation&lt;/h2&gt;
+&lt;p&gt;Have you seen this?&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Run SSH Without sudo: User-Level sshd on Linux</title>
+      <link>http://localhost:1313/en/linux/linux/enable-ssh-without-sudo/</link>
+      <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/enable-ssh-without-sudo/</guid>
+      <description>&lt;p&gt;Below is a full draft based on your SSH startup and debugging process. It is ready for publication on a technical blog.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;run-ssh-without-sudo-on-linux-user-level-sshd-guide&#34;&gt;Run SSH Without sudo on Linux (User-Level sshd Guide)&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Subtitle / Abstract:&lt;/strong&gt;
+When you have no root access in a lab or restricted server environment, how do you start SSH and access your account remotely? This guide shows how to run &lt;code&gt;sshd&lt;/code&gt; in your user directory, enable key login, and connect remotely.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Run sshd Without sudo: Troubleshooting and Persistent User-Level SSH</title>
+      <link>http://localhost:1313/en/linux/linux/fix-sshsystem-process-start-failure/</link>
+      <pubDate>Fri, 24 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/fix-sshsystem-process-start-failure/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Title:&lt;/strong&gt;
+Run sshd Without sudo: Troubleshooting, nohup, and systemd (User-Level SSH)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Subtitle / Abstract:&lt;/strong&gt;
+How to run OpenSSH as a normal user, solve common errors like &amp;ldquo;connection refused&amp;rdquo;, &amp;ldquo;password auth failed&amp;rdquo;, and &lt;code&gt;start-limit-hit&lt;/code&gt;, and keep sshd alive using nohup or systemd.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Target readers:&lt;/strong&gt;
+Intermediate Linux users, researchers on shared servers, and anyone who needs SSH without root.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-background--motivation&#34;&gt;1. Background / Motivation&lt;/h2&gt;
+&lt;p&gt;In some lab or shared environments, regular users do not have sudo. The default sshd service cannot be started. If you need to:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Auto-start frp on Ubuntu with systemd</title>
+      <link>http://localhost:1313/en/linux/linux/frp-auto-start-on-ubuntu/</link>
+      <pubDate>Thu, 23 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/frp-auto-start-on-ubuntu/</guid>
+      <description>&lt;h1 id=&#34;auto-start-frp-on-ubuntu-a-complete-guide&#34;&gt;Auto-start frp on Ubuntu: A Complete Guide&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Subtitle / Abstract&lt;/strong&gt;
+Use systemd to run frp (Fast Reverse Proxy) as a managed service for stable, secure, and monitored auto-start on boot.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Reading time&lt;/strong&gt;: 8 minutes
+&lt;strong&gt;Tags&lt;/strong&gt;: frp, intranet tunneling, systemd, auto-start, Linux, Ubuntu
+&lt;strong&gt;SEO keywords&lt;/strong&gt;: frp auto start, Ubuntu frp config, frpc systemd, frps service, intranet tunneling
+&lt;strong&gt;Meta description&lt;/strong&gt;: Step-by-step systemd setup for frp (frpc/frps) with config templates and troubleshooting.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;target-readers&#34;&gt;Target readers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Developers deploying frps on cloud servers&lt;/li&gt;
+&lt;li&gt;Intermediate Linux users building stable home/office tunnels&lt;/li&gt;
+&lt;li&gt;DevOps and self-hosting enthusiasts&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;background-and-motivation&#34;&gt;Background and motivation&lt;/h2&gt;
+&lt;p&gt;Many developers use &lt;strong&gt;frp&lt;/strong&gt; to expose internal services (SSH, web, NAS) to the internet. The problem is that running &lt;code&gt;./frpc -c frpc.ini&lt;/code&gt; manually is inconvenient and unreliable after reboot.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Expose WSL2 Services to the LAN via Windows Port Forwarding</title>
+      <link>http://localhost:1313/en/linux/linux/wsl-intranet-not-shared-with-windows/</link>
+      <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/wsl-intranet-not-shared-with-windows/</guid>
+      <description>&lt;h1 id=&#34;windows--wsl2-port-forwarding-guide-access-flask-5000&#34;&gt;Windows + WSL2 Port Forwarding Guide (Access Flask 5000)&lt;/h1&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;You are using &lt;strong&gt;WSL2&lt;/strong&gt; (Ubuntu or another Linux distro)&lt;/li&gt;
+&lt;li&gt;The Windows host can access the LAN (Wi-Fi or Ethernet)&lt;/li&gt;
+&lt;li&gt;A Flask service is running inside WSL2 and listening on:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;app&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;run(host&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;0.0.0.0&amp;#34;&lt;/span&gt;, port&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5000&lt;/span&gt;)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;host=&amp;quot;0.0.0.0&amp;quot;&lt;/code&gt; is required; otherwise external access will fail.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;step-1-check-the-wsl2-ip&#34;&gt;Step 1: Check the WSL2 IP&lt;/h2&gt;
+&lt;p&gt;In WSL2:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ip addr show eth0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You should see something like:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;inet 172.26.209.37/20
+&lt;/code&gt;&lt;/pre&gt;&lt;blockquote&gt;
+&lt;p&gt;Record the IP after &lt;code&gt;inet&lt;/code&gt; (here: &lt;code&gt;172.26.209.37&lt;/code&gt;). This is the WSL2 internal IP.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to Use wrk for Load Testing</title>
+      <link>http://localhost:1313/en/linux/linux/wrk-load-testing-guide/</link>
+      <pubDate>Wed, 22 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/wrk-load-testing-guide/</guid>
+      <description>&lt;h1 id=&#34;load-testing-apis-with-wrk-detailed-guide&#34;&gt;Load Testing APIs with wrk (Detailed Guide)&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This article explains how to use &lt;code&gt;wrk&lt;/code&gt; on Ubuntu to stress-test backend APIs (Flask, FastAPI, Spring Boot, etc.) and interpret the results.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-what-is-wrk&#34;&gt;1. What is wrk?&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/wg/wrk&#34;&gt;&lt;code&gt;wrk&lt;/code&gt;&lt;/a&gt; is a modern, high-performance HTTP benchmarking tool written in C. Key features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;High concurrency&lt;/strong&gt;: thousands of concurrent connections&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Multi-threaded&lt;/strong&gt;: uses multiple CPU cores&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Lua scripting&lt;/strong&gt;: for custom headers, bodies, tokens&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Faster than Apache Benchmark (ab)&lt;/strong&gt;: lighter and more stable&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-install-wrk&#34;&gt;2. Install wrk&lt;/h2&gt;
+&lt;p&gt;On Ubuntu/Debian:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>How to Create and Edit Mermaid Diagrams</title>
+      <link>http://localhost:1313/en/linux/linux/create-and-edit-mermaid-diagrams/</link>
+      <pubDate>Tue, 26 Aug 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/create-and-edit-mermaid-diagrams/</guid>
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+&lt;p&gt;Mermaid is a framework for creating diagrams using code. This post shows how to install the tooling on your server and render Mermaid code into images.&lt;/p&gt;
+&lt;h1 id=&#34;steps&#34;&gt;Steps&lt;/h1&gt;
+&lt;h2 id=&#34;install-the-renderer&#34;&gt;Install the renderer&lt;/h2&gt;
+&lt;p&gt;Run:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;npm install -g @mermaid-js/mermaid-cli
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note: the CLI requires npm version &amp;gt;= 20. It is recommended to manage npm versions with nvm.&lt;/p&gt;
+&lt;p&gt;If you do not have nvm, install it with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -o https://raw.githubusercontent.com/nvm-sh/nvim/v0.39.4/install.sh | bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Restart your shell, then run:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Ui-Components on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/ui-components/</link>
+    <description>Recent content in Ui-Components on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 07 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/ui-components/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Svelte 按钮配置全攻略：状态、样式与无障碍实践</title>
+      <link>http://localhost:1313/dev/frontend/svelte-button-config-guide/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/dev/frontend/svelte-button-config-guide/</guid>
+      <description>教你在 Svelte 中构建可复用的按钮：动态类名、可选链/空值合并、安全取值、状态样式映射、无障碍支持、测试与常见陷阱。</description>
+    </item>
+  </channel>
+</rss>

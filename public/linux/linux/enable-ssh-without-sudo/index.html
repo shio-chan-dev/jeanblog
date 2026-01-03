@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>没有sudo权限开启ssh | Jeanphilo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。
+
+🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略）
+副标题 / 摘要：
+当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 sshd，支持密钥登录并实现远程连接。
+阅读时长： 10 分钟
+目标读者： 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者
+标签： SSH、sshd、Linux、远程连接、非 root、系统配置
+SEO 关键词： SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败
+
+🎯 背景与动机
+很多科研服务器、学校实验室或共享主机都不给普通用户 sudo 权限。
+然而我们仍常常需要：
+
+远程登录自己的账户；
+上传/下载文件；
+或从另一台机器访问自己的进程。
+
+默认情况下，sshd 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 用户目录 下运行一个“用户态 SSH 服务”，无需修改系统配置。
+
+🧩 核心概念
+
+  
+      
+          名词
+          含义
+      
+  
+  
+      
+          sshd
+          SSH 服务端程序，负责接收和验证 SSH 连接。
+      
+      
+          用户态（user-space）sshd
+          普通用户自行启动的 sshd 进程，不使用 root 权限。
+      
+      
+          HostKey
+          服务器用于加密连接的密钥对。
+      
+      
+          AuthorizedKeys
+          被允许登录该账户的公钥列表。
+      
+      
+          /etc/shadow
+          系统密码哈希存储文件，非 root 用户无法访问。
+      
+  
+
+
+⚙️ 实践指南：从零启动用户态 SSH 服务
+🪜 第一步：准备配置文件
+创建配置目录：">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/linux/linux/enable-ssh-without-sudo/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/linux/linux/enable-ssh-without-sudo/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/en/linux/linux/enable-ssh-without-sudo/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/linux/linux/enable-ssh-without-sudo/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="没有sudo权限开启ssh">
+  <meta property="og:description" content="以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。
+🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略） 副标题 / 摘要： 当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 sshd，支持密钥登录并实现远程连接。
+阅读时长： 10 分钟 目标读者： 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者 标签： SSH、sshd、Linux、远程连接、非 root、系统配置 SEO 关键词： SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败
+🎯 背景与动机 很多科研服务器、学校实验室或共享主机都不给普通用户 sudo 权限。 然而我们仍常常需要：
+远程登录自己的账户； 上传/下载文件； 或从另一台机器访问自己的进程。 默认情况下，sshd 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 用户目录 下运行一个“用户态 SSH 服务”，无需修改系统配置。
+🧩 核心概念 名词 含义 sshd SSH 服务端程序，负责接收和验证 SSH 连接。 用户态（user-space）sshd 普通用户自行启动的 sshd 进程，不使用 root 权限。 HostKey 服务器用于加密连接的密钥对。 AuthorizedKeys 被允许登录该账户的公钥列表。 /etc/shadow 系统密码哈希存储文件，非 root 用户无法访问。 ⚙️ 实践指南：从零启动用户态 SSH 服务 🪜 第一步：准备配置文件 创建配置目录：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="linux">
+    <meta property="article:published_time" content="2025-10-24T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-10-24T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="没有sudo权限开启ssh">
+<meta name="twitter:description" content="以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。
+
+🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略）
+副标题 / 摘要：
+当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 sshd，支持密钥登录并实现远程连接。
+阅读时长： 10 分钟
+目标读者： 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者
+标签： SSH、sshd、Linux、远程连接、非 root、系统配置
+SEO 关键词： SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败
+
+🎯 背景与动机
+很多科研服务器、学校实验室或共享主机都不给普通用户 sudo 权限。
+然而我们仍常常需要：
+
+远程登录自己的账户；
+上传/下载文件；
+或从另一台机器访问自己的进程。
+
+默认情况下，sshd 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 用户目录 下运行一个“用户态 SSH 服务”，无需修改系统配置。
+
+🧩 核心概念
+
+  
+      
+          名词
+          含义
+      
+  
+  
+      
+          sshd
+          SSH 服务端程序，负责接收和验证 SSH 连接。
+      
+      
+          用户态（user-space）sshd
+          普通用户自行启动的 sshd 进程，不使用 root 权限。
+      
+      
+          HostKey
+          服务器用于加密连接的密钥对。
+      
+      
+          AuthorizedKeys
+          被允许登录该账户的公钥列表。
+      
+      
+          /etc/shadow
+          系统密码哈希存储文件，非 root 用户无法访问。
+      
+  
+
+
+⚙️ 实践指南：从零启动用户态 SSH 服务
+🪜 第一步：准备配置文件
+创建配置目录：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Linux",
+      "item": "http://localhost:1313/linux/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Linux",
+      "item": "http://localhost:1313/linux/linux/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "没有sudo权限开启ssh",
+      "item": "http://localhost:1313/linux/linux/enable-ssh-without-sudo/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "没有sudo权限开启ssh",
+  "name": "没有sudo权限开启ssh",
+  "description": "以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。\n🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略） 副标题 / 摘要： 当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 sshd，支持密钥登录并实现远程连接。\n阅读时长： 10 分钟 目标读者： 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者 标签： SSH、sshd、Linux、远程连接、非 root、系统配置 SEO 关键词： SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败\n🎯 背景与动机 很多科研服务器、学校实验室或共享主机都不给普通用户 sudo 权限。 然而我们仍常常需要：\n远程登录自己的账户； 上传/下载文件； 或从另一台机器访问自己的进程。 默认情况下，sshd 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 用户目录 下运行一个“用户态 SSH 服务”，无需修改系统配置。\n🧩 核心概念 名词 含义 sshd SSH 服务端程序，负责接收和验证 SSH 连接。 用户态（user-space）sshd 普通用户自行启动的 sshd 进程，不使用 root 权限。 HostKey 服务器用于加密连接的密钥对。 AuthorizedKeys 被允许登录该账户的公钥列表。 /etc/shadow 系统密码哈希存储文件，非 root 用户无法访问。 ⚙️ 实践指南：从零启动用户态 SSH 服务 🪜 第一步：准备配置文件 创建配置目录：\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。\n🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略） 副标题 / 摘要： 当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 sshd，支持密钥登录并实现远程连接。\n阅读时长： 10 分钟 目标读者： 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者 标签： SSH、sshd、Linux、远程连接、非 root、系统配置 SEO 关键词： SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败\n🎯 背景与动机 很多科研服务器、学校实验室或共享主机都不给普通用户 sudo 权限。 然而我们仍常常需要：\n远程登录自己的账户； 上传/下载文件； 或从另一台机器访问自己的进程。 默认情况下，sshd 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 用户目录 下运行一个“用户态 SSH 服务”，无需修改系统配置。\n🧩 核心概念 名词 含义 sshd SSH 服务端程序，负责接收和验证 SSH 连接。 用户态（user-space）sshd 普通用户自行启动的 sshd 进程，不使用 root 权限。 HostKey 服务器用于加密连接的密钥对。 AuthorizedKeys 被允许登录该账户的公钥列表。 /etc/shadow 系统密码哈希存储文件，非 root 用户无法访问。 ⚙️ 实践指南：从零启动用户态 SSH 服务 🪜 第一步：准备配置文件 创建配置目录：\nmkdir -p ~/.ssh 新建配置文件 ~/.ssh/ssh_config：\nPort 2222 ListenAddress 0.0.0.0 HostKey /home//.ssh/ssh_host_ed25519_key AuthorizedKeysFile /home//.ssh/authorized_keys PasswordAuthentication yes PubkeyAuthentication yes ChallengeResponseAuthentication no PidFile /home//.ssh/sshd.pid 注意：路径不要写 ~，OpenSSH 不会自动展开！\n🔑 第二步：生成服务器主机密钥 ssh-keygen -t ed25519 -f ~/.ssh/ssh_host_ed25519_key -N \"\" chmod 600 ~/.ssh/ssh_host_ed25519_key 🚀 第三步：启动用户态 sshd /usr/bin/sshd -d -f ~/.ssh/ssh_config 若出现：\nServer listening on 0.0.0.0 port 2222. 表示 SSH 服务启动成功。 你现在可以在本机测试：\nssh -p 2222 @localhost 🧠 原理与说明 为什么要用 2222 端口？ 1024 以下端口属于“特权端口”，需要 root 权限才能绑定。 选择非特权端口（如 2222、8022）即可。\n为什么登录时报 Could not get shadow information？ 因为非 root 用户无法访问 /etc/shadow，所以密码认证会失败。 → 解决方案是使用公钥登录（见下节）。\n🔐 使用 SSH 公钥登录（推荐） 生成本地密钥（不含邮箱注释）：\nssh-keygen -t ed25519 -C \"\" -f ~/.ssh/id_ed25519_noemail 把公钥加入授权列表：\ncat ~/.ssh/id_ed25519_noemail.pub \u003e\u003e ~/.ssh/authorized_keys chmod 700 ~/.ssh chmod 600 ~/.ssh/authorized_keys 登录测试：\nssh -i ~/.ssh/id_ed25519_noemail -p 2222 @localhost 🌐 让外部主机访问（远程连接） 确认 sshd 监听的是所有地址\nss -tlnp | grep 2222 若输出为 127.0.0.1:2222，表示只允许本地访问。 修改配置为：\nListenAddress 0.0.0.0 并重启 sshd。\n防火墙和 NAT\n若端口外部访问提示 “Connection refused”，说明：\n防火墙阻止了外部连接； 或你所在环境的 NAT 未映射该端口。 若 localhost 可连，公网IP 不通，则需放行或配置端口转发。\n后台运行 sshd\nnohup /usr/bin/sshd -f ~/.ssh/ssh_config -E ~/.ssh/sshd.log \u0026 tail -f ~/.ssh/sshd.log 🧩 常见问题与注意事项 问题 原因 解决办法 Permission denied (password) 非 root 无法读取 /etc/shadow 使用公钥登录 Address already in use 端口被占用 kill 旧进程或换端口 Bind to port failed 尝试绑定 22 使用 \u003e1024 的端口号 Connection refused 防火墙 / NAT 拦截 检查监听地址与安全策略 Could not load host key HostKey 路径错误 使用绝对路径并设权限 600 💡 最佳实践与建议 ✅ 使用 ed25519 算法生成密钥（安全且速度快）。 ✅ 在非 root 环境中只使用公钥认证。 ✅ 保持 ~/.ssh 权限为 700，authorized_keys 为 600。 ⚠️ 不要暴露你的用户目录或 host key。 ⚙️ 如需远程可用，确认 ListenAddress 0.0.0.0 并开放端口。 🧾 小结 本文演示了如何：\n在没有 sudo 权限的环境下启动独立 SSH 服务； 配置密钥认证避免 /etc/shadow 限制； 实现本地与远程 SSH 登录； 排查 “Connection refused” 等常见问题。 最终，你就能在任何普通账户中拥有一个“自己的 SSH 服务”。\n🔗 参考与延伸阅读 OpenSSH 官方手册 man sshd_config RFC 4251: The Secure Shell Protocol Architecture Linux 文件权限与安全机制 🚀 行动号召（CTA） 💻 试试看：用本文步骤启动你自己的 sshd。 ⭐ 收藏分享：下次在受限环境中，你就有后门方案。 💬 评论交流：你还遇到过哪些 SSH 启动限制？ 是否希望我帮你生成一个 Markdown 版（可直接发布到博客平台、保留代码高亮）？\n",
+  "wordCount" : "365",
+  "inLanguage": "zh",
+  "datePublished": "2025-10-24T00:00:00Z",
+  "dateModified": "2025-10-24T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/linux/linux/enable-ssh-without-sudo/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/en/" title="English"
+                                aria-label="English">En</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="文章归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/dev/" title="开发">
+                    <span>开发</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/alg/" title="算法">
+                    <span>算法</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>标签</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/linux/">Linux</a>&nbsp;»&nbsp;<a href="http://localhost:1313/linux/linux/">Linux</a></div>
+    <h1 class="post-title entry-hint-parent">
+      没有sudo权限开启ssh
+    </h1>
+    <div class="post-meta"><span title='2025-10-24 00:00:00 +0000 UTC'>2025年10月24日</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;|&nbsp;<span>语言:</span>
+<ul class="i18n_list">
+    <li>
+        <a href="http://localhost:1313/en/linux/linux/enable-ssh-without-sudo/">En</a>
+    </li>
+</ul>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#-%e5%9c%a8%e6%97%a0-sudo-%e6%9d%83%e9%99%90%e7%9a%84-linux-%e7%8e%af%e5%a2%83%e4%b8%8b%e5%90%af%e5%8a%a8-ssh-%e6%9c%8d%e5%8a%a1%e7%94%a8%e6%88%b7%e6%80%81-sshd-%e5%85%a8%e6%94%bb%e7%95%a5" aria-label="🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略）">🧠 在无 sudo 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略）</a><ul>
+                        
+                <li>
+                    <a href="#-%e8%83%8c%e6%99%af%e4%b8%8e%e5%8a%a8%e6%9c%ba" aria-label="🎯 背景与动机">🎯 背景与动机</a></li>
+                <li>
+                    <a href="#-%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5" aria-label="🧩 核心概念">🧩 核心概念</a></li>
+                <li>
+                    <a href="#-%e5%ae%9e%e8%b7%b5%e6%8c%87%e5%8d%97%e4%bb%8e%e9%9b%b6%e5%90%af%e5%8a%a8%e7%94%a8%e6%88%b7%e6%80%81-ssh-%e6%9c%8d%e5%8a%a1" aria-label="⚙️ 实践指南：从零启动用户态 SSH 服务">⚙️ 实践指南：从零启动用户态 SSH 服务</a><ul>
+                        
+                <li>
+                    <a href="#-%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%87%86%e5%a4%87%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6" aria-label="🪜 第一步：准备配置文件">🪜 第一步：准备配置文件</a></li>
+                <li>
+                    <a href="#-%e7%ac%ac%e4%ba%8c%e6%ad%a5%e7%94%9f%e6%88%90%e6%9c%8d%e5%8a%a1%e5%99%a8%e4%b8%bb%e6%9c%ba%e5%af%86%e9%92%a5" aria-label="🔑 第二步：生成服务器主机密钥">🔑 第二步：生成服务器主机密钥</a></li>
+                <li>
+                    <a href="#-%e7%ac%ac%e4%b8%89%e6%ad%a5%e5%90%af%e5%8a%a8%e7%94%a8%e6%88%b7%e6%80%81-sshd" aria-label="🚀 第三步：启动用户态 sshd">🚀 第三步：启动用户态 sshd</a></li></ul>
+                </li>
+                <li>
+                    <a href="#-%e5%8e%9f%e7%90%86%e4%b8%8e%e8%af%b4%e6%98%8e" aria-label="🧠 原理与说明">🧠 原理与说明</a></li>
+                <li>
+                    <a href="#-%e4%bd%bf%e7%94%a8-ssh-%e5%85%ac%e9%92%a5%e7%99%bb%e5%bd%95%e6%8e%a8%e8%8d%90" aria-label="🔐 使用 SSH 公钥登录（推荐）">🔐 使用 SSH 公钥登录（推荐）</a></li>
+                <li>
+                    <a href="#-%e8%ae%a9%e5%a4%96%e9%83%a8%e4%b8%bb%e6%9c%ba%e8%ae%bf%e9%97%ae%e8%bf%9c%e7%a8%8b%e8%bf%9e%e6%8e%a5" aria-label="🌐 让外部主机访问（远程连接）">🌐 让外部主机访问（远程连接）</a></li>
+                <li>
+                    <a href="#-%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="🧩 常见问题与注意事项">🧩 常见问题与注意事项</a></li>
+                <li>
+                    <a href="#-%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%bb%ba%e8%ae%ae" aria-label="💡 最佳实践与建议">💡 最佳实践与建议</a></li>
+                <li>
+                    <a href="#-%e5%b0%8f%e7%bb%93" aria-label="🧾 小结">🧾 小结</a></li>
+                <li>
+                    <a href="#-%e5%8f%82%e8%80%83%e4%b8%8e%e5%bb%b6%e4%bc%b8%e9%98%85%e8%af%bb" aria-label="🔗 参考与延伸阅读">🔗 参考与延伸阅读</a></li>
+                <li>
+                    <a href="#-%e8%a1%8c%e5%8a%a8%e5%8f%b7%e5%8f%accta" aria-label="🚀 行动号召（CTA）">🚀 行动号召（CTA）</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><p>以下是一篇符合优秀技术博客规范的完整文章草稿，基于你上面完整的 SSH 启动与调试过程整理而成，适合发布到技术博客（如掘金、知乎专栏、Medium 或个人博客）。</p>
+<hr>
+<h1 id="-在无-sudo-权限的-linux-环境下启动-ssh-服务用户态-sshd-全攻略">🧠 在无 <code>sudo</code> 权限的 Linux 环境下启动 SSH 服务（用户态 sshd 全攻略）<a hidden class="anchor" aria-hidden="true" href="#-在无-sudo-权限的-linux-环境下启动-ssh-服务用户态-sshd-全攻略">#</a></h1>
+<p><strong>副标题 / 摘要：</strong>
+当你在学校机房、远程实验环境或受限服务器上没有 root 权限时，如何开启 SSH 服务并远程访问？本文从零带你在用户目录下运行可用的 <code>sshd</code>，支持密钥登录并实现远程连接。</p>
+<p><strong>阅读时长：</strong> 10 分钟
+<strong>目标读者：</strong> 中级 Linux 用户、科研人员、服务器使用者、DevOps 学习者
+<strong>标签：</strong> SSH、sshd、Linux、远程连接、非 root、系统配置
+<strong>SEO 关键词：</strong> SSH 无 root 权限、用户态 sshd、openssh 配置、非特权端口、远程登录失败</p>
+<hr>
+<h2 id="-背景与动机">🎯 背景与动机<a hidden class="anchor" aria-hidden="true" href="#-背景与动机">#</a></h2>
+<p>很多科研服务器、学校实验室或共享主机都不给普通用户 <code>sudo</code> 权限。
+然而我们仍常常需要：</p>
+<ul>
+<li>远程登录自己的账户；</li>
+<li>上传/下载文件；</li>
+<li>或从另一台机器访问自己的进程。</li>
+</ul>
+<p>默认情况下，<code>sshd</code> 服务需要 root 才能运行，因为它通常绑定在 22 端口并访问系统认证信息。但事实上，我们完全可以在 <strong>用户目录</strong> 下运行一个“用户态 SSH 服务”，无需修改系统配置。</p>
+<hr>
+<h2 id="-核心概念">🧩 核心概念<a hidden class="anchor" aria-hidden="true" href="#-核心概念">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>名词</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>sshd</strong></td>
+          <td>SSH 服务端程序，负责接收和验证 SSH 连接。</td>
+      </tr>
+      <tr>
+          <td><strong>用户态（user-space）sshd</strong></td>
+          <td>普通用户自行启动的 sshd 进程，不使用 root 权限。</td>
+      </tr>
+      <tr>
+          <td><strong>HostKey</strong></td>
+          <td>服务器用于加密连接的密钥对。</td>
+      </tr>
+      <tr>
+          <td><strong>AuthorizedKeys</strong></td>
+          <td>被允许登录该账户的公钥列表。</td>
+      </tr>
+      <tr>
+          <td><strong>/etc/shadow</strong></td>
+          <td>系统密码哈希存储文件，非 root 用户无法访问。</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="-实践指南从零启动用户态-ssh-服务">⚙️ 实践指南：从零启动用户态 SSH 服务<a hidden class="anchor" aria-hidden="true" href="#-实践指南从零启动用户态-ssh-服务">#</a></h2>
+<h3 id="-第一步准备配置文件">🪜 第一步：准备配置文件<a hidden class="anchor" aria-hidden="true" href="#-第一步准备配置文件">#</a></h3>
+<p>创建配置目录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir -p ~/.ssh
+</span></span></code></pre></div><p>新建配置文件 <code>~/.ssh/ssh_config</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Port <span style="color:#ae81ff">2222</span>
+</span></span><span style="display:flex;"><span>ListenAddress 0.0.0.0
+</span></span><span style="display:flex;"><span>HostKey /home/&lt;username&gt;/.ssh/ssh_host_ed25519_key
+</span></span><span style="display:flex;"><span>AuthorizedKeysFile /home/&lt;username&gt;/.ssh/authorized_keys
+</span></span><span style="display:flex;"><span>PasswordAuthentication yes
+</span></span><span style="display:flex;"><span>PubkeyAuthentication yes
+</span></span><span style="display:flex;"><span>ChallengeResponseAuthentication no
+</span></span><span style="display:flex;"><span>PidFile /home/&lt;username&gt;/.ssh/sshd.pid
+</span></span></code></pre></div><blockquote>
+<p>注意：路径不要写 <code>~</code>，OpenSSH 不会自动展开！</p>
+</blockquote>
+<hr>
+<h3 id="-第二步生成服务器主机密钥">🔑 第二步：生成服务器主机密钥<a hidden class="anchor" aria-hidden="true" href="#-第二步生成服务器主机密钥">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh-keygen -t ed25519 -f ~/.ssh/ssh_host_ed25519_key -N <span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">600</span> ~/.ssh/ssh_host_ed25519_key
+</span></span></code></pre></div><hr>
+<h3 id="-第三步启动用户态-sshd">🚀 第三步：启动用户态 sshd<a hidden class="anchor" aria-hidden="true" href="#-第三步启动用户态-sshd">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>/usr/bin/sshd -d -f ~/.ssh/ssh_config
+</span></span></code></pre></div><p>若出现：</p>
+<pre tabindex="0"><code>Server listening on 0.0.0.0 port 2222.
+</code></pre><p>表示 SSH 服务启动成功。
+你现在可以在本机测试：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh -p <span style="color:#ae81ff">2222</span> &lt;username&gt;@localhost
+</span></span></code></pre></div><hr>
+<h2 id="-原理与说明">🧠 原理与说明<a hidden class="anchor" aria-hidden="true" href="#-原理与说明">#</a></h2>
+<ol>
+<li>
+<p><strong>为什么要用 2222 端口？</strong>
+1024 以下端口属于“特权端口”，需要 root 权限才能绑定。
+选择非特权端口（如 2222、8022）即可。</p>
+</li>
+<li>
+<p><strong>为什么登录时报 <code>Could not get shadow information</code>？</strong>
+因为非 root 用户无法访问 <code>/etc/shadow</code>，所以密码认证会失败。
+→ 解决方案是使用公钥登录（见下节）。</p>
+</li>
+</ol>
+<hr>
+<h2 id="-使用-ssh-公钥登录推荐">🔐 使用 SSH 公钥登录（推荐）<a hidden class="anchor" aria-hidden="true" href="#-使用-ssh-公钥登录推荐">#</a></h2>
+<ol>
+<li>
+<p><strong>生成本地密钥（不含邮箱注释）：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh-keygen -t ed25519 -C <span style="color:#e6db74">&#34;&#34;</span> -f ~/.ssh/id_ed25519_noemail
+</span></span></code></pre></div></li>
+<li>
+<p><strong>把公钥加入授权列表：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat ~/.ssh/id_ed25519_noemail.pub &gt;&gt; ~/.ssh/authorized_keys
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">700</span> ~/.ssh
+</span></span><span style="display:flex;"><span>chmod <span style="color:#ae81ff">600</span> ~/.ssh/authorized_keys
+</span></span></code></pre></div></li>
+<li>
+<p><strong>登录测试：</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh -i ~/.ssh/id_ed25519_noemail -p <span style="color:#ae81ff">2222</span> &lt;username&gt;@localhost
+</span></span></code></pre></div></li>
+</ol>
+<hr>
+<h2 id="-让外部主机访问远程连接">🌐 让外部主机访问（远程连接）<a hidden class="anchor" aria-hidden="true" href="#-让外部主机访问远程连接">#</a></h2>
+<ol>
+<li>
+<p><strong>确认 sshd 监听的是所有地址</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ss -tlnp | grep <span style="color:#ae81ff">2222</span>
+</span></span></code></pre></div><p>若输出为 <code>127.0.0.1:2222</code>，表示只允许本地访问。
+修改配置为：</p>
+<pre tabindex="0"><code>ListenAddress 0.0.0.0
+</code></pre><p>并重启 sshd。</p>
+</li>
+<li>
+<p><strong>防火墙和 NAT</strong></p>
+<ul>
+<li>
+<p>若端口外部访问提示 “Connection refused”，说明：</p>
+<ul>
+<li>防火墙阻止了外部连接；</li>
+<li>或你所在环境的 NAT 未映射该端口。</li>
+</ul>
+</li>
+<li>
+<p>若 <code>localhost</code> 可连，<code>公网IP</code> 不通，则需放行或配置端口转发。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>后台运行 sshd</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nohup /usr/bin/sshd -f ~/.ssh/ssh_config -E ~/.ssh/sshd.log &amp;
+</span></span><span style="display:flex;"><span>tail -f ~/.ssh/sshd.log
+</span></span></code></pre></div></li>
+</ol>
+<hr>
+<h2 id="-常见问题与注意事项">🧩 常见问题与注意事项<a hidden class="anchor" aria-hidden="true" href="#-常见问题与注意事项">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>问题</th>
+          <th>原因</th>
+          <th>解决办法</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>Permission denied (password)</code></td>
+          <td>非 root 无法读取 <code>/etc/shadow</code></td>
+          <td>使用公钥登录</td>
+      </tr>
+      <tr>
+          <td><code>Address already in use</code></td>
+          <td>端口被占用</td>
+          <td><code>kill</code> 旧进程或换端口</td>
+      </tr>
+      <tr>
+          <td><code>Bind to port failed</code></td>
+          <td>尝试绑定 22</td>
+          <td>使用 &gt;1024 的端口号</td>
+      </tr>
+      <tr>
+          <td><code>Connection refused</code></td>
+          <td>防火墙 / NAT 拦截</td>
+          <td>检查监听地址与安全策略</td>
+      </tr>
+      <tr>
+          <td><code>Could not load host key</code></td>
+          <td>HostKey 路径错误</td>
+          <td>使用绝对路径并设权限 600</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="-最佳实践与建议">💡 最佳实践与建议<a hidden class="anchor" aria-hidden="true" href="#-最佳实践与建议">#</a></h2>
+<ul>
+<li>✅ 使用 <strong>ed25519</strong> 算法生成密钥（安全且速度快）。</li>
+<li>✅ 在非 root 环境中只使用公钥认证。</li>
+<li>✅ 保持 <code>~/.ssh</code> 权限为 <code>700</code>，<code>authorized_keys</code> 为 <code>600</code>。</li>
+<li>⚠️ 不要暴露你的用户目录或 host key。</li>
+<li>⚙️ 如需远程可用，确认 <code>ListenAddress 0.0.0.0</code> 并开放端口。</li>
+</ul>
+<hr>
+<h2 id="-小结">🧾 小结<a hidden class="anchor" aria-hidden="true" href="#-小结">#</a></h2>
+<p>本文演示了如何：</p>
+<ol>
+<li>在没有 sudo 权限的环境下启动独立 SSH 服务；</li>
+<li>配置密钥认证避免 <code>/etc/shadow</code> 限制；</li>
+<li>实现本地与远程 SSH 登录；</li>
+<li>排查 “Connection refused” 等常见问题。</li>
+</ol>
+<p>最终，你就能在任何普通账户中拥有一个“自己的 SSH 服务”。</p>
+<hr>
+<h2 id="-参考与延伸阅读">🔗 参考与延伸阅读<a hidden class="anchor" aria-hidden="true" href="#-参考与延伸阅读">#</a></h2>
+<ul>
+<li><a href="https://www.openssh.com/manual.html">OpenSSH 官方手册</a></li>
+<li><a href="https://man.openbsd.org/sshd_config">man sshd_config</a></li>
+<li><a href="https://www.rfc-editor.org/rfc/rfc4251">RFC 4251: The Secure Shell Protocol Architecture</a></li>
+<li><a href="https://wiki.archlinux.org/title/File_permissions_and_attributes">Linux 文件权限与安全机制</a></li>
+</ul>
+<hr>
+<h2 id="-行动号召cta">🚀 行动号召（CTA）<a hidden class="anchor" aria-hidden="true" href="#-行动号召cta">#</a></h2>
+<ul>
+<li>💻 <strong>试试看</strong>：用本文步骤启动你自己的 sshd。</li>
+<li>⭐ <strong>收藏分享</strong>：下次在受限环境中，你就有后门方案。</li>
+<li>💬 <strong>评论交流</strong>：你还遇到过哪些 SSH 启动限制？</li>
+</ul>
+<hr>
+<p>是否希望我帮你生成一个 Markdown 版（可直接发布到博客平台、保留代码高亮）？</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 没有sudo权限开启ssh on x"
+            href="https://x.com/intent/tweet/?text=%e6%b2%a1%e6%9c%89sudo%e6%9d%83%e9%99%90%e5%bc%80%e5%90%afssh&amp;url=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fenable-ssh-without-sudo%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 没有sudo权限开启ssh on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fenable-ssh-without-sudo%2f&amp;title=%e6%b2%a1%e6%9c%89sudo%e6%9d%83%e9%99%90%e5%bc%80%e5%90%afssh&amp;summary=%e6%b2%a1%e6%9c%89sudo%e6%9d%83%e9%99%90%e5%bc%80%e5%90%afssh&amp;source=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fenable-ssh-without-sudo%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 没有sudo权限开启ssh on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fenable-ssh-without-sudo%2f&title=%e6%b2%a1%e6%9c%89sudo%e6%9d%83%e9%99%90%e5%bc%80%e5%90%afssh">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 没有sudo权限开启ssh on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fenable-ssh-without-sudo%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 没有sudo权限开启ssh on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e6%b2%a1%e6%9c%89sudo%e6%9d%83%e9%99%90%e5%bc%80%e5%90%afssh%20-%20http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fenable-ssh-without-sudo%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 没有sudo权限开启ssh on telegram"
+            href="https://telegram.me/share/url?text=%e6%b2%a1%e6%9c%89sudo%e6%9d%83%e9%99%90%e5%bc%80%e5%90%afssh&amp;url=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fenable-ssh-without-sudo%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 没有sudo权限开启ssh on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e6%b2%a1%e6%9c%89sudo%e6%9d%83%e9%99%90%e5%bc%80%e5%90%afssh&u=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fenable-ssh-without-sudo%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

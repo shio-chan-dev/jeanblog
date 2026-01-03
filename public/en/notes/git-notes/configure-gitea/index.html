@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>How to Set Up Gitea | Jeanphilo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="Run Gitea Locally: Your Private GitHub (with Existing Repo Import)
+Subtitle / Abstract:
+This guide walks you through installing the lightweight Git server Gitea on your local machine. No root required, no system pollution. Manage, browse, and push projects like GitHub, and import existing repos.
+Target readers:
+Personal developers, indie engineers, and small team leads with basic Git knowledge.
+
+Background / Motivation
+Many developers want:
+
+to host code inside a company or LAN
+to avoid cloud platforms (GitHub/Gitee)
+to have a web UI, pull requests, and code browsing
+
+GitLab is heavy (often multiple GB of RAM). Gitea is:">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/en/notes/git-notes/configure-gitea/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/notes/git-notes/configure-gitea/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/en/notes/git-notes/configure-gitea/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/en/notes/git-notes/configure-gitea/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="How to Set Up Gitea">
+  <meta property="og:description" content="Run Gitea Locally: Your Private GitHub (with Existing Repo Import) Subtitle / Abstract: This guide walks you through installing the lightweight Git server Gitea on your local machine. No root required, no system pollution. Manage, browse, and push projects like GitHub, and import existing repos.
+Target readers: Personal developers, indie engineers, and small team leads with basic Git knowledge.
+Background / Motivation Many developers want:
+to host code inside a company or LAN to avoid cloud platforms (GitHub/Gitee) to have a web UI, pull requests, and code browsing GitLab is heavy (often multiple GB of RAM). Gitea is:">
+  <meta property="og:locale" content="en-us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="notes">
+    <meta property="article:published_time" content="2025-10-28T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-10-28T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How to Set Up Gitea">
+<meta name="twitter:description" content="Run Gitea Locally: Your Private GitHub (with Existing Repo Import)
+Subtitle / Abstract:
+This guide walks you through installing the lightweight Git server Gitea on your local machine. No root required, no system pollution. Manage, browse, and push projects like GitHub, and import existing repos.
+Target readers:
+Personal developers, indie engineers, and small team leads with basic Git knowledge.
+
+Background / Motivation
+Many developers want:
+
+to host code inside a company or LAN
+to avoid cloud platforms (GitHub/Gitee)
+to have a web UI, pull requests, and code browsing
+
+GitLab is heavy (often multiple GB of RAM). Gitea is:">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Notes",
+      "item": "http://localhost:1313/en/notes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Git Notes",
+      "item": "http://localhost:1313/en/notes/git-notes/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "How to Set Up Gitea",
+      "item": "http://localhost:1313/en/notes/git-notes/configure-gitea/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "How to Set Up Gitea",
+  "name": "How to Set Up Gitea",
+  "description": "Run Gitea Locally: Your Private GitHub (with Existing Repo Import) Subtitle / Abstract: This guide walks you through installing the lightweight Git server Gitea on your local machine. No root required, no system pollution. Manage, browse, and push projects like GitHub, and import existing repos.\nTarget readers: Personal developers, indie engineers, and small team leads with basic Git knowledge.\nBackground / Motivation Many developers want:\nto host code inside a company or LAN to avoid cloud platforms (GitHub/Gitee) to have a web UI, pull requests, and code browsing GitLab is heavy (often multiple GB of RAM). Gitea is:\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "Run Gitea Locally: Your Private GitHub (with Existing Repo Import) Subtitle / Abstract: This guide walks you through installing the lightweight Git server Gitea on your local machine. No root required, no system pollution. Manage, browse, and push projects like GitHub, and import existing repos.\nTarget readers: Personal developers, indie engineers, and small team leads with basic Git knowledge.\nBackground / Motivation Many developers want:\nto host code inside a company or LAN to avoid cloud platforms (GitHub/Gitee) to have a web UI, pull requests, and code browsing GitLab is heavy (often multiple GB of RAM). Gitea is:\nlightweight a single binary supports PR, Wiki, Issues, CI/CD In minutes, you get a private “mini GitHub”.\nCore concepts Term Description GitLab most powerful open-source Git platform, heavy resource usage Gitea lightweight self-hosted Git service with GitHub-like UI Bare repo repo with history only, no working tree Pull Request merge request from one branch to another SQLite default lightweight database for Gitea Setup steps 1) Prepare environment Supported OS: Linux / macOS / Windows Recommended: RAM \u003e= 512MB, disk \u003e= 1GB\n2) Create directory and download mkdir -p ~/gitea cd ~/gitea wget -O gitea https://dl.gitea.io/gitea/1.22.0/gitea-1.22.0-linux-amd64 chmod +x gitea 3) Start Gitea ./gitea web --port 3000 Open: http://localhost:3000\n4) Install wizard Fill in:\nDB type: SQLite3 Repo root: /home//gitea/repos Base URL: http://localhost:3000 Create admin account Runnable example: push an existing repo Assume your local project is /home/gong/projects/scrapy:\nCreate a repo named scrapy in Gitea In your project directory: cd ~/projects/scrapy git remote set-url origin http://localhost:3000/JeanphiloGong/scrapy.git git push -u origin --all git push -u origin --tags Refresh the web UI to see full history.\nRegister as a system service 1) Prerequisites Assume Gitea is installed at:\n/home/gong/gitea Binary path:\n/home/gong/gitea/gitea Run as user gong and do not use root.\n2) Create systemd service Create /etc/systemd/system/gitea.service:\n[Unit] Description=Gitea (Self-hosted Git Service) After=network.target [Service] # User and group User=gong Group=gong # Working directory WorkingDirectory=/home/gong/gitea # Start command ExecStart=/home/gong/gitea/gitea web --config /home/gong/gitea/custom/conf/app.ini # Restart policy Restart=always RestartSec=10s # Environment (optional) Environment=USER=gong HOME=/home/gong GITEA_WORK_DIR=/home/gong/gitea # Security PrivateTmp=true ProtectSystem=full NoNewPrivileges=true [Install] WantedBy=multi-user.target Notes:\nWorkingDirectory is the Gitea directory ExecStart defines the launch command Restart=always ensures auto-restart 3) Load and enable # Reload systemd sudo systemctl daemon-reload # Enable auto-start sudo systemctl enable gitea # Start service sudo systemctl start gitea # Check status sudo systemctl status gitea Expected:\nActive: active (running) 4) View logs Real-time logs:\nsudo journalctl -u gitea -f History logs:\nsudo journalctl -u gitea --since \"1 hour ago\" Explanation Gitea is a Go-based self-hosted Git service. It manages local Git repos (e.g., ~/gitea/repos) and exposes GitHub-like operations via HTTP/SSH.\nCompared to git init --bare (just storage), Gitea adds web UI, users, PRs, and Wiki.\nCommon issues Issue Cause Fix Port 3000 in use Another service uses it Run ./gitea web --port 8080 Permission errors Gitea runs as current user Check repo directory permissions Push fails Repo init conflict Do not select “Initialize with README” Push slow/timeouts Using HTTP not SSH Configure SSH keys for faster pushes Best practices SQLite is enough for personal or small teams\nRun in background: nohup ./gitea web \u0026\nBackup regularly:\n~/gitea/repos/ ~/gitea/data/gitea.db ~/gitea/custom/conf/app.ini If the team grows, move to a server or Docker\nSummary You have:\nDeployed Gitea locally Avoided port conflicts Pushed existing repos to Gitea Gained a web UI, PRs, and history You now have your own private “GitHub”.\nReferences Gitea docs Gitea downloads Pro Git book Forgejo Meta Reading time: 8 minutes Tags: Git, Gitea, self-hosted, DevOps, version-control SEO keywords: local Gitea install, self-hosted Git server, private GitHub, import local repo Meta description: Set up a lightweight local Git server with Gitea, including PRs, web UI, and repo management. Call to Action (CTA) Try it now:\nRun the install commands Visit http://localhost:3000 Create your first repo Push a project If you want automation and backup scripts, leave a comment and I will share a follow-up.\n",
+  "wordCount" : "647",
+  "inLanguage": "en",
+  "datePublished": "2025-10-28T00:00:00Z",
+  "dateModified": "2025-10-28T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/en/notes/git-notes/configure-gitea/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/en/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/" title="中文"
+                                aria-label="中文">Zh</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/en/archives/" title="Archives">
+                    <span>Archives</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/dev/" title="Development">
+                    <span>Dev</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/alg/" title="Algorithms">
+                    <span>Algorithms</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/search/" title="Search (Alt &#43; /)" accesskey=/>
+                    <span>Search</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/categories/" title="Categories">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/en/tags/" title="Tags">
+                    <span>Tags</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/en/">Home</a>&nbsp;»&nbsp;<a href="http://localhost:1313/en/notes/">Notes</a>&nbsp;»&nbsp;<a href="http://localhost:1313/en/notes/git-notes/">Git Notes</a></div>
+    <h1 class="post-title entry-hint-parent">
+      How to Set Up Gitea
+    </h1>
+    <div class="post-meta"><span title='2025-10-28 00:00:00 +0000 UTC'>October 28, 2025</span>&nbsp;·&nbsp;<span>4 min</span>&nbsp;|&nbsp;<span>Translations:</span>
+<ul class="i18n_list">
+    <li>
+        <a href="http://localhost:1313/notes/git-notes/configure-gitea/">Zh</a>
+    </li>
+</ul>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">Table of Contents</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#run-gitea-locally-your-private-github-with-existing-repo-import" aria-label="Run Gitea Locally: Your Private GitHub (with Existing Repo Import)">Run Gitea Locally: Your Private GitHub (with Existing Repo Import)</a><ul>
+                        
+                <li>
+                    <a href="#background--motivation" aria-label="Background / Motivation">Background / Motivation</a></li>
+                <li>
+                    <a href="#core-concepts" aria-label="Core concepts">Core concepts</a></li>
+                <li>
+                    <a href="#setup-steps" aria-label="Setup steps">Setup steps</a><ul>
+                        
+                <li>
+                    <a href="#1-prepare-environment" aria-label="1) Prepare environment">1) Prepare environment</a></li>
+                <li>
+                    <a href="#2-create-directory-and-download" aria-label="2) Create directory and download">2) Create directory and download</a></li>
+                <li>
+                    <a href="#3-start-gitea" aria-label="3) Start Gitea">3) Start Gitea</a></li>
+                <li>
+                    <a href="#4-install-wizard" aria-label="4) Install wizard">4) Install wizard</a></li></ul>
+                </li>
+                <li>
+                    <a href="#runnable-example-push-an-existing-repo" aria-label="Runnable example: push an existing repo">Runnable example: push an existing repo</a></li>
+                <li>
+                    <a href="#register-as-a-system-service" aria-label="Register as a system service">Register as a system service</a><ul>
+                        
+                <li>
+                    <a href="#1-prerequisites" aria-label="1) Prerequisites">1) Prerequisites</a></li>
+                <li>
+                    <a href="#2-create-systemd-service" aria-label="2) Create systemd service">2) Create systemd service</a></li>
+                <li>
+                    <a href="#3-load-and-enable" aria-label="3) Load and enable">3) Load and enable</a></li>
+                <li>
+                    <a href="#4-view-logs" aria-label="4) View logs">4) View logs</a></li></ul>
+                </li>
+                <li>
+                    <a href="#explanation" aria-label="Explanation">Explanation</a></li>
+                <li>
+                    <a href="#common-issues" aria-label="Common issues">Common issues</a></li>
+                <li>
+                    <a href="#best-practices" aria-label="Best practices">Best practices</a></li>
+                <li>
+                    <a href="#summary" aria-label="Summary">Summary</a></li>
+                <li>
+                    <a href="#references" aria-label="References">References</a></li>
+                <li>
+                    <a href="#meta" aria-label="Meta">Meta</a></li>
+                <li>
+                    <a href="#call-to-action-cta" aria-label="Call to Action (CTA)">Call to Action (CTA)</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="run-gitea-locally-your-private-github-with-existing-repo-import">Run Gitea Locally: Your Private GitHub (with Existing Repo Import)<a hidden class="anchor" aria-hidden="true" href="#run-gitea-locally-your-private-github-with-existing-repo-import">#</a></h1>
+<p><strong>Subtitle / Abstract:</strong>
+This guide walks you through installing the lightweight Git server Gitea on your local machine. No root required, no system pollution. Manage, browse, and push projects like GitHub, and import existing repos.</p>
+<p><strong>Target readers:</strong>
+Personal developers, indie engineers, and small team leads with basic Git knowledge.</p>
+<hr>
+<h2 id="background--motivation">Background / Motivation<a hidden class="anchor" aria-hidden="true" href="#background--motivation">#</a></h2>
+<p>Many developers want:</p>
+<ul>
+<li>to host code inside a company or LAN</li>
+<li>to avoid cloud platforms (GitHub/Gitee)</li>
+<li>to have a web UI, pull requests, and code browsing</li>
+</ul>
+<p>GitLab is heavy (often multiple GB of RAM). Gitea is:</p>
+<ul>
+<li>lightweight</li>
+<li>a single binary</li>
+<li>supports PR, Wiki, Issues, CI/CD</li>
+</ul>
+<p>In minutes, you get a private &ldquo;mini GitHub&rdquo;.</p>
+<hr>
+<h2 id="core-concepts">Core concepts<a hidden class="anchor" aria-hidden="true" href="#core-concepts">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>Term</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>GitLab</strong></td>
+          <td>most powerful open-source Git platform, heavy resource usage</td>
+      </tr>
+      <tr>
+          <td><strong>Gitea</strong></td>
+          <td>lightweight self-hosted Git service with GitHub-like UI</td>
+      </tr>
+      <tr>
+          <td><strong>Bare repo</strong></td>
+          <td>repo with history only, no working tree</td>
+      </tr>
+      <tr>
+          <td><strong>Pull Request</strong></td>
+          <td>merge request from one branch to another</td>
+      </tr>
+      <tr>
+          <td><strong>SQLite</strong></td>
+          <td>default lightweight database for Gitea</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="setup-steps">Setup steps<a hidden class="anchor" aria-hidden="true" href="#setup-steps">#</a></h2>
+<h3 id="1-prepare-environment">1) Prepare environment<a hidden class="anchor" aria-hidden="true" href="#1-prepare-environment">#</a></h3>
+<p>Supported OS: Linux / macOS / Windows
+Recommended: RAM &gt;= 512MB, disk &gt;= 1GB</p>
+<h3 id="2-create-directory-and-download">2) Create directory and download<a hidden class="anchor" aria-hidden="true" href="#2-create-directory-and-download">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir -p ~/gitea
+</span></span><span style="display:flex;"><span>cd ~/gitea
+</span></span><span style="display:flex;"><span>wget -O gitea https://dl.gitea.io/gitea/1.22.0/gitea-1.22.0-linux-amd64
+</span></span><span style="display:flex;"><span>chmod +x gitea
+</span></span></code></pre></div><h3 id="3-start-gitea">3) Start Gitea<a hidden class="anchor" aria-hidden="true" href="#3-start-gitea">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./gitea web --port <span style="color:#ae81ff">3000</span>
+</span></span></code></pre></div><p>Open: http://localhost:3000</p>
+<h3 id="4-install-wizard">4) Install wizard<a hidden class="anchor" aria-hidden="true" href="#4-install-wizard">#</a></h3>
+<p>Fill in:</p>
+<ul>
+<li>DB type: <code>SQLite3</code></li>
+<li>Repo root: <code>/home/&lt;username&gt;/gitea/repos</code></li>
+<li>Base URL: <code>http://localhost:3000</code></li>
+<li>Create admin account</li>
+</ul>
+<hr>
+<h2 id="runnable-example-push-an-existing-repo">Runnable example: push an existing repo<a hidden class="anchor" aria-hidden="true" href="#runnable-example-push-an-existing-repo">#</a></h2>
+<p>Assume your local project is <code>/home/gong/projects/scrapy</code>:</p>
+<ol>
+<li>Create a repo named <code>scrapy</code> in Gitea</li>
+<li>In your project directory:</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cd ~/projects/scrapy
+</span></span><span style="display:flex;"><span>git remote set-url origin http://localhost:3000/JeanphiloGong/scrapy.git
+</span></span><span style="display:flex;"><span>git push -u origin --all
+</span></span><span style="display:flex;"><span>git push -u origin --tags
+</span></span></code></pre></div><p>Refresh the web UI to see full history.</p>
+<hr>
+<h2 id="register-as-a-system-service">Register as a system service<a hidden class="anchor" aria-hidden="true" href="#register-as-a-system-service">#</a></h2>
+<h3 id="1-prerequisites">1) Prerequisites<a hidden class="anchor" aria-hidden="true" href="#1-prerequisites">#</a></h3>
+<p>Assume Gitea is installed at:</p>
+<pre tabindex="0"><code>/home/gong/gitea
+</code></pre><p>Binary path:</p>
+<pre tabindex="0"><code>/home/gong/gitea/gitea
+</code></pre><p>Run as user <code>gong</code> and do not use root.</p>
+<hr>
+<h3 id="2-create-systemd-service">2) Create systemd service<a hidden class="anchor" aria-hidden="true" href="#2-create-systemd-service">#</a></h3>
+<p>Create <code>/etc/systemd/system/gitea.service</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ini" data-lang="ini"><span style="display:flex;"><span><span style="color:#66d9ef">[Unit]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Description</span><span style="color:#f92672">=</span><span style="color:#e6db74">Gitea (Self-hosted Git Service)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">After</span><span style="color:#f92672">=</span><span style="color:#e6db74">network.target</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">[Service]</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># User and group</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">User</span><span style="color:#f92672">=</span><span style="color:#e6db74">gong</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Group</span><span style="color:#f92672">=</span><span style="color:#e6db74">gong</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Working directory</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">WorkingDirectory</span><span style="color:#f92672">=</span><span style="color:#e6db74">/home/gong/gitea</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Start command</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ExecStart</span><span style="color:#f92672">=</span><span style="color:#e6db74">/home/gong/gitea/gitea web --config /home/gong/gitea/custom/conf/app.ini</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Restart policy</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Restart</span><span style="color:#f92672">=</span><span style="color:#e6db74">always</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">RestartSec</span><span style="color:#f92672">=</span><span style="color:#e6db74">10s</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Environment (optional)</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Environment</span><span style="color:#f92672">=</span><span style="color:#e6db74">USER=gong HOME=/home/gong GITEA_WORK_DIR=/home/gong/gitea</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Security</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">PrivateTmp</span><span style="color:#f92672">=</span><span style="color:#e6db74">true</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">ProtectSystem</span><span style="color:#f92672">=</span><span style="color:#e6db74">full</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">NoNewPrivileges</span><span style="color:#f92672">=</span><span style="color:#e6db74">true</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">[Install]</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">WantedBy</span><span style="color:#f92672">=</span><span style="color:#e6db74">multi-user.target</span>
+</span></span></code></pre></div><p>Notes:</p>
+<ul>
+<li><code>WorkingDirectory</code> is the Gitea directory</li>
+<li><code>ExecStart</code> defines the launch command</li>
+<li><code>Restart=always</code> ensures auto-restart</li>
+</ul>
+<hr>
+<h3 id="3-load-and-enable">3) Load and enable<a hidden class="anchor" aria-hidden="true" href="#3-load-and-enable">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Reload systemd</span>
+</span></span><span style="display:flex;"><span>sudo systemctl daemon-reload
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Enable auto-start</span>
+</span></span><span style="display:flex;"><span>sudo systemctl enable gitea
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Start service</span>
+</span></span><span style="display:flex;"><span>sudo systemctl start gitea
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Check status</span>
+</span></span><span style="display:flex;"><span>sudo systemctl status gitea
+</span></span></code></pre></div><p>Expected:</p>
+<pre tabindex="0"><code>Active: active (running)
+</code></pre><hr>
+<h3 id="4-view-logs">4) View logs<a hidden class="anchor" aria-hidden="true" href="#4-view-logs">#</a></h3>
+<p>Real-time logs:</p>
+<pre tabindex="0"><code>sudo journalctl -u gitea -f
+</code></pre><p>History logs:</p>
+<pre tabindex="0"><code>sudo journalctl -u gitea --since &#34;1 hour ago&#34;
+</code></pre><hr>
+<h2 id="explanation">Explanation<a hidden class="anchor" aria-hidden="true" href="#explanation">#</a></h2>
+<p>Gitea is a Go-based self-hosted Git service. It manages local Git repos (e.g., <code>~/gitea/repos</code>) and exposes GitHub-like operations via HTTP/SSH.</p>
+<p>Compared to <code>git init --bare</code> (just storage), Gitea adds web UI, users, PRs, and Wiki.</p>
+<hr>
+<h2 id="common-issues">Common issues<a hidden class="anchor" aria-hidden="true" href="#common-issues">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>Issue</th>
+          <th>Cause</th>
+          <th>Fix</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>Port 3000 in use</td>
+          <td>Another service uses it</td>
+          <td>Run <code>./gitea web --port 8080</code></td>
+      </tr>
+      <tr>
+          <td>Permission errors</td>
+          <td>Gitea runs as current user</td>
+          <td>Check repo directory permissions</td>
+      </tr>
+      <tr>
+          <td>Push fails</td>
+          <td>Repo init conflict</td>
+          <td>Do not select &ldquo;Initialize with README&rdquo;</td>
+      </tr>
+      <tr>
+          <td>Push slow/timeouts</td>
+          <td>Using HTTP not SSH</td>
+          <td>Configure SSH keys for faster pushes</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="best-practices">Best practices<a hidden class="anchor" aria-hidden="true" href="#best-practices">#</a></h2>
+<ul>
+<li>
+<p>SQLite is enough for personal or small teams</p>
+</li>
+<li>
+<p>Run in background: <code>nohup ./gitea web &amp;</code></p>
+</li>
+<li>
+<p>Backup regularly:</p>
+<pre tabindex="0"><code>~/gitea/repos/
+~/gitea/data/gitea.db
+~/gitea/custom/conf/app.ini
+</code></pre></li>
+<li>
+<p>If the team grows, move to a server or Docker</p>
+</li>
+</ul>
+<hr>
+<h2 id="summary">Summary<a hidden class="anchor" aria-hidden="true" href="#summary">#</a></h2>
+<p>You have:</p>
+<ol>
+<li>Deployed Gitea locally</li>
+<li>Avoided port conflicts</li>
+<li>Pushed existing repos to Gitea</li>
+<li>Gained a web UI, PRs, and history</li>
+</ol>
+<p>You now have your own private &ldquo;GitHub&rdquo;.</p>
+<hr>
+<h2 id="references">References<a hidden class="anchor" aria-hidden="true" href="#references">#</a></h2>
+<ul>
+<li><a href="https://docs.gitea.io/">Gitea docs</a></li>
+<li><a href="https://dl.gitea.io/gitea/">Gitea downloads</a></li>
+<li><a href="https://git-scm.com/book/">Pro Git book</a></li>
+<li><a href="https://forgejo.org/">Forgejo</a></li>
+</ul>
+<hr>
+<h2 id="meta">Meta<a hidden class="anchor" aria-hidden="true" href="#meta">#</a></h2>
+<ul>
+<li>Reading time: 8 minutes</li>
+<li>Tags: <code>Git</code>, <code>Gitea</code>, <code>self-hosted</code>, <code>DevOps</code>, <code>version-control</code></li>
+<li>SEO keywords: <code>local Gitea install</code>, <code>self-hosted Git server</code>, <code>private GitHub</code>, <code>import local repo</code></li>
+<li>Meta description: Set up a lightweight local Git server with Gitea, including PRs, web UI, and repo management.</li>
+</ul>
+<hr>
+<h2 id="call-to-action-cta">Call to Action (CTA)<a hidden class="anchor" aria-hidden="true" href="#call-to-action-cta">#</a></h2>
+<p>Try it now:</p>
+<ol>
+<li>Run the install commands</li>
+<li>Visit http://localhost:3000</li>
+<li>Create your first repo</li>
+<li>Push a project</li>
+</ol>
+<p>If you want automation and backup scripts, leave a comment and I will share a follow-up.</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share How to Set Up Gitea on x"
+            href="https://x.com/intent/tweet/?text=How%20to%20Set%20Up%20Gitea&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2fnotes%2fgit-notes%2fconfigure-gitea%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share How to Set Up Gitea on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2fnotes%2fgit-notes%2fconfigure-gitea%2f&amp;title=How%20to%20Set%20Up%20Gitea&amp;summary=How%20to%20Set%20Up%20Gitea&amp;source=http%3a%2f%2flocalhost%3a1313%2fen%2fnotes%2fgit-notes%2fconfigure-gitea%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share How to Set Up Gitea on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2fen%2fnotes%2fgit-notes%2fconfigure-gitea%2f&title=How%20to%20Set%20Up%20Gitea">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share How to Set Up Gitea on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2fen%2fnotes%2fgit-notes%2fconfigure-gitea%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share How to Set Up Gitea on whatsapp"
+            href="https://api.whatsapp.com/send?text=How%20to%20Set%20Up%20Gitea%20-%20http%3a%2f%2flocalhost%3a1313%2fen%2fnotes%2fgit-notes%2fconfigure-gitea%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share How to Set Up Gitea on telegram"
+            href="https://telegram.me/share/url?text=How%20to%20Set%20Up%20Gitea&amp;url=http%3a%2f%2flocalhost%3a1313%2fen%2fnotes%2fgit-notes%2fconfigure-gitea%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share How to Set Up Gitea on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=How%20to%20Set%20Up%20Gitea&u=http%3a%2f%2flocalhost%3a1313%2fen%2fnotes%2fgit-notes%2fconfigure-gitea%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/en/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

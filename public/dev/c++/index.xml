@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>C&#43;&#43; on Jeanphilo Blog</title>
+    <link>http://localhost:1313/dev/c&#43;&#43;/</link>
+    <description>Recent content in C&#43;&#43; on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 30 Dec 2025 18:12:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/dev/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>size_t 有什么用？为什么 C&#43;&#43; 循环更偏爱 size_t 而不是 int</title>
+      <link>http://localhost:1313/dev/c&#43;&#43;/size_t-why-not-int-loop/</link>
+      <pubDate>Tue, 30 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/dev/c&#43;&#43;/size_t-why-not-int-loop/</guid>
+      <description>&lt;h1 id=&#34;size_&#34;&gt;&lt;strong&gt;size_t 有什么用？为什么 C++ 循环更偏爱 size_t 而不是 int&lt;/strong&gt;&lt;/h1&gt;
+&lt;h3 id=&#34;副标题--摘要&#34;&gt;副标题 / 摘要&lt;/h3&gt;
+&lt;p&gt;当你写 &lt;code&gt;for&lt;/code&gt; 循环遍历容器时，&lt;code&gt;size_t&lt;/code&gt; 往往比 &lt;code&gt;int&lt;/code&gt; 更安全、更贴合语义。本文用 ACERS 结构讲清楚 &lt;code&gt;size_t&lt;/code&gt; 的定义、使用理由、风险点与工程实践，适合写 C++ 的你快速落地。&lt;/p&gt;
+&lt;h3 id=&#34;元信息&#34;&gt;元信息&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;阅读时长：8-10 分钟&lt;/li&gt;
+&lt;li&gt;标签：C++，size_t，类型系统，循环，STL&lt;/li&gt;
+&lt;li&gt;SEO 关键词：size_t 用途，size_t 和 int 区别，C++ 循环初始化，size_t 下溢&lt;/li&gt;
+&lt;li&gt;元描述：解释 size_t 的定义与用途，说明为什么循环索引常用 size_t，并给出安全写法与工程场景。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;目标读者&#34;&gt;目标读者&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;C++ 初学者：对 &lt;code&gt;size_t&lt;/code&gt;、&lt;code&gt;sizeof&lt;/code&gt;、容器 &lt;code&gt;size()&lt;/code&gt; 的返回类型不熟悉&lt;/li&gt;
+&lt;li&gt;中级工程师：遇到过 &lt;code&gt;-Wsign-compare&lt;/code&gt; 警告或下溢 bug&lt;/li&gt;
+&lt;li&gt;需要写跨平台/高性能 C++ 代码的人&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;背景--动机&#34;&gt;背景 / 动机&lt;/h3&gt;
+&lt;p&gt;在 C++ 代码里，你经常能看到这样的循环：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (size_t i &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; vec.size(); &lt;span style=&#34;color:#f92672&#34;&gt;++&lt;/span&gt;i) { ... }
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;不少人疑惑：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;为什么不用更“直观”的 &lt;code&gt;int&lt;/code&gt;？&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;size_t&lt;/code&gt; 到底是什么？为什么是无符号？&lt;/li&gt;
+&lt;li&gt;什么时候会踩坑？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这一篇把这些问题一次讲清楚。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

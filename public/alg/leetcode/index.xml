@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>leetcode on Jeanphilo Blog</title>
+    <link>http://localhost:1313/alg/leetcode/</link>
+    <description>Recent content in leetcode on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 30 Dec 2025 11:40:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/alg/leetcode/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>数据结构基础：好数对计数（Number of Good Pairs）哈希统计 ACERS 解析</title>
+      <link>http://localhost:1313/alg/leetcode/good-pairs-count-acers/</link>
+      <pubDate>Tue, 30 Dec 2025 11:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/good-pairs-count-acers/</guid>
+      <description>用哈希计数一遍扫描解决好数对（Good Pairs）问题，附工程场景、复杂度对比与多语言实现。</description>
+    </item>
+    <item>
+      <title>Two Sum 两数之和：哈希表一遍扫描与 ACERS 工程化解析</title>
+      <link>http://localhost:1313/alg/leetcode/two-sum-hash-map-acers/</link>
+      <pubDate>Sun, 28 Dec 2025 10:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/two-sum-hash-map-acers/</guid>
+      <description>从题意还原到哈希表一遍扫描，系统讲解 Two Sum，并给出工程场景、复杂度对比与多语言实现。</description>
+    </item>
+    <item>
+      <title>排序专题（终篇）：选型实战——按规模、稳定性、内存与分布选择排序算法</title>
+      <link>http://localhost:1313/alg/leetcode/9.sorting-series-selection-guide/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/9.sorting-series-selection-guide/</guid>
+      <description>以实战视角整理排序选型：给出规模/分布/稳定性/内存维度的决策表、工程场景示例、测试清单与常见坑，快速落地前七篇内容。</description>
+    </item>
+    <item>
+      <title>排序专题（八）：TimSort 与 Introsort——语言内置排序的工程范式</title>
+      <link>http://localhost:1313/alg/leetcode/8.sorting-series-timsort-introsort/</link>
+      <pubDate>Mon, 08 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/8.sorting-series-timsort-introsort/</guid>
+      <description>拆解 Python/Java 默认的 TimSort 与 C++ std::sort 的 Introsort：触发条件、稳定性、复杂度与工程取舍，附伪实现骨架与选型建议。</description>
+    </item>
+    <item>
+      <title>排序专题（七）：非比较排序——计数、桶、基数的范围与位数之战</title>
+      <link>http://localhost:1313/alg/leetcode/7.sorting-series-non-comparison/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/7.sorting-series-non-comparison/</guid>
+      <description>讲清非比较排序的适用前提、时间/空间复杂度、工程实现细节与常见坑，附计数/桶/基数排序的多语言示例。</description>
+    </item>
+    <item>
+      <title>排序专题（六）：堆排序——原地 O(n log n) 的稳健方案</title>
+      <link>http://localhost:1313/alg/leetcode/6.sorting-series-heap-sort/</link>
+      <pubDate>Sat, 06 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/6.sorting-series-heap-sort/</guid>
+      <description>讲解堆排序的原理、复杂度与工程场景，对比快排/归并的取舍，附多语言实现和 top-k 应用示例。</description>
+    </item>
+    <item>
+      <title>排序专题（五）：快速排序——枢轴策略、尾递归优化与工程实战</title>
+      <link>http://localhost:1313/alg/leetcode/5.sorting-series-quick-sort/</link>
+      <pubDate>Fri, 05 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/5.sorting-series-quick-sort/</guid>
+      <description>全面讲解快速排序的核心思想、枢轴选择、重复元素分区、尾递归与混合排序实践，附多语言实现与工程选型建议。</description>
+    </item>
+    <item>
+      <title>最大正负数计数：用二分在排序数组中统计正整数和负整数数量的最大值</title>
+      <link>http://localhost:1313/alg/leetcode/binary-search-maximum-count-positive-negative/</link>
+      <pubDate>Thu, 04 Dec 2025 11:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/binary-search-maximum-count-positive-negative/</guid>
+      <description>在排序数组中统计正整数和负整数数量的最大值（Maximum Count of Positive &amp;amp; Negative Integers）。本文用上下界二分模板一次性找到负数结束位置和正数起始位置，并给出多语言实现与工程应用示例。</description>
+    </item>
+    <item>
+      <title>比目标字母大的最小字母：有序字符数组上的二分查找技巧</title>
+      <link>http://localhost:1313/alg/leetcode/binary-search-smallest-letter-greater-than-target/</link>
+      <pubDate>Thu, 04 Dec 2025 11:30:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/binary-search-smallest-letter-greater-than-target/</guid>
+      <description>在排序字符数组中查找比目标字母大的最小字母（Find Smallest Letter Greater Than Target），支持环绕。本文用 upper_bound 二分模板稳定处理边界，并提供多语言实现和工程实践示例。</description>
+    </item>
+    <item>
+      <title>经典 Binary Search：在排序数组中查找目标值索引的统一模板</title>
+      <link>http://localhost:1313/alg/leetcode/binary-search-find-target-index/</link>
+      <pubDate>Thu, 04 Dec 2025 11:20:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/binary-search-find-target-index/</guid>
+      <description>在有序数组中查找目标值：存在返回下标，不存在返回 -1。本文以 LeetCode 704 为例，用统一的二分模板讲清楚边界处理，并给出多语言实现和工程实践示例。</description>
+    </item>
+    <item>
+      <title>Search Insert Position：排序数组中目标值插入位置的二分查找实战</title>
+      <link>http://localhost:1313/alg/leetcode/binary-search-search-insert-position/</link>
+      <pubDate>Thu, 04 Dec 2025 11:10:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/binary-search-search-insert-position/</guid>
+      <description>在有序数组中寻找目标值插入位置，使数组仍然有序：存在返回下标，不存在返回应插入的位置。本文用统一的 lower_bound 二分模板实现 Search Insert Position，并给出多语言代码与工程应用示例。</description>
+    </item>
+    <item>
+      <title>在排序数组中查找元素的起始和结束位置：一套二分模板搞定 Search Range</title>
+      <link>http://localhost:1313/alg/leetcode/binary-search-search-range-start-end/</link>
+      <pubDate>Thu, 04 Dec 2025 11:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/binary-search-search-range-start-end/</guid>
+      <description>在有序数组中找到目标值的起始和结束位置（Search Range），要求 O(log n) 时间。本文用下界/上界二分模板彻底解决边界问题，并给出多语言代码和工程实践示例。</description>
+    </item>
+    <item>
+      <title>咒语与药水的成功组合：排序 &#43; 二分查找秒杀乘积约束问题</title>
+      <link>http://localhost:1313/alg/leetcode/spells-and-potions-successful-pairs/</link>
+      <pubDate>Thu, 04 Dec 2025 10:50:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/spells-and-potions-successful-pairs/</guid>
+      <description>给定 spells 和 potions 两个数组以及 success 阈值，如何用排序 &#43; 二分查找在 O((n&#43;m)log m) 时间内求出每个咒语能与多少药水形成乘积 ≥ success 的成功组合，并给出多语言实现与工程应用示例。</description>
+    </item>
+    <item>
+      <title>固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和</title>
+      <link>http://localhost:1313/alg/leetcode/almost-unique-subarray-max-sum/</link>
+      <pubDate>Thu, 04 Dec 2025 10:40:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/almost-unique-subarray-max-sum/</guid>
+      <description>给定整数数组 nums 和正整数 m、k，要求在所有长度为 k、且至少包含 m 个不同元素的子数组中，找到最大和；若不存在返回 0。本文用滑动窗口 &#43; 计数哈希表推导 O(n) 解法，并提供多语言实现与工程应用示例。</description>
+    </item>
+    <item>
+      <title>最少涂色次数拿到 k 个连续黑块：滑动窗口的极简解法</title>
+      <link>http://localhost:1313/alg/leetcode/minimum-recolors-k-consecutive-black-blocks/</link>
+      <pubDate>Thu, 04 Dec 2025 10:30:00 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/minimum-recolors-k-consecutive-black-blocks/</guid>
+      <description>给定只包含 W/B 的字符串 blocks，每次可将一个 W 涂成 B，如何用一次线性扫描求出得到至少一次连续 k 个黑色块的最少操作次数，并给出多语言实现与工程应用示例。</description>
+    </item>
+    <item>
+      <title>排序专题（四）：归并排序——稳定分治与外部排序的首选</title>
+      <link>http://localhost:1313/alg/leetcode/4.sorting-series-merge-sort/</link>
+      <pubDate>Thu, 04 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/4.sorting-series-merge-sort/</guid>
+      <description>系统讲解归并排序的分治原理、稳定性、空间取舍与工程场景，附 Python/C/C++/Go/Rust/JS 实现、外部排序思路与选型建议。</description>
+    </item>
+    <item>
+      <title>排序专题（三）：希尔排序——从插入到分组增量的效率跃迁</title>
+      <link>http://localhost:1313/alg/leetcode/3.sorting-series-shell-sort/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/3.sorting-series-shell-sort/</guid>
+      <description>深入解析希尔排序的原理、增量策略与工程用法，附多场景示例和 Python/C/C++/Go/Rust/JS 实现，帮助理解从插入到 O(n log^2 n) 的过渡。</description>
+    </item>
+    <item>
+      <title>排序专题（二）：冒泡、选择、插入——三种 O(n^2) 基线的对比与取舍</title>
+      <link>http://localhost:1313/alg/leetcode/2.sorting-series-on2-baseline/</link>
+      <pubDate>Tue, 02 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/2.sorting-series-on2-baseline/</guid>
+      <description>用 ACERS 模板系统讲解冒泡/选择/插入排序的原理、稳定性、适用场景与工程示例，并给出多语言实现与选型建议。</description>
+    </item>
+    <item>
+      <title>排序专题序章：如何选算法——时间/空间/稳定性/场景速查</title>
+      <link>http://localhost:1313/alg/leetcode/1.sorting-series-preface/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/1.sorting-series-preface/</guid>
+      <description>用 ACERS 模板快速梳理常见排序算法的适用场景、复杂度、稳定性与工程实现，附多语言可运行示例与选型清单。</description>
+    </item>
+    <item>
+      <title>判断一个数是否为2的幂:ACERS算法题解析与工程应用</title>
+      <link>http://localhost:1313/alg/leetcode/power-of-two-acers/</link>
+      <pubDate>Wed, 19 Nov 2025 08:09:31 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/power-of-two-acers/</guid>
+      <description>&lt;h1 id=&#34;判断一个数是否为-2-的幂acers-算法题解析与工程应用&#34;&gt;&lt;strong&gt;判断一个数是否为 2 的幂：ACERS 算法题解析与工程应用&lt;/strong&gt;&lt;/h1&gt;
+&lt;h2 id=&#34;a--algorithm题目与算法&#34;&gt;A — Algorithm（题目与算法）&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;题目简介&#34;&gt;&lt;strong&gt;题目简介&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;给定一个整数 &lt;code&gt;n&lt;/code&gt;，判断它是否是 2 的幂。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2 的幂&lt;/strong&gt; 是指：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;1, 2, 4, 8, 16, 32, 64, ...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;数学上等价于：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;n = 2^k 且 k ≥ 0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;编程中要求 &lt;strong&gt;以最优方式判断&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;基础示例&#34;&gt;&lt;strong&gt;基础示例&lt;/strong&gt;&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;输入&lt;/th&gt;
+          &lt;th&gt;输出&lt;/th&gt;
+          &lt;th&gt;原因&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;1&lt;/td&gt;
+          &lt;td&gt;true&lt;/td&gt;
+          &lt;td&gt;2⁰ = 1&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;8&lt;/td&gt;
+          &lt;td&gt;true&lt;/td&gt;
+          &lt;td&gt;8 的二进制 1000&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;12&lt;/td&gt;
+          &lt;td&gt;false&lt;/td&gt;
+          &lt;td&gt;1100 中有两个 1，不是 2 的幂&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;直观图示（8）&lt;/strong&gt;&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;8 = 1000₂
+8 - 1 = 0111₂
+8 &amp;amp; 7 = 0000   → 是 2 的幂
+&lt;/code&gt;&lt;/pre&gt;&lt;hr&gt;
+&lt;h1 id=&#34;c--concepts核心思想&#34;&gt;C — Concepts（核心思想）&lt;/h1&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;核心算法思想位运算判断-2-的幂&#34;&gt;&lt;strong&gt;核心算法思想：位运算判断 2 的幂&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;关键观察：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>一位与两位编码解析的刷题笔记与工程应用全解析（续集）</title>
+      <link>http://localhost:1313/alg/leetcode/one-bit-two-bit-characters-notes-part-2/</link>
+      <pubDate>Tue, 18 Nov 2025 23:43:17 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/one-bit-two-bit-characters-notes-part-2/</guid>
+      <description>&lt;h1 id=&#34;一位与两位编码解析的刷题笔记与工程应用全解析续集&#34;&gt;&lt;strong&gt;一位与两位编码解析的刷题笔记与工程应用全解析（续集）&lt;/strong&gt;&lt;/h1&gt;
+&lt;h2 id=&#34;副标题--摘要&#34;&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;本文解析 LeetCode《1-bit and 2-bit Characters》题目，讲解如何用简单的指针跳跃算法解析二进制编码序列，并展示该算法在通信协议、数据格式解析、事件流处理等工程场景中的真实应用。适合希望将算法题知识迁移到工程系统的开发者。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;目标读者&#34;&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;刷 LeetCode、准备技术面试的开发者&lt;/li&gt;
+&lt;li&gt;对通信协议、序列解析、数据流处理感兴趣的工程师&lt;/li&gt;
+&lt;li&gt;想提升“抽象能力与工程迁移能力”的同学&lt;/li&gt;
+&lt;li&gt;从事监控、序列分析、协议解析等工作的后端开发者&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;背景--动机为什么这题值得写一篇博客&#34;&gt;&lt;strong&gt;背景 / 动机：为什么这题值得写一篇博客？&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;乍一看，这道题好像只是简单判断：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;一个由 0/1 组成的编码流，最后一个 0 是否单独构成一个 1 位字符？&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;但本质上它对应的是 &lt;strong&gt;“变长编码（Variable-Length Coding）解析”&lt;/strong&gt;，而变长编码在工程中极其常见，比如：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;UTF-8 字符解析&lt;/li&gt;
+&lt;li&gt;网络包头编码解析&lt;/li&gt;
+&lt;li&gt;字节码指令流解析&lt;/li&gt;
+&lt;li&gt;数据压缩（如 Huffman Coding）&lt;/li&gt;
+&lt;li&gt;通信协议中的 Frame 解析&lt;/li&gt;
+&lt;li&gt;行为序列中用跳表式结构编码的事件&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，这道题不仅是算法题，更是“从左向右解析变长编码的模型题”。&lt;/p&gt;
+&lt;p&gt;理解这题，就是理解大量系统底层的基础。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;核心概念&#34;&gt;&lt;strong&gt;核心概念&lt;/strong&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;1-变长编码variable-length-encoding&#34;&gt;&lt;strong&gt;1. 变长编码（Variable-Length Encoding）&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;题目中规定了两种编码：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;1 位字符&lt;/strong&gt;：&lt;code&gt;0&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;2 位字符&lt;/strong&gt;：&lt;code&gt;10&lt;/code&gt; 或 &lt;code&gt;11&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这是一种简化的变长编码结构：字符长度取决于首位。&lt;/p&gt;
+&lt;p&gt;工程中常见：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;系统&lt;/th&gt;
+          &lt;th&gt;变长规则&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;UTF-8&lt;/td&gt;
+          &lt;td&gt;1~4 字节，根据前缀位判断长度&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;TLV 协议&lt;/td&gt;
+          &lt;td&gt;T + 长度字段决定 Value 长度&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;字节码流&lt;/td&gt;
+          &lt;td&gt;opcode 决定后续参数个数&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;硬件指令集&lt;/td&gt;
+          &lt;td&gt;有变长和固定长度两类&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;题目正是这些系统的「极简模型」。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>固定间距1检测的刷题笔记与工程应用解析(续集)</title>
+      <link>http://localhost:1313/alg/leetcode/fixed-distance-ones-detection-notes-part-2/</link>
+      <pubDate>Tue, 18 Nov 2025 00:07:34 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/fixed-distance-ones-detection-notes-part-2/</guid>
+      <description>&lt;h1 id=&#34;固定间距-1-检测的刷题笔记与工程应用全解析续集&#34;&gt;&lt;strong&gt;固定间距 1 检测的刷题笔记与工程应用全解析（续集）&lt;/strong&gt;&lt;/h1&gt;
+&lt;h2 id=&#34;副标题--摘要&#34;&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;本文解析 LeetCode “检查 1 是否至少间隔 k” 问题，深入讲解“事件间距校验”背后的工程思想，并展示该算法在监控系统、风控策略、行为分析中的真实应用。适合希望将刷题思想迁移到实际项目的开发者。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;目标读者&#34;&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;刷 LeetCode / 准备面试的算法学习者&lt;/li&gt;
+&lt;li&gt;想提升代码工程能力与抽象能力的开发者&lt;/li&gt;
+&lt;li&gt;从事监控、风控、日志分析、数据治理的人&lt;/li&gt;
+&lt;li&gt;需要分析连续事件间隔的系统设计者&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;背景--动机为什么这题值得写一篇博客&#34;&gt;&lt;strong&gt;背景 / 动机：为什么这题值得写一篇博客？&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;在刷题中，很多人会认为这道题只是：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;判断两个 1 是否距离不足 k&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;但其背后的思想在工程中非常常见，尤其用于：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;调控敏感操作的触发频率&lt;/li&gt;
+&lt;li&gt;检测系统异常是否“过于密集”&lt;/li&gt;
+&lt;li&gt;控制行为“最低间隔时间”&lt;/li&gt;
+&lt;li&gt;判断连续事件是否违反安全策略&lt;/li&gt;
+&lt;li&gt;系统限流或速率控制（Rate Limiting）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;换句话说，这题虽然简单，但它对应的“事件间距校验模型”在实际工程里是&lt;strong&gt;非常常用的原型逻辑&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;核心概念&#34;&gt;&lt;strong&gt;核心概念&lt;/strong&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;1-事件间距event-spacing&#34;&gt;&lt;strong&gt;1. 事件间距（Event Spacing）&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;对于事件序列：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;... 0 1 0 0 0 1 0 ...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;我们关心：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;任意两个 1 之间的距离是否 ≥ k+1（中间至少 k 个 0）&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这是一个典型的&lt;strong&gt;约束检查类问题&lt;/strong&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;2-在线校验online-check&#34;&gt;&lt;strong&gt;2. 在线校验（Online Check）&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;无需存储所有事件，只需要：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;记录上一次事件发生的位置 &lt;code&gt;last1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;当前事件位置 &lt;code&gt;i&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;判断 &lt;code&gt;i - last1 &amp;gt; k&lt;/code&gt; 是否成立&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;整个检查过程是一次 O(n) 流式扫描，非常适合实时系统。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>滑动窗口在工程中的高价值应用：从 LeetCode 最大元音子串问题到真实系统监控</title>
+      <link>http://localhost:1313/alg/leetcode/sliding-window-max-vowel-substring-to-monitoring/</link>
+      <pubDate>Mon, 17 Nov 2025 08:15:54 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/sliding-window-max-vowel-substring-to-monitoring/</guid>
+      <description>&lt;h1 id=&#34;滑动窗口在工程中的高价值应用从-leetcode-最大元音子串问题到真实系统监控&#34;&gt;&lt;strong&gt;滑动窗口在工程中的高价值应用：从 LeetCode 最大元音子串问题到真实系统监控&lt;/strong&gt;&lt;/h1&gt;
+&lt;h2 id=&#34;副标题--摘要&#34;&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;本文以 LeetCode 的“最大元音子串数”题目为起点，全面解析滑动窗口算法的原理，并展示它在日志监控、风控、安全、NLP 与数据流分析中的真实应用场景。适合希望从刷题走向工程实践的开发者。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;目标读者&#34;&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;算法学习者、LeetCode 刷题者&lt;/li&gt;
+&lt;li&gt;后端工程师、运维/监控工程师&lt;/li&gt;
+&lt;li&gt;数据分析与数据挖掘从业者&lt;/li&gt;
+&lt;li&gt;想提升“算法到工程迁移能力”的开发者&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;背景--动机&#34;&gt;&lt;strong&gt;背景 / 动机&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;许多人刷题时容易认为它们只是“做做逻辑题”，但实际上，许多经典算法技巧（如滑动窗口）在工程中应用非常广泛，尤其是在以下场景：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;实时日志流分析&lt;/li&gt;
+&lt;li&gt;监控系统的阈值检测&lt;/li&gt;
+&lt;li&gt;用户行为序列分析&lt;/li&gt;
+&lt;li&gt;风控策略中的敏感操作窗口统计&lt;/li&gt;
+&lt;li&gt;NLP 文本风格检测&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;本篇文章通过解析如下代码：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; maxVowels(string s, &lt;span style=&#34;color:#66d9ef&#34;&gt;int&lt;/span&gt; k)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;展示它隐藏的工程价值，帮助你理解这段逻辑为什么不仅仅是“数元音”，而是“固定窗口计数”的强大模型。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;核心概念&#34;&gt;&lt;strong&gt;核心概念&lt;/strong&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;1-滑动窗口sliding-window&#34;&gt;&lt;strong&gt;1. 滑动窗口（Sliding Window）&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;一种在 O(n) 时间内扫描区间数据的方法，通过：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;加入右端点元素&lt;/li&gt;
+&lt;li&gt;移除左端点元素&lt;/li&gt;
+&lt;li&gt;保持窗口长度为 k&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;适用于连续、时间片段、行为序列等。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;2-固定窗口计数&#34;&gt;&lt;strong&gt;2. 固定窗口计数&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;核心思想：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;维护窗口中满足某条件的元素数量，并在窗口右移时更新最大值。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;本题中条件是：字符是否为元音。&lt;/p&gt;
+&lt;p&gt;工程中的条件可以变成：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;是否为异常日志&lt;/li&gt;
+&lt;li&gt;是否为敏感操作&lt;/li&gt;
+&lt;li&gt;是否为高价值请求&lt;/li&gt;
+&lt;li&gt;是否为某类 token（在 NLP 中）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;3-在线算法online-algorithm&#34;&gt;&lt;strong&gt;3. 在线算法（Online Algorithm）&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;无需额外空间或完整数据，只需遍历一次即可实时统计。&lt;/p&gt;
+&lt;p&gt;适合：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;实时流式数据（Kafka/Flume/log-agent）&lt;/li&gt;
+&lt;li&gt;高频事件监控系统&lt;/li&gt;
+&lt;li&gt;在线规则判断&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;实践指南--步骤&#34;&gt;&lt;strong&gt;实践指南 / 步骤&lt;/strong&gt;&lt;/h1&gt;
+&lt;h3 id=&#34;步骤-1定义判断条件&#34;&gt;&lt;strong&gt;步骤 1：定义判断条件&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;如同“判断元音”一样，你可以替换成：&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>连续1子串计数的刷题笔记与工程应用全解析</title>
+      <link>http://localhost:1313/alg/leetcode/count-consecutive-ones-substrings-notes/</link>
+      <pubDate>Sun, 16 Nov 2025 22:58:57 +0800</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/count-consecutive-ones-substrings-notes/</guid>
+      <description>&lt;h1 id=&#34;连续1子串计数的刷题笔记与工程应用全解析&#34;&gt;&lt;strong&gt;连续1子串计数的刷题笔记与工程应用全解析&lt;/strong&gt;&lt;/h1&gt;
+&lt;h2 id=&#34;副标题--摘要&#34;&gt;&lt;strong&gt;副标题 / 摘要&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;本文从一道 LeetCode 算法题出发，深入解析“连续 1 子串计数算法”的原理，并展示其在真实工程中的多个典型应用场景（可运行示例附带）。适合希望从刷题过渡到工程能力提升的开发者。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;目标读者&#34;&gt;&lt;strong&gt;目标读者&lt;/strong&gt;&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;正在刷 LeetCode / 准备面试的同学&lt;/li&gt;
+&lt;li&gt;想提升代码工程能力的开发者&lt;/li&gt;
+&lt;li&gt;数据分析、系统监控、机器学习方向工程师&lt;/li&gt;
+&lt;li&gt;需要分析连续事件序列的人（如日志分析、活跃度计算）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;背景--动机为什么这题值得写一篇博客&#34;&gt;&lt;strong&gt;背景 / 动机：为什么这题值得写一篇博客？&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;很多人刷到这题，会以为它只是简单的数学推导：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;连续 1 的长度是 n
+贡献子串数 = n(n+1)/2&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;但实际上：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;连续事件统计是工程中极为常见的子任务&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;日志监控、网络请求分析、图像处理、用户活跃度等都依赖它&lt;/li&gt;
+&lt;li&gt;算法题是简化后的版本，工程中往往是流式数据、实时分析&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，把算法题的思想提炼出来，能直接提升工程能力。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;核心概念&#34;&gt;&lt;strong&gt;核心概念&lt;/strong&gt;&lt;/h2&gt;
+&lt;h3 id=&#34;1-连续段run&#34;&gt;&lt;strong&gt;1. 连续段（Run）&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;在一个 0/1 序列中，连续的 1 或 0 构成一个 &amp;ldquo;run&amp;rdquo;。&lt;/p&gt;
+&lt;p&gt;例：&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;11100111
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;有两个长度为 3 和 3 的 1-run。&lt;/p&gt;
+&lt;h3 id=&#34;2-子串贡献公式&#34;&gt;&lt;strong&gt;2. 子串贡献公式&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;连续 1 长度 = n
+所有只含 1 的子串数：&lt;/p&gt;
+&lt;p&gt;[
+1 + 2 + &amp;hellip; + n = \frac{n(n+1)}{2}
+]&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

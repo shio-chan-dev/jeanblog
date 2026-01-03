@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程 | Jeanphilo Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程
+
+副标题： 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别
+阅读时长： 7 分钟
+标签： 网络排查、SSH、VNC、Linux、远程连接
+SEO 关键词： SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC
+
+
+🎯 目标读者
+
+Linux 使用者、开发者、服务器维护人员
+想学习网络排错思路的中级工程师
+对 SSH/VNC 协议机制有兴趣的读者
+
+
+💡 背景与动机
+你是否遇到过这样的情况：
+
+“服务器能 ping 通，但 SSH 连不上？”
+
+这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。
+本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。
+
+🔍 问题现象
+执行命令：
+ssh chenhm@101.6.142.82 -p 5905
+输出：
+kex_exchange_identification: Connection closed by remote host
+Connection closed by 101.6.142.82 port 5905
+尝试 ping：
+ping 101.6.142.82
+能通，没有丢包。
+于是我们知道：">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/en/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程">
+  <meta property="og:description" content="为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程 副标题： 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别 阅读时长： 7 分钟 标签： 网络排查、SSH、VNC、Linux、远程连接 SEO 关键词： SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC
+🎯 目标读者 Linux 使用者、开发者、服务器维护人员 想学习网络排错思路的中级工程师 对 SSH/VNC 协议机制有兴趣的读者 💡 背景与动机 你是否遇到过这样的情况：
+“服务器能 ping 通，但 SSH 连不上？”
+这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。 本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。
+🔍 问题现象 执行命令：
+ssh chenhm@101.6.142.82 -p 5905 输出：
+kex_exchange_identification: Connection closed by remote host Connection closed by 101.6.142.82 port 5905 尝试 ping：
+ping 101.6.142.82 能通，没有丢包。
+于是我们知道：">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="linux">
+    <meta property="article:published_time" content="2025-10-24T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-10-24T00:00:00+00:00">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程">
+<meta name="twitter:description" content="为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程
+
+副标题： 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别
+阅读时长： 7 分钟
+标签： 网络排查、SSH、VNC、Linux、远程连接
+SEO 关键词： SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC
+
+
+🎯 目标读者
+
+Linux 使用者、开发者、服务器维护人员
+想学习网络排错思路的中级工程师
+对 SSH/VNC 协议机制有兴趣的读者
+
+
+💡 背景与动机
+你是否遇到过这样的情况：
+
+“服务器能 ping 通，但 SSH 连不上？”
+
+这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。
+本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。
+
+🔍 问题现象
+执行命令：
+ssh chenhm@101.6.142.82 -p 5905
+输出：
+kex_exchange_identification: Connection closed by remote host
+Connection closed by 101.6.142.82 port 5905
+尝试 ping：
+ping 101.6.142.82
+能通，没有丢包。
+于是我们知道：">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "Linux",
+      "item": "http://localhost:1313/linux/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Linux",
+      "item": "http://localhost:1313/linux/linux/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程",
+      "item": "http://localhost:1313/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程",
+  "name": "为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程",
+  "description": "为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程 副标题： 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别 阅读时长： 7 分钟 标签： 网络排查、SSH、VNC、Linux、远程连接 SEO 关键词： SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC\n🎯 目标读者 Linux 使用者、开发者、服务器维护人员 想学习网络排错思路的中级工程师 对 SSH/VNC 协议机制有兴趣的读者 💡 背景与动机 你是否遇到过这样的情况：\n“服务器能 ping 通，但 SSH 连不上？”\n这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。 本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。\n🔍 问题现象 执行命令：\nssh chenhm@101.6.142.82 -p 5905 输出：\nkex_exchange_identification: Connection closed by remote host Connection closed by 101.6.142.82 port 5905 尝试 ping：\nping 101.6.142.82 能通，没有丢包。\n于是我们知道：\n",
+  "keywords": [
+    
+  ],
+  "articleBody": "为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程 副标题： 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别 阅读时长： 7 分钟 标签： 网络排查、SSH、VNC、Linux、远程连接 SEO 关键词： SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC\n🎯 目标读者 Linux 使用者、开发者、服务器维护人员 想学习网络排错思路的中级工程师 对 SSH/VNC 协议机制有兴趣的读者 💡 背景与动机 你是否遇到过这样的情况：\n“服务器能 ping 通，但 SSH 连不上？”\n这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。 本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。\n🔍 问题现象 执行命令：\nssh chenhm@101.6.142.82 -p 5905 输出：\nkex_exchange_identification: Connection closed by remote host Connection closed by 101.6.142.82 port 5905 尝试 ping：\nping 101.6.142.82 能通，没有丢包。\n于是我们知道：\n主机在线； 网络连通； 但 SSH 握手阶段失败。 🧠 核心概念解析 概念 解释 Ping 使用 ICMP 协议，只测试网络连通性。 TCP 传输层协议，负责建立连接（如三次握手）。 SSH 应用层协议，基于 TCP 提供加密远程登录。 VNC / RFB 图形远程桌面协议（Remote Frame Buffer）。 换句话说：Ping 通 ≠ SSH 通，因为它们运行在不同协议层。\n⚙️ 实践排查步骤 Step 1. 测试 TCP 是否连通 telnet 101.6.142.82 5905 输出：\nTrying 101.6.142.82... Connected to 101.6.142.82. Escape character is '^]'. RFB 003.008 🚨 关键线索： RFB 003.008 是 VNC 协议的握手字符串（Remote Frame Buffer version 3.8）。\n这说明：\n5905 端口确实开放； 但运行的是 VNC 服务，而不是 SSH。 🧩 原理解释 SSH 客户端在 TCP 层连上后，会发出加密握手请求（SSH-2.0-OpenSSH_8.x）。 而 VNC 服务器在相同阶段返回 RFB 003.008。 协议不匹配 → SSH 客户端直接关闭连接。\n这正是 kex_exchange_identification 错误的本质原因。\n🧰 验证与确认 1️⃣ 查看端口服务\nsudo ss -tlnp | grep 5905 可能输出：\nLISTEN 0 5 0.0.0.0:5905 ... /usr/bin/Xvnc 说明该端口属于 VNC 服务。\n2️⃣ 查看 SSH 监听端口\nsudo grep ^Port /etc/ssh/sshd_config 如果返回 Port 22，那 SSH 仍在默认端口。\n🧭 正确的连接方式 ✅ 若你想连接图形界面 使用 VNC 客户端：\nvncviewer 101.6.142.82:5905 或使用工具：\nRealVNC TigerVNC TightVNC ✅ 若你想连接终端 使用 SSH（默认端口）：\nssh chenhm@101.6.142.82 -p 22 🛠️ 常见问题与注意事项 问题 可能原因 解决方式 Connection closed by remote host 协议不匹配（SSH→VNC） 使用正确协议连接 SSH 无法连接任何端口 SSH 服务未启动 sudo systemctl start sshd VNC 连接拒绝 防火墙未放行端口 firewall-cmd --add-port=5905/tcp --permanent SSH 被断开 fail2ban 封禁 检查 /var/log/auth.log 🧩 最佳实践与建议 区分端口与协议：仅凭端口号不能判断服务类型。\n使用 telnet / nc 探测协议标识，是快速判断服务类型的技巧。\n养成查看日志的习惯：journalctl -u ssh、/var/log/auth.log。\n为多服务主机设置清晰端口规划，例如：\nSSH → 22 VNC → 5900+ HTTP → 80/8080 HTTPS → 443 🧾 小结 本文通过一个“能 ping 通但 ssh 不通”的案例，展示了：\n如何区分网络层、传输层与应用层问题； 如何识别协议（RFB vs SSH）； 如何快速定位真正运行的服务。 一句话总结： 不是 SSH 坏了，而是你连错了服务。\n🔗 参考与延伸阅读 OpenSSH 官方文档 TigerVNC GitHub [Linux man pages: ssh, telnet, ss, netstat] RFC 6143: The Remote Framebuffer Protocol (RFB) 🚀 行动号召 👉 试试看！ 在你自己的服务器上运行：\nnc 看看它返回什么协议头，也许你会发现更多“隐藏服务”。\n💬 有趣的网络排查案例？ 欢迎在评论区分享你的故事或问题。\n",
+  "wordCount" : "318",
+  "inLanguage": "zh",
+  "datePublished": "2025-10-24T00:00:00Z",
+  "dateModified": "2025-10-24T00:00:00Z",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/en/" title="English"
+                                aria-label="English">En</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="文章归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/dev/" title="开发">
+                    <span>开发</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/alg/" title="算法">
+                    <span>算法</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>标签</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/linux/">Linux</a>&nbsp;»&nbsp;<a href="http://localhost:1313/linux/linux/">Linux</a></div>
+    <h1 class="post-title entry-hint-parent">
+      为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程
+    </h1>
+    <div class="post-meta"><span title='2025-10-24 00:00:00 +0000 UTC'>2025年10月24日</span>&nbsp;·&nbsp;<span>2 分钟</span>&nbsp;|&nbsp;<span>语言:</span>
+<ul class="i18n_list">
+    <li>
+        <a href="http://localhost:1313/en/linux/linux/ping-works-ssh-fails-fake-ssh-true-vnc/">En</a>
+    </li>
+</ul>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%83%bd-ping-%e9%80%9a%e5%8d%b4-ssh-%e4%b8%8d%e9%80%9a%e4%b8%80%e6%ac%a1%e5%81%87-ssh-%e7%9c%9f-vnc-%e7%9a%84%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b" aria-label="为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程">为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程</a><ul>
+                        
+                <li>
+                    <a href="#-%e7%9b%ae%e6%a0%87%e8%af%bb%e8%80%85" aria-label="🎯 目标读者">🎯 目标读者</a></li>
+                <li>
+                    <a href="#-%e8%83%8c%e6%99%af%e4%b8%8e%e5%8a%a8%e6%9c%ba" aria-label="💡 背景与动机">💡 背景与动机</a></li>
+                <li>
+                    <a href="#-%e9%97%ae%e9%a2%98%e7%8e%b0%e8%b1%a1" aria-label="🔍 问题现象">🔍 问题现象</a></li>
+                <li>
+                    <a href="#-%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5%e8%a7%a3%e6%9e%90" aria-label="🧠 核心概念解析">🧠 核心概念解析</a></li>
+                <li>
+                    <a href="#-%e5%ae%9e%e8%b7%b5%e6%8e%92%e6%9f%a5%e6%ad%a5%e9%aa%a4" aria-label="⚙️ 实践排查步骤">⚙️ 实践排查步骤</a><ul>
+                        
+                <li>
+                    <a href="#step-1-%e6%b5%8b%e8%af%95-tcp-%e6%98%af%e5%90%a6%e8%bf%9e%e9%80%9a" aria-label="Step 1. 测试 TCP 是否连通">Step 1. 测试 TCP 是否连通</a></li></ul>
+                </li>
+                <li>
+                    <a href="#-%e5%8e%9f%e7%90%86%e8%a7%a3%e9%87%8a" aria-label="🧩 原理解释">🧩 原理解释</a></li>
+                <li>
+                    <a href="#-%e9%aa%8c%e8%af%81%e4%b8%8e%e7%a1%ae%e8%ae%a4" aria-label="🧰 验证与确认">🧰 验证与确认</a></li>
+                <li>
+                    <a href="#-%e6%ad%a3%e7%a1%ae%e7%9a%84%e8%bf%9e%e6%8e%a5%e6%96%b9%e5%bc%8f" aria-label="🧭 正确的连接方式">🧭 正确的连接方式</a><ul>
+                        
+                <li>
+                    <a href="#-%e8%8b%a5%e4%bd%a0%e6%83%b3%e8%bf%9e%e6%8e%a5%e5%9b%be%e5%bd%a2%e7%95%8c%e9%9d%a2" aria-label="✅ 若你想连接图形界面">✅ 若你想连接图形界面</a></li>
+                <li>
+                    <a href="#-%e8%8b%a5%e4%bd%a0%e6%83%b3%e8%bf%9e%e6%8e%a5%e7%bb%88%e7%ab%af" aria-label="✅ 若你想连接终端">✅ 若你想连接终端</a></li></ul>
+                </li>
+                <li>
+                    <a href="#-%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="🛠️ 常见问题与注意事项">🛠️ 常见问题与注意事项</a></li>
+                <li>
+                    <a href="#-%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e4%b8%8e%e5%bb%ba%e8%ae%ae" aria-label="🧩 最佳实践与建议">🧩 最佳实践与建议</a></li>
+                <li>
+                    <a href="#-%e5%b0%8f%e7%bb%93" aria-label="🧾 小结">🧾 小结</a></li>
+                <li>
+                    <a href="#-%e5%8f%82%e8%80%83%e4%b8%8e%e5%bb%b6%e4%bc%b8%e9%98%85%e8%af%bb" aria-label="🔗 参考与延伸阅读">🔗 参考与延伸阅读</a></li>
+                <li>
+                    <a href="#-%e8%a1%8c%e5%8a%a8%e5%8f%b7%e5%8f%ac" aria-label="🚀 行动号召">🚀 行动号召</a>
+                </li>
+            </ul>
+            </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><h1 id="为什么能-ping-通却-ssh-不通一次假-ssh-真-vnc-的排查过程"><strong>为什么能 Ping 通却 SSH 不通？一次“假 SSH 真 VNC” 的排查过程</strong><a hidden class="anchor" aria-hidden="true" href="#为什么能-ping-通却-ssh-不通一次假-ssh-真-vnc-的排查过程">#</a></h1>
+<blockquote>
+<p><strong>副标题：</strong> 从连接被拒到协议识别，带你彻底理解 TCP、SSH 与 VNC 的区别
+<strong>阅读时长：</strong> 7 分钟
+<strong>标签：</strong> 网络排查、SSH、VNC、Linux、远程连接
+<strong>SEO 关键词：</strong> SSH连接失败、kex_exchange_identification、VNC端口5905、RFB 003.008、SSH vs VNC</p>
+</blockquote>
+<hr>
+<h2 id="-目标读者">🎯 目标读者<a hidden class="anchor" aria-hidden="true" href="#-目标读者">#</a></h2>
+<ul>
+<li>Linux 使用者、开发者、服务器维护人员</li>
+<li>想学习网络排错思路的中级工程师</li>
+<li>对 SSH/VNC 协议机制有兴趣的读者</li>
+</ul>
+<hr>
+<h2 id="-背景与动机">💡 背景与动机<a hidden class="anchor" aria-hidden="true" href="#-背景与动机">#</a></h2>
+<p>你是否遇到过这样的情况：</p>
+<blockquote>
+<p>“服务器能 ping 通，但 SSH 连不上？”</p>
+</blockquote>
+<p>这类问题很常见，尤其是在多服务（SSH、VNC、HTTP）混跑的远程主机上。
+本文通过一次真实案例，展示从“SSH 连接失败”到“发现端口跑的是 VNC”的完整分析过程。</p>
+<hr>
+<h2 id="-问题现象">🔍 问题现象<a hidden class="anchor" aria-hidden="true" href="#-问题现象">#</a></h2>
+<p>执行命令：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh chenhm@101.6.142.82 -p <span style="color:#ae81ff">5905</span>
+</span></span></code></pre></div><p>输出：</p>
+<pre tabindex="0"><code>kex_exchange_identification: Connection closed by remote host
+Connection closed by 101.6.142.82 port 5905
+</code></pre><p>尝试 <code>ping</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ping 101.6.142.82
+</span></span></code></pre></div><p>能通，没有丢包。</p>
+<p>于是我们知道：</p>
+<ul>
+<li>主机在线；</li>
+<li>网络连通；</li>
+<li>但 SSH 握手阶段失败。</li>
+</ul>
+<hr>
+<h2 id="-核心概念解析">🧠 核心概念解析<a hidden class="anchor" aria-hidden="true" href="#-核心概念解析">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>概念</th>
+          <th>解释</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><strong>Ping</strong></td>
+          <td>使用 ICMP 协议，只测试网络连通性。</td>
+      </tr>
+      <tr>
+          <td><strong>TCP</strong></td>
+          <td>传输层协议，负责建立连接（如三次握手）。</td>
+      </tr>
+      <tr>
+          <td><strong>SSH</strong></td>
+          <td>应用层协议，基于 TCP 提供加密远程登录。</td>
+      </tr>
+      <tr>
+          <td><strong>VNC / RFB</strong></td>
+          <td>图形远程桌面协议（Remote Frame Buffer）。</td>
+      </tr>
+  </tbody>
+</table>
+<p>换句话说：<strong>Ping 通 ≠ SSH 通</strong>，因为它们运行在不同协议层。</p>
+<hr>
+<h2 id="-实践排查步骤">⚙️ 实践排查步骤<a hidden class="anchor" aria-hidden="true" href="#-实践排查步骤">#</a></h2>
+<h3 id="step-1-测试-tcp-是否连通">Step 1. 测试 TCP 是否连通<a hidden class="anchor" aria-hidden="true" href="#step-1-测试-tcp-是否连通">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>telnet 101.6.142.82 <span style="color:#ae81ff">5905</span>
+</span></span></code></pre></div><p>输出：</p>
+<pre tabindex="0"><code>Trying 101.6.142.82...
+Connected to 101.6.142.82.
+Escape character is &#39;^]&#39;.
+RFB 003.008
+</code></pre><p>🚨 <strong>关键线索</strong>：
+<code>RFB 003.008</code> 是 <strong>VNC 协议的握手字符串</strong>（Remote Frame Buffer version 3.8）。</p>
+<p>这说明：</p>
+<ul>
+<li>5905 端口确实开放；</li>
+<li>但运行的是 <strong>VNC 服务</strong>，而不是 SSH。</li>
+</ul>
+<hr>
+<h2 id="-原理解释">🧩 原理解释<a hidden class="anchor" aria-hidden="true" href="#-原理解释">#</a></h2>
+<p>SSH 客户端在 TCP 层连上后，会发出加密握手请求（<code>SSH-2.0-OpenSSH_8.x</code>）。
+而 VNC 服务器在相同阶段返回 <code>RFB 003.008</code>。
+协议不匹配 → SSH 客户端直接关闭连接。</p>
+<p>这正是 <code>kex_exchange_identification</code> 错误的本质原因。</p>
+<hr>
+<h2 id="-验证与确认">🧰 验证与确认<a hidden class="anchor" aria-hidden="true" href="#-验证与确认">#</a></h2>
+<p>1️⃣ <strong>查看端口服务</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ss -tlnp | grep <span style="color:#ae81ff">5905</span>
+</span></span></code></pre></div><p>可能输出：</p>
+<pre tabindex="0"><code>LISTEN  0  5  0.0.0.0:5905  ...  /usr/bin/Xvnc
+</code></pre><p>说明该端口属于 VNC 服务。</p>
+<p>2️⃣ <strong>查看 SSH 监听端口</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo grep ^Port /etc/ssh/sshd_config
+</span></span></code></pre></div><p>如果返回 <code>Port 22</code>，那 SSH 仍在默认端口。</p>
+<hr>
+<h2 id="-正确的连接方式">🧭 正确的连接方式<a hidden class="anchor" aria-hidden="true" href="#-正确的连接方式">#</a></h2>
+<h3 id="-若你想连接图形界面">✅ 若你想连接图形界面<a hidden class="anchor" aria-hidden="true" href="#-若你想连接图形界面">#</a></h3>
+<p>使用 VNC 客户端：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>vncviewer 101.6.142.82:5905
+</span></span></code></pre></div><p>或使用工具：</p>
+<ul>
+<li>RealVNC</li>
+<li>TigerVNC</li>
+<li>TightVNC</li>
+</ul>
+<h3 id="-若你想连接终端">✅ 若你想连接终端<a hidden class="anchor" aria-hidden="true" href="#-若你想连接终端">#</a></h3>
+<p>使用 SSH（默认端口）：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ssh chenhm@101.6.142.82 -p <span style="color:#ae81ff">22</span>
+</span></span></code></pre></div><hr>
+<h2 id="-常见问题与注意事项">🛠️ 常见问题与注意事项<a hidden class="anchor" aria-hidden="true" href="#-常见问题与注意事项">#</a></h2>
+<table>
+  <thead>
+      <tr>
+          <th>问题</th>
+          <th>可能原因</th>
+          <th>解决方式</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>Connection closed by remote host</code></td>
+          <td>协议不匹配（SSH→VNC）</td>
+          <td>使用正确协议连接</td>
+      </tr>
+      <tr>
+          <td>SSH 无法连接任何端口</td>
+          <td>SSH 服务未启动</td>
+          <td><code>sudo systemctl start sshd</code></td>
+      </tr>
+      <tr>
+          <td>VNC 连接拒绝</td>
+          <td>防火墙未放行端口</td>
+          <td><code>firewall-cmd --add-port=5905/tcp --permanent</code></td>
+      </tr>
+      <tr>
+          <td>SSH 被断开</td>
+          <td>fail2ban 封禁</td>
+          <td>检查 <code>/var/log/auth.log</code></td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="-最佳实践与建议">🧩 最佳实践与建议<a hidden class="anchor" aria-hidden="true" href="#-最佳实践与建议">#</a></h2>
+<ul>
+<li>
+<p><strong>区分端口与协议</strong>：仅凭端口号不能判断服务类型。</p>
+</li>
+<li>
+<p><strong>使用 <code>telnet</code> / <code>nc</code> 探测协议标识</strong>，是快速判断服务类型的技巧。</p>
+</li>
+<li>
+<p><strong>养成查看日志的习惯</strong>：<code>journalctl -u ssh</code>、<code>/var/log/auth.log</code>。</p>
+</li>
+<li>
+<p><strong>为多服务主机设置清晰端口规划</strong>，例如：</p>
+<pre tabindex="0"><code>SSH → 22
+VNC → 5900+
+HTTP → 80/8080
+HTTPS → 443
+</code></pre></li>
+</ul>
+<hr>
+<h2 id="-小结">🧾 小结<a hidden class="anchor" aria-hidden="true" href="#-小结">#</a></h2>
+<p>本文通过一个“能 ping 通但 ssh 不通”的案例，展示了：</p>
+<ol>
+<li>如何区分网络层、传输层与应用层问题；</li>
+<li>如何识别协议（RFB vs SSH）；</li>
+<li>如何快速定位真正运行的服务。</li>
+</ol>
+<blockquote>
+<p>一句话总结：
+<strong>不是 SSH 坏了，而是你连错了服务。</strong></p>
+</blockquote>
+<hr>
+<h2 id="-参考与延伸阅读">🔗 参考与延伸阅读<a hidden class="anchor" aria-hidden="true" href="#-参考与延伸阅读">#</a></h2>
+<ul>
+<li><a href="https://www.openssh.com/manual.html">OpenSSH 官方文档</a></li>
+<li><a href="https://github.com/TigerVNC/tigervnc">TigerVNC GitHub</a></li>
+<li>[Linux man pages: ssh, telnet, ss, netstat]</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc6143">RFC 6143: The Remote Framebuffer Protocol (RFB)</a></li>
+</ul>
+<hr>
+<h2 id="-行动号召">🚀 行动号召<a hidden class="anchor" aria-hidden="true" href="#-行动号召">#</a></h2>
+<p>👉 <strong>试试看！</strong>
+在你自己的服务器上运行：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nc &lt;server_ip&gt; &lt;port&gt;
+</span></span></code></pre></div><p>看看它返回什么协议头，也许你会发现更多“隐藏服务”。</p>
+<p>💬 <strong>有趣的网络排查案例？</strong> 欢迎在评论区分享你的故事或问题。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程 on x"
+            href="https://x.com/intent/tweet/?text=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%8f%af%e4%bb%a5Ping%e9%80%9a%e5%8d%b4ssh%e4%b8%8d%e9%80%9a%3f%e4%b8%80%e6%ac%a1%e5%81%87ssh%e7%9c%9fvnc%e7%9a%84%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b&amp;url=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fping-works-ssh-fails-fake-ssh-true-vnc%2f&amp;hashtags=">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fping-works-ssh-fails-fake-ssh-true-vnc%2f&amp;title=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%8f%af%e4%bb%a5Ping%e9%80%9a%e5%8d%b4ssh%e4%b8%8d%e9%80%9a%3f%e4%b8%80%e6%ac%a1%e5%81%87ssh%e7%9c%9fvnc%e7%9a%84%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b&amp;summary=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%8f%af%e4%bb%a5Ping%e9%80%9a%e5%8d%b4ssh%e4%b8%8d%e9%80%9a%3f%e4%b8%80%e6%ac%a1%e5%81%87ssh%e7%9c%9fvnc%e7%9a%84%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b&amp;source=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fping-works-ssh-fails-fake-ssh-true-vnc%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fping-works-ssh-fails-fake-ssh-true-vnc%2f&title=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%8f%af%e4%bb%a5Ping%e9%80%9a%e5%8d%b4ssh%e4%b8%8d%e9%80%9a%3f%e4%b8%80%e6%ac%a1%e5%81%87ssh%e7%9c%9fvnc%e7%9a%84%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fping-works-ssh-fails-fake-ssh-true-vnc%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%8f%af%e4%bb%a5Ping%e9%80%9a%e5%8d%b4ssh%e4%b8%8d%e9%80%9a%3f%e4%b8%80%e6%ac%a1%e5%81%87ssh%e7%9c%9fvnc%e7%9a%84%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b%20-%20http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fping-works-ssh-fails-fake-ssh-true-vnc%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程 on telegram"
+            href="https://telegram.me/share/url?text=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%8f%af%e4%bb%a5Ping%e9%80%9a%e5%8d%b4ssh%e4%b8%8d%e9%80%9a%3f%e4%b8%80%e6%ac%a1%e5%81%87ssh%e7%9c%9fvnc%e7%9a%84%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b&amp;url=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fping-works-ssh-fails-fake-ssh-true-vnc%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 为什么可以Ping通却ssh不通?一次假ssh真vnc的排查过程 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e4%b8%ba%e4%bb%80%e4%b9%88%e5%8f%af%e4%bb%a5Ping%e9%80%9a%e5%8d%b4ssh%e4%b8%8d%e9%80%9a%3f%e4%b8%80%e6%ac%a1%e5%81%87ssh%e7%9c%9fvnc%e7%9a%84%e6%8e%92%e6%9f%a5%e8%bf%87%e7%a8%8b&u=http%3a%2f%2flocalhost%3a1313%2flinux%2flinux%2fping-works-ssh-fails-fake-ssh-true-vnc%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

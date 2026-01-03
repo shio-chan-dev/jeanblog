@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Merge-Sort on Jeanphilo Blog</title>
+    <link>http://localhost:1313/en/tags/merge-sort/</link>
+    <description>Recent content in Merge-Sort on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 04 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/tags/merge-sort/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Sorting Series (4): Merge Sort - Stable Divide and Conquer and External Sorting</title>
+      <link>http://localhost:1313/en/alg/leetcode/4.sorting-series-merge-sort/</link>
+      <pubDate>Thu, 04 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/alg/leetcode/4.sorting-series-merge-sort/</guid>
+      <description>Systematic explanation of merge sort principles, stability, space trade-offs, and engineering scenarios with Python/C/C++/Go/Rust/JS implementations and external sorting guidance.</description>
+    </item>
+  </channel>
+</rss>

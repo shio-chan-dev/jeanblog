@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto" data-theme="auto">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和 | Jeanphilo Blog</title>
+<meta name="keywords" content="几乎唯一子数组, 滑动窗口, distinct elements, 子数组最大和, 算法题解析">
+<meta name="description" content="给定整数数组 nums 和正整数 m、k，要求在所有长度为 k、且至少包含 m 个不同元素的子数组中，找到最大和；若不存在返回 0。本文用滑动窗口 &#43; 计数哈希表推导 O(n) 解法，并提供多语言实现与工程应用示例。">
+<meta name="author" content="">
+<link rel="canonical" href="http://localhost:1313/alg/leetcode/almost-unique-subarray-max-sum/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.343cc480b9ffc8f04ccbe5e968ad674880cab773ec19905e93033065c1e7a804.css" integrity="sha256-NDzEgLn/yPBMy&#43;XpaK1nSIDKt3PsGZBekwMwZcHnqAQ=" rel="preload stylesheet" as="style">
+<link rel="icon" href="http://localhost:1313/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="http://localhost:1313/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="http://localhost:1313/favicon-32x32.png">
+<link rel="apple-touch-icon" href="http://localhost:1313/apple-touch-icon.png">
+<link rel="mask-icon" href="http://localhost:1313/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" hreflang="zh" href="http://localhost:1313/alg/leetcode/almost-unique-subarray-max-sum/">
+<link rel="alternate" hreflang="en" href="http://localhost:1313/en/alg/leetcode/almost-unique-subarray-max-sum/">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --code-block-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+                color-scheme: dark;
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .toc {
+                background: var(--entry);
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .list::-webkit-scrollbar-thumb {
+                border-color: var(--code-bg);
+            }
+        }
+
+    </style>
+</noscript>
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else if (localStorage.getItem("pref-theme") === "light") {
+       document.querySelector("html").dataset.theme = 'light';
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.querySelector("html").dataset.theme = 'dark';
+    } else {
+        document.querySelector("html").dataset.theme = 'light';
+    }
+
+</script><meta property="og:url" content="http://localhost:1313/alg/leetcode/almost-unique-subarray-max-sum/">
+  <meta property="og:site_name" content="Jeanphilo Blog">
+  <meta property="og:title" content="固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和">
+  <meta property="og:description" content="给定整数数组 nums 和正整数 m、k，要求在所有长度为 k、且至少包含 m 个不同元素的子数组中，找到最大和；若不存在返回 0。本文用滑动窗口 &#43; 计数哈希表推导 O(n) 解法，并提供多语言实现与工程应用示例。">
+  <meta property="og:locale" content="zh-cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="alg">
+    <meta property="article:published_time" content="2025-12-04T10:40:00+08:00">
+    <meta property="article:modified_time" content="2025-12-04T10:40:00+08:00">
+    <meta property="article:tag" content="滑动窗口">
+    <meta property="article:tag" content="哈希表">
+    <meta property="article:tag" content="数组">
+    <meta property="article:tag" content="双指针">
+    <meta property="article:tag" content="面试高频题">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和">
+<meta name="twitter:description" content="给定整数数组 nums 和正整数 m、k，要求在所有长度为 k、且至少包含 m 个不同元素的子数组中，找到最大和；若不存在返回 0。本文用滑动窗口 &#43; 计数哈希表推导 O(n) 解法，并提供多语言实现与工程应用示例。">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position":  1 ,
+      "name": "算法",
+      "item": "http://localhost:1313/alg/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "leetcode",
+      "item": "http://localhost:1313/alg/leetcode/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "固定长度子数组 + 至少 m 个不同元素：几乎唯一子数组的最大和",
+      "item": "http://localhost:1313/alg/leetcode/almost-unique-subarray-max-sum/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "固定长度子数组 + 至少 m 个不同元素：几乎唯一子数组的最大和",
+  "name": "固定长度子数组 \u002b 至少 m 个不同元素：几乎唯一子数组的最大和",
+  "description": "给定整数数组 nums 和正整数 m、k，要求在所有长度为 k、且至少包含 m 个不同元素的子数组中，找到最大和；若不存在返回 0。本文用滑动窗口 + 计数哈希表推导 O(n) 解法，并提供多语言实现与工程应用示例。",
+  "keywords": [
+    "几乎唯一子数组", "滑动窗口", "distinct elements", "子数组最大和", "算法题解析"
+  ],
+  "articleBody": " 副标题 / 摘要\n一道看似麻烦的子数组题：长度必须固定为 k，元素种类又要至少 m 个，还要在满足约束下让子数组和最大。本文通过「固定窗口滑动 + 计数哈希表」，构造 O(n) 级别的简洁算法，并给出多语言实现与工程实践案例。\n预计阅读时长：12~15 分钟 适用场景标签：滑动窗口进阶、distinct 计数、子数组最大和 SEO 关键词：almost unique subarray, at least m distinct, sliding window, subarray max sum 目标读者与背景 目标读者\n已经掌握基础滑动窗口（如「最长无重复子串」）的刷题同学 后端 / 数据分析工程师，需要在数组或数据流上做实时统计 准备中高级面试，希望写出更工程化解法的开发者 问题背景 / 动机\n许多业务都有类似需求：\n推荐系统：固定长度的推荐位里，既要保证足够多的不同品类，又希望整体评分尽量高； 监控系统：在最近的固定时间窗口里，要求至少有 m 个不同指标处于活跃状态； 行为分析：在 k 次连续行为中，至少访问 m 个不同页面，且总价值最大。 本题正是这类需求的抽象版，非常适合用来练习滑动窗口 + 计数哈希表的组合技。\nA — Algorithm（题目与算法） 题目重述 给定整数数组 nums，正整数 m 和 k。\n如果一个长度为 k 的子数组中至少包含 m 个不同的元素，则称其为“几乎唯一子数组（almost unique subarray）”。\n请在所有几乎唯一子数组中，找到元素和的最大值；如果不存在这样的子数组，则返回 0。\n输入\nnums: 整数数组，长度为 n m: 至少需要包含的不同元素数量 k: 子数组长度，1 ≤ k ≤ n 输出\n整数：所有符合条件的子数组的最大和，若不存在则为 0 示例 1 nums = [1, 2, 1, 2, 3] m = 2 k = 3 所有长度为 3 的子数组为：\n[1, 2, 1]，不同元素集合 {1, 2}，个数 2 ≥ m=2，和为 4 [2, 1, 2]，不同元素 {1, 2}，个数 2 ≥ 2，和为 5 [1, 2, 3]，不同元素 {1, 2, 3}，个数 3 ≥ 2，和为 6 所有满足条件的子数组中，最大和为 6。\n输出：6\n示例 2 nums = [5, 5, 5, 5] m = 2 k = 2 所有长度为 2 的子数组：\n[5, 5], [5, 5], [5, 5]\n不同元素集合都是 {5}，只有 1 个元素 \u003c m=2，不满足条件。 不存在几乎唯一子数组，因此：\n输出：0\nC — Concepts（核心思想） 核心思想：固定窗口滑动 + 哈希表计数 把题目拆解一下：\n子数组长度必须是 固定的 k； 子数组中不同的元素个数必须 至少为 m； 在所有满足条件的窗口中，选和最大的。 这三个条件分别对应：\n固定长度窗口 → 固定长度滑动窗口（fixed-size sliding window）； 不同元素个数 → 窗口内去重计数，适合用哈希表 / 计数器； 最大和 → 维护一个滑动的窗口和（sum）。 维护的三个核心状态 在窗口滑动过程中，需要维护：\nwindow_sum：当前窗口内所有元素的总和； cnt[x]：当前窗口内，元素 x 出现的次数； distinct：当前窗口内 不同元素的个数，也就是满足 cnt[x] \u003e 0 的元素数。 窗口每向右移动 1 个元素（下标 i）时：\n把 nums[i] 加入窗口： window_sum += nums[i] cnt[nums[i]]++ 若 cnt[nums[i]] 从 0 变到 1，则 distinct++ 如果当前窗口长度超过 k： 移除左端元素 nums[i-k]： window_sum -= nums[i-k] cnt[nums[i-k]]-- 若 cnt[nums[i-k]] 从 1 变到 0，则 distinct-- 当 i \u003e= k-1 时，窗口长度已经是 k： 若 distinct \u003e= m，则用 window_sum 更新答案。 算法类型 方法：滑动窗口 + 哈希表计数 窗口类型：固定长度 k 特点：一次遍历，同时维护「和」与「不同元素个数」两个指标 实践指南 / 步骤 可以按以下步骤从 0 到 1 实现该算法：\n初始化窗口状态\nwindow_sum = 0 distinct = 0 空哈希表 cnt 答案 ans = 0 从左到右遍历数组\n每次把 nums[i] 纳入窗口： 更新 window_sum 和 cnt 如果这个数是第一次出现，则 distinct++ 按需收缩窗口\n当 i \u003e= k 时，窗口中元素个数为 k+1，超出 1 个： 移除左端 nums[i-k] 对应更新 window_sum、cnt 和 distinct 检查是否符合“几乎唯一子数组”条件\n当 i \u003e= k-1（窗口长度刚好为 k）且 distinct \u003e= m 时： 使用 window_sum 更新 ans 返回结果\n遍历结束后，若从未满足条件则 ans 仍为 0，直接返回 整个过程只需一次线性扫描，时间 O(n)，空间则来自哈希表中存储的不同元素数量。\nE — Engineering（工程应用） 下面给三个贴近实际的场景，分别使用 Python、Go、JavaScript 代码示例。\n场景 1：推荐系统中的“多样性约束窗口评分”（Python） 背景\n推荐系统往往希望在固定长度的推荐位中：\n覆盖足够多的品类（多样性，多样性差会导致用户疲劳）； 同时保证内容质量（总得分尽可能高）。 可以把：\n每个位置的推荐内容评分（或 CTR 预估）当作 nums[i]； 不同内容品类 ID 当作 nums[i] 的另一维属性（这里简化为直接用值区别）； k 为推荐位长度，m 为至少要覆盖的不同品类数。 为何适用\n需要在固定长度窗口中同时考虑：\n不同元素数量（多样性）； 总和（质量）。 正好就是这道题的抽象。\n示例代码\nfrom collections import defaultdict from typing import List def max_sum_almost_unique(nums: List[int], m: int, k: int) -\u003e int: n = len(nums) if k \u003e n: return 0 cnt = defaultdict(int) distinct = 0 window_sum = 0 ans = 0 for i, x in enumerate(nums): window_sum += x if cnt[x] == 0: distinct += 1 cnt[x] += 1 if i \u003e= k: y = nums[i - k] window_sum -= y cnt[y] -= 1 if cnt[y] == 0: distinct -= 1 if i \u003e= k - 1 and distinct \u003e= m: ans = max(ans, window_sum) return ans if __name__ == \"__main__\": print(max_sum_almost_unique([1, 2, 1, 2, 3], 2, 3)) # 6 场景 2：监控 / APM 中的“多指标活跃窗口”（Go） 背景\n在监控系统中，你可能希望最近的 k 条样本中：\n至少有 m 个不同指标处于活跃状态（比如不同业务线、不同接口）； 并且这些样本的某种累积分值（如错误次数、延迟）尽可能大。 为什么适合用该算法\n样本是按时间顺序到达的 → 非常适合滑动窗口； 需要同时判断“指标多样性”与“数值总和” → 正好对应 distinct 和 window_sum。 示例代码（Go）\npackage main import \"fmt\" func maxSumAlmostUnique(nums []int, m, k int) int64 { n := len(nums) if k \u003e n { return 0 } cnt := make(map[int]int) distinct := 0 var windowSum int64 var ans int64 for i := 0; i \u003c n; i++ { x := nums[i] windowSum += int64(x) if cnt[x] == 0 { distinct++ } cnt[x]++ if i \u003e= k { y := nums[i-k] windowSum -= int64(y) cnt[y]-- if cnt[y] == 0 { distinct-- } } if i \u003e= k-1 \u0026\u0026 distinct \u003e= m { if windowSum \u003e ans { ans = windowSum } } } return ans } func main() { fmt.Println(maxSumAlmostUnique([]int{1, 2, 1, 2, 3}, 2, 3)) // 6 } 场景 3：前端行为分析中的“多样化点击序列”（JavaScript） 背景\n你在前端收集用户点击 ID 序列 nums，想分析：\n在任意长度为 k 的连续点击中，至少要点击过 m 个不同元素； 并希望在满足多样性的前提下，总“价值”最大（比如每次点击对应一个权重）。 这可以直接在前端运行的脚本中完成，辅助埋点分析或可视化。\nfunction maxSumAlmostUnique(nums, m, k) { if (k \u003e nums.length) return 0; const cnt = new Map(); let distinct = 0; let windowSum = 0; let ans = 0; for (let i = 0; i \u003c nums.length; i++) { const x = nums[i]; windowSum += x; if (!cnt.has(x) || cnt.get(x) === 0) distinct++; cnt.set(x, (cnt.get(x) || 0) + 1); if (i \u003e= k) { const y = nums[i - k]; windowSum -= y; cnt.set(y, cnt.get(y) - 1); if (cnt.get(y) === 0) distinct--; } if (i \u003e= k - 1 \u0026\u0026 distinct \u003e= m) { ans = Math.max(ans, windowSum); } } return ans; } console.log(maxSumAlmostUnique([1, 2, 1, 2, 3], 2, 3)); // 6 R — Reflection（反思与深入） 时间与空间复杂度 时间复杂度：O(n)\n每个元素最多进入和离开窗口各一次，哈希表操作均摊 O(1)。\n空间复杂度：O(U)\n其中 U 为窗口内可能出现的不同元素个数（哈希表大小）。\n在绝大多数场景下远小于 n。\n替代方案与常见错误 1. 暴力法（枚举所有子数组）\n对每个起点 i，构造子数组 nums[i..i+k-1]，用集合统计不同元素个数并求和； 每个窗口 O(k)，总窗口数 ~O(n) → 总复杂度 O(n·k)，大数据很容易超时。 2. 排序 + 双指针（错误思路）\n有人会尝试对每个窗口排序，再统计不同元素个数； 但排序会破坏子数组的「相对顺序 + 固定窗口位置」结构，且复杂度更高； 更严重的是：排序后就不是原窗口了，无法代表真实业务含义。 3. 只维护 distinct，不维护 sum\n有人会先筛出所有满足 distinct \u003e= m 的窗口，再在这些窗口上重新 O(k) 计算和； 这相当于退化回了 O(n·k)，失去了滑动窗口的优势。 当前方案的优势\n使用一个哈希表同时维护 distinct 与 window_sum，全程单次扫描； 数据结构简单，容易在工程中 debug 和监控； 模式可以直接迁移到更复杂的场景（引入权重、标签、黑白名单等）。 常见坑点与注意事项 窗口边界\n收缩条件：i \u003e= k 时，需要移除 nums[i-k] 判断窗口完整：i \u003e= k-1 时，窗口长度刚好为 k，才能参与答案比较。 distinct 更新顺序\n先更新计数，再判断是否从 0 变 1 或从 1 变 0； 避免顺序写错导致 distinct 统计不准。 m \u003e k 的情况\n这意味着在长度为 k 的窗口内不可能有 m 个不同元素，答案必然为 0； 代码中可提前返回，也可以让逻辑自然返回 0。 整数溢出（在 C / C++ / Go 中）\n如果 nums 元素较大，窗口和建议用 64 位整型（long long / int64）。 S — Summary（总结） 本题本质是在固定长度为 k 的窗口中，寻找「至少有 m 个不同元素」且「窗口和最大」的子数组。 使用固定长度滑动窗口可以保证只扫描数组一次，避免 O(n·k) 的重复计算。 哈希表计数 + 一个 distinct 变量即可精确维护窗口内的不同元素个数。 通过同时维护窗口和与 distinct，能在 O(1) 时间内判断窗口是否可行并更新答案。 该模式在推荐系统、监控系统、用户行为分析等工程场景中有天然的对应关系。 参考与延伸阅读 各类「at least / at most k distinct elements」数组 / 字符串题\n（例如 Longest Substring with At Most K Distinct Characters） LeetCode 904. Fruit Into Baskets（可变窗口 + 至多两种元素） LeetCode 159 / 340 等一系列「含至多 K 个不同字符的最长子串」问题 《算法导论》中关于哈希表与线性时间算法的章节 多语言完整实现（Python / C / C++ / Go / Rust / JS） 下面是多语言版本的完整实现，你可以根据自己主要使用的语言拷贝到相应项目中。\nPython 实现 from collections import defaultdict from typing import List def max_sum_almost_unique(nums: List[int], m: int, k: int) -\u003e int: n = len(nums) if k \u003e n: return 0 cnt = defaultdict(int) distinct = 0 window_sum = 0 ans = 0 for i, x in enumerate(nums): window_sum += x if cnt[x] == 0: distinct += 1 cnt[x] += 1 if i \u003e= k: y = nums[i - k] window_sum -= y cnt[y] -= 1 if cnt[y] == 0: distinct -= 1 if i \u003e= k - 1 and distinct \u003e= m: ans = max(ans, window_sum) return ans if __name__ == \"__main__\": print(max_sum_almost_unique([1, 2, 1, 2, 3], 2, 3)) # 6 C 实现（示例哈希表版） 说明：为了保持示例完整性，这里实现了一个简单的链地址哈希表。工程中建议直接使用成熟库或根据业务数据范围改成数组计数。\n#include #include typedef struct Node { int key; int val; struct Node *next; } Node; typedef struct { Node **buckets; int size; } HashMap; static unsigned int hash_int(int key, int size) { unsigned int x = (unsigned int)key; x ^= x \u003e\u003e 16; x *= 0x7feb352d; x ^= x \u003e\u003e 15; return x % size; } HashMap *hm_create(int size) { HashMap *hm = (HashMap *)malloc(sizeof(HashMap)); hm-\u003esize = size; hm-\u003ebuckets = (Node **)calloc(size, sizeof(Node *)); return hm; } int hm_get(HashMap *hm, int key) { unsigned int h = hash_int(key, hm-\u003esize); Node *cur = hm-\u003ebuckets[h]; while (cur) { if (cur-\u003ekey == key) return cur-\u003eval; cur = cur-\u003enext; } return 0; } void hm_add(HashMap *hm, int key, int delta) { unsigned int h = hash_int(key, hm-\u003esize); Node *cur = hm-\u003ebuckets[h]; while (cur) { if (cur-\u003ekey == key) { cur-\u003eval += delta; return; } cur = cur-\u003enext; } Node *node = (Node *)malloc(sizeof(Node)); node-\u003ekey = key; node-\u003eval = delta; node-\u003enext = hm-\u003ebuckets[h]; hm-\u003ebuckets[h] = node; } void hm_free(HashMap *hm) { for (int i = 0; i \u003c hm-\u003esize; ++i) { Node *cur = hm-\u003ebuckets[i]; while (cur) { Node *tmp = cur; cur = cur-\u003enext; free(tmp); } } free(hm-\u003ebuckets); free(hm); } long long maxSumAlmostUnique(int *nums, int n, int m, int k) { if (k \u003e n) return 0; HashMap *hm = hm_create(1024); int distinct = 0; long long windowSum = 0; long long ans = 0; for (int i = 0; i \u003c n; ++i) { int x = nums[i]; windowSum += x; int cx = hm_get(hm, x); if (cx == 0) distinct++; hm_add(hm, x, 1); if (i \u003e= k) { int y = nums[i - k]; windowSum -= y; int cy = hm_get(hm, y); hm_add(hm, y, -1); if (cy == 1) distinct--; } if (i \u003e= k - 1 \u0026\u0026 distinct \u003e= m \u0026\u0026 windowSum \u003e ans) { ans = windowSum; } } hm_free(hm); return ans; } int main(void) { int nums[] = {1, 2, 1, 2, 3}; int n = sizeof(nums) / sizeof(nums[0]); printf(\"%lld\\n\", maxSumAlmostUnique(nums, n, 2, 3)); // 6 return 0; } C++ 实现 #include using namespace std; long long maxSumAlmostUnique(const vector\u003cint\u003e \u0026nums, int m, int k) { int n = (int)nums.size(); if (k \u003e n) return 0; unordered_map\u003cint, int\u003e cnt; int distinct = 0; long long windowSum = 0; long long ans = 0; for (int i = 0; i \u003c n; ++i) { int x = nums[i]; windowSum += x; if (cnt[x] == 0) distinct++; cnt[x]++; if (i \u003e= k) { int y = nums[i - k]; windowSum -= y; cnt[y]--; if (cnt[y] == 0) distinct--; } if (i \u003e= k - 1 \u0026\u0026 distinct \u003e= m) { ans = max(ans, windowSum); } } return ans; } int main() { vector\u003cint\u003e nums{1, 2, 1, 2, 3}; cout \u003c\u003c maxSumAlmostUnique(nums, 2, 3) \u003c\u003c endl; // 6 return 0; } Go 实现 package main import \"fmt\" func maxSumAlmostUnique(nums []int, m, k int) int64 { n := len(nums) if k \u003e n { return 0 } cnt := make(map[int]int) distinct := 0 var windowSum int64 var ans int64 for i := 0; i \u003c n; i++ { x := nums[i] windowSum += int64(x) if cnt[x] == 0 { distinct++ } cnt[x]++ if i \u003e= k { y := nums[i-k] windowSum -= int64(y) cnt[y]-- if cnt[y] == 0 { distinct-- } } if i \u003e= k-1 \u0026\u0026 distinct \u003e= m { if windowSum \u003e ans { ans = windowSum } } } return ans } func main() { fmt.Println(maxSumAlmostUnique([]int{1, 2, 1, 2, 3}, 2, 3)) // 6 } Rust 实现 use std::collections::HashMap; fn max_sum_almost_unique(nums: \u0026[i32], m: usize, k: usize) -\u003e i64 { let n = nums.len(); if k \u003e n { return 0; } let mut cnt: HashMap\u003ci32, i32\u003e = HashMap::new(); let mut distinct: i32 = 0; let mut window_sum: i64 = 0; let mut ans: i64 = 0; for i in 0..n { let x = nums[i]; window_sum += x as i64; let entry = cnt.entry(x).or_insert(0); if *entry == 0 { distinct += 1; } *entry += 1; if i \u003e= k { let y = nums[i - k]; window_sum -= y as i64; if let Some(e) = cnt.get_mut(\u0026y) { *e -= 1; if *e == 0 { distinct -= 1; } } } if i + 1 \u003e= k \u0026\u0026 (distinct as usize) \u003e= m { if window_sum \u003e ans { ans = window_sum; } } } ans } fn main() { let nums = vec![1, 2, 1, 2, 3]; println!(\"{}\", max_sum_almost_unique(\u0026nums, 2, 3)); // 6 } JavaScript 实现 function maxSumAlmostUnique(nums, m, k) { if (k \u003e nums.length) return 0; const cnt = new Map(); let distinct = 0; let windowSum = 0; let ans = 0; for (let i = 0; i \u003c nums.length; i++) { const x = nums[i]; windowSum += x; if (!cnt.has(x) || cnt.get(x) === 0) distinct++; cnt.set(x, (cnt.get(x) || 0) + 1); if (i \u003e= k) { const y = nums[i - k]; windowSum -= y; cnt.set(y, cnt.get(y) - 1); if (cnt.get(y) === 0) distinct--; } if (i \u003e= k - 1 \u0026\u0026 distinct \u003e= m) { ans = Math.max(ans, windowSum); } } return ans; } console.log(maxSumAlmostUnique([1, 2, 1, 2, 3], 2, 3)); // 6 行动号召（CTA） 把这道题在你最熟悉的语言里手写一遍，并加入到自己的「滑动窗口模板库」中。 找几道「at most k distinct」「at least k distinct」的题，试着用同一套窗口 + 哈希表框架解决。 回到你的业务代码中，思考是否存在类似「固定窗口 + 多样性约束 + 最大/最小某指标」的问题，尝试用本文的方法重构一处逻辑。 ",
+  "wordCount" : "1889",
+  "inLanguage": "zh",
+  "datePublished": "2025-12-04T10:40:00+08:00",
+  "dateModified": "2025-12-04T10:40:00+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:1313/alg/leetcode/almost-unique-subarray-max-sum/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Jeanphilo Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "http://localhost:1313/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+<body id="top">
+    <header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:1313/" accesskey="h" title="Jeanphilo Blog (Alt + H)">Jeanphilo Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)" aria-label="Toggle theme">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+                    <ul class="lang-switch"><li>|</li>
+                        <li>
+                            <a href="http://localhost:1313/en/" title="English"
+                                aria-label="English">En</a>
+                        </li>
+                    </ul>
+            </div>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:1313/archives/" title="文章归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/dev/" title="开发">
+                    <span>开发</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/alg/" title="算法">
+                    <span>算法</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/search/" title="搜索 (Alt &#43; /)" accesskey=/>
+                    <span>搜索</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/categories/" title="Categories">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:1313/tags/" title="Tags">
+                    <span>标签</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="http://localhost:1313/">主页</a>&nbsp;»&nbsp;<a href="http://localhost:1313/alg/">算法</a>&nbsp;»&nbsp;<a href="http://localhost:1313/alg/leetcode/">leetcode</a></div>
+    <h1 class="post-title entry-hint-parent">
+      固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和
+    </h1>
+    <div class="post-description">
+      给定整数数组 nums 和正整数 m、k，要求在所有长度为 k、且至少包含 m 个不同元素的子数组中，找到最大和；若不存在返回 0。本文用滑动窗口 &#43; 计数哈希表推导 O(n) 解法，并提供多语言实现与工程应用示例。
+    </div>
+    <div class="post-meta"><span title='2025-12-04 10:40:00 +0800 HKT'>2025年12月4日</span>&nbsp;·&nbsp;<span>9 分钟</span>&nbsp;|&nbsp;<span>语言:</span>
+<ul class="i18n_list">
+    <li>
+        <a href="http://localhost:1313/en/alg/leetcode/almost-unique-subarray-max-sum/">En</a>
+    </li>
+</ul>
+
+</div>
+  </header> <div class="toc">
+    <details >
+        <summary accesskey="c" title="(Alt + C)">
+            <span class="details">目录</span>
+        </summary>
+
+        <div class="inner"><ul>
+                <li>
+                    <a href="#%e7%9b%ae%e6%a0%87%e8%af%bb%e8%80%85%e4%b8%8e%e8%83%8c%e6%99%af" aria-label="目标读者与背景">目标读者与背景</a></li>
+                <li>
+                    <a href="#a--algorithm%e9%a2%98%e7%9b%ae%e4%b8%8e%e7%ae%97%e6%b3%95" aria-label="A — Algorithm（题目与算法）">A — Algorithm（题目与算法）</a><ul>
+                        
+                <li>
+                    <a href="#%e9%a2%98%e7%9b%ae%e9%87%8d%e8%bf%b0" aria-label="题目重述">题目重述</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b-1" aria-label="示例 1">示例 1</a></li>
+                <li>
+                    <a href="#%e7%a4%ba%e4%be%8b-2" aria-label="示例 2">示例 2</a></li></ul>
+                </li>
+                <li>
+                    <a href="#c--concepts%e6%a0%b8%e5%bf%83%e6%80%9d%e6%83%b3" aria-label="C — Concepts（核心思想）">C — Concepts（核心思想）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%a0%b8%e5%bf%83%e6%80%9d%e6%83%b3%e5%9b%ba%e5%ae%9a%e7%aa%97%e5%8f%a3%e6%bb%91%e5%8a%a8--%e5%93%88%e5%b8%8c%e8%a1%a8%e8%ae%a1%e6%95%b0" aria-label="核心思想：固定窗口滑动 &#43; 哈希表计数">核心思想：固定窗口滑动 + 哈希表计数</a></li>
+                <li>
+                    <a href="#%e7%bb%b4%e6%8a%a4%e7%9a%84%e4%b8%89%e4%b8%aa%e6%a0%b8%e5%bf%83%e7%8a%b6%e6%80%81" aria-label="维护的三个核心状态">维护的三个核心状态</a></li>
+                <li>
+                    <a href="#%e7%ae%97%e6%b3%95%e7%b1%bb%e5%9e%8b" aria-label="算法类型">算法类型</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e5%ae%9e%e8%b7%b5%e6%8c%87%e5%8d%97--%e6%ad%a5%e9%aa%a4" aria-label="实践指南 / 步骤">实践指南 / 步骤</a></li>
+                <li>
+                    <a href="#e--engineering%e5%b7%a5%e7%a8%8b%e5%ba%94%e7%94%a8" aria-label="E — Engineering（工程应用）">E — Engineering（工程应用）</a><ul>
+                        
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af-1%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f%e4%b8%ad%e7%9a%84%e5%a4%9a%e6%a0%b7%e6%80%a7%e7%ba%a6%e6%9d%9f%e7%aa%97%e5%8f%a3%e8%af%84%e5%88%86python" aria-label="场景 1：推荐系统中的“多样性约束窗口评分”（Python）">场景 1：推荐系统中的“多样性约束窗口评分”（Python）</a></li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af-2%e7%9b%91%e6%8e%a7--apm-%e4%b8%ad%e7%9a%84%e5%a4%9a%e6%8c%87%e6%a0%87%e6%b4%bb%e8%b7%83%e7%aa%97%e5%8f%a3go" aria-label="场景 2：监控 / APM 中的“多指标活跃窗口”（Go）">场景 2：监控 / APM 中的“多指标活跃窗口”（Go）</a></li>
+                <li>
+                    <a href="#%e5%9c%ba%e6%99%af-3%e5%89%8d%e7%ab%af%e8%a1%8c%e4%b8%ba%e5%88%86%e6%9e%90%e4%b8%ad%e7%9a%84%e5%a4%9a%e6%a0%b7%e5%8c%96%e7%82%b9%e5%87%bb%e5%ba%8f%e5%88%97javascript" aria-label="场景 3：前端行为分析中的“多样化点击序列”（JavaScript）">场景 3：前端行为分析中的“多样化点击序列”（JavaScript）</a></li></ul>
+                </li>
+                <li>
+                    <a href="#r--reflection%e5%8f%8d%e6%80%9d%e4%b8%8e%e6%b7%b1%e5%85%a5" aria-label="R — Reflection（反思与深入）">R — Reflection（反思与深入）</a><ul>
+                        
+                <li>
+                    <a href="#%e6%97%b6%e9%97%b4%e4%b8%8e%e7%a9%ba%e9%97%b4%e5%a4%8d%e6%9d%82%e5%ba%a6" aria-label="时间与空间复杂度">时间与空间复杂度</a></li>
+                <li>
+                    <a href="#%e6%9b%bf%e4%bb%a3%e6%96%b9%e6%a1%88%e4%b8%8e%e5%b8%b8%e8%a7%81%e9%94%99%e8%af%af" aria-label="替代方案与常见错误">替代方案与常见错误</a></li>
+                <li>
+                    <a href="#%e5%b8%b8%e8%a7%81%e5%9d%91%e7%82%b9%e4%b8%8e%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9" aria-label="常见坑点与注意事项">常见坑点与注意事项</a></li></ul>
+                </li>
+                <li>
+                    <a href="#s--summary%e6%80%bb%e7%bb%93" aria-label="S — Summary（总结）">S — Summary（总结）</a></li>
+                <li>
+                    <a href="#%e5%8f%82%e8%80%83%e4%b8%8e%e5%bb%b6%e4%bc%b8%e9%98%85%e8%af%bb" aria-label="参考与延伸阅读">参考与延伸阅读</a></li>
+                <li>
+                    <a href="#%e5%a4%9a%e8%af%ad%e8%a8%80%e5%ae%8c%e6%95%b4%e5%ae%9e%e7%8e%b0python--c--c--go--rust--js" aria-label="多语言完整实现（Python / C / C&#43;&#43; / Go / Rust / JS）">多语言完整实现（Python / C / C++ / Go / Rust / JS）</a><ul>
+                        
+                <li>
+                    <a href="#python-%e5%ae%9e%e7%8e%b0" aria-label="Python 实现">Python 实现</a></li>
+                <li>
+                    <a href="#c-%e5%ae%9e%e7%8e%b0%e7%a4%ba%e4%be%8b%e5%93%88%e5%b8%8c%e8%a1%a8%e7%89%88" aria-label="C 实现（示例哈希表版）">C 实现（示例哈希表版）</a></li>
+                <li>
+                    <a href="#c-%e5%ae%9e%e7%8e%b0" aria-label="C&#43;&#43; 实现">C++ 实现</a></li>
+                <li>
+                    <a href="#go-%e5%ae%9e%e7%8e%b0" aria-label="Go 实现">Go 实现</a></li>
+                <li>
+                    <a href="#rust-%e5%ae%9e%e7%8e%b0" aria-label="Rust 实现">Rust 实现</a></li>
+                <li>
+                    <a href="#javascript-%e5%ae%9e%e7%8e%b0" aria-label="JavaScript 实现">JavaScript 实现</a></li></ul>
+                </li>
+                <li>
+                    <a href="#%e8%a1%8c%e5%8a%a8%e5%8f%b7%e5%8f%accta" aria-label="行动号召（CTA）">行动号召（CTA）</a>
+                </li>
+            </ul>
+        </div>
+    </details>
+</div>
+
+  <div class="post-content"><blockquote>
+<p><strong>副标题 / 摘要</strong><br>
+一道看似麻烦的子数组题：长度必须固定为 k，元素种类又要至少 m 个，还要在满足约束下让子数组和最大。本文通过「固定窗口滑动 + 计数哈希表」，构造 O(n) 级别的简洁算法，并给出多语言实现与工程实践案例。</p>
+</blockquote>
+<ul>
+<li><strong>预计阅读时长</strong>：12~15 分钟</li>
+<li><strong>适用场景标签</strong>：<code>滑动窗口进阶</code>、<code>distinct 计数</code>、<code>子数组最大和</code></li>
+<li><strong>SEO 关键词</strong>：almost unique subarray, at least m distinct, sliding window, subarray max sum</li>
+</ul>
+<hr>
+<h2 id="目标读者与背景">目标读者与背景<a hidden class="anchor" aria-hidden="true" href="#目标读者与背景">#</a></h2>
+<p><strong>目标读者</strong></p>
+<ul>
+<li>已经掌握基础滑动窗口（如「最长无重复子串」）的刷题同学</li>
+<li>后端 / 数据分析工程师，需要在数组或数据流上做实时统计</li>
+<li>准备中高级面试，希望写出更工程化解法的开发者</li>
+</ul>
+<p><strong>问题背景 / 动机</strong></p>
+<p>许多业务都有类似需求：</p>
+<ul>
+<li>推荐系统：固定长度的推荐位里，既要保证足够多的不同品类，又希望整体评分尽量高；</li>
+<li>监控系统：在最近的固定时间窗口里，要求至少有 m 个不同指标处于活跃状态；</li>
+<li>行为分析：在 k 次连续行为中，至少访问 m 个不同页面，且总价值最大。</li>
+</ul>
+<p>本题正是这类需求的抽象版，非常适合用来练习<strong>滑动窗口 + 计数哈希表</strong>的组合技。</p>
+<hr>
+<h2 id="a--algorithm题目与算法">A — Algorithm（题目与算法）<a hidden class="anchor" aria-hidden="true" href="#a--algorithm题目与算法">#</a></h2>
+<h3 id="题目重述">题目重述<a hidden class="anchor" aria-hidden="true" href="#题目重述">#</a></h3>
+<blockquote>
+<p>给定整数数组 <code>nums</code>，正整数 <code>m</code> 和 <code>k</code>。<br>
+如果一个长度为 <code>k</code> 的子数组中<strong>至少包含 <code>m</code> 个不同的元素</strong>，则称其为“几乎唯一子数组（almost unique subarray）”。<br>
+请在所有几乎唯一子数组中，找到<strong>元素和的最大值</strong>；如果不存在这样的子数组，则返回 <code>0</code>。</p>
+</blockquote>
+<p><strong>输入</strong></p>
+<ul>
+<li><code>nums</code>: 整数数组，长度为 <code>n</code></li>
+<li><code>m</code>: 至少需要包含的不同元素数量</li>
+<li><code>k</code>: 子数组长度，<code>1 ≤ k ≤ n</code></li>
+</ul>
+<p><strong>输出</strong></p>
+<ul>
+<li>整数：所有符合条件的子数组的<strong>最大和</strong>，若不存在则为 0</li>
+</ul>
+<h3 id="示例-1">示例 1<a hidden class="anchor" aria-hidden="true" href="#示例-1">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>nums = [1, 2, 1, 2, 3]
+</span></span><span style="display:flex;"><span>m    = 2
+</span></span><span style="display:flex;"><span>k    = 3
+</span></span></code></pre></div><p>所有长度为 3 的子数组为：</p>
+<ol>
+<li><code>[1, 2, 1]</code>，不同元素集合 <code>{1, 2}</code>，个数 2 ≥ m=2，和为 4</li>
+<li><code>[2, 1, 2]</code>，不同元素 <code>{1, 2}</code>，个数 2 ≥ 2，和为 5</li>
+<li><code>[1, 2, 3]</code>，不同元素 <code>{1, 2, 3}</code>，个数 3 ≥ 2，和为 6</li>
+</ol>
+<p>所有满足条件的子数组中，最大和为 <code>6</code>。</p>
+<p><strong>输出</strong>：<code>6</code></p>
+<h3 id="示例-2">示例 2<a hidden class="anchor" aria-hidden="true" href="#示例-2">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>nums = [5, 5, 5, 5]
+</span></span><span style="display:flex;"><span>m    = 2
+</span></span><span style="display:flex;"><span>k    = 2
+</span></span></code></pre></div><p>所有长度为 2 的子数组：</p>
+<ul>
+<li><code>[5, 5]</code>, <code>[5, 5]</code>, <code>[5, 5]</code><br>
+不同元素集合都是 <code>{5}</code>，只有 1 个元素 &lt; m=2，不满足条件。</li>
+</ul>
+<p>不存在几乎唯一子数组，因此：</p>
+<p><strong>输出</strong>：<code>0</code></p>
+<hr>
+<h2 id="c--concepts核心思想">C — Concepts（核心思想）<a hidden class="anchor" aria-hidden="true" href="#c--concepts核心思想">#</a></h2>
+<h3 id="核心思想固定窗口滑动--哈希表计数">核心思想：固定窗口滑动 + 哈希表计数<a hidden class="anchor" aria-hidden="true" href="#核心思想固定窗口滑动--哈希表计数">#</a></h3>
+<p>把题目拆解一下：</p>
+<ol>
+<li>子数组长度必须是 <strong>固定的 <code>k</code></strong>；</li>
+<li>子数组中不同的元素个数必须 <strong>至少为 <code>m</code></strong>；</li>
+<li>在所有满足条件的窗口中，选<strong>和最大的</strong>。</li>
+</ol>
+<p>这三个条件分别对应：</p>
+<ul>
+<li>固定长度窗口 → <strong>固定长度滑动窗口（fixed-size sliding window）</strong>；</li>
+<li>不同元素个数 → <strong>窗口内去重计数</strong>，适合用哈希表 / 计数器；</li>
+<li>最大和 → 维护一个滑动的窗口和（sum）。</li>
+</ul>
+<h3 id="维护的三个核心状态">维护的三个核心状态<a hidden class="anchor" aria-hidden="true" href="#维护的三个核心状态">#</a></h3>
+<p>在窗口滑动过程中，需要维护：</p>
+<ol>
+<li><code>window_sum</code>：当前窗口内所有元素的总和；</li>
+<li><code>cnt[x]</code>：当前窗口内，元素 <code>x</code> 出现的次数；</li>
+<li><code>distinct</code>：当前窗口内 <strong>不同元素的个数</strong>，也就是满足 <code>cnt[x] &gt; 0</code> 的元素数。</li>
+</ol>
+<p>窗口每向右移动 1 个元素（下标 i）时：</p>
+<ol>
+<li>把 <code>nums[i]</code> 加入窗口：
+<ul>
+<li><code>window_sum += nums[i]</code></li>
+<li><code>cnt[nums[i]]++</code></li>
+<li>若 <code>cnt[nums[i]]</code> 从 0 变到 1，则 <code>distinct++</code></li>
+</ul>
+</li>
+<li>如果当前窗口长度超过 <code>k</code>：
+<ul>
+<li>移除左端元素 <code>nums[i-k]</code>：
+<ul>
+<li><code>window_sum -= nums[i-k]</code></li>
+<li><code>cnt[nums[i-k]]--</code></li>
+<li>若 <code>cnt[nums[i-k]]</code> 从 1 变到 0，则 <code>distinct--</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>当 <code>i &gt;= k-1</code> 时，窗口长度已经是 k：
+<ul>
+<li>若 <code>distinct &gt;= m</code>，则用 <code>window_sum</code> 更新答案。</li>
+</ul>
+</li>
+</ol>
+<h3 id="算法类型">算法类型<a hidden class="anchor" aria-hidden="true" href="#算法类型">#</a></h3>
+<ul>
+<li>方法：<strong>滑动窗口 + 哈希表计数</strong></li>
+<li>窗口类型：<strong>固定长度 k</strong></li>
+<li>特点：一次遍历，同时维护「和」与「不同元素个数」两个指标</li>
+</ul>
+<hr>
+<h2 id="实践指南--步骤">实践指南 / 步骤<a hidden class="anchor" aria-hidden="true" href="#实践指南--步骤">#</a></h2>
+<p>可以按以下步骤从 0 到 1 实现该算法：</p>
+<ol>
+<li>
+<p><strong>初始化窗口状态</strong></p>
+<ul>
+<li><code>window_sum = 0</code></li>
+<li><code>distinct = 0</code></li>
+<li>空哈希表 <code>cnt</code></li>
+<li>答案 <code>ans = 0</code></li>
+</ul>
+</li>
+<li>
+<p><strong>从左到右遍历数组</strong></p>
+<ul>
+<li>每次把 <code>nums[i]</code> 纳入窗口：
+<ul>
+<li>更新 <code>window_sum</code> 和 <code>cnt</code></li>
+<li>如果这个数是第一次出现，则 <code>distinct++</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>按需收缩窗口</strong></p>
+<ul>
+<li>当 <code>i &gt;= k</code> 时，窗口中元素个数为 <code>k+1</code>，超出 1 个：
+<ul>
+<li>移除左端 <code>nums[i-k]</code></li>
+<li>对应更新 <code>window_sum</code>、<code>cnt</code> 和 <code>distinct</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>检查是否符合“几乎唯一子数组”条件</strong></p>
+<ul>
+<li>当 <code>i &gt;= k-1</code>（窗口长度刚好为 k）且 <code>distinct &gt;= m</code> 时：
+<ul>
+<li>使用 <code>window_sum</code> 更新 <code>ans</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>返回结果</strong></p>
+<ul>
+<li>遍历结束后，若从未满足条件则 <code>ans</code> 仍为 0，直接返回</li>
+</ul>
+</li>
+</ol>
+<p>整个过程只需一次线性扫描，时间 O(n)，空间则来自哈希表中存储的不同元素数量。</p>
+<hr>
+<h2 id="e--engineering工程应用">E — Engineering（工程应用）<a hidden class="anchor" aria-hidden="true" href="#e--engineering工程应用">#</a></h2>
+<p>下面给三个贴近实际的场景，分别使用 Python、Go、JavaScript 代码示例。</p>
+<h3 id="场景-1推荐系统中的多样性约束窗口评分python">场景 1：推荐系统中的“多样性约束窗口评分”（Python）<a hidden class="anchor" aria-hidden="true" href="#场景-1推荐系统中的多样性约束窗口评分python">#</a></h3>
+<p><strong>背景</strong><br>
+推荐系统往往希望在固定长度的推荐位中：</p>
+<ul>
+<li>覆盖足够多的品类（多样性，多样性差会导致用户疲劳）；</li>
+<li>同时保证内容质量（总得分尽可能高）。</li>
+</ul>
+<p>可以把：</p>
+<ul>
+<li>每个位置的推荐内容评分（或 CTR 预估）当作 <code>nums[i]</code>；</li>
+<li>不同内容品类 ID 当作 <code>nums[i]</code> 的另一维属性（这里简化为直接用值区别）；</li>
+<li><code>k</code> 为推荐位长度，<code>m</code> 为至少要覆盖的不同品类数。</li>
+</ul>
+<p><strong>为何适用</strong></p>
+<p>需要在固定长度窗口中同时考虑：</p>
+<ul>
+<li>不同元素数量（多样性）；</li>
+<li>总和（质量）。</li>
+</ul>
+<p>正好就是这道题的抽象。</p>
+<p><strong>示例代码</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> defaultdict
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> List
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">max_sum_almost_unique</span>(nums: List[int], m: int, k: int) <span style="color:#f92672">-&gt;</span> int:
+</span></span><span style="display:flex;"><span>    n <span style="color:#f92672">=</span> len(nums)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> k <span style="color:#f92672">&gt;</span> n:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cnt <span style="color:#f92672">=</span> defaultdict(int)
+</span></span><span style="display:flex;"><span>    distinct <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    window_sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    ans <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i, x <span style="color:#f92672">in</span> enumerate(nums):
+</span></span><span style="display:flex;"><span>        window_sum <span style="color:#f92672">+=</span> x
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> cnt[x] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            distinct <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        cnt[x] <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">&gt;=</span> k:
+</span></span><span style="display:flex;"><span>            y <span style="color:#f92672">=</span> nums[i <span style="color:#f92672">-</span> k]
+</span></span><span style="display:flex;"><span>            window_sum <span style="color:#f92672">-=</span> y
+</span></span><span style="display:flex;"><span>            cnt[y] <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> cnt[y] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                distinct <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">&gt;=</span> k <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">and</span> distinct <span style="color:#f92672">&gt;=</span> m:
+</span></span><span style="display:flex;"><span>            ans <span style="color:#f92672">=</span> max(ans, window_sum)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ans
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    print(max_sum_almost_unique([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>))  <span style="color:#75715e"># 6</span>
+</span></span></code></pre></div><hr>
+<h3 id="场景-2监控--apm-中的多指标活跃窗口go">场景 2：监控 / APM 中的“多指标活跃窗口”（Go）<a hidden class="anchor" aria-hidden="true" href="#场景-2监控--apm-中的多指标活跃窗口go">#</a></h3>
+<p><strong>背景</strong><br>
+在监控系统中，你可能希望最近的 <code>k</code> 条样本中：</p>
+<ul>
+<li>至少有 <code>m</code> 个不同指标处于活跃状态（比如不同业务线、不同接口）；</li>
+<li>并且这些样本的某种累积分值（如错误次数、延迟）尽可能大。</li>
+</ul>
+<p><strong>为什么适合用该算法</strong></p>
+<ul>
+<li>样本是按时间顺序到达的 → 非常适合滑动窗口；</li>
+<li>需要同时判断“指标多样性”与“数值总和” → 正好对应 <code>distinct</code> 和 <code>window_sum</code>。</li>
+</ul>
+<p><strong>示例代码（Go）</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">maxSumAlmostUnique</span>(<span style="color:#a6e22e">nums</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">m</span>, <span style="color:#a6e22e">k</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int64</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nums</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &gt; <span style="color:#a6e22e">n</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cnt</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int</span>]<span style="color:#66d9ef">int</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">distinct</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">windowSum</span> <span style="color:#66d9ef">int64</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ans</span> <span style="color:#66d9ef">int64</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span>]
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">+=</span> int64(<span style="color:#a6e22e">x</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cnt</span>[<span style="color:#a6e22e">x</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">distinct</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">cnt</span>[<span style="color:#a6e22e">x</span>]<span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">k</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span><span style="color:#f92672">-</span><span style="color:#a6e22e">k</span>]
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">-=</span> int64(<span style="color:#a6e22e">y</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">cnt</span>[<span style="color:#a6e22e">y</span>]<span style="color:#f92672">--</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cnt</span>[<span style="color:#a6e22e">y</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">distinct</span><span style="color:#f92672">--</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">k</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">distinct</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">m</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">windowSum</span> &gt; <span style="color:#a6e22e">ans</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">ans</span> = <span style="color:#a6e22e">windowSum</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ans</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">maxSumAlmostUnique</span>([]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>)) <span style="color:#75715e">// 6</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h3 id="场景-3前端行为分析中的多样化点击序列javascript">场景 3：前端行为分析中的“多样化点击序列”（JavaScript）<a hidden class="anchor" aria-hidden="true" href="#场景-3前端行为分析中的多样化点击序列javascript">#</a></h3>
+<p><strong>背景</strong><br>
+你在前端收集用户点击 ID 序列 <code>nums</code>，想分析：</p>
+<ul>
+<li>在任意长度为 <code>k</code> 的连续点击中，至少要点击过 <code>m</code> 个不同元素；</li>
+<li>并希望在满足多样性的前提下，总“价值”最大（比如每次点击对应一个权重）。</li>
+</ul>
+<p>这可以直接在前端运行的脚本中完成，辅助埋点分析或可视化。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">maxSumAlmostUnique</span>(<span style="color:#a6e22e">nums</span>, <span style="color:#a6e22e">m</span>, <span style="color:#a6e22e">k</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">k</span> <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">nums</span>.<span style="color:#a6e22e">length</span>) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cnt</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Map</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">distinct</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">ans</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">nums</span>.<span style="color:#a6e22e">length</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">x</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">has</span>(<span style="color:#a6e22e">x</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">x</span>) <span style="color:#f92672">===</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">distinct</span><span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">set</span>(<span style="color:#a6e22e">x</span>, (<span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">x</span>) <span style="color:#f92672">||</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">k</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">y</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">k</span>];
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">-=</span> <span style="color:#a6e22e">y</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">set</span>(<span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">y</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">y</span>) <span style="color:#f92672">===</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">distinct</span><span style="color:#f92672">--</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">k</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">distinct</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">m</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">ans</span> <span style="color:#f92672">=</span> Math.<span style="color:#a6e22e">max</span>(<span style="color:#a6e22e">ans</span>, <span style="color:#a6e22e">windowSum</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ans</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">maxSumAlmostUnique</span>([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>)); <span style="color:#75715e">// 6
+</span></span></span></code></pre></div><hr>
+<h2 id="r--reflection反思与深入">R — Reflection（反思与深入）<a hidden class="anchor" aria-hidden="true" href="#r--reflection反思与深入">#</a></h2>
+<h3 id="时间与空间复杂度">时间与空间复杂度<a hidden class="anchor" aria-hidden="true" href="#时间与空间复杂度">#</a></h3>
+<ul>
+<li>
+<p><strong>时间复杂度</strong>：O(n)<br>
+每个元素最多进入和离开窗口各一次，哈希表操作均摊 O(1)。</p>
+</li>
+<li>
+<p><strong>空间复杂度</strong>：O(U)<br>
+其中 U 为窗口内可能出现的不同元素个数（哈希表大小）。<br>
+在绝大多数场景下远小于 <code>n</code>。</p>
+</li>
+</ul>
+<hr>
+<h3 id="替代方案与常见错误">替代方案与常见错误<a hidden class="anchor" aria-hidden="true" href="#替代方案与常见错误">#</a></h3>
+<p><strong>1. 暴力法（枚举所有子数组）</strong></p>
+<ul>
+<li>对每个起点 i，构造子数组 <code>nums[i..i+k-1]</code>，用集合统计不同元素个数并求和；</li>
+<li>每个窗口 O(k)，总窗口数 ~O(n) → 总复杂度 O(n·k)，大数据很容易超时。</li>
+</ul>
+<p><strong>2. 排序 + 双指针（错误思路）</strong></p>
+<ul>
+<li>有人会尝试对每个窗口排序，再统计不同元素个数；</li>
+<li>但排序会破坏子数组的「相对顺序 + 固定窗口位置」结构，且复杂度更高；</li>
+<li>更严重的是：排序后就不是原窗口了，无法代表真实业务含义。</li>
+</ul>
+<p><strong>3. 只维护 distinct，不维护 sum</strong></p>
+<ul>
+<li>有人会先筛出所有满足 <code>distinct &gt;= m</code> 的窗口，再在这些窗口上重新 O(k) 计算和；</li>
+<li>这相当于退化回了 O(n·k)，失去了滑动窗口的优势。</li>
+</ul>
+<p><strong>当前方案的优势</strong></p>
+<ul>
+<li>使用一个哈希表同时维护 <code>distinct</code> 与 <code>window_sum</code>，全程单次扫描；</li>
+<li>数据结构简单，容易在工程中 debug 和监控；</li>
+<li>模式可以直接迁移到更复杂的场景（引入权重、标签、黑白名单等）。</li>
+</ul>
+<hr>
+<h3 id="常见坑点与注意事项">常见坑点与注意事项<a hidden class="anchor" aria-hidden="true" href="#常见坑点与注意事项">#</a></h3>
+<ol>
+<li>
+<p><strong>窗口边界</strong></p>
+<ul>
+<li>收缩条件：<code>i &gt;= k</code> 时，需要移除 <code>nums[i-k]</code></li>
+<li>判断窗口完整：<code>i &gt;= k-1</code> 时，窗口长度刚好为 <code>k</code>，才能参与答案比较。</li>
+</ul>
+</li>
+<li>
+<p><strong>distinct 更新顺序</strong></p>
+<ul>
+<li>先更新计数，再判断是否从 0 变 1 或从 1 变 0；</li>
+<li>避免顺序写错导致 <code>distinct</code> 统计不准。</li>
+</ul>
+</li>
+<li>
+<p><strong>m &gt; k 的情况</strong></p>
+<ul>
+<li>这意味着在长度为 k 的窗口内不可能有 m 个不同元素，答案必然为 0；</li>
+<li>代码中可提前返回，也可以让逻辑自然返回 0。</li>
+</ul>
+</li>
+<li>
+<p><strong>整数溢出（在 C / C++ / Go 中）</strong></p>
+<ul>
+<li>如果 <code>nums</code> 元素较大，窗口和建议用 64 位整型（<code>long long</code> / <code>int64</code>）。</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="s--summary总结">S — Summary（总结）<a hidden class="anchor" aria-hidden="true" href="#s--summary总结">#</a></h2>
+<ul>
+<li>本题本质是在固定长度为 k 的窗口中，寻找「至少有 m 个不同元素」且「窗口和最大」的子数组。</li>
+<li>使用固定长度滑动窗口可以保证只扫描数组一次，避免 O(n·k) 的重复计算。</li>
+<li>哈希表计数 + 一个 <code>distinct</code> 变量即可精确维护窗口内的不同元素个数。</li>
+<li>通过同时维护窗口和与 distinct，能在 O(1) 时间内判断窗口是否可行并更新答案。</li>
+<li>该模式在推荐系统、监控系统、用户行为分析等工程场景中有天然的对应关系。</li>
+</ul>
+<hr>
+<h2 id="参考与延伸阅读">参考与延伸阅读<a hidden class="anchor" aria-hidden="true" href="#参考与延伸阅读">#</a></h2>
+<ul>
+<li>各类「at least / at most k distinct elements」数组 / 字符串题<br>
+（例如 Longest Substring with At Most K Distinct Characters）</li>
+<li>LeetCode 904. Fruit Into Baskets（可变窗口 + 至多两种元素）</li>
+<li>LeetCode 159 / 340 等一系列「含至多 K 个不同字符的最长子串」问题</li>
+<li>《算法导论》中关于哈希表与线性时间算法的章节</li>
+</ul>
+<hr>
+<h2 id="多语言完整实现python--c--c--go--rust--js">多语言完整实现（Python / C / C++ / Go / Rust / JS）<a hidden class="anchor" aria-hidden="true" href="#多语言完整实现python--c--c--go--rust--js">#</a></h2>
+<p>下面是多语言版本的完整实现，你可以根据自己主要使用的语言拷贝到相应项目中。</p>
+<h3 id="python-实现">Python 实现<a hidden class="anchor" aria-hidden="true" href="#python-实现">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> defaultdict
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> List
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">max_sum_almost_unique</span>(nums: List[int], m: int, k: int) <span style="color:#f92672">-&gt;</span> int:
+</span></span><span style="display:flex;"><span>    n <span style="color:#f92672">=</span> len(nums)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> k <span style="color:#f92672">&gt;</span> n:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    cnt <span style="color:#f92672">=</span> defaultdict(int)
+</span></span><span style="display:flex;"><span>    distinct <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    window_sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    ans <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i, x <span style="color:#f92672">in</span> enumerate(nums):
+</span></span><span style="display:flex;"><span>        window_sum <span style="color:#f92672">+=</span> x
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> cnt[x] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            distinct <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        cnt[x] <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">&gt;=</span> k:
+</span></span><span style="display:flex;"><span>            y <span style="color:#f92672">=</span> nums[i <span style="color:#f92672">-</span> k]
+</span></span><span style="display:flex;"><span>            window_sum <span style="color:#f92672">-=</span> y
+</span></span><span style="display:flex;"><span>            cnt[y] <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> cnt[y] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                distinct <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">&gt;=</span> k <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">and</span> distinct <span style="color:#f92672">&gt;=</span> m:
+</span></span><span style="display:flex;"><span>            ans <span style="color:#f92672">=</span> max(ans, window_sum)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ans
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    print(max_sum_almost_unique([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>))  <span style="color:#75715e"># 6</span>
+</span></span></code></pre></div><hr>
+<h3 id="c-实现示例哈希表版">C 实现（示例哈希表版）<a hidden class="anchor" aria-hidden="true" href="#c-实现示例哈希表版">#</a></h3>
+<blockquote>
+<p>说明：为了保持示例完整性，这里实现了一个简单的链地址哈希表。工程中建议直接使用成熟库或根据业务数据范围改成数组计数。</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> Node {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> key;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> val;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">struct</span> Node <span style="color:#f92672">*</span>next;
+</span></span><span style="display:flex;"><span>} Node;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>    Node <span style="color:#f92672">**</span>buckets;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> size;
+</span></span><span style="display:flex;"><span>} HashMap;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">hash_int</span>(<span style="color:#66d9ef">int</span> key, <span style="color:#66d9ef">int</span> size) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span>)key;
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">^=</span> x <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">16</span>;
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">*=</span> <span style="color:#ae81ff">0x7feb352d</span>;
+</span></span><span style="display:flex;"><span>    x <span style="color:#f92672">^=</span> x <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">15</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> x <span style="color:#f92672">%</span> size;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>HashMap <span style="color:#f92672">*</span><span style="color:#a6e22e">hm_create</span>(<span style="color:#66d9ef">int</span> size) {
+</span></span><span style="display:flex;"><span>    HashMap <span style="color:#f92672">*</span>hm <span style="color:#f92672">=</span> (HashMap <span style="color:#f92672">*</span>)<span style="color:#a6e22e">malloc</span>(<span style="color:#66d9ef">sizeof</span>(HashMap));
+</span></span><span style="display:flex;"><span>    hm<span style="color:#f92672">-&gt;</span>size <span style="color:#f92672">=</span> size;
+</span></span><span style="display:flex;"><span>    hm<span style="color:#f92672">-&gt;</span>buckets <span style="color:#f92672">=</span> (Node <span style="color:#f92672">**</span>)<span style="color:#a6e22e">calloc</span>(size, <span style="color:#66d9ef">sizeof</span>(Node <span style="color:#f92672">*</span>));
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> hm;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">hm_get</span>(HashMap <span style="color:#f92672">*</span>hm, <span style="color:#66d9ef">int</span> key) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> h <span style="color:#f92672">=</span> <span style="color:#a6e22e">hash_int</span>(key, hm<span style="color:#f92672">-&gt;</span>size);
+</span></span><span style="display:flex;"><span>    Node <span style="color:#f92672">*</span>cur <span style="color:#f92672">=</span> hm<span style="color:#f92672">-&gt;</span>buckets[h];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (cur) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (cur<span style="color:#f92672">-&gt;</span>key <span style="color:#f92672">==</span> key) <span style="color:#66d9ef">return</span> cur<span style="color:#f92672">-&gt;</span>val;
+</span></span><span style="display:flex;"><span>        cur <span style="color:#f92672">=</span> cur<span style="color:#f92672">-&gt;</span>next;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">hm_add</span>(HashMap <span style="color:#f92672">*</span>hm, <span style="color:#66d9ef">int</span> key, <span style="color:#66d9ef">int</span> delta) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> h <span style="color:#f92672">=</span> <span style="color:#a6e22e">hash_int</span>(key, hm<span style="color:#f92672">-&gt;</span>size);
+</span></span><span style="display:flex;"><span>    Node <span style="color:#f92672">*</span>cur <span style="color:#f92672">=</span> hm<span style="color:#f92672">-&gt;</span>buckets[h];
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span> (cur) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (cur<span style="color:#f92672">-&gt;</span>key <span style="color:#f92672">==</span> key) {
+</span></span><span style="display:flex;"><span>            cur<span style="color:#f92672">-&gt;</span>val <span style="color:#f92672">+=</span> delta;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        cur <span style="color:#f92672">=</span> cur<span style="color:#f92672">-&gt;</span>next;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    Node <span style="color:#f92672">*</span>node <span style="color:#f92672">=</span> (Node <span style="color:#f92672">*</span>)<span style="color:#a6e22e">malloc</span>(<span style="color:#66d9ef">sizeof</span>(Node));
+</span></span><span style="display:flex;"><span>    node<span style="color:#f92672">-&gt;</span>key <span style="color:#f92672">=</span> key;
+</span></span><span style="display:flex;"><span>    node<span style="color:#f92672">-&gt;</span>val <span style="color:#f92672">=</span> delta;
+</span></span><span style="display:flex;"><span>    node<span style="color:#f92672">-&gt;</span>next <span style="color:#f92672">=</span> hm<span style="color:#f92672">-&gt;</span>buckets[h];
+</span></span><span style="display:flex;"><span>    hm<span style="color:#f92672">-&gt;</span>buckets[h] <span style="color:#f92672">=</span> node;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">hm_free</span>(HashMap <span style="color:#f92672">*</span>hm) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> hm<span style="color:#f92672">-&gt;</span>size; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>        Node <span style="color:#f92672">*</span>cur <span style="color:#f92672">=</span> hm<span style="color:#f92672">-&gt;</span>buckets[i];
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> (cur) {
+</span></span><span style="display:flex;"><span>            Node <span style="color:#f92672">*</span>tmp <span style="color:#f92672">=</span> cur;
+</span></span><span style="display:flex;"><span>            cur <span style="color:#f92672">=</span> cur<span style="color:#f92672">-&gt;</span>next;
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">free</span>(tmp);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">free</span>(hm<span style="color:#f92672">-&gt;</span>buckets);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">free</span>(hm);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">maxSumAlmostUnique</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>nums, <span style="color:#66d9ef">int</span> n, <span style="color:#66d9ef">int</span> m, <span style="color:#66d9ef">int</span> k) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (k <span style="color:#f92672">&gt;</span> n) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    HashMap <span style="color:#f92672">*</span>hm <span style="color:#f92672">=</span> <span style="color:#a6e22e">hm_create</span>(<span style="color:#ae81ff">1024</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> distinct <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> windowSum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> ans <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> nums[i];
+</span></span><span style="display:flex;"><span>        windowSum <span style="color:#f92672">+=</span> x;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> cx <span style="color:#f92672">=</span> <span style="color:#a6e22e">hm_get</span>(hm, x);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (cx <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) distinct<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">hm_add</span>(hm, x, <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (i <span style="color:#f92672">&gt;=</span> k) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> nums[i <span style="color:#f92672">-</span> k];
+</span></span><span style="display:flex;"><span>            windowSum <span style="color:#f92672">-=</span> y;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> cy <span style="color:#f92672">=</span> <span style="color:#a6e22e">hm_get</span>(hm, y);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">hm_add</span>(hm, y, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (cy <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) distinct<span style="color:#f92672">--</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (i <span style="color:#f92672">&gt;=</span> k <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> distinct <span style="color:#f92672">&gt;=</span> m <span style="color:#f92672">&amp;&amp;</span> windowSum <span style="color:#f92672">&gt;</span> ans) {
+</span></span><span style="display:flex;"><span>            ans <span style="color:#f92672">=</span> windowSum;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">hm_free</span>(hm);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ans;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> nums[] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>};
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(nums) <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(nums[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">printf</span>(<span style="color:#e6db74">&#34;%lld</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#a6e22e">maxSumAlmostUnique</span>(nums, n, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>)); <span style="color:#75715e">// 6
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h3 id="c-实现">C++ 实现<a hidden class="anchor" aria-hidden="true" href="#c-实现">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;bits/stdc++.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">using</span> <span style="color:#66d9ef">namespace</span> std;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> <span style="color:#a6e22e">maxSumAlmostUnique</span>(<span style="color:#66d9ef">const</span> vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">&amp;</span>nums, <span style="color:#66d9ef">int</span> m, <span style="color:#66d9ef">int</span> k) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> n <span style="color:#f92672">=</span> (<span style="color:#66d9ef">int</span>)nums.size();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (k <span style="color:#f92672">&gt;</span> n) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    unordered_map<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> cnt;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> distinct <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> windowSum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">long</span> <span style="color:#66d9ef">long</span> ans <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> n; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> nums[i];
+</span></span><span style="display:flex;"><span>        windowSum <span style="color:#f92672">+=</span> x;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (cnt[x] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) distinct<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>        cnt[x]<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (i <span style="color:#f92672">&gt;=</span> k) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> y <span style="color:#f92672">=</span> nums[i <span style="color:#f92672">-</span> k];
+</span></span><span style="display:flex;"><span>            windowSum <span style="color:#f92672">-=</span> y;
+</span></span><span style="display:flex;"><span>            cnt[y]<span style="color:#f92672">--</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> (cnt[y] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) distinct<span style="color:#f92672">--</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (i <span style="color:#f92672">&gt;=</span> k <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> distinct <span style="color:#f92672">&gt;=</span> m) {
+</span></span><span style="display:flex;"><span>            ans <span style="color:#f92672">=</span> max(ans, windowSum);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ans;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span> nums{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>};
+</span></span><span style="display:flex;"><span>    cout <span style="color:#f92672">&lt;&lt;</span> maxSumAlmostUnique(nums, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>) <span style="color:#f92672">&lt;&lt;</span> endl; <span style="color:#75715e">// 6
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h3 id="go-实现">Go 实现<a hidden class="anchor" aria-hidden="true" href="#go-实现">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">maxSumAlmostUnique</span>(<span style="color:#a6e22e">nums</span> []<span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">m</span>, <span style="color:#a6e22e">k</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int64</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">n</span> <span style="color:#f92672">:=</span> len(<span style="color:#a6e22e">nums</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &gt; <span style="color:#a6e22e">n</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">cnt</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">int</span>]<span style="color:#66d9ef">int</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">distinct</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">windowSum</span> <span style="color:#66d9ef">int64</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ans</span> <span style="color:#66d9ef">int64</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> &lt; <span style="color:#a6e22e">n</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span>]
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">+=</span> int64(<span style="color:#a6e22e">x</span>)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cnt</span>[<span style="color:#a6e22e">x</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">distinct</span><span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		<span style="color:#a6e22e">cnt</span>[<span style="color:#a6e22e">x</span>]<span style="color:#f92672">++</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">k</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span><span style="color:#f92672">-</span><span style="color:#a6e22e">k</span>]
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">-=</span> int64(<span style="color:#a6e22e">y</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#a6e22e">cnt</span>[<span style="color:#a6e22e">y</span>]<span style="color:#f92672">--</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">cnt</span>[<span style="color:#a6e22e">y</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">distinct</span><span style="color:#f92672">--</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">k</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">distinct</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">m</span> {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">windowSum</span> &gt; <span style="color:#a6e22e">ans</span> {
+</span></span><span style="display:flex;"><span>				<span style="color:#a6e22e">ans</span> = <span style="color:#a6e22e">windowSum</span>
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ans</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">maxSumAlmostUnique</span>([]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>)) <span style="color:#75715e">// 6</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><hr>
+<h3 id="rust-实现">Rust 实现<a hidden class="anchor" aria-hidden="true" href="#rust-实现">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-rust" data-lang="rust"><span style="display:flex;"><span><span style="color:#66d9ef">use</span> std::collections::HashMap;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">max_sum_almost_unique</span>(nums: <span style="color:#66d9ef">&amp;</span>[<span style="color:#66d9ef">i32</span>], m: <span style="color:#66d9ef">usize</span>, k: <span style="color:#66d9ef">usize</span>) -&gt; <span style="color:#66d9ef">i64</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> n <span style="color:#f92672">=</span> nums.len();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> k <span style="color:#f92672">&gt;</span> n {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> cnt: <span style="color:#a6e22e">HashMap</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">i32</span>, <span style="color:#66d9ef">i32</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">=</span> HashMap::new();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> distinct: <span style="color:#66d9ef">i32</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> window_sum: <span style="color:#66d9ef">i64</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> <span style="color:#66d9ef">mut</span> ans: <span style="color:#66d9ef">i64</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">..</span>n {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> x <span style="color:#f92672">=</span> nums[i];
+</span></span><span style="display:flex;"><span>        window_sum <span style="color:#f92672">+=</span> x <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i64</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">let</span> entry <span style="color:#f92672">=</span> cnt.entry(x).or_insert(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>entry <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>            distinct <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">*</span>entry <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">&gt;=</span> k {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">let</span> y <span style="color:#f92672">=</span> nums[i <span style="color:#f92672">-</span> k];
+</span></span><span style="display:flex;"><span>            window_sum <span style="color:#f92672">-=</span> y <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">i64</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">let</span> Some(e) <span style="color:#f92672">=</span> cnt.get_mut(<span style="color:#f92672">&amp;</span>y) {
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">*</span>e <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">*</span>e <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+</span></span><span style="display:flex;"><span>                    distinct <span style="color:#f92672">-=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&gt;=</span> k <span style="color:#f92672">&amp;&amp;</span> (distinct <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">usize</span>) <span style="color:#f92672">&gt;=</span> m {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> window_sum <span style="color:#f92672">&gt;</span> ans {
+</span></span><span style="display:flex;"><span>                ans <span style="color:#f92672">=</span> window_sum;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    ans
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fn</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">let</span> nums <span style="color:#f92672">=</span> <span style="color:#a6e22e">vec!</span>[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">println!</span>(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span>, max_sum_almost_unique(<span style="color:#f92672">&amp;</span>nums, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>)); <span style="color:#75715e">// 6
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><hr>
+<h3 id="javascript-实现">JavaScript 实现<a hidden class="anchor" aria-hidden="true" href="#javascript-实现">#</a></h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">maxSumAlmostUnique</span>(<span style="color:#a6e22e">nums</span>, <span style="color:#a6e22e">m</span>, <span style="color:#a6e22e">k</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">k</span> <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">nums</span>.<span style="color:#a6e22e">length</span>) <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cnt</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Map</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">distinct</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">let</span> <span style="color:#a6e22e">ans</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">let</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#a6e22e">i</span> <span style="color:#f92672">&lt;</span> <span style="color:#a6e22e">nums</span>.<span style="color:#a6e22e">length</span>; <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span>];
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">x</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">has</span>(<span style="color:#a6e22e">x</span>) <span style="color:#f92672">||</span> <span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">x</span>) <span style="color:#f92672">===</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">distinct</span><span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">set</span>(<span style="color:#a6e22e">x</span>, (<span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">x</span>) <span style="color:#f92672">||</span> <span style="color:#ae81ff">0</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">k</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">y</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">nums</span>[<span style="color:#a6e22e">i</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">k</span>];
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">windowSum</span> <span style="color:#f92672">-=</span> <span style="color:#a6e22e">y</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">set</span>(<span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">y</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">cnt</span>.<span style="color:#a6e22e">get</span>(<span style="color:#a6e22e">y</span>) <span style="color:#f92672">===</span> <span style="color:#ae81ff">0</span>) <span style="color:#a6e22e">distinct</span><span style="color:#f92672">--</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">i</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">k</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">distinct</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">m</span>) {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">ans</span> <span style="color:#f92672">=</span> Math.<span style="color:#a6e22e">max</span>(<span style="color:#a6e22e">ans</span>, <span style="color:#a6e22e">windowSum</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ans</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">maxSumAlmostUnique</span>([<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>)); <span style="color:#75715e">// 6
+</span></span></span></code></pre></div><hr>
+<h2 id="行动号召cta">行动号召（CTA）<a hidden class="anchor" aria-hidden="true" href="#行动号召cta">#</a></h2>
+<ul>
+<li>把这道题在你最熟悉的语言里手写一遍，并加入到自己的「滑动窗口模板库」中。</li>
+<li>找几道「at most k distinct」「at least k distinct」的题，试着用同一套窗口 + 哈希表框架解决。</li>
+<li>回到你的业务代码中，思考是否存在类似「固定窗口 + 多样性约束 + 最大/最小某指标」的问题，尝试用本文的方法重构一处逻辑。</li>
+</ul>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+      <li><a href="http://localhost:1313/tags/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3/">滑动窗口</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/">哈希表</a></li>
+      <li><a href="http://localhost:1313/tags/%E6%95%B0%E7%BB%84/">数组</a></li>
+      <li><a href="http://localhost:1313/tags/%E5%8F%8C%E6%8C%87%E9%92%88/">双指针</a></li>
+      <li><a href="http://localhost:1313/tags/%E9%9D%A2%E8%AF%95%E9%AB%98%E9%A2%91%E9%A2%98/">面试高频题</a></li>
+    </ul>
+
+
+<ul class="share-buttons">
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和 on x"
+            href="https://x.com/intent/tweet/?text=%e5%9b%ba%e5%ae%9a%e9%95%bf%e5%ba%a6%e5%ad%90%e6%95%b0%e7%bb%84%20%2b%20%e8%87%b3%e5%b0%91%20m%20%e4%b8%aa%e4%b8%8d%e5%90%8c%e5%85%83%e7%b4%a0%ef%bc%9a%e5%87%a0%e4%b9%8e%e5%94%af%e4%b8%80%e5%ad%90%e6%95%b0%e7%bb%84%e7%9a%84%e6%9c%80%e5%a4%a7%e5%92%8c&amp;url=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2falmost-unique-subarray-max-sum%2f&amp;hashtags=%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3%2c%e5%93%88%e5%b8%8c%e8%a1%a8%2c%e6%95%b0%e7%bb%84%2c%e5%8f%8c%e6%8c%87%e9%92%88%2c%e9%9d%a2%e8%af%95%e9%ab%98%e9%a2%91%e9%a2%98">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M512 62.554 L 512 449.446 C 512 483.97 483.97 512 449.446 512 L 62.554 512 C 28.03 512 0 483.97 0 449.446 L 0 62.554 C 0 28.03 28.029 0 62.554 0 L 449.446 0 C 483.971 0 512 28.03 512 62.554 Z M 269.951 190.75 L 182.567 75.216 L 56 75.216 L 207.216 272.95 L 63.9 436.783 L 125.266 436.783 L 235.9 310.383 L 332.567 436.783 L 456 436.783 L 298.367 228.367 L 432.367 75.216 L 371.033 75.216 Z M 127.633 110 L 164.101 110 L 383.481 400.065 L 349.5 400.065 Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和 on linkedin"
+            href="https://www.linkedin.com/shareArticle?mini=true&amp;url=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2falmost-unique-subarray-max-sum%2f&amp;title=%e5%9b%ba%e5%ae%9a%e9%95%bf%e5%ba%a6%e5%ad%90%e6%95%b0%e7%bb%84%20%2b%20%e8%87%b3%e5%b0%91%20m%20%e4%b8%aa%e4%b8%8d%e5%90%8c%e5%85%83%e7%b4%a0%ef%bc%9a%e5%87%a0%e4%b9%8e%e5%94%af%e4%b8%80%e5%ad%90%e6%95%b0%e7%bb%84%e7%9a%84%e6%9c%80%e5%a4%a7%e5%92%8c&amp;summary=%e5%9b%ba%e5%ae%9a%e9%95%bf%e5%ba%a6%e5%ad%90%e6%95%b0%e7%bb%84%20%2b%20%e8%87%b3%e5%b0%91%20m%20%e4%b8%aa%e4%b8%8d%e5%90%8c%e5%85%83%e7%b4%a0%ef%bc%9a%e5%87%a0%e4%b9%8e%e5%94%af%e4%b8%80%e5%ad%90%e6%95%b0%e7%bb%84%e7%9a%84%e6%9c%80%e5%a4%a7%e5%92%8c&amp;source=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2falmost-unique-subarray-max-sum%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-288.985,423.278l0,-225.717l-75.04,0l0,225.717l75.04,0Zm270.539,0l0,-129.439c0,-69.333 -37.018,-101.586 -86.381,-101.586c-39.804,0 -57.634,21.891 -67.617,37.266l0,-31.958l-75.021,0c0.995,21.181 0,225.717 0,225.717l75.02,0l0,-126.056c0,-6.748 0.486,-13.492 2.474,-18.315c5.414,-13.475 17.767,-27.434 38.494,-27.434c27.135,0 38.007,20.707 38.007,51.037l0,120.768l75.024,0Zm-307.552,-334.556c-25.674,0 -42.448,16.879 -42.448,39.002c0,21.658 16.264,39.002 41.455,39.002l0.484,0c26.165,0 42.452,-17.344 42.452,-39.002c-0.485,-22.092 -16.241,-38.954 -41.943,-39.002Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和 on reddit"
+            href="https://reddit.com/submit?url=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2falmost-unique-subarray-max-sum%2f&title=%e5%9b%ba%e5%ae%9a%e9%95%bf%e5%ba%a6%e5%ad%90%e6%95%b0%e7%bb%84%20%2b%20%e8%87%b3%e5%b0%91%20m%20%e4%b8%aa%e4%b8%8d%e5%90%8c%e5%85%83%e7%b4%a0%ef%bc%9a%e5%87%a0%e4%b9%8e%e5%94%af%e4%b8%80%e5%ad%90%e6%95%b0%e7%bb%84%e7%9a%84%e6%9c%80%e5%a4%a7%e5%92%8c">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-3.446,265.638c0,-22.964 -18.616,-41.58 -41.58,-41.58c-11.211,0 -21.361,4.457 -28.841,11.666c-28.424,-20.508 -67.586,-33.757 -111.204,-35.278l18.941,-89.121l61.884,13.157c0.756,15.734 13.642,28.29 29.56,28.29c16.407,0 29.706,-13.299 29.706,-29.701c0,-16.403 -13.299,-29.702 -29.706,-29.702c-11.666,0 -21.657,6.792 -26.515,16.578l-69.105,-14.69c-1.922,-0.418 -3.939,-0.042 -5.585,1.036c-1.658,1.073 -2.811,2.761 -3.224,4.686l-21.152,99.438c-44.258,1.228 -84.046,14.494 -112.837,35.232c-7.468,-7.164 -17.589,-11.591 -28.757,-11.591c-22.965,0 -41.585,18.616 -41.585,41.58c0,16.896 10.095,31.41 24.568,37.918c-0.639,4.135 -0.99,8.328 -0.99,12.576c0,63.977 74.469,115.836 166.33,115.836c91.861,0 166.334,-51.859 166.334,-115.836c0,-4.218 -0.347,-8.387 -0.977,-12.493c14.564,-6.47 24.735,-21.034 24.735,-38.001Zm-119.474,108.193c-20.27,20.241 -59.115,21.816 -70.534,21.816c-11.428,0 -50.277,-1.575 -70.522,-21.82c-3.007,-3.008 -3.007,-7.882 0,-10.889c3.003,-2.999 7.882,-3.003 10.885,0c12.777,12.781 40.11,17.317 59.637,17.317c19.522,0 46.86,-4.536 59.657,-17.321c3.016,-2.999 7.886,-2.995 10.885,0.008c3.008,3.011 3.003,7.882 -0.008,10.889Zm-5.23,-48.781c-16.373,0 -29.701,-13.324 -29.701,-29.698c0,-16.381 13.328,-29.714 29.701,-29.714c16.378,0 29.706,13.333 29.706,29.714c0,16.374 -13.328,29.698 -29.706,29.698Zm-160.386,-29.702c0,-16.381 13.328,-29.71 29.714,-29.71c16.369,0 29.689,13.329 29.689,29.71c0,16.373 -13.32,29.693 -29.689,29.693c-16.386,0 -29.714,-13.32 -29.714,-29.693Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和 on facebook"
+            href="https://facebook.com/sharer/sharer.php?u=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2falmost-unique-subarray-max-sum%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-106.468,0l0,-192.915l66.6,0l12.672,-82.621l-79.272,0l0,-53.617c0,-22.603 11.073,-44.636 46.58,-44.636l36.042,0l0,-70.34c0,0 -32.71,-5.582 -63.982,-5.582c-65.288,0 -107.96,39.569 -107.96,111.204l0,62.971l-72.573,0l0,82.621l72.573,0l0,192.915l-191.104,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和 on whatsapp"
+            href="https://api.whatsapp.com/send?text=%e5%9b%ba%e5%ae%9a%e9%95%bf%e5%ba%a6%e5%ad%90%e6%95%b0%e7%bb%84%20%2b%20%e8%87%b3%e5%b0%91%20m%20%e4%b8%aa%e4%b8%8d%e5%90%8c%e5%85%83%e7%b4%a0%ef%bc%9a%e5%87%a0%e4%b9%8e%e5%94%af%e4%b8%80%e5%ad%90%e6%95%b0%e7%bb%84%e7%9a%84%e6%9c%80%e5%a4%a7%e5%92%8c%20-%20http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2falmost-unique-subarray-max-sum%2f">
+            <svg version="1.1" viewBox="0 0 512 512" xml:space="preserve" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M449.446,0c34.525,0 62.554,28.03 62.554,62.554l0,386.892c0,34.524 -28.03,62.554 -62.554,62.554l-386.892,0c-34.524,0 -62.554,-28.03 -62.554,-62.554l0,-386.892c0,-34.524 28.029,-62.554 62.554,-62.554l386.892,0Zm-58.673,127.703c-33.842,-33.881 -78.847,-52.548 -126.798,-52.568c-98.799,0 -179.21,80.405 -179.249,179.234c-0.013,31.593 8.241,62.428 23.927,89.612l-25.429,92.884l95.021,-24.925c26.181,14.28 55.659,21.807 85.658,21.816l0.074,0c98.789,0 179.206,-80.413 179.247,-179.243c0.018,-47.895 -18.61,-92.93 -52.451,-126.81Zm-126.797,275.782l-0.06,0c-26.734,-0.01 -52.954,-7.193 -75.828,-20.767l-5.441,-3.229l-56.386,14.792l15.05,-54.977l-3.542,-5.637c-14.913,-23.72 -22.791,-51.136 -22.779,-79.287c0.033,-82.142 66.867,-148.971 149.046,-148.971c39.793,0.014 77.199,15.531 105.329,43.692c28.128,28.16 43.609,65.592 43.594,105.4c-0.034,82.149 -66.866,148.983 -148.983,148.984Zm81.721,-111.581c-4.479,-2.242 -26.499,-13.075 -30.604,-14.571c-4.105,-1.495 -7.091,-2.241 -10.077,2.241c-2.986,4.483 -11.569,14.572 -14.182,17.562c-2.612,2.988 -5.225,3.364 -9.703,1.12c-4.479,-2.241 -18.91,-6.97 -36.017,-22.23c-13.314,-11.876 -22.304,-26.542 -24.916,-31.026c-2.612,-4.484 -0.279,-6.908 1.963,-9.14c2.016,-2.007 4.48,-5.232 6.719,-7.847c2.24,-2.615 2.986,-4.484 4.479,-7.472c1.493,-2.99 0.747,-5.604 -0.374,-7.846c-1.119,-2.241 -10.077,-24.288 -13.809,-33.256c-3.635,-8.733 -7.327,-7.55 -10.077,-7.688c-2.609,-0.13 -5.598,-0.158 -8.583,-0.158c-2.986,0 -7.839,1.121 -11.944,5.604c-4.105,4.484 -15.675,15.32 -15.675,37.364c0,22.046 16.048,43.342 18.287,46.332c2.24,2.99 31.582,48.227 76.511,67.627c10.685,4.615 19.028,7.371 25.533,9.434c10.728,3.41 20.492,2.929 28.209,1.775c8.605,-1.285 26.499,-10.833 30.231,-21.295c3.732,-10.464 3.732,-19.431 2.612,-21.298c-1.119,-1.869 -4.105,-2.99 -8.583,-5.232Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和 on telegram"
+            href="https://telegram.me/share/url?text=%e5%9b%ba%e5%ae%9a%e9%95%bf%e5%ba%a6%e5%ad%90%e6%95%b0%e7%bb%84%20%2b%20%e8%87%b3%e5%b0%91%20m%20%e4%b8%aa%e4%b8%8d%e5%90%8c%e5%85%83%e7%b4%a0%ef%bc%9a%e5%87%a0%e4%b9%8e%e5%94%af%e4%b8%80%e5%ad%90%e6%95%b0%e7%bb%84%e7%9a%84%e6%9c%80%e5%a4%a7%e5%92%8c&amp;url=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2falmost-unique-subarray-max-sum%2f">
+            <svg version="1.1" xml:space="preserve" viewBox="2 2 28 28" height="30px" width="30px" fill="currentColor">
+                <path
+                    d="M26.49,29.86H5.5a3.37,3.37,0,0,1-2.47-1,3.35,3.35,0,0,1-1-2.47V5.48A3.36,3.36,0,0,1,3,3,3.37,3.37,0,0,1,5.5,2h21A3.38,3.38,0,0,1,29,3a3.36,3.36,0,0,1,1,2.46V26.37a3.35,3.35,0,0,1-1,2.47A3.38,3.38,0,0,1,26.49,29.86Zm-5.38-6.71a.79.79,0,0,0,.85-.66L24.73,9.24a.55.55,0,0,0-.18-.46.62.62,0,0,0-.41-.17q-.08,0-16.53,6.11a.59.59,0,0,0-.41.59.57.57,0,0,0,.43.52l4,1.24,1.61,4.83a.62.62,0,0,0,.63.43.56.56,0,0,0,.4-.17L16.54,20l4.09,3A.9.9,0,0,0,21.11,23.15ZM13.8,20.71l-1.21-4q8.72-5.55,8.78-5.55c.15,0,.23,0,.23.16a.18.18,0,0,1,0,.06s-2.51,2.3-7.52,6.8Z" />
+            </svg>
+        </a>
+    </li>
+    <li>
+        <a target="_blank" rel="noopener noreferrer" aria-label="share 固定长度子数组 &#43; 至少 m 个不同元素：几乎唯一子数组的最大和 on ycombinator"
+            href="https://news.ycombinator.com/submitlink?t=%e5%9b%ba%e5%ae%9a%e9%95%bf%e5%ba%a6%e5%ad%90%e6%95%b0%e7%bb%84%20%2b%20%e8%87%b3%e5%b0%91%20m%20%e4%b8%aa%e4%b8%8d%e5%90%8c%e5%85%83%e7%b4%a0%ef%bc%9a%e5%87%a0%e4%b9%8e%e5%94%af%e4%b8%80%e5%ad%90%e6%95%b0%e7%bb%84%e7%9a%84%e6%9c%80%e5%a4%a7%e5%92%8c&u=http%3a%2f%2flocalhost%3a1313%2falg%2fleetcode%2falmost-unique-subarray-max-sum%2f">
+            <svg version="1.1" xml:space="preserve" width="30px" height="30px" viewBox="0 0 512 512" fill="currentColor"
+                xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape">
+                <path
+                    d="M449.446 0C483.971 0 512 28.03 512 62.554L512 449.446C512 483.97 483.97 512 449.446 512L62.554 512C28.03 512 0 483.97 0 449.446L0 62.554C0 28.03 28.029 0 62.554 0L449.446 0ZM183.8767 87.9921H121.8427L230.6673 292.4508V424.0079H281.3328V292.4508L390.1575 87.9921H328.1233L256 238.2489z" />
+            </svg>
+        </a>
+    </li>
+</ul>
+
+  </footer>
+</article>
+    </main>
+    
+<footer class="footer">
+        <span>&copy; 2026 <a href="http://localhost:1313/">Jeanphilo Blog</a></span> · 
+
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu');
+    if (menu) {
+        
+        const scrollPosition = localStorage.getItem("menu-scroll-position");
+        if (scrollPosition) {
+            menu.scrollLeft = parseInt(scrollPosition, 10);
+        }
+        
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.querySelector("html");
+        if (html.dataset.theme === "dark") {
+            html.dataset.theme = 'light';
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            html.dataset.theme = 'dark';
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = '复制';
+
+        function copyingDone() {
+            copybutton.innerHTML = '已复制！';
+            setTimeout(() => {
+                copybutton.innerHTML = '复制';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

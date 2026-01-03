@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Security on Jeanphilo Blog</title>
+    <link>http://localhost:1313/en/categories/security/</link>
+    <description>Recent content in Security on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 16 Dec 2025 18:12:00 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/categories/security/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>XOR and RC4: From Principles to Go Practice (with Safer Alternatives)</title>
+      <link>http://localhost:1313/en/dev/go/xor-rec4-primer/</link>
+      <pubDate>Tue, 16 Dec 2025 18:12:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/dev/go/xor-rec4-primer/</guid>
+      <description>An intro to XOR and RC4 for Go/backend engineers, with runnable examples and safer alternatives.</description>
+    </item>
+    <item>
+      <title>UFW &#43; CrowdSec: Stop Malicious Port Scans (From Fail2ban Pain to a Modern Solution)</title>
+      <link>http://localhost:1313/en/linux/linux/ufw-crowdsec-portscan/</link>
+      <pubDate>Sat, 22 Nov 2025 12:00:00 +0800</pubDate>
+      <guid>http://localhost:1313/en/linux/linux/ufw-crowdsec-portscan/</guid>
+      <description>&lt;h1 id=&#34;ufw--crowdsec-stop-malicious-port-scans&#34;&gt;UFW + CrowdSec: Stop Malicious Port Scans&lt;/h1&gt;
+&lt;p&gt;&lt;strong&gt;Subtitle / Abstract:&lt;/strong&gt; How do you protect exposed server ports? This guide shows how to move past Fail2ban regex hell and build a stable, automated, intelligent port-scan defense system.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;target-readers&#34;&gt;Target readers&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Developers using FRP or reverse tunnels&lt;/li&gt;
+&lt;li&gt;Operators of cloud servers (Tencent, Alibaba, AWS, etc.)&lt;/li&gt;
+&lt;li&gt;Linux users who want to stop port scans and SSH brute force&lt;/li&gt;
+&lt;li&gt;People using Fail2ban who want a modern alternative&lt;/li&gt;
+&lt;li&gt;Anyone improving personal server security&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;background--motivation-why-you-need-port-scan-defense&#34;&gt;Background / Motivation: Why you need port-scan defense&lt;/h2&gt;
+&lt;p&gt;When you run FRP (frps + frpc) or expose multiple ports, you will often see:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

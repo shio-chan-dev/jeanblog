@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Gap-Sequence on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/gap-sequence/</link>
+    <description>Recent content in Gap-Sequence on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 03 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/gap-sequence/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>排序专题（三）：希尔排序——从插入到分组增量的效率跃迁</title>
+      <link>http://localhost:1313/alg/leetcode/3.sorting-series-shell-sort/</link>
+      <pubDate>Wed, 03 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/3.sorting-series-shell-sort/</guid>
+      <description>深入解析希尔排序的原理、增量策略与工程用法，附多场景示例和 Python/C/C++/Go/Rust/JS 实现，帮助理解从插入到 O(n log^2 n) 的过渡。</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Accessibility on Jeanphilo Blog</title>
+    <link>http://localhost:1313/en/tags/accessibility/</link>
+    <description>Recent content in Accessibility on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 07 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/en/tags/accessibility/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Svelte Button Configuration Guide: States, Styles, and Accessibility</title>
+      <link>http://localhost:1313/en/dev/frontend/svelte-button-config-guide/</link>
+      <pubDate>Sun, 07 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/en/dev/frontend/svelte-button-config-guide/</guid>
+      <description>Build reusable buttons in Svelte: dynamic classes, optional chaining and nullish coalescing, safe defaults, state-driven styles, accessibility, testing, and common pitfalls.</description>
+    </item>
+  </channel>
+</rss>

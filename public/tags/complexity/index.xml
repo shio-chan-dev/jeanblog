@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Complexity on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/complexity/</link>
+    <description>Recent content in Complexity on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 01 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/complexity/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>排序专题序章：如何选算法——时间/空间/稳定性/场景速查</title>
+      <link>http://localhost:1313/alg/leetcode/1.sorting-series-preface/</link>
+      <pubDate>Mon, 01 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/1.sorting-series-preface/</guid>
+      <description>用 ACERS 模板快速梳理常见排序算法的适用场景、复杂度、稳定性与工程实现，附多语言可运行示例与选型清单。</description>
+    </item>
+  </channel>
+</rss>

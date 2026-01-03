@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Selection on Jeanphilo Blog</title>
+    <link>http://localhost:1313/tags/selection/</link>
+    <description>Recent content in Selection on Jeanphilo Blog</description>
+    <generator>Hugo -- 0.152.2</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 09 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/selection/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>排序专题（终篇）：选型实战——按规模、稳定性、内存与分布选择排序算法</title>
+      <link>http://localhost:1313/alg/leetcode/9.sorting-series-selection-guide/</link>
+      <pubDate>Tue, 09 Dec 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/alg/leetcode/9.sorting-series-selection-guide/</guid>
+      <description>以实战视角整理排序选型：给出规模/分布/稳定性/内存维度的决策表、工程场景示例、测试清单与常见坑，快速落地前七篇内容。</description>
+    </item>
+  </channel>
+</rss>
