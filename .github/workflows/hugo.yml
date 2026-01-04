@@ -22,17 +22,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          submodules: true        # 你 themes/PaperMod 是子模块的话这行很关键
+          submodules: recursive
           fetch-depth: 0
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: "latest"
-          extended: true          # PaperMod 需要 extended 版本
+          hugo-version: "0.123.7"
+          extended: true
 
       - name: Build
-        run: hugo --minify
+        run: hugo --minify --baseURL "https://shio-chan-dev.github.io/jeanblog/"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -41,10 +41,10 @@ jobs:
 
   deploy:
     needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
