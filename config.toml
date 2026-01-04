@@ -17,10 +17,12 @@ defaultContentLanguageInSubdir = true
     languageName = "中文"
     languageCode = "zh-cn"
     weight = 1
+    contentDir = "content/zh"
   [languages.en]
     languageName = "English"
     languageCode = "en-us"
     weight = 2
+    contentDir = "content/en"
 
 [taxonomies]
   category = "categories"
@@ -122,4 +124,3 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     name = "Tags"
     pageRef = "tags"
     weight = 60
-
