@@ -5,7 +5,7 @@ title = "Jeanphilo Blog"
 pagination.pagerSize = 10
 
 defaultContentLanguage = "zh"
-defaultContentLanguageInSubdir = false
+defaultContentLanguageInSubdir = true
 
 [module]
   [[module.imports]]
