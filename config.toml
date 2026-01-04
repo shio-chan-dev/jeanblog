@@ -1,11 +1,11 @@
-baseURL = "https://shio-chan-dev.github.io/"
+baseURL = "https://shio-chan-dev.github.io/jeanblog/"
 languageCode = "zh-cn"
 title = "Jeanphilo Blog"
 
 pagination.pagerSize = 10
 
-defaultContentLanguage = "zh"
-defaultContentLanguageInSubdir = true
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = false
 
 [module]
   [[module.imports]]
