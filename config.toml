@@ -42,6 +42,7 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
   showToc = true
   showCodeCopyButtons = true
   showAllPostsArchive = true
+  mainSections = ["notes", "dev", "linux", "alg", "thoughts"]
 
   [[params.socialIcons]]
     name = "github"
