@@ -104,6 +104,56 @@ public:
 };
 ```
 
+### **完整可运行版本（含 main）**
+
+下面代码可直接编译运行，读取一行 0/1 字符串并输出答案：
+
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Solution {
+public:
+    int numSub(const string& s) {
+        constexpr long long MOD = 1'000'000'007;
+        long long ans = 0;
+        int last0 = -1;
+
+        for (int i = 0; i < (int)s.size(); i++) {
+            if (s[i] == '0') {
+                last0 = i;
+            } else {
+                ans += i - last0;
+                ans %= MOD;
+            }
+        }
+        return (int)ans;
+    }
+};
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    string s;
+    if (!(cin >> s)) {
+        return 0;
+    }
+    Solution sol;
+    cout << sol.numSub(s) << "\n";
+    return 0;
+}
+```
+
+编译与运行示例：
+
+```bash
+g++ -std=c++17 -O2 -o numsub numsub.cpp
+echo 0110111 | ./numsub
+```
+
 ---
 
 # **解释与原理：为什么这样做？**
