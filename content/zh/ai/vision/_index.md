@@ -1,4 +1,4 @@
 +++
 title = "Vision"
-description = "计算机视觉与图像模型实践"
+description = "计算机视觉基础与工程实践"
 +++
