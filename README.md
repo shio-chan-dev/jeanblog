@@ -41,6 +41,11 @@ hugo server -D
 └── .github/workflows/   # GitHub Pages 部署流水线
 ```
 
+## 自定义改动
+- **菜单链接修正**：`layouts/partials/header.html` 覆盖 PaperMod 的 header 生成逻辑，使用 `.Page.RelPermalink` 避免多语言路径重复（细节见 `layouts/README.md`）。
+- **Section 列表顺序**：`layouts/section/list.html` 让 section 列表页先展示子目录（`.Sections`），再分页展示文章（`.RegularPages`）；子目录需有 `_index.md` 才会被识别为 section。
+- **主题更新提示**：如升级 PaperMod 模块，请检查以上覆盖模板是否需要同步调整。
+
 ## 写作流程
 1. **创建草稿**
    ```bash
