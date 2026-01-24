@@ -103,6 +103,12 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     weight = 20
 
   [[languages.en.menu.main]]
+    identifier = "ai"
+    name = "AI"
+    pageRef = "ai"
+    weight = 25
+
+  [[languages.en.menu.main]]
     identifier = "alg"
     name = "Algorithms"
     pageRef = "alg"
