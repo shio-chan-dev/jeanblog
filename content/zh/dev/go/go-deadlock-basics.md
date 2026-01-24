@@ -51,6 +51,21 @@ fatal error: all goroutines are asleep - deadlock!
 * **Mutex 不可重入**：同一 goroutine 里重复 Lock 会自我阻塞。
 * **锁顺序一致**：多把锁必须统一获取顺序，避免交叉等待。
 
+### **常见出现背景（什么时候容易发生）**
+
+* **生产者/消费者启动顺序错位**：发送先发生、接收未就绪，常见于任务队列、worker pool。
+* **扇出/扇入未配对**：启动了多个 worker，但聚合端没把结果全部读完。
+* **pipeline 未关闭或退出信号缺失**：上游结束但下游仍 `range` 等待。
+* **持锁做阻塞操作**：拿着锁去收/发 channel、网络 I/O、或等待另一个锁。
+* **多锁资源交叉持有**：两个 goroutine 以不同顺序拿锁，形成循环等待。
+
+### **为什么会出现（根因归纳）**
+
+1. **等待关系闭环**：A 等 B，B 等 C，C 等 A，没有外力打破。
+2. **同步原语用法不成对**：channel 收发未配对、WaitGroup 计数未归零。
+3. **协程生命周期不一致**：生产者先退出/未 close，消费者无限等。
+4. **锁粒度/顺序不清晰**：共享资源越多，锁顺序越容易失控。
+
 ---
 
 ## A — Algorithm（题目与算法）
@@ -59,7 +74,8 @@ Go 运行时判定死锁的核心逻辑是：
 当主 goroutine 在等待，且**所有其他 goroutine 也都在等待**，并且没有任何事件能
 推动程序继续执行，runtime 会直接报错并终止。
 
-下面是最常见、最“纯粹”的死锁示例（演示用，实际项目别这么写）。
+下面是最常见、最“纯粹”的死锁示例（演示用，实际项目别这么写），
+每个错误示例后都给出修复版便于对照。
 
 **示例 1：从没人写入的 channel 里接收**
 
@@ -69,6 +85,22 @@ package main
 func main() {
 	ch := make(chan int) // 无缓冲
 	<-ch                 // 一直等发送者，没人写 -> 死锁
+}
+```
+
+**修复 1：保证有发送者（或引入缓冲并确保后续接收）**
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan int)
+	go func() {
+		ch <- 1
+	}()
+	fmt.Println(<-ch)
 }
 ```
 
@@ -83,6 +115,24 @@ func main() {
 }
 ```
 
+**修复 2：启动接收方，或让发送发生在有接收者时**
+
+```go
+package main
+
+import "fmt"
+
+func main() {
+	ch := make(chan int)
+
+	go func() {
+		fmt.Println(<-ch)
+	}()
+
+	ch <- 1
+}
+```
+
 **示例 3：WaitGroup Add/Done 不匹配**
 
 ```go
@@ -94,6 +144,26 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(1)
 	wg.Wait() // 没有任何 goroutine 调用 Done -> 永远等待
+}
+```
+
+**修复 3：Add/Done 成对出现，Add 在启动 goroutine 前**
+
+```go
+package main
+
+import "sync"
+
+func main() {
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		// do work
+	}()
+
+	wg.Wait()
 }
 ```
 
@@ -125,6 +195,19 @@ func main() {
 **背景**：主 goroutine 发送任务，但 worker 没启动。  
 **为什么适用**：无缓冲 channel 收发不对齐直接死锁。  
 
+**错误写法：先发送再启动 worker，发送端永久阻塞**
+
+```go
+package main
+
+func main() {
+	tasks := make(chan int)
+	tasks <- 1
+}
+```
+
+**修复：先启动 worker，再发送并关闭**
+
 ```go
 package main
 
@@ -150,6 +233,27 @@ func main() {
 **背景**：主协程等全部任务结束，但 worker 忘了 Done。  
 **为什么适用**：计数错就会永久等待。  
 
+**错误写法：只 Add 不 Done**
+
+```go
+package main
+
+import "sync"
+
+func main() {
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	go func() {
+		// 忘记 Done
+	}()
+
+	wg.Wait()
+}
+```
+
+**修复：Add/Done 成对出现**
+
 ```go
 package main
 
@@ -172,6 +276,8 @@ func main() {
 
 **背景**：两个 goroutine 交叉加锁，形成 ABBA。  
 **为什么适用**：共享资源多时，锁顺序不一致最容易出问题。  
+
+**错误写法：锁顺序不一致导致循环等待**
 
 ```go
 package main
@@ -202,6 +308,45 @@ func main() {
 		a.Lock()
 		a.Unlock()
 		b.Unlock()
+	}()
+
+	wg.Wait()
+}
+```
+
+**修复：统一锁顺序或封装成统一入口**
+
+```go
+package main
+
+import "sync"
+
+func main() {
+	var a, b sync.Mutex
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	lockBoth := func() {
+		a.Lock()
+		b.Lock()
+	}
+	unlockBoth := func() {
+		b.Unlock()
+		a.Unlock()
+	}
+
+	go func() {
+		defer wg.Done()
+		lockBoth()
+		// do work
+		unlockBoth()
+	}()
+
+	go func() {
+		defer wg.Done()
+		lockBoth()
+		// do work
+		unlockBoth()
 	}()
 
 	wg.Wait()
@@ -270,6 +415,9 @@ go func() {
 <-ch
 ```
 
+如果使用 `range` 消费 channel，确保生产者在合适时机 `close(ch)`，
+或通过 `context` / done channel 提供退出信号。
+
 3️⃣ **检查 WaitGroup 计数是否匹配**
 
 ```go
@@ -282,11 +430,15 @@ go func() {
 wg.Wait()
 ```
 
+确保 `Add` 在启动 goroutine 前完成，避免计数被错过。
+
 4️⃣ **统一锁顺序**
 
 ```
 所有 goroutine 获取锁的顺序必须一致：A -> B -> C
 ```
+
+同时避免在持锁时执行阻塞操作（channel 收发、网络 I/O、等待另一个锁）。
 
 ---
 
