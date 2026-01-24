@@ -17,6 +17,7 @@ description: Create Hugo blog posts for LeetCode-style problems in this project 
 5. Get the current timestamp by running `date "+%Y-%m-%dT%H:%M:%S%:z"` and use it in `date`.
 6. Write the full article in Chinese technical style, including:
    - Title, subtitle/summary, target readers, background/motivation, core concepts
+   - Thought-process derivation: from naive/brute force to bottleneck, key observation, method choice, and why it is correct
    - ACERS sections (Algorithm, Concepts, Engineering, Reflection, Summary)
    - Practical steps, runnable examples, explanations, FAQs, best practices
    - Meta info (reading time, tags, SEO keywords, meta description) and CTA
@@ -40,4 +41,5 @@ description: Create Hugo blog posts for LeetCode-style problems in this project 
 - Follow `docs/leetcode_std.md` exactly; do not omit required sections.
 - Use runnable code, no pseudocode.
 - Keep front matter consistent with existing LeetCode posts.
+- Do not present only the final solution; include the reasoning path and key decisions.
 - Do not include secrets or private data.
