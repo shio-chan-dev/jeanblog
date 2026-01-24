@@ -1,0 +1,43 @@
+{{- define "main" }}
+{{/* Section list override: show subsections first, then paginated pages. */}}
+{{- if .Title }}
+{{/* Header block with breadcrumbs, title, and description. */}}
+<header class="page-header">
+    {{- if site.Params.showBreadCrumbs }}
+        {{- partial "breadcrumbs.html" . }}
+    {{- end }}
+    <h1>
+        {{- .Title -}}
+    </h1>
+    {{- if .Description }}
+    <div class="post-description">
+        {{- .Description -}}
+    </div>
+    {{- end }}
+</header>
+{{- end }}
+
+{{- if .Content }}
+{{/* Optional section intro content from _index.md. */}}
+<div class="post-content">
+    {{- .Content -}}
+</div>
+{{- end }}
+
+{{- $sections := .Sections }}
+{{/* Subsections first so folders are visible before posts. */}}
+{{- if gt (len $sections) 0 }}
+    {{- range $sections }}
+        {{- partial "entry.html" . }}
+    {{- end }}
+{{- end }}
+
+{{- $pages := .RegularPages }}
+{{/* Regular pages follow, using the same pagination as the theme. */}}
+{{- $paginator := .Paginate $pages }}
+{{- range $paginator.Pages }}
+    {{- partial "entry.html" . }}
+{{- end }}
+
+{{- partial "pagination.html" . }}
+{{- end }}
