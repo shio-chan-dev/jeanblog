@@ -42,7 +42,7 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
   showToc = true
   showCodeCopyButtons = true
   showAllPostsArchive = true
-  mainSections = ["notes", "dev", "linux", "alg", "thoughts"]
+  mainSections = ["notes", "dev", "ai", "linux", "alg", "thoughts"]
 
   [[params.socialIcons]]
     name = "github"
@@ -66,6 +66,12 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     weight = 20
 
   [[languages.zh.menu.main]]
+    identifier = "ai"
+    name = "AI"
+    pageRef = "ai"
+    weight = 25
+
+  [[languages.zh.menu.main]]
     identifier = "alg"
     name = "算法"
     pageRef = "alg"
@@ -82,12 +88,6 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     name = "分类"
     pageRef = "categories"
     weight = 50
-
-  [[languages.zh.menu.main]]
-    identifier = "tags"
-    name = "标签"
-    pageRef = "tags"
-    weight = 60
 
 [languages.en.menu]
   [[languages.en.menu.main]]
@@ -119,9 +119,3 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     name = "Categories"
     pageRef = "categories"
     weight = 50
-
-  [[languages.en.menu.main]]
-    identifier = "tags"
-    name = "Tags"
-    pageRef = "tags"
-    weight = 60
