@@ -89,6 +89,32 @@ water[i] = min(maxLeft[i], maxRight[i]) - height[i]
 
 ---
 
+## 思路推导（从朴素到双指针）
+
+### 朴素解法与瓶颈
+
+对每个位置 `i`，分别向左、向右扫描找到最高柱子，再计算  
+`min(maxLeft, maxRight) - height[i]`。  
+这样每个位置都会重复扫描两侧，时间复杂度为 **O(n^2)**，瓶颈在“重复找最大值”。
+
+### 关键观察
+
+每个位置的水位只与两侧最高值的**较小者**有关。  
+因此如果我们能维护左右最高值，就能决定一侧的水量，无需再回头。
+
+### 方案选择与正确性直觉
+
+用双指针从两侧向中间移动，同时维护 `leftMax` 与 `rightMax`。  
+
+- 若 `leftMax <= rightMax`，则当前位置 `l` 的水位由 `leftMax` 决定：  
+  右侧最高值至少为 `rightMax`，而 `rightMax >= leftMax`，  
+  所以 `min(leftMax, rightMax) = leftMax`，可安全结算 `l` 并右移。
+- 若 `leftMax > rightMax`，同理可安全结算右侧 `r` 并左移。
+
+这个选择让每个位置只处理一次，时间 **O(n)**，空间 **O(1)**。
+
+---
+
 ## 实践指南 / 步骤
 
 1. 设置双指针 `l=0, r=n-1`，并维护 `leftMax`、`rightMax`  
