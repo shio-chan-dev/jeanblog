@@ -28,7 +28,7 @@
 {{/* Subsections first so folders are visible before posts. */}}
 {{- if gt (len $sections) 0 }}
     {{- range $sections }}
-        {{- partial "entry.html" . }}
+        {{- partial "post_entry.html" . }}
     {{- end }}
 {{- end }}
 
@@ -36,7 +36,7 @@
 {{/* Regular pages follow, using the same pagination as the theme. */}}
 {{- $paginator := .Paginate $pages }}
 {{- range $paginator.Pages }}
-    {{- partial "entry.html" . }}
+    {{- partial "post_entry.html" . }}
 {{- end }}
 
 {{- partial "pagination.html" . }}
