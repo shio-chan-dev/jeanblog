@@ -33,3 +33,4 @@ minutes = ceil(
   - additional tradeoff analysis
   - failure case or counterexample
   - one more engineering scenario
+ - Only deepen the chosen core concepts using the PDKH ladder; do not add unrelated parallel topics.

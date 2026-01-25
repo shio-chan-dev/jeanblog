@@ -18,6 +18,8 @@
 - CTA is present.
  - Each major section includes at least one concrete anchor (number/constraint/formula/counterexample).
  - At least one explicit limitation or counterexample is included.
+ - Deepening ladder applied to 1-2 named core concepts (PDKH).
+ - Expansion for length stays within those concepts; no unrelated parallel topics added.
 
 ## Front Matter
 - YAML front matter includes: title, subtitle, date, summary, tags, categories, keywords, readingTime, draft.

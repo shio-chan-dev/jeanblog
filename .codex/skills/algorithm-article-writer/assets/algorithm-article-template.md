@@ -23,6 +23,11 @@
 - Complexity headline (with n or d):
 - Common pitfall (with example or failure case):
 
+## Deepening Focus (PDKH Ladder)
+- Choose 1-2 core concepts to deepen (name them).
+- Apply the PDKH steps from `references/deepening-ladder.md` to each concept.
+- No new parallel topics; deepen the same concept through the ladder.
+
 ## Master Mental Model
 - Core abstraction (the invariant or structure you are really exploiting):
 - Problem family it belongs to (e.g., interval DP, monotonic structure, flow, greedy-exchange):
@@ -92,10 +97,9 @@
 3. Scenario C: background, why it fits, minimal code snippet.
 
 ## Content Expansion Knobs (Use if below minimum reading time)
-- Add a second worked example with contrasting input scale or distribution.
-- Add one micro-derivation with a numeric trace (>= 3 steps).
-- Add a quantified tradeoff table (time/space/accuracy).
-- Add a second counterexample or failure mode with fix.
+- Deepen the chosen concepts with another PDKH step (e.g., formalization or counterexample).
+- Add a second worked example only if it is for the same chosen concept.
+- Add a quantified tradeoff table only if it compares variants of the same concept.
 
 ## Alternatives and Tradeoffs
 - Alternative 1 vs current (quantify tradeoff):
