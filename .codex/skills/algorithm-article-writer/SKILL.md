@@ -9,7 +9,7 @@ description: Write long-form, high-density algorithm explanation posts for this 
 Use when the user requests an algorithm explanation post (concept, technique, or series) focused on fast mastery with runnable code. Do not use for LeetCode problem writeups or paper reviews.
 
 ## Workflow
-1. Read `docs/std.md` and `assets/algorithm-article-template.md`.
+1. Read `docs/std.md`, `assets/algorithm-article-template.md`, `references/depth-checklist.md`, and `references/reading-time-estimator.md`.
 2. Gather required inputs: algorithm/topic, target audience, target language (or infer), code-language constraints, output path override, and any examples/constraints.
 3. Choose output path:
    - If the algorithm is AI/ML-specific and a relevant folder exists under `content/<lang>/ai/`, use `content/<lang>/ai/<topic>/<slug>.md`.
@@ -25,12 +25,17 @@ Use when the user requests an algorithm explanation post (concept, technique, or
    - At least one worked example (input/output or trace).
    - Naive-to-optimized reasoning path and tradeoffs.
    - Correctness reasoning (proof sketch or invariant).
-7. Fill YAML front matter:
+7. Run an anchor pass using `references/depth-checklist.md`; add missing numeric examples, constraints, formulas, or counterexamples.
+8. Run an anti-fluff rewrite: remove generic phrasing and replace with concrete, testable statements.
+9. Compute reading time using `scripts/estimate_reading_time.py` and the rules in `references/reading-time-estimator.md`.
+   - If estimated minutes < `min_required` (default 15), expand content with meaningful material until it meets the minimum.
+   - Set `readingTime` to the computed estimate (rounded up); it must never be lower than the estimate.
+10. Fill YAML front matter:
    - `title`, `subtitle`, `date`, `summary`, `tags`, `categories`, `keywords`, `readingTime`, `draft`.
    - Use `date "+%Y-%m-%dT%H:%M:%S%:z"` for `date`.
    - Target `readingTime` >= 15 minutes unless the user requests shorter.
-8. Validate with `references/acceptance-criteria.md` and fix gaps.
-9. Report output (path, date, notes, checks).
+11. Validate with `references/acceptance-criteria.md` and fix gaps.
+12. Report output (path, date, notes, checks).
 
 ## Required Inputs
 - Algorithm/topic and scope.
@@ -60,6 +65,9 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 - Do not edit `themes/`, config files, or generated outputs.
 - Use ASCII filenames by default.
 - No secrets or PII.
+- Every major section must include at least one concrete anchor as defined in `references/depth-checklist.md`.
+- `readingTime` must be >= the computed estimate from `scripts/estimate_reading_time.py`.
+- If the estimate is below the minimum threshold, expand content with meaningful material (do not pad with fluff).
 
 ## Verification
 - Front matter valid and required fields present.

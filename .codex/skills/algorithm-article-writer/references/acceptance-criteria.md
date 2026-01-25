@@ -16,10 +16,13 @@
 - Summary includes at least 4 concrete takeaways.
 - References/further reading are provided.
 - CTA is present.
+ - Each major section includes at least one concrete anchor (number/constraint/formula/counterexample).
+ - At least one explicit limitation or counterexample is included.
 
 ## Front Matter
 - YAML front matter includes: title, subtitle, date, summary, tags, categories, keywords, readingTime, draft.
 - readingTime indicates long-form depth (>= 15 min) unless user requested shorter.
+- readingTime is >= computed estimate from `scripts/estimate_reading_time.py`.
 - Slug and output path follow project taxonomy.
 
 ## Quality Bar

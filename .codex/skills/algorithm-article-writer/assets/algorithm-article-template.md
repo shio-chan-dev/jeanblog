@@ -2,6 +2,7 @@
 
 > Fill every section. Keep signal density high: each paragraph should add a new idea, tradeoff, or application detail.
 > Include expert signals: abstraction, bounds intuition, decision criteria, and implementation realities.
+> Each major section must include at least one concrete anchor (number/constraint/formula/counterexample).
 
 ## Title
 - <Clear, keyword-rich, specific>
@@ -13,14 +14,14 @@
 - <Beginner/Intermediate/Advanced + who benefits>
 
 ## Background / Motivation
-- <Why this algorithm matters, where it fails without it>
+- <Why this algorithm matters, where it fails without it. Include a measurable bottleneck.>
 
 ## Quick Mastery Map (60-120s)
 - Problem shape:
 - Core idea in one line:
 - When to use / avoid:
-- Complexity headline:
-- Common pitfall:
+- Complexity headline (with n or d):
+- Common pitfall (with example or failure case):
 
 ## Master Mental Model
 - Core abstraction (the invariant or structure you are really exploiting):
@@ -31,20 +32,20 @@
 - Definitions:
 - Invariants or key properties:
 - Data structures:
-- Formulae (if any):
+- Formulae (define variables):
 
 ## Feasibility and Lower Bound Intuition
-- What cannot be done faster (informal lower bound reasoning):
-- When input features break the model:
+- What cannot be done faster (informal lower bound reasoning with a numeric or regime):
+- When input features break the model (counterexample):
 
 ## Problem Framing
 - Input/Output shape:
-- Constraints (if known):
+- Constraints (if known, include a numeric range):
 - Optimization target (time/space/accuracy):
 
 ## Baseline and Bottleneck
-- Naive approach:
-- Bottleneck and why it fails:
+- Naive approach (with complexity):
+- Bottleneck and why it fails (quantify if possible):
 
 ## Key Observation
 - <The turning point that makes the algorithm work>
@@ -55,14 +56,14 @@
 3. ...
 
 ## Decision Criteria (Selection Guide)
-- Input size regimes:
+- Input size regimes (with thresholds):
 - Data distribution / sparsity:
-- Memory constraints:
+- Memory constraints (with limits):
 - Implementation complexity tolerance:
 
 ## Worked Example (Trace)
-- Input:
-- Step-by-step state:
+- Input (concrete values):
+- Step-by-step state (at least 2 steps):
 - Output:
 
 ## Correctness (Proof Sketch)
@@ -71,14 +72,14 @@
 - Why termination implies correctness:
 
 ## Complexity
-- Time:
-- Space:
+- Time (dominant term):
+- Space (dominant term):
 - Worst/average/best if relevant:
 
 ## Constant Factors and Engineering Realities
-- Cache/locality considerations:
+- Cache/locality considerations (name a bottleneck):
 - Practical limits (language/runtime quirks):
-- Typical optimizations and their risks:
+- Typical optimizations and their risks (with example):
 
 ## Runnable Implementation (Language: <X>)
 ```<language>
@@ -90,9 +91,15 @@
 2. Scenario B: background, why it fits, minimal code snippet.
 3. Scenario C: background, why it fits, minimal code snippet.
 
+## Content Expansion Knobs (Use if below minimum reading time)
+- Add a second worked example with contrasting input scale or distribution.
+- Add one micro-derivation with a numeric trace (>= 3 steps).
+- Add a quantified tradeoff table (time/space/accuracy).
+- Add a second counterexample or failure mode with fix.
+
 ## Alternatives and Tradeoffs
-- Alternative 1 vs current:
-- Alternative 2 vs current:
+- Alternative 1 vs current (quantify tradeoff):
+- Alternative 2 vs current (quantify tradeoff):
 - Why this choice is the most practical:
 
 ## Migration Path (Skill Ladder)
@@ -100,9 +107,9 @@
 - How this extends to a harder class of problems:
 
 ## Common Pitfalls and Edge Cases
-- Pitfall 1:
-- Pitfall 2:
-- Pitfall 3:
+- Pitfall 1 (failure case):
+- Pitfall 2 (failure case):
+- Pitfall 3 (failure case):
 
 ## Best Practices
 - ...
