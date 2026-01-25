@@ -12,7 +12,9 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 1. Read `docs/std.md` and `assets/algorithm-article-template.md`.
 2. Gather required inputs: algorithm/topic, target audience, target language (or infer), code-language constraints, output path override, and any examples/constraints.
 3. Choose output path:
-   - If `content/zh/` or `content/en/` exists: `content/<lang>/alg/leetcode/<slug>.md`.
+   - If the algorithm is AI/ML-specific and a relevant folder exists under `content/<lang>/ai/`, use `content/<lang>/ai/<topic>/<slug>.md`.
+   - Else if `content/<lang>/dev/algorithm/` exists: `content/<lang>/dev/algorithm/<slug>.md`.
+   - Else if `content/<lang>/alg/` exists: `content/<lang>/alg/<slug>.md`.
    - Otherwise: `content/posts/<category>/<slug>.md`.
    - Keep ASCII kebab-case filenames; preserve slug once chosen.
 4. Choose code language using `references/language-selection-rubric.md`.
@@ -38,8 +40,8 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 - Output path override (optional).
 
 ## Defaults
-- Output path: `content/<lang>/alg/leetcode/`.
-- Category: `leetcode`.
+- Output path: `content/<lang>/dev/algorithm/` for non-AI algorithms.
+- Category: use existing taxonomy; default to `逻辑与算法` for `content/zh/dev/algorithm/`, otherwise mirror categories from nearby posts in the same folder or ask.
 - Tags: include `algorithms` plus topic-specific tags.
 - Reading time: long-form (>= 15 min) unless user requests shorter.
 - Article language: same as user request if not specified.
