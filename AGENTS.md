@@ -61,7 +61,7 @@ Omitted domains: Backend, Payments/Billing, ML/AI, Data pipelines, Compliance/Le
 
 ## 12 Golden Rules (Why / How / Check)
 1. Keep Hugo front matter valid. Why: build and metadata depend on it. How: use `archetypes/default.md` and include title/date/draft/categories/tags. Check: front matter parses and required fields exist.
-2. Place posts under `content/posts/<category>/`. Why: site organization and menus. How: create files only under that path. Check: new posts live in `content/posts/`.
+2. Place posts under `content/zh/<category>/`. Why: site organization and menus. How: create files only under that path. Check: new posts live in `content/zh/`.
 3. Do not edit generated outputs. Why: `public/` and `resources/_gen/` are overwritten. How: treat them as read-only unless asked. Check: no edits there.
 4. Avoid theme submodule changes by default. Why: high regression risk. How: prefer overrides in `layouts/` and `static/`. Check: no `themes/` changes unless requested.
 5. Preserve existing language and tone. Why: consistency for readers. How: keep the post's original language unless asked. Check: no language switches in edits.
