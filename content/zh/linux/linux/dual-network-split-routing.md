@@ -139,7 +139,7 @@ sudo iptables -t nat -A POSTROUTING -o <内网网卡> -j MASQUERADE
 如果你能控制公司网关/路由器，可以做端口映射：
 
 ```
-公网 UDP 51820 -> 192.168.1.224:51820
+公网 UDP 51820 -> <WG_SERVER_LAN_IP>:51820
 ```
 
 这样你的电脑就可以用标准 WireGuard 连接内网。
