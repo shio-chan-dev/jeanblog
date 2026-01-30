@@ -12,3 +12,5 @@ resources/_gen/
 # Python
 __pycache__/
 *.py[cod]
+
+agent.log
