@@ -487,6 +487,13 @@ NMS 是一个贪心算法：
 
 下面代码不依赖 PyTorch/torchvision，复制即可运行：
 
+运行方式示例：
+
+```bash
+python3 -m pip install numpy
+python3 demo_nms.py
+```
+
 ```python
 import time
 from typing import Optional, Tuple

@@ -549,6 +549,13 @@ $$
 
 你可以把它保存成 `demo_flash_attention.py` 直接运行。
 
+运行方式示例：
+
+```bash
+python3 -m pip install numpy
+python3 demo_flash_attention.py
+```
+
 ```python
 import math
 from dataclasses import dataclass

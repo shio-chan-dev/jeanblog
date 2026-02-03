@@ -13,9 +13,14 @@ draft: false
 
 ## 副标题 / 摘要
 
-MQA/GQA 通过减少 K/V 头数来降低 KV cache 与访存，但注意力实现也必须跟着改变：
-**Q 头数（Hq）不变，K/V 头数（Hkv）减少，并通过 head→KV 的映射关系共享 K/V**。
-本文用“数学等价 + 访存模型 + FlashAttention 的分块复用”把这件事讲透，并附一个可运行的 Numpy 示例验证输出等价。
+> MQA/GQA 通过减少 K/V 头数来降低 KV cache 与访存，但注意力实现也必须跟着改变：  
+> **Q 头数（Hq）不变，K/V 头数（Hkv）减少，并通过 head→KV 的映射关系共享 K/V**。  
+> 本文用“数学等价 + 访存模型 + FlashAttention 的分块复用”把这件事讲透，并附可运行示例验证输出等价。
+
+- **预计阅读时长**：约 15 分钟  
+- **标签**：`flash-attention`、`mqa`、`gqa`、`kv-cache`、`inference`  
+- **SEO 关键词**：FlashAttention, MQA, GQA, KV cache, Grouped Query Attention  
+- **元描述**：FlashAttention 在 MQA/GQA 下如何共享 KV：映射等价、带宽收益与实现要点，附可运行验证。  
 
 ---
 
