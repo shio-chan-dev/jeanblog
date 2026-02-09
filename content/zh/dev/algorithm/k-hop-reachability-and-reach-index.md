@@ -1,11 +1,14 @@
 ---
 title: "k-hop 与可达性查询：BFS 限制、Reachability 索引与 2-hop Labeling ACERS 解析"
+subtitle: "从在线搜索到离线索引：在时延、内存、更新成本之间做可解释取舍"
 date: 2026-02-09T09:52:17+08:00
 draft: false
+summary: "围绕 k-hop 与可达性查询，讲清 BFS+hop 限制、传递闭包取舍、以及位图索引/2-hop labeling 的工程落地路径。"
 categories: ["逻辑与算法"]
 tags: ["图", "BFS", "Reachability", "k-hop", "Transitive Closure", "2-hop labeling", "位图索引"]
 description: "围绕 k-hop 与可达性查询，系统讲解 BFS+hop 限制、为何一般不全算传递闭包、以及工程常用的位图索引/2-hop labeling 思路，并给出可运行多语言实现。"
 keywords: ["k-hop", "Reachability", "Transitive Closure", "BFS hop limit", "2-hop labeling", "reach index", "bitset"]
+readingTime: 15
 ---
 
 > **副标题 / 摘要**  
@@ -167,6 +170,32 @@ result: false
 - 位图 reach index（压缩存储）
 - 分层索引 + 在线 BFS 验证
 - landmark/bloom 预过滤 + 精确搜索兜底
+
+### 4) 2-hop labeling 最小手算例子
+
+考虑有向图：
+
+```text
+0 -> 1 -> 3
+ \\        ^
+  -> 2 ----|
+```
+
+可构造一个简化标签集合（演示用途）：
+
+- `L_out(0) = {1,2,3}`
+- `L_out(1) = {3}`
+- `L_out(2) = {3}`
+- `L_in(3) = {0,1,2}`
+
+查询 `reachable(0,3)` 时，只需判断：
+
+```text
+L_out(0) ∩ L_in(3) = {1,2,3} ∩ {0,1,2} = {1,2} != ∅
+```
+
+即可返回可达，而不必在线展开整条搜索前沿。  
+这也是 2-hop 在读多写少场景常被采用的原因：把查询代价转移到离线构建。
 
 ---
 
