@@ -52,6 +52,9 @@ home = ["HTML", "RSS", "JSON"]   # JSON 用于搜索
     name = "telegram"
     url = "https://t.me/Jeanphilo"
 
+[params.author]
+  name = "Jeanphilo"
+
 [languages.zh.menu]
   [[languages.zh.menu.main]]
     identifier = "archives"
