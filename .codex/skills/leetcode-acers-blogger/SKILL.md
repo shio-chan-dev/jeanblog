@@ -1,45 +1,37 @@
 ---
 name: leetcode-acers-blogger
-description: Create Hugo blog posts for LeetCode-style problems in this project using docs/leetcode_std.md, with current timestamps from `date`. Use when the user provides a problem statement and wants a new ACERS post.
+description: v0.1.0 - Compatibility entry for LeetCode ACERS posts; delegates to algorithm-problem-acers-blogger with `problem_source=leetcode`.
 ---
 
-# LeetCode ACERS Hugo Blogger
+# LeetCode ACERS Hugo Blogger (Compatibility)
+
+## Trigger
+Use when the user explicitly asks for LeetCode problem writeups or names this skill. If the problem source is not LeetCode, switch to `algorithm-problem-acers-blogger`.
 
 ## Workflow
-1. Read `docs/leetcode_std.md` and follow the ACERS template plus all extra requirements.
-2. Gather inputs: problem statement, examples, target language (zh/en), target folder override (if any), desired slug/title, tags/keywords.
-3. Choose output path:
-   - Chinese default: `content/zh/alg/leetcode/<slug>.md`
-   - English default: `content/en/alg/leetcode/<slug>.md`
-   - Do not default to `content/posts/leetcode`.
-   - If the user specifies a path (e.g., `@content/posts/leetcode`), honor that path.
-4. Generate front matter in YAML with `title`, `date`, `draft=false`, `categories`, `tags`, `description`, `keywords`.
-5. Get the current timestamp by running `date "+%Y-%m-%dT%H:%M:%S%:z"` and use it in `date`.
-6. Write the full article in Chinese technical style, including:
-   - Title, subtitle/summary, target readers, background/motivation, core concepts
-   - Thought-process derivation: from naive/brute force to bottleneck, key observation, method choice, and why it is correct
-   - ACERS sections (Algorithm, Concepts, Engineering, Reflection, Summary)
-   - Practical steps, runnable examples, explanations, FAQs, best practices
-   - Meta info (reading time, tags, SEO keywords, meta description) and CTA
-7. If it is an algorithm problem, append multi-language implementations (Python, C, C++, Go, Rust, JS).
-8. Use ASCII kebab-case file names by default; avoid non-ASCII unless explicitly requested.
+1. Set `problem_source=leetcode` by default.
+2. Read `.codex/skills/algorithm-problem-acers-blogger/SKILL.md` and follow that workflow.
+3. Keep default output path locked to:
+   - Chinese: `content/zh/alg/leetcode/<slug>.md`
+   - English: `content/en/alg/leetcode/<slug>.md`
+   - If user specifies another path, honor it.
+4. Keep default category `LeetCode` unless user explicitly requests a different taxonomy.
+5. Use `date "+%Y-%m-%dT%H:%M:%S%:z"` for front matter date.
 
 ## Required Inputs
-- Problem statement (full text or link with pasted text)
-- 1-2 examples (input/output or scenario)
-- Target language (zh or en)
-- Output folder (optional; default is the language section under `content/zh/alg/leetcode`)
-- Title/keywords/tags (optional; infer if not provided)
+- Problem statement (full text or pasted core constraints).
+- 1-2 examples.
+- Target language (`zh` or `en`).
+- Output folder override (optional).
 
 ## Output Format
 - Path: `<file path>`
 - Date: `<timestamp used>`
+- Source: `leetcode`
 - Notes: `<assumptions or missing info>`
 
 ## Guardrails
-- Do not invent constraints, inputs, or outputs; ask if missing.
-- Follow `docs/leetcode_std.md` exactly; do not omit required sections.
-- Use runnable code, no pseudocode.
-- Keep front matter consistent with existing LeetCode posts.
-- Do not present only the final solution; include the reasoning path and key decisions.
+- Do not invent constraints, inputs, or outputs.
+- Follow `docs/leetcode_std.md` ACERS requirements.
+- Use runnable code and include reasoning path, not final answer only.
 - Do not include secrets or private data.
