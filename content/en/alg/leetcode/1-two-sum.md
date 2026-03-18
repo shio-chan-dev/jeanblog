@@ -1,11 +1,11 @@
 ---
-title: "Two Sum with Hash Map (ACERS Summary)"
+title: "LeetCode 1: Two Sum (Hash Map ACERS Summary)"
 date: 2025-12-04T11:10:00+08:00
 draft: false
 categories: ["LeetCode"]
 ---
 
-# Two Sum
+# LeetCode 1: Two Sum
 
 ## Summary
 Find two indices such that `nums[i] + nums[j] = target`. Use a hash map for O(n) time.

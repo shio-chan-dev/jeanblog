@@ -1,5 +1,5 @@
 ---
-title: "数据结构基础：好数对计数（Number of Good Pairs）哈希统计 ACERS 解析"
+title: "数据结构基础：好数对计数（Number of Good Pairs）哈希统计 ACERS 解析（LeetCode 1512）"
 date: 2025-12-30T11:40:00+08:00
 draft: false
 categories: ["LeetCode"]

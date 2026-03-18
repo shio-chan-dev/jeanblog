@@ -1,11 +1,11 @@
 ---
-title: "Spells and Potions: Count Successful Pairs"
+title: "LeetCode 2300: Successful Pairs of Spells and Potions"
 date: 2025-12-04T11:10:00+08:00
 draft: false
 categories: ["LeetCode"]
 ---
 
-# Spells and Potions
+# LeetCode 2300: Successful Pairs of Spells and Potions
 
 ## Summary
 For each spell, count how many potions make `spell * potion >= success`. Sort potions and binary search the threshold.

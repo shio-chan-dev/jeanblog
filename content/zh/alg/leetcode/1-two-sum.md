@@ -1,5 +1,5 @@
 ---
-title: "Two Sum 两数之和：哈希表一遍扫描与 ACERS 工程化解析"
+title: "Two Sum 两数之和：哈希表一遍扫描与 ACERS 工程化解析（LeetCode 1）"
 date: 2025-12-28T10:00:00+08:00
 draft: false
 categories: ["LeetCode"]

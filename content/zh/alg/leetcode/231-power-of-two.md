@@ -1,5 +1,5 @@
 ---
-title: "判断一个数是否为 2 的幂（Power of Two）：位运算 O(1) ACERS 解析"
+title: "判断一个数是否为 2 的幂（Power of Two）：位运算 O(1) ACERS 解析（LeetCode 231）"
 date: 2026-01-21T13:22:53+08:00
 draft: false
 categories: ["LeetCode"]

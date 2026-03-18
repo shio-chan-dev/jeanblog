@@ -1,5 +1,5 @@
 ---
-title: "Sliding Window Maximum: Monotonic Queue One-Pass ACERS Guide"
+title: "LeetCode 239: Sliding Window Maximum (Monotonic Queue ACERS Guide)"
 date: 2026-01-19T17:46:14+08:00
 draft: false
 categories: ["LeetCode"]
@@ -10,7 +10,7 @@ keywords: ["Sliding Window Maximum", "monotonic queue", "deque", "O(n)"]
 
 ### **Title**
 
-Sliding Window Maximum: Monotonic Queue One-Pass ACERS Guide
+LeetCode 239: Sliding Window Maximum (Monotonic Queue ACERS Guide)
 
 ---
 

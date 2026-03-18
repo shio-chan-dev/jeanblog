@@ -1,11 +1,11 @@
 ---
-title: "Maximum Sum of Almost Unique Subarray"
+title: "LeetCode 2841: Maximum Sum of Almost Unique Subarray"
 date: 2025-12-04T11:10:00+08:00
 draft: false
 categories: ["LeetCode"]
 ---
 
-# Maximum Sum of Almost Unique Subarray
+# LeetCode 2841: Maximum Sum of Almost Unique Subarray
 
 ## Summary
 Given an array, window size `k`, and threshold `m`, find the maximum sum of any length-`k` subarray that contains at least `m` distinct elements.

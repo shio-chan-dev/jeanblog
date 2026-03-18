@@ -1,5 +1,5 @@
 ---
-title: "LeetCode 1456: Maximum Vowels in a Substring (ACERS Guide)"
+title: "LeetCode 1456: Maximum Number of Vowels in a Substring of Given Length (ACERS Guide)"
 date: 2026-01-20T13:40:45+08:00
 draft: false
 categories: ["LeetCode"]

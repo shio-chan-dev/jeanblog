@@ -1,5 +1,5 @@
 ---
-title: "Data Structures Basics: Number of Good Pairs (Hash Counting ACERS)"
+title: "LeetCode 1512: Number of Good Pairs (Hash Counting ACERS Guide)"
 date: 2025-12-30T11:40:00+08:00
 draft: false
 categories: ["LeetCode"]
