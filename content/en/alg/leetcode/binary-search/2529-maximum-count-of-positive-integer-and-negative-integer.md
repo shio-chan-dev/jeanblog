@@ -1,11 +1,11 @@
 ---
-title: "Maximum Count of Positive and Negative Numbers"
+title: "LeetCode 2529: Maximum Count of Positive Integer and Negative Integer"
 date: 2025-12-04T11:10:00+08:00
 draft: false
 categories: ["LeetCode"]
 ---
 
-# Maximum Count of Positive and Negative Numbers
+# LeetCode 2529: Maximum Count of Positive Integer and Negative Integer
 
 ## Summary
 Given a sorted array, return the maximum of the number of positive and negative values. Binary search gives the split points in O(log n).

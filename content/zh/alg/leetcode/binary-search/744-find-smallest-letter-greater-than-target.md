@@ -1,5 +1,5 @@
 ---
-title: "比目标字母大的最小字母：有序字符数组上的二分查找技巧"
+title: "比目标字母大的最小字母：有序字符数组上的二分查找技巧（LeetCode 744）"
 date: 2025-12-04T11:30:00+08:00
 draft: false
 categories: ["LeetCode"]
@@ -533,4 +533,3 @@ console.log(nextGreatestLetter(["c", "f", "j"], "j")); // "c"
 - 把本文的 upper_bound 模板添加到你的二分查找笔记中，并手写一遍加深印象。
 - 尝试用同一个模板解决「Maximum Count of Positive/Negative Integers」中边界点的查找。
 - 在你自己的项目里，找到一个“查找下一个更大元素”的逻辑，看看能否用二分 + 环绕模式简化。 
-

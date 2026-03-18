@@ -1,11 +1,11 @@
 ---
-title: "Find Target Indices After Sorting"
+title: "LeetCode 2089: Find Target Indices After Sorting Array"
 date: 2025-12-04T11:10:00+08:00
 draft: false
 categories: ["LeetCode"]
 ---
 
-# Find Target Indices After Sorting
+# LeetCode 2089: Find Target Indices After Sorting Array
 
 ## Summary
 Sort the array and return all indices where the target appears. Use binary search to find the range efficiently.

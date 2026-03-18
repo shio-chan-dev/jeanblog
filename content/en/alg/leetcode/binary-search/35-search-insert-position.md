@@ -1,11 +1,11 @@
 ---
-title: "Search Insert Position: Binary Search for the Insert Index"
+title: "LeetCode 35: Search Insert Position"
 date: 2025-12-04T11:10:00+08:00
 draft: false
 categories: ["LeetCode"]
 ---
 
-# Search Insert Position
+# LeetCode 35: Search Insert Position
 
 ## Summary
 Find the index where a target should be inserted into a sorted array. If it exists, return its index; otherwise return the insertion position. This is a classic lower_bound binary search.

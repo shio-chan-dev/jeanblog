@@ -1,5 +1,5 @@
 ---
-title: "Search Insert Position：排序数组中目标值插入位置的二分查找实战"
+title: "Search Insert Position：排序数组中目标值插入位置的二分查找实战（LeetCode 35）"
 date: 2025-12-04T11:10:00+08:00
 draft: false
 categories: ["LeetCode"]
@@ -543,4 +543,3 @@ console.log(searchInsert([1, 3, 5, 6], 0)); // 0
 - 把本文的 `search_insert` 实现记进你的「二分查找模板」，并尝试背下来（尤其是条件和区间写法）。
 - 选一到两道需要统计 `<= x` 或 `>= x` 数量的题，试着用 `lower_bound` 模板来解决。
 - 回顾你项目里的「有序表插入 / 定位」逻辑，看是否能用 Search Insert Position 思路让代码更简洁、更好维护。 
-

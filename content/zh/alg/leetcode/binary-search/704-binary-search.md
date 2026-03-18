@@ -1,5 +1,5 @@
 ---
-title: "经典 Binary Search：在排序数组中查找目标值索引的统一模板"
+title: "经典 Binary Search：在排序数组中查找目标值索引的统一模板（LeetCode 704）"
 date: 2025-12-04T11:20:00+08:00
 draft: false
 categories: ["LeetCode"]
@@ -504,4 +504,3 @@ console.log(binarySearch([-1, 0, 3, 5, 9, 12], 2)); // -1
 - 把本文的二分查找模板抄进你的笔记或代码仓库，尝试不看代码自己写一遍。
 - 用同一个模板实现「Search Insert Position」和「Search Range」，体会它们之间的联系。
 - 在你的工程代码中，找一个使用线性搜索的有序列表逻辑，试着用二分查找替换，看能否提升性能或简化代码。 
-

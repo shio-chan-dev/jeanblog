@@ -1,11 +1,11 @@
 ---
-title: "Find First and Last Position of Element in Sorted Array"
+title: "LeetCode 34: Find First and Last Position of Element in Sorted Array"
 date: 2025-12-04T11:10:00+08:00
 draft: false
 categories: ["LeetCode"]
 ---
 
-# Find First and Last Position of Element in Sorted Array
+# LeetCode 34: Find First and Last Position of Element in Sorted Array
 
 ## Summary
 Given a sorted array, return the first and last index of a target value, or `[-1, -1]` if not found. Use lower_bound and upper_bound.
