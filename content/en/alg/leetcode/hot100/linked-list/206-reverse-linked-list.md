@@ -2,6 +2,7 @@
 title: "Hot100: Reverse Linked List Three-Pointer Iterative/Recursive ACERS Guide"
 date: 2026-02-09T17:27:59+08:00
 draft: false
+url: "/alg/leetcode/hot100/206-reverse-linked-list/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "pointer", "iteration", "recursion", "LeetCode 206"]
 description: "Reverse a singly linked list in O(n) time and O(1) extra space with the three-pointer iterative template, with recursive comparison, engineering mapping, and runnable multi-language implementations."

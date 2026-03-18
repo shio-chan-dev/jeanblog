@@ -2,6 +2,7 @@
 title: "Hot100: Merge K Sorted Lists Divide-and-Conquer O(N log k) ACERS Guide"
 date: 2026-02-10T17:05:53+08:00
 draft: false
+url: "/alg/leetcode/hot100/23-merge-k-sorted-lists/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "divide and conquer", "merge", "priority queue", "LeetCode 23"]
 description: "Upgrade from LeetCode 21 to k-way merge: derive why sequential merge degrades, then use divide-and-conquer to reach O(N log k), with heap comparison and runnable multi-language implementations."

@@ -2,6 +2,7 @@
 title: "Hot100: Palindrome Linked List Fast/Slow + Reverse Second Half O(1) Space ACERS Guide"
 date: 2026-02-09T17:38:32+08:00
 draft: false
+url: "/alg/leetcode/hot100/234-palindrome-linked-list/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "fast slow pointers", "reverse list", "palindrome", "LeetCode 234"]
 description: "Check whether a singly linked list is a palindrome in O(n) time and O(1) extra space: find middle with fast/slow pointers, reverse second half, compare, then restore list structure."

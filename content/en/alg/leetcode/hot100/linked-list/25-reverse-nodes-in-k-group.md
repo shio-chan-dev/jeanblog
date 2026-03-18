@@ -2,6 +2,7 @@
 title: "Hot100: Reverse Nodes in k-Group Group-Wise In-Place ACERS Guide"
 date: 2026-02-10T10:25:53+08:00
 draft: false
+url: "/alg/leetcode/hot100/25-reverse-nodes-in-k-group/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "group reversal", "dummy node", "two pointers", "LeetCode 25"]
 description: "Reverse a linked list in groups of k nodes in-place, leaving the last group unchanged if its size is smaller than k. This guide presents a dummy-node + kth-scan + in-place reversal template in O(n) time and O(1) extra space."

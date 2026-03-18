@@ -2,6 +2,7 @@
 title: "Hot100: Reorder List In-Place Split-Reverse-Merge ACERS Guide"
 date: 2026-02-10T09:57:31+08:00
 draft: false
+url: "/alg/leetcode/hot100/143-reorder-list/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "two pointers", "in-place", "LeetCode 143"]
 description: "Reorder a linked list to L0->Ln->L1->Ln-1... in O(n) time and O(1) extra space using split, reverse, and alternating merge, with derivation, pitfalls, and runnable multi-language implementations."

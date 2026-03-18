@@ -2,6 +2,7 @@
 title: "Hot100: Merge Two Sorted Lists Sentinel Two-Pointer Merge ACERS Guide"
 date: 2026-02-10T10:47:02+08:00
 draft: false
+url: "/alg/leetcode/hot100/21-merge-two-sorted-lists/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "two pointers", "merge", "sentinel", "LeetCode 21"]
 description: "Merge two sorted linked lists in O(m+n) with sentinel node and two pointers, with iterative and recursive comparison, engineering mapping, and runnable multi-language implementations."

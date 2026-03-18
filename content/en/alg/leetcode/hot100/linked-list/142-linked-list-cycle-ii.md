@@ -2,6 +2,7 @@
 title: "Hot100: Linked List Cycle II Floyd Detection + Entry Localization ACERS Guide"
 date: 2026-02-10T10:47:56+08:00
 draft: false
+url: "/alg/leetcode/hot100/142-linked-list-cycle-ii/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "fast slow pointers", "Floyd", "two pointers", "LeetCode 142"]
 description: "Return the first node where a singly linked list enters a cycle without modifying the list: use Floyd fast/slow pointers to detect a meeting point, then reset one pointer to head and move both one step to localize the entry in O(n) time and O(1) space."

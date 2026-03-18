@@ -2,6 +2,7 @@
 title: "Hot100: Reverse Linked List II Dummy Node + Head-Insertion ACERS Guide"
 date: 2026-02-10T09:56:14+08:00
 draft: false
+url: "/alg/leetcode/hot100/92-reverse-linked-list-ii/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "sublist reversal", "dummy node", "head insertion", "LeetCode 92"]
 description: "Reverse only the interval [left, right] in a singly linked list using a dummy node and in-place head insertion. O(n) time, O(1) extra space, with derivation, pitfalls, and runnable multi-language implementations."

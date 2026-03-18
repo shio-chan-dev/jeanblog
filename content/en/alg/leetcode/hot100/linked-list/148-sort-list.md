@@ -2,6 +2,7 @@
 title: "Hot100: Sort List Linked-List Merge Sort ACERS Guide"
 date: 2026-02-10T17:07:38+08:00
 draft: false
+url: "/alg/leetcode/hot100/148-sort-list/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "merge sort", "fast slow pointers", "divide and conquer", "LeetCode 148"]
 description: "Sort a singly linked list in O(n log n) time using split + recursive merge sort. This guide explains derivation, invariants, engineering mappings, and runnable multi-language implementations."

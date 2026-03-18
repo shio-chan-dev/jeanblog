@@ -2,6 +2,7 @@
 title: "Hot100: Intersection of Two Linked Lists Two-Pointer Switch-Head O(1) Space ACERS Guide"
 date: 2026-02-09T09:26:37+08:00
 draft: false
+url: "/alg/leetcode/hot100/160-intersection-of-two-linked-lists/"
 categories: ["LeetCode"]
 tags: ["Hot100", "linked list", "two pointers", "hash", "LeetCode 160"]
 description: "Find the intersection node of two singly linked lists without modifying structure: two pointers switching heads synchronize in O(m+n) time and O(1) extra space, with derivation, engineering mapping, and multi-language implementations."
