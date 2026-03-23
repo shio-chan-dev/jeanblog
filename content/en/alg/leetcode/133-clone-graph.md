@@ -222,6 +222,61 @@ That ensures both:
 - node uniqueness in the clone
 - edge structure preservation
 
+### Reference Implementation
+
+Before moving to engineering scenarios, it helps to pin down the direct interview solution first.
+
+#### Python DFS
+
+```python
+from typing import Optional
+
+
+class Solution:
+    def cloneGraph(self, node: Optional["Node"]) -> Optional["Node"]:
+        copies = {}
+
+        def dfs(cur: Optional["Node"]) -> Optional["Node"]:
+            if cur is None:
+                return None
+            if cur in copies:
+                return copies[cur]
+
+            cloned = Node(cur.val)
+            copies[cur] = cloned
+            for nxt in cur.neighbors:
+                cloned.neighbors.append(dfs(nxt))
+            return cloned
+
+        return dfs(node)
+```
+
+#### Python BFS
+
+```python
+from collections import deque
+from typing import Optional
+
+
+class Solution:
+    def cloneGraph(self, node: Optional["Node"]) -> Optional["Node"]:
+        if node is None:
+            return None
+
+        copies = {node: Node(node.val)}
+        queue = deque([node])
+
+        while queue:
+            cur = queue.popleft()
+            for nxt in cur.neighbors:
+                if nxt not in copies:
+                    copies[nxt] = Node(nxt.val)
+                    queue.append(nxt)
+                copies[cur].neighbors.append(copies[nxt])
+
+        return copies[node]
+```
+
 ---
 
 ## E - Engineering
