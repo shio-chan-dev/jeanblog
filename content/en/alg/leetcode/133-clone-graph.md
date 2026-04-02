@@ -229,52 +229,143 @@ Before moving to engineering scenarios, it helps to pin down the direct intervie
 #### Python DFS
 
 ```python
-from typing import Optional
+from collections import deque
 
 
-class Solution:
-    def cloneGraph(self, node: Optional["Node"]) -> Optional["Node"]:
-        copies = {}
+class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
 
-        def dfs(cur: Optional["Node"]) -> Optional["Node"]:
-            if cur is None:
-                return None
-            if cur in copies:
-                return copies[cur]
 
-            cloned = Node(cur.val)
-            copies[cur] = cloned
-            for nxt in cur.neighbors:
-                cloned.neighbors.append(dfs(nxt))
-            return cloned
+def build_graph(adj_list):
+    if not adj_list:
+        return None
 
-        return dfs(node)
+    nodes = {i + 1: Node(i + 1) for i in range(len(adj_list))}
+    for i, neighbors in enumerate(adj_list, start=1):
+        nodes[i].neighbors = [nodes[val] for val in neighbors]
+    return nodes[1]
+
+
+def graph_to_adj_list(node):
+    if node is None:
+        return []
+
+    seen = {node}
+    queue = deque([node])
+    nodes_by_val = {}
+
+    while queue:
+        cur = queue.popleft()
+        nodes_by_val[cur.val] = cur
+        for nxt in cur.neighbors:
+            if nxt not in seen:
+                seen.add(nxt)
+                queue.append(nxt)
+
+    return [
+        [nxt.val for nxt in nodes_by_val[val].neighbors]
+        for val in sorted(nodes_by_val)
+    ]
+
+
+def clone_graph_dfs(node):
+    copies = {}
+
+    def dfs(cur):
+        if cur is None:
+            return None
+        if cur in copies:
+            return copies[cur]
+
+        cloned = Node(cur.val)
+        copies[cur] = cloned
+        for nxt in cur.neighbors:
+            cloned.neighbors.append(dfs(nxt))
+        return cloned
+
+    return dfs(node)
+
+
+if __name__ == "__main__":
+    adj_list = [[2, 4], [1, 3], [2, 4], [1, 3]]
+    original = build_graph(adj_list)
+    cloned = clone_graph_dfs(original)
+
+    print(graph_to_adj_list(cloned))
+    print(original is cloned)
 ```
 
 #### Python BFS
 
 ```python
 from collections import deque
-from typing import Optional
 
 
-class Solution:
-    def cloneGraph(self, node: Optional["Node"]) -> Optional["Node"]:
-        if node is None:
-            return None
+class Node:
+    def __init__(self, val=0, neighbors=None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
 
-        copies = {node: Node(node.val)}
-        queue = deque([node])
 
-        while queue:
-            cur = queue.popleft()
-            for nxt in cur.neighbors:
-                if nxt not in copies:
-                    copies[nxt] = Node(nxt.val)
-                    queue.append(nxt)
-                copies[cur].neighbors.append(copies[nxt])
+def build_graph(adj_list):
+    if not adj_list:
+        return None
 
-        return copies[node]
+    nodes = {i + 1: Node(i + 1) for i in range(len(adj_list))}
+    for i, neighbors in enumerate(adj_list, start=1):
+        nodes[i].neighbors = [nodes[val] for val in neighbors]
+    return nodes[1]
+
+
+def graph_to_adj_list(node):
+    if node is None:
+        return []
+
+    seen = {node}
+    queue = deque([node])
+    nodes_by_val = {}
+
+    while queue:
+        cur = queue.popleft()
+        nodes_by_val[cur.val] = cur
+        for nxt in cur.neighbors:
+            if nxt not in seen:
+                seen.add(nxt)
+                queue.append(nxt)
+
+    return [
+        [nxt.val for nxt in nodes_by_val[val].neighbors]
+        for val in sorted(nodes_by_val)
+    ]
+
+
+def clone_graph_bfs(node):
+    if node is None:
+        return None
+
+    copies = {node: Node(node.val)}
+    queue = deque([node])
+
+    while queue:
+        cur = queue.popleft()
+        for nxt in cur.neighbors:
+            if nxt not in copies:
+                copies[nxt] = Node(nxt.val)
+                queue.append(nxt)
+            copies[cur].neighbors.append(copies[nxt])
+
+    return copies[node]
+
+
+if __name__ == "__main__":
+    adj_list = [[2, 4], [1, 3], [2, 4], [1, 3]]
+    original = build_graph(adj_list)
+    cloned = clone_graph_bfs(original)
+
+    print(graph_to_adj_list(cloned))
+    print(original is cloned)
 ```
 
 ---
