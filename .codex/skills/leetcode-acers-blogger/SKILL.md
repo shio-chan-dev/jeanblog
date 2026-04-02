@@ -1,6 +1,6 @@
 ---
 name: leetcode-acers-blogger
-description: v0.1.0 - Compatibility entry for LeetCode ACERS posts; delegates to algorithm-problem-acers-blogger with `problem_source=leetcode`.
+description: v0.1.1 - Route concrete LeetCode problem writeup requests to the ACERS blogger with `problem_source=leetcode` when the user wants a publishable Hugo post for a LeetCode problem.
 ---
 
 # LeetCode ACERS Hugo Blogger (Compatibility)
@@ -8,12 +8,18 @@ description: v0.1.0 - Compatibility entry for LeetCode ACERS posts; delegates to
 ## Trigger
 Use when the user explicitly asks for LeetCode problem writeups or names this skill. If the problem source is not LeetCode, switch to `algorithm-problem-acers-blogger`.
 
+## Bundled Resources
+- `.codex/skills/algorithm-problem-acers-blogger/SKILL.md` as the delegated primary workflow.
+- `.codex/skills/algorithm-problem-acers-blogger/references/source-path-policy.md` for LeetCode and Hot100 placement policy.
+- `docs/leetcode_std.md` for the ACERS structure.
+
 ## Workflow
 1. Set `problem_source=leetcode` by default.
 2. Read `.codex/skills/algorithm-problem-acers-blogger/SKILL.md` and follow that workflow.
 3. Keep default output path locked to:
    - Chinese: `content/zh/alg/leetcode/<slug>.md`
    - English: `content/en/alg/leetcode/<slug>.md`
+   - If the user explicitly requests Hot100 or the task context clearly targets an existing Hot100 collection, use the matching `content/<lang>/alg/leetcode/hot100/...` path.
    - If user specifies another path, honor it.
 4. Keep default category `LeetCode` unless user explicitly requests a different taxonomy.
 5. Use `date "+%Y-%m-%dT%H:%M:%S%:z"` for front matter date.
@@ -35,3 +41,9 @@ Use when the user explicitly asks for LeetCode problem writeups or names this sk
 - Follow `docs/leetcode_std.md` ACERS requirements.
 - Use runnable code and include reasoning path, not final answer only.
 - Do not include secrets or private data.
+- Do not move a LeetCode post into Hot100 unless the request or task context clearly targets that collection.
+
+## Verification
+- Confirm the delegated skill still sees `problem_source=leetcode`.
+- Confirm the final path stays under `content/<lang>/alg/leetcode/` unless the user or task explicitly targets `hot100/`.
+- Confirm the final category remains `LeetCode` unless the user requested a different taxonomy.

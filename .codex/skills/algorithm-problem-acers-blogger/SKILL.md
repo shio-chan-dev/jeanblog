@@ -1,6 +1,6 @@
 ---
 name: algorithm-problem-acers-blogger
-description: v0.1.0 - Create Hugo ACERS posts for algorithm problems across LeetCode/Codeforces/AtCoder/Luogu/custom sources using docs/leetcode_std.md and current timestamps from `date`.
+description: v0.1.1 - Create publishable Hugo ACERS posts for concrete algorithm problems across LeetCode/Codeforces/AtCoder/Luogu/custom sources when the user provides a problem statement and wants a structured writeup, using docs/leetcode_std.md and current timestamps from `date`.
 ---
 
 # Algorithm Problem ACERS Blogger
@@ -8,8 +8,13 @@ description: v0.1.0 - Create Hugo ACERS posts for algorithm problems across Leet
 ## Trigger
 Use when the user provides an algorithm problem (online judge or custom) and wants a publishable ACERS post. This covers LeetCode and non-LeetCode problem writeups. Do not use for broad concept articles or paper reviews.
 
+## Bundled Resources
+- `docs/leetcode_std.md` for the ACERS structure and required sections.
+- `references/source-path-policy.md` for source-specific output paths and taxonomy defaults.
+- `references/verification-checklist.md` for pre-delivery validation.
+
 ## Workflow
-1. Read `docs/leetcode_std.md` and follow its ACERS template plus all extra requirements.
+1. Read `docs/leetcode_std.md`, `references/source-path-policy.md`, and `references/verification-checklist.md`.
 2. Gather inputs:
    - problem statement and constraints,
    - 1-2 examples,
@@ -18,10 +23,8 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
    - optional output path override, title/slug/tags/keywords.
 3. Normalize `problem_source` to lowercase kebab-case.
 4. Choose output path:
+   - Follow `references/source-path-policy.md`.
    - If user provides path, honor it.
-   - Else if `problem_source=leetcode`: `content/<lang>/alg/leetcode/<slug>.md`.
-   - Else if `content/<lang>/dev/algorithm/` exists: `content/<lang>/dev/algorithm/<slug>.md`.
-   - Else: `content/<lang>/alg/<problem_source>/<slug>.md`.
    - Use ASCII kebab-case filenames by default.
 5. Generate YAML front matter with:
    - `title`, `date`, `draft=false`, `categories`, `tags`, `description`, `keywords`.
@@ -36,9 +39,7 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
    - Include practical steps, runnable examples, FAQs, best practices, meta info, and CTA.
 7. For algorithm problems, append multi-language implementations (Python, C, C++, Go, Rust, JS) unless user requests a subset.
 8. Validate:
-   - No invented constraints, inputs, outputs, or complexity claims.
-   - Required ACERS sections are present.
-   - Front matter is valid and taxonomy is consistent with target folder.
+   - Run `references/verification-checklist.md`.
 9. Report output path, date, source, assumptions, and checks.
 
 ## Required Inputs
@@ -67,3 +68,10 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
 - Use runnable code only; no pseudocode-only final deliverable.
 - Do not edit `themes/`, config files, or generated outputs.
 - Do not include secrets or private data.
+- Do not place a post under `hot100/` unless the user explicitly asks for Hot100 or the task context clearly requires that collection.
+
+## Verification
+- Front matter is valid and category/tag choices match the selected path.
+- Required ACERS sections from `docs/leetcode_std.md` are present.
+- Complexity claims, constraints, and examples are traceable to the supplied problem statement.
+- Final code blocks are runnable examples rather than pseudocode-only stubs.

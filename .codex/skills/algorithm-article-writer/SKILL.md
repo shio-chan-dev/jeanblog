@@ -1,12 +1,20 @@
 ---
 name: algorithm-article-writer
-description: Write long-form, high-density algorithm explanation posts for this Hugo blog with runnable code, using docs/std.md and a project template.
+description: v0.1.0 - Write long-form, high-density algorithm concept or technique posts for this Hugo blog when the user wants a publishable explanation article with runnable code, using docs/std.md and the bundled template.
 ---
 
 # Algorithm Article Writer
 
 ## Trigger
 Use when the user requests an algorithm explanation post (concept, technique, or series) focused on fast mastery with runnable code. Do not use for LeetCode problem writeups or paper reviews.
+
+## Bundled Resources
+- `docs/std.md` for the project writing checklist.
+- `assets/algorithm-article-template.md` for the default article structure.
+- `references/language-selection-rubric.md` for code-language selection.
+- `references/depth-checklist.md` and `references/deepening-ladder.md` for depth and anti-fluff passes.
+- `references/reading-time-estimator.md` plus `scripts/estimate_reading_time.py` for `readingTime`.
+- `references/acceptance-criteria.md` for final validation.
 
 ## Workflow
 1. Read `docs/std.md`, `assets/algorithm-article-template.md`, `references/depth-checklist.md`, `references/reading-time-estimator.md`, and `references/deepening-ladder.md`.
@@ -76,6 +84,7 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 - Required sections from `docs/std.md` are present.
 - Code snippet is runnable and minimal.
 - References/links resolve.
+- `readingTime` is not lower than the computed estimate.
 
 ## Acceptance Loop
 - Run `references/acceptance-criteria.md` and record pass/fail evidence.
