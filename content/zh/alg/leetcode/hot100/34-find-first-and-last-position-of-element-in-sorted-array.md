@@ -1,11 +1,12 @@
 ---
-title: "在排序数组中查找元素的起始和结束位置：一套二分模板搞定 Search Range（LeetCode 34）"
+title: "Hot100：在排序数组中查找元素的起始和结束位置，一套二分模板搞定 Search Range（LeetCode 34）"
 date: 2025-12-04T11:00:00+08:00
 draft: false
+aliases: ["/alg/leetcode/binary-search/34-find-first-and-last-position-of-element-in-sorted-array/"]
 categories: ["LeetCode"]
-tags: ["二分查找", "有序数组", "边界问题", "面试高频题"]
+tags: ["Hot100", "二分查找", "有序数组", "边界问题", "面试高频题", "LeetCode 34"]
 description: "在有序数组中找到目标值的起始和结束位置（Search Range），要求 O(log n) 时间。本文用下界/上界二分模板彻底解决边界问题，并给出多语言代码和工程实践示例。"
-keywords: ["Search Range", "first and last position", "二分查找", "有序数组", "lower_bound", "upper_bound"]
+keywords: ["Search Range", "first and last position", "二分查找", "有序数组", "lower_bound", "upper_bound", "LeetCode 34", "Hot100"]
 ---
 
 > **副标题 / 摘要**  
@@ -13,7 +14,7 @@ keywords: ["Search Range", "first and last position", "二分查找", "有序数
 
 - **预计阅读时长**：10~15 分钟  
 - **适用场景标签**：`二分查找`、`日志区间查询`、`时间序列检索`  
-- **SEO 关键词**：search range, first and last position, 二分查找边界, lower_bound, upper_bound  
+- **SEO 关键词**：search range, first and last position, 二分查找边界, lower_bound, upper_bound, LeetCode 34, Hot100  
 
 ---
 

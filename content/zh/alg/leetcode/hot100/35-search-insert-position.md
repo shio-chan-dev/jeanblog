@@ -1,11 +1,12 @@
 ---
-title: "Search Insert Position：排序数组中目标值插入位置的二分查找实战（LeetCode 35）"
+title: "Hot100：Search Insert Position 排序数组中目标值插入位置的二分查找实战（LeetCode 35）"
 date: 2025-12-04T11:10:00+08:00
 draft: false
+aliases: ["/alg/leetcode/binary-search/35-search-insert-position/"]
 categories: ["LeetCode"]
-tags: ["二分查找", "有序数组", "插入位置", "面试高频题"]
+tags: ["Hot100", "二分查找", "有序数组", "插入位置", "面试高频题", "LeetCode 35"]
 description: "在有序数组中寻找目标值插入位置，使数组仍然有序：存在返回下标，不存在返回应插入的位置。本文用统一的 lower_bound 二分模板实现 Search Insert Position，并给出多语言代码与工程应用示例。"
-keywords: ["Search Insert Position", "二分查找", "插入位置", "lower_bound", "有序数组插入"]
+keywords: ["Search Insert Position", "二分查找", "插入位置", "lower_bound", "有序数组插入", "LeetCode 35", "Hot100"]
 ---
 
 > **副标题 / 摘要**  
@@ -13,7 +14,7 @@ keywords: ["Search Insert Position", "二分查找", "插入位置", "lower_boun
 
 - **预计阅读时长**：8~10 分钟  
 - **适用场景标签**：`二分查找入门`、`插入位置`、`范围查找`  
-- **SEO 关键词**：search insert position, lower_bound, 二分插入, 排序数组插入位置  
+- **SEO 关键词**：search insert position, lower_bound, 二分插入, 排序数组插入位置, LeetCode 35, Hot100  
 
 ---
 

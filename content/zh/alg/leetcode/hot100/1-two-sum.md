@@ -1,19 +1,20 @@
 ---
-title: "Two Sum 两数之和：哈希表一遍扫描与 ACERS 工程化解析（LeetCode 1）"
+title: "Hot100：Two Sum 两数之和哈希表一遍扫描与 ACERS 工程化解析（LeetCode 1）"
 date: 2025-12-28T10:00:00+08:00
 draft: false
+aliases: ["/alg/leetcode/1-two-sum/"]
 categories: ["LeetCode"]
-tags: ["哈希表", "数组", "补数", "两数之和", "面试高频", "ACERS"]
+tags: ["Hot100", "哈希表", "数组", "补数", "两数之和", "面试高频", "ACERS", "LeetCode 1"]
 description: "从题意还原到哈希表一遍扫描，系统讲解 Two Sum，并给出工程场景、复杂度对比与多语言实现。"
-keywords: ["Two Sum", "两数之和", "hash map", "补数", "O(n)", "LeetCode 1"]
+keywords: ["Two Sum", "两数之和", "hash map", "补数", "O(n)", "LeetCode 1", "Hot100"]
 ---
 
 > **副标题 / 摘要**  
 > Two Sum（两数之和）是最经典的数组哈希题：用“补数 + 哈希表”把 O(n^2) 降到 O(n)。本文按 ACERS 结构拆解题意、原理与工程迁移，并给出多语言可运行实现。
 
 - **预计阅读时长**：10~12 分钟
-- **标签**：`哈希表`、`数组`、`补数`、`面试高频`
-- **SEO 关键词**：Two Sum, 两数之和, hash map, 补数, O(n)
+- **标签**：`Hot100`、`哈希表`、`数组`、`补数`、`面试高频`
+- **SEO 关键词**：Two Sum, 两数之和, hash map, 补数, O(n), LeetCode 1, Hot100
 - **元描述**：两数之和的哈希表解法与工程应用解析，含复杂度对比与多语言代码。
 
 ---

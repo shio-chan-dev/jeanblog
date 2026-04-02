@@ -1,19 +1,20 @@
 ---
-title: "Hot100：相同的树（Same Tree）同步递归 / BFS ACERS 解析"
+title: "相同的树（Same Tree）同步递归 / BFS ACERS 解析"
 date: 2026-03-15T21:29:42+08:00
 draft: false
+aliases: ["/alg/leetcode/hot100/binary-tree/100-same-tree/"]
 categories: ["LeetCode"]
-tags: ["Hot100", "二叉树", "DFS", "BFS", "树比较", "LeetCode 100"]
+tags: ["二叉树", "DFS", "BFS", "树比较", "LeetCode 100"]
 description: "围绕 LeetCode 100 讲清同步递归比较、队列成对校验与结构等价判断，附工程迁移与多语言实现。"
-keywords: ["Same Tree", "相同的树", "二叉树比较", "同步递归", "BFS", "LeetCode 100", "Hot100"]
+keywords: ["Same Tree", "相同的树", "二叉树比较", "同步递归", "BFS", "LeetCode 100"]
 ---
 
 > **副标题 / 摘要**  
 > LeetCode 100 的关键不在“会不会遍历树”，而在“能不能把两棵树当成一对一对的节点同步比较”。本文按 ACERS 结构拆解同步递归的判断合同、BFS 成对校验写法，以及工程里常见的结构等价判断场景。
 
 - **预计阅读时长**：9~11 分钟  
-- **标签**：`Hot100`、`二叉树`、`DFS`、`BFS`、`树比较`  
-- **SEO 关键词**：Hot100, Same Tree, 相同的树, 二叉树比较, 同步递归, LeetCode 100  
+- **标签**：`二叉树`、`DFS`、`BFS`、`树比较`  
+- **SEO 关键词**：Same Tree, 相同的树, 二叉树比较, 同步递归, LeetCode 100  
 - **元描述**：系统讲透 LeetCode 100 的同步递归与 BFS 成对比较思路，并延伸到配置树、组件树和语法树的等价判断。  
 
 ---

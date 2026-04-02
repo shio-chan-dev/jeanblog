@@ -1,26 +1,27 @@
 ---
-title: "Hot100：反转链表 II（Reverse Linked List II）哑节点+头插法 ACERS 解析"
+title: "反转链表 II（Reverse Linked List II）哑节点+头插法 ACERS 解析"
 date: 2026-02-10T09:56:14+08:00
 draft: false
+aliases: ["/alg/leetcode/hot100/linked-list/92-reverse-linked-list-ii/"]
 categories: ["LeetCode"]
-tags: ["Hot100", "链表", "区间反转", "哑节点", "头插法", "LeetCode 92"]
+tags: ["链表", "区间反转", "哑节点", "头插法", "LeetCode 92"]
 description: "在单链表中仅反转区间 [left, right]：用哑节点定位前驱，再用头插法原地重排，时间 O(n)、额外空间 O(1)，附工程思路与多语言实现。"
-keywords: ["Reverse Linked List II", "反转链表 II", "区间反转", "哑节点", "头插法", "LeetCode 92", "Hot100"]
+keywords: ["Reverse Linked List II", "反转链表 II", "区间反转", "哑节点", "头插法", "LeetCode 92"]
 ---
 
 > **副标题 / 摘要**  
 > 反转链表 II 的关键不在“会反转”，而在“只反转中间一段且不破坏两端连接”。本文用 ACERS 结构讲清哑节点定位、头插法重排与边界处理，给出可复用模板与多语言代码。
 
 - **预计阅读时长**：12~15 分钟  
-- **标签**：`Hot100`、`链表`、`区间反转`、`哑节点`  
-- **SEO 关键词**：Reverse Linked List II, 反转链表 II, 区间反转, 哑节点, 头插法, LeetCode 92, Hot100  
+- **标签**：`链表`、`区间反转`、`哑节点`  
+- **SEO 关键词**：Reverse Linked List II, 反转链表 II, 区间反转, 哑节点, 头插法, LeetCode 92  
 - **元描述**：单链表区间反转的工程化模板：哑节点 + 头插法，O(n)/O(1)，附推导、常见坑与多语言实现。  
 
 ---
 
 ## 目标读者
 
-- 正在刷 Hot100，已会 206 反转链表，想进一步掌握“局部反转”的同学
+- 已会 206 反转链表，想进一步掌握“局部反转”的同学
 - 经常在链表题里卡边界（`left=1`、`right=n`）的中级开发者
 - 希望把链表指针操作做成稳定模板的工程师
 
@@ -413,7 +414,7 @@ function reverseBetween(head, left, right) {
 ## 元信息
 
 - **阅读时长**：12~15 分钟  
-- **标签**：Hot100、链表、区间反转、哑节点  
+- **标签**：链表、区间反转、哑节点  
 - **SEO 关键词**：Reverse Linked List II, 反转链表 II, 头插法, LeetCode 92  
 - **元描述**：区间反转单链表的 O(n)/O(1) 模板实现与工程实践。  
 

@@ -1,19 +1,20 @@
 ---
-title: "路径和 III：前缀和 + 哈希表统计向下路径（LeetCode 437）ACERS 解析"
+title: "Hot100：路径和 III 前缀和 + 哈希表统计向下路径（LeetCode 437）ACERS 解析"
 date: 2026-02-02T22:13:45+08:00
 draft: false
+aliases: ["/alg/leetcode/437-path-sum-iii/"]
 categories: ["LeetCode"]
-tags: ["二叉树", "DFS", "前缀和", "哈希表", "LeetCode 437"]
+tags: ["Hot100", "二叉树", "DFS", "前缀和", "哈希表", "LeetCode 437"]
 description: "用前缀和 + 计数哈希表在 O(n) 时间统计二叉树中和为 targetSum 的向下路径数，含推导、工程迁移与多语言实现。"
-keywords: ["Path Sum III", "路径和 III", "前缀和", "哈希表", "DFS", "LeetCode 437", "O(n)"]
+keywords: ["Path Sum III", "路径和 III", "前缀和", "哈希表", "DFS", "LeetCode 437", "O(n)", "Hot100"]
 ---
 
 > **副标题 / 摘要**  
 > “路径不必从根开始、但必须向下”使得这题无法用简单的根到叶 DP 解决。本文用 ACERS 结构讲透 **树上前缀和**：把任意向下路径转化为“两个前缀和的差”，用哈希表在线计数，做到 O(n) 一次 DFS 统计所有答案。
 
 - **预计阅读时长**：12~15 分钟  
-- **标签**：`二叉树`、`前缀和`、`DFS`、`哈希表`  
-- **SEO 关键词**：Path Sum III, 路径和 III, 树上前缀和, 前缀和哈希, LeetCode 437  
+- **标签**：`Hot100`、`二叉树`、`前缀和`、`DFS`、`哈希表`  
+- **SEO 关键词**：Path Sum III, 路径和 III, 树上前缀和, 前缀和哈希, LeetCode 437, Hot100  
 - **元描述**：前缀和 + 哈希表在线统计二叉树向下路径和等于 targetSum 的条数，包含推导、复杂度对比与多语言实现。  
 
 ---
@@ -396,8 +397,8 @@ LeetCode 437 的关键不是 DFS，而是把它看成“树上的前缀和差分
 ## 元信息
 
 - **阅读时长**：12~15 分钟  
-- **标签**：二叉树、前缀和、DFS、LeetCode 437  
-- **SEO 关键词**：Path Sum III, 树上前缀和, 前缀和哈希, LeetCode 437  
+- **标签**：Hot100、二叉树、前缀和、DFS、LeetCode 437  
+- **SEO 关键词**：Path Sum III, 树上前缀和, 前缀和哈希, LeetCode 437, Hot100  
 - **元描述**：前缀和 + 哈希表在线统计二叉树向下路径和等于 targetSum 的条数，附推导与多语言实现。  
 
 ---
