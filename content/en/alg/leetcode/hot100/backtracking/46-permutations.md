@@ -95,66 +95,148 @@ output: [[1]]
 
 ## C — Concepts
 
-### What changes when moving from Subsets to Permutations
+### Build it from scratch
 
-In `78. Subsets`, the key boundary is `startIndex` because order does not matter.  
-In permutations, every layer asks a different question:
+The cleanest way to think about permutations is not "memorize a backtracking template."
+It is:
 
-> Which unused element should fill the next position?
+- what can go in the 1st position?
+- after that, what can go in the 2nd?
+- after that, what can go in the 3rd?
 
-That means:
+For `nums = [1, 2, 3]`, that means:
 
-- we do not use `startIndex`
-- every layer iterates over the whole array
-- `used[]` decides whether an element is still available
-- answers are collected only at leaf nodes
+- first choose `1`, `2`, or `3`
+- if you choose `1`, the next choice is between `2` and `3`
+- if you then choose `2`, only `3` is left
+- that gives one complete permutation: `[1, 2, 3]`
 
-### Search tree model
+Then you go back and try a different earlier choice:
 
-For `nums = [1,2,3]`, the tree begins like this:
+- `[1, 3, 2]`
+- `[2, 1, 3]`
+- `[2, 3, 1]`
+- `[3, 1, 2]`
+- `[3, 2, 1]`
 
-```text
-[]
-|- [1]
-|  |- [1,2]
-|  |  |- [1,2,3]
-|  |- [1,3]
-|     |- [1,3,2]
-|- [2]
-|- [3]
+That is why permutations naturally form a search tree.
+
+### Step 1: start from a tiny example
+
+Take `nums = [1, 2, 3]`.
+
+Instead of asking "how do I generate all permutations?", ask the smaller question:
+
+> How do I build one permutation one slot at a time?
+
+That shift makes the recursion much easier to design.
+
+### Step 2: decide what state a partial answer needs
+
+While building one permutation, we need three pieces of state:
+
+- `path`: the numbers already chosen
+- `used[i]`: whether `nums[i]` is already inside `path`
+- `res`: where to store finished permutations
+
+So the setup is:
+
+```python
+res = []
+path = []
+used = [False] * len(nums)
 ```
 
-Unlike subsets, the intermediate nodes are only prefixes.  
-A node becomes a valid answer only when all positions have been filled.
+At the beginning:
 
-### The stable template
+- `path = []`
+- every element in `used` is `False`
 
-```text
-dfs():
-    if path length == n:
-        collect answer
-        return
-    for i in [0 .. n-1]:
-        if used[i]:
-            continue
-        choose nums[i]
-        used[i] = true
-        dfs()
-        used[i] = false
-        undo nums[i]
+That means we have not chosen anything yet.
+
+### Step 3: define the recursive subproblem
+
+The recursive question is:
+
+> Given the current partial permutation in `path`, what unused number can I place next?
+
+That becomes a DFS function:
+
+```python
+def dfs() -> None:
+    ...
 ```
 
----
+It can directly read and modify `res`, `path`, and `used`.
 
-## Practical Steps
+### Step 4: define the stopping condition
 
-1. Prepare `res`, `path`, and a Boolean array `used`
-2. Enter DFS and first check whether the path is already full
-3. Iterate over all indices
-4. Skip elements already used in the current path
-5. Choose one element, recurse, then restore state on return
+When is one permutation complete?
 
-Runnable Python example:
+When `path` has the same length as `nums`.
+
+```python
+if len(path) == len(nums):
+    res.append(path.copy())
+    return
+```
+
+Two details matter here:
+
+- we collect only at leaf nodes, because only then is the permutation complete
+- we must append `path.copy()` instead of `path`, because `path` will keep changing during backtracking
+
+### Step 5: list the available choices
+
+At any point, the next number can be any element that is not already used.
+
+```python
+for i, x in enumerate(nums):
+    if used[i]:
+        continue
+```
+
+So every DFS level scans the full array, but only unused numbers are eligible.
+
+### Step 6: make one choice
+
+If `x` is unused, choose it by updating the state:
+
+```python
+used[i] = True
+path.append(x)
+```
+
+Now the partial permutation is one element longer.
+
+### Step 7: recurse on the smaller problem
+
+After choosing the next number, solve the rest of the problem:
+
+> Fill the remaining positions.
+
+```python
+dfs()
+```
+
+### Step 8: undo the choice
+
+After exploring every permutation that starts with that choice, restore the old state so the loop can try the next option.
+
+```python
+path.pop()
+used[i] = False
+```
+
+This is the key backtracking pattern:
+
+```text
+choose
+recurse
+undo
+```
+
+### Step 9: combine the pieces
 
 ```python
 from typing import List
@@ -169,9 +251,11 @@ def permute(nums: List[int]) -> List[List[int]]:
         if len(path) == len(nums):
             res.append(path.copy())
             return
+
         for i, x in enumerate(nums):
             if used[i]:
                 continue
+
             used[i] = True
             path.append(x)
             dfs()
@@ -180,12 +264,70 @@ def permute(nums: List[int]) -> List[List[int]]:
 
     dfs()
     return res
-
-
-if __name__ == "__main__":
-    print(permute([1, 2, 3]))
-    print(permute([0, 1]))
 ```
+
+### Step 10: walk one branch slowly
+
+For `nums = [1, 2, 3]`:
+
+Start:
+
+- `path = []`
+- `used = [False, False, False]`
+
+Choose `1`:
+
+- `path = [1]`
+- `used = [True, False, False]`
+
+Choose `2`:
+
+- `path = [1, 2]`
+- `used = [True, True, False]`
+
+Choose `3`:
+
+- `path = [1, 2, 3]`
+- `used = [True, True, True]`
+
+Now `len(path) == len(nums)`, so save `[1, 2, 3]`.
+
+Then backtrack:
+
+- remove `3`
+- mark `3` unused
+
+Return to `path = [1, 2]` and try other choices.
+There are none, so backtrack again:
+
+- remove `2`
+- mark `2` unused
+
+Now we are back at `path = [1]`, and can try `3` instead.
+That produces `[1, 3, 2]`.
+
+The full search keeps repeating that same pattern until every branch has been explored.
+
+### How to think through it during an interview or while coding
+
+If you want to derive this method from scratch, ask these five questions:
+
+1. Can I build the answer one position at a time?
+2. What does a partial answer look like?
+3. When is the partial answer complete?
+4. What choices are available next?
+5. What state must I undo before trying the next choice?
+
+For permutations, the answers are:
+
+- yes, build one slot at a time
+- the partial answer is `path`
+- it is complete when `len(path) == len(nums)`
+- the next choice is any unused number
+- after recursion, undo with both `path.pop()` and `used[i] = False`
+
+That is the full mental model.
+The code is only a direct translation of that reasoning.
 
 ---
 
