@@ -48,6 +48,14 @@
 - Constraints (if known, include a numeric range):
 - Optimization target (time/space/accuracy):
 
+## Build It From Scratch
+- Tiny example or minimal non-trivial case:
+- What a partial answer / state means:
+- What the baseline would do:
+- Why that baseline breaks (bottleneck):
+- Key observation that changes the approach:
+- One explicit branch / state trace:
+
 ## Baseline and Bottleneck
 - Naive approach (with complexity):
 - Bottleneck and why it fails (quantify if possible):

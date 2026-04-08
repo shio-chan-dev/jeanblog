@@ -1,6 +1,6 @@
 ---
 name: leetcode-acers-blogger
-description: v0.1.1 - Route concrete LeetCode problem writeup requests to the ACERS blogger with `problem_source=leetcode` when the user wants a publishable Hugo post for a LeetCode problem.
+description: v0.1.2 - Route concrete LeetCode problem writeup requests to the ACERS blogger with `problem_source=leetcode` and derivation-first tutorial flow when the user wants a publishable Hugo post.
 ---
 
 # LeetCode ACERS Hugo Blogger (Compatibility)
@@ -11,11 +11,12 @@ Use when the user explicitly asks for LeetCode problem writeups or names this sk
 ## Bundled Resources
 - `.codex/skills/algorithm-problem-acers-blogger/SKILL.md` as the delegated primary workflow.
 - `.codex/skills/algorithm-problem-acers-blogger/references/source-path-policy.md` for LeetCode and Hot100 placement policy.
+- `.codex/skills/algorithm-problem-acers-blogger/references/derivation-first-tutorial.md` for the “teach it from scratch” walkthrough mode.
 - `docs/leetcode_std.md` for the ACERS structure.
 
 ## Workflow
 1. Set `problem_source=leetcode` by default.
-2. Read `.codex/skills/algorithm-problem-acers-blogger/SKILL.md` and follow that workflow.
+2. Read `.codex/skills/algorithm-problem-acers-blogger/SKILL.md` and follow that workflow in derivation-first mode.
 3. Keep default output path locked to:
    - Chinese: `content/zh/alg/leetcode/<slug>.md`
    - English: `content/en/alg/leetcode/<slug>.md`
@@ -42,8 +43,10 @@ Use when the user explicitly asks for LeetCode problem writeups or names this sk
 - Use runnable code and include reasoning path, not final answer only.
 - Do not include secrets or private data.
 - Do not move a LeetCode post into Hot100 unless the request or task context clearly targets that collection.
+- Do not skip the “build it from the problem” tutorial path and jump straight to the named template or final code.
 
 ## Verification
 - Confirm the delegated skill still sees `problem_source=leetcode`.
 - Confirm the final path stays under `content/<lang>/alg/leetcode/` unless the user or task explicitly targets `hot100/`.
 - Confirm the final category remains `LeetCode` unless the user requested a different taxonomy.
+- Confirm the tutorial section explains how the solution is derived from the problem before the compact final algorithm.

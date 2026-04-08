@@ -1,4 +1,4 @@
 interface:
   display_name: "Algorithm Article Writer"
-  short_description: "v0.1.0 - Write long-form algorithm explanation posts"
-  default_prompt: "Use $algorithm-article-writer to draft a publishable long-form algorithm concept or technique article for this Hugo blog with runnable code and complete front matter."
+  short_description: "v0.1.1 - Write derivation-first algorithm articles"
+  default_prompt: "Use $algorithm-article-writer to draft a publishable long-form algorithm concept or technique article for this Hugo blog with derivation-first tutorial sections, runnable code, and complete front matter."

@@ -1,4 +1,4 @@
 interface:
   display_name: "LeetCode ACERS Blogger"
-  short_description: "v0.1.1 - Route LeetCode writeups to the ACERS workflow"
-  default_prompt: "Use $leetcode-acers-blogger to turn this LeetCode problem into a publishable Hugo ACERS post with the correct LeetCode path and front matter."
+  short_description: "v0.1.2 - Route LeetCode writeups to derivation-first ACERS"
+  default_prompt: "Use $leetcode-acers-blogger to turn this LeetCode problem into a publishable Hugo ACERS post with derivation-first tutorial flow, the correct LeetCode path, and complete front matter."

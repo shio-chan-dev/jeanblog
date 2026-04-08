@@ -1,6 +1,6 @@
 ---
 name: algorithm-problem-acers-blogger
-description: v0.1.1 - Create publishable Hugo ACERS posts for concrete algorithm problems across LeetCode/Codeforces/AtCoder/Luogu/custom sources when the user provides a problem statement and wants a structured writeup, using docs/leetcode_std.md and current timestamps from `date`.
+description: v0.1.2 - Create publishable Hugo ACERS posts for concrete algorithm problems across LeetCode/Codeforces/AtCoder/Luogu/custom sources when the user wants a structured writeup with derivation-first tutorial sections, using docs/leetcode_std.md and current timestamps from `date`.
 ---
 
 # Algorithm Problem ACERS Blogger
@@ -11,10 +11,11 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
 ## Bundled Resources
 - `docs/leetcode_std.md` for the ACERS structure and required sections.
 - `references/source-path-policy.md` for source-specific output paths and taxonomy defaults.
+- `references/derivation-first-tutorial.md` for the mandatory “build it from scratch” tutorial flow.
 - `references/verification-checklist.md` for pre-delivery validation.
 
 ## Workflow
-1. Read `docs/leetcode_std.md`, `references/source-path-policy.md`, and `references/verification-checklist.md`.
+1. Read `docs/leetcode_std.md`, `references/source-path-policy.md`, `references/derivation-first-tutorial.md`, and `references/verification-checklist.md`.
 2. Gather inputs:
    - problem statement and constraints,
    - 1-2 examples,
@@ -35,6 +36,13 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
      - Other paths: mirror nearby posts in the same folder; if unavailable, ask user before inventing taxonomy.
 6. Write the full ACERS article in the target language:
    - Include title/subtitle, target readers, background/motivation, core concepts.
+   - Include a derivation-first tutorial flow before the final polished algorithm section:
+     - start from a tiny example or manual trace,
+     - define the smaller subproblem or partial state,
+     - explain the completion/base condition,
+     - list the next choices or transitions,
+     - walk one branch / state evolution slowly,
+     - only then name the final template or algorithm.
    - Include naive-to-optimized thought process and correctness reasoning.
    - Include practical steps, runnable examples, FAQs, best practices, meta info, and CTA.
 7. For algorithm problems, append multi-language implementations (Python, C, C++, Go, Rust, JS) unless user requests a subset.
@@ -69,9 +77,12 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
 - Do not edit `themes/`, config files, or generated outputs.
 - Do not include secrets or private data.
 - Do not place a post under `hot100/` unless the user explicitly asks for Hot100 or the task context clearly requires that collection.
+- Do not jump directly from the problem statement to the final trick or template label.
+- If the final method is a known template, explain why the problem evidence leads to that template before presenting finished code.
 
 ## Verification
 - Front matter is valid and category/tag choices match the selected path.
 - Required ACERS sections from `docs/leetcode_std.md` are present.
 - Complexity claims, constraints, and examples are traceable to the supplied problem statement.
 - Final code blocks are runnable examples rather than pseudocode-only stubs.
+- The tutorial path shows how the solution is discovered from the problem, not just what the final solution is.

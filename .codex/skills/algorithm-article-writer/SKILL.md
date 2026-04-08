@@ -1,6 +1,6 @@
 ---
 name: algorithm-article-writer
-description: v0.1.0 - Write long-form, high-density algorithm concept or technique posts for this Hugo blog when the user wants a publishable explanation article with runnable code, using docs/std.md and the bundled template.
+description: v0.1.1 - Write long-form, high-density algorithm concept or technique posts for this Hugo blog when the user wants a publishable explanation article with derivation-first tutorial sections and runnable code.
 ---
 
 # Algorithm Article Writer
@@ -11,13 +11,14 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 ## Bundled Resources
 - `docs/std.md` for the project writing checklist.
 - `assets/algorithm-article-template.md` for the default article structure.
+- `references/derivation-first-explanations.md` for teaching the method from the problem pressure rather than from the final trick.
 - `references/language-selection-rubric.md` for code-language selection.
 - `references/depth-checklist.md` and `references/deepening-ladder.md` for depth and anti-fluff passes.
 - `references/reading-time-estimator.md` plus `scripts/estimate_reading_time.py` for `readingTime`.
 - `references/acceptance-criteria.md` for final validation.
 
 ## Workflow
-1. Read `docs/std.md`, `assets/algorithm-article-template.md`, `references/depth-checklist.md`, `references/reading-time-estimator.md`, and `references/deepening-ladder.md`.
+1. Read `docs/std.md`, `assets/algorithm-article-template.md`, `references/derivation-first-explanations.md`, `references/depth-checklist.md`, `references/reading-time-estimator.md`, and `references/deepening-ladder.md`.
 2. Gather required inputs: algorithm/topic, target audience, target language (or infer), code-language constraints, output path override, and any examples/constraints.
 3. Choose output path:
    - If the algorithm is AI/ML-specific and a relevant folder exists under `content/<lang>/ai/`, use `content/<lang>/ai/<topic>/<slug>.md`.
@@ -32,6 +33,7 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 7. Draft a long-form, high-density article with master-level structure:
    - At least one runnable code snippet (no pseudocode-only solutions).
    - At least one worked example (input/output or trace).
+   - A derivation-first tutorial section that starts from a tiny example or concrete pain point, shows the baseline and bottleneck, then justifies the final named technique.
    - Naive-to-optimized reasoning path and tradeoffs.
    - Correctness reasoning (proof sketch or invariant).
 8. Run a deepening pass for the chosen concepts using `references/deepening-ladder.md`.
@@ -75,6 +77,7 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 - Do not edit `themes/`, config files, or generated outputs.
 - Use ASCII filenames by default.
 - No secrets or PII.
+- Do not present the named technique or final formula before the tutorial section has shown the bottleneck and key observation that justify it.
 - Every major section must include at least one concrete anchor as defined in `references/depth-checklist.md`.
 - `readingTime` must be >= the computed estimate from `scripts/estimate_reading_time.py`.
 - If the estimate is below the minimum threshold, deepen the chosen core concepts (do not add unrelated parallel topics).
@@ -85,6 +88,7 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 - Code snippet is runnable and minimal.
 - References/links resolve.
 - `readingTime` is not lower than the computed estimate.
+- The tutorial sections show the reasoning path from problem pressure to final method, not just the finished method summary.
 
 ## Acceptance Loop
 - Run `references/acceptance-criteria.md` and record pass/fail evidence.

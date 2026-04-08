@@ -7,6 +7,7 @@
 - Background/motivation explains why the algorithm matters.
 - Core concepts and terms are defined.
 - Practice guide (step-by-step algorithm) is present.
+- A derivation-first tutorial section is present and shows how the method is built from the problem before naming the final trick.
 - At least one runnable code snippet is included.
 - Explanation/principles and naive-to-optimized reasoning are included.
 - Complexity analysis is included (time and space).
