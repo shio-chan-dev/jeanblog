@@ -1,6 +1,6 @@
 ---
 name: algorithm-article-writer
-description: v0.1.1 - Write long-form, high-density algorithm concept or technique posts for this Hugo blog when the user wants a publishable explanation article with derivation-first tutorial sections and runnable code.
+description: v0.1.2 - Write long-form, high-density algorithm concept or technique posts for this Hugo blog when the user wants a guided-build tutorial that develops code step by step before the final answer.
 ---
 
 # Algorithm Article Writer
@@ -33,7 +33,7 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 7. Draft a long-form, high-density article with master-level structure:
    - At least one runnable code snippet (no pseudocode-only solutions).
    - At least one worked example (input/output or trace).
-   - A derivation-first tutorial section that starts from a tiny example or concrete pain point, shows the baseline and bottleneck, then justifies the final named technique.
+   - A guided-build tutorial section that is written as numbered steps, introduces one idea and one code fragment at a time, then assembles the full code before the final reference answer.
    - Naive-to-optimized reasoning path and tradeoffs.
    - Correctness reasoning (proof sketch or invariant).
 8. Run a deepening pass for the chosen concepts using `references/deepening-ladder.md`.
@@ -78,6 +78,7 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 - Use ASCII filenames by default.
 - No secrets or PII.
 - Do not present the named technique or final formula before the tutorial section has shown the bottleneck and key observation that justify it.
+- Do not split the teaching flow into redundant “steps”, “implementation”, and “code” sections that restate the same content.
 - Every major section must include at least one concrete anchor as defined in `references/depth-checklist.md`.
 - `readingTime` must be >= the computed estimate from `scripts/estimate_reading_time.py`.
 - If the estimate is below the minimum threshold, deepen the chosen core concepts (do not add unrelated parallel topics).
@@ -88,7 +89,7 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 - Code snippet is runnable and minimal.
 - References/links resolve.
 - `readingTime` is not lower than the computed estimate.
-- The tutorial sections show the reasoning path from problem pressure to final method, not just the finished method summary.
+- The tutorial sections use a guided-build flow that introduces fragments step by step, then assembles them into full code, then gives a clean reference answer.
 
 ## Acceptance Loop
 - Run `references/acceptance-criteria.md` and record pass/fail evidence.

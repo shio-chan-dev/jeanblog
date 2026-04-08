@@ -48,25 +48,33 @@
 - Constraints (if known, include a numeric range):
 - Optimization target (time/space/accuracy):
 
-## Build It From Scratch
-- Tiny example or minimal non-trivial case:
-- What a partial answer / state means:
-- What the baseline would do:
-- Why that baseline breaks (bottleneck):
-- Key observation that changes the approach:
+## Build It Step by Step
+- Step 1:
+  - Question:
+  - Reasoning:
+  - Code fragment:
+- Step 2:
+  - Question:
+  - Reasoning:
+  - Code fragment:
+- Step 3:
+  - Question:
+  - Reasoning:
+  - Code fragment:
+- Step 4:
+  - Question:
+  - Reasoning:
+  - Code fragment:
 - One explicit branch / state trace:
 
-## Baseline and Bottleneck
-- Naive approach (with complexity):
-- Bottleneck and why it fails (quantify if possible):
+## Assemble the Full Code
+- Show the first complete implementation built from the fragments above.
+- Explain only the integration points, not the whole reasoning again.
 
-## Key Observation
-- <The turning point that makes the algorithm work>
-
-## Algorithm Steps (Practice Guide)
-1. ...
-2. ...
-3. ...
+## Reference Answer (Language: <X>)
+```<language>
+# clean final code
+```
 
 ## Decision Criteria (Selection Guide)
 - Input size regimes (with thresholds):
@@ -93,11 +101,6 @@
 - Cache/locality considerations (name a bottleneck):
 - Practical limits (language/runtime quirks):
 - Typical optimizations and their risks (with example):
-
-## Runnable Implementation (Language: <X>)
-```<language>
-# runnable code
-```
 
 ## Engineering Scenarios
 1. Scenario A: background, why it fits, minimal code snippet.

@@ -6,9 +6,10 @@
 - Target audience is explicit.
 - Background/motivation explains why the algorithm matters.
 - Core concepts and terms are defined.
-- Practice guide (step-by-step algorithm) is present.
-- A derivation-first tutorial section is present and shows how the method is built from the problem before naming the final trick.
-- At least one runnable code snippet is included.
+- A guided-build tutorial section is present and shows how the method is built from the problem before naming the final trick.
+- The guided-build section uses numbered steps with one question/reasoning move per step.
+- The article includes `Assemble the Full Code`.
+- The article includes a clean `Reference Answer`.
 - Explanation/principles and naive-to-optimized reasoning are included.
 - Complexity analysis is included (time and space).
 - Worked example or trace is included.

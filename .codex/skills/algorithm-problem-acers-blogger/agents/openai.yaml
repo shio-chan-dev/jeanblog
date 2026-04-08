@@ -1,4 +1,4 @@
 interface:
   display_name: "Algorithm Problem ACERS Blogger"
-  short_description: "v0.1.2 - Write derivation-first ACERS problem posts"
-  default_prompt: "Use $algorithm-problem-acers-blogger to turn this concrete algorithm problem into a publishable Hugo ACERS post with derivation-first tutorial flow, the correct source-specific path, and complete front matter."
+  short_description: "v0.1.3 - Write guided-build ACERS problem posts"
+  default_prompt: "Use $algorithm-problem-acers-blogger to turn this concrete algorithm problem into a publishable Hugo ACERS post with a step-by-step guided build, assembled full code, reference answer, the correct source-specific path, and complete front matter."
