@@ -10,6 +10,7 @@ Run this checklist before delivering an algorithm-problem ACERS post.
 - The tutorial section is a numbered guided build, not just a high-level derivation summary.
 - The guided build introduces state and code fragments step by step before any full solution appears.
 - The article includes both `Assemble the Full Code` and `Reference Answer`.
+- No standalone `naive idea`, `naive approach`, or `naive-to-optimized` section appears; any such contrast is folded into the guided-build steps.
 - Constraints, examples, and complexity claims come from the supplied problem
   statement or are explicitly labeled as assumptions.
 - Final code blocks are runnable examples, not pseudocode-only snippets.

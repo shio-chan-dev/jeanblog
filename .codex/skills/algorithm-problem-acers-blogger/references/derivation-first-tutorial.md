@@ -21,6 +21,10 @@ Prefer this order:
 
 Do not reverse that order unless the user explicitly wants a terse reference
 note instead of a tutorial.
+Do not insert a standalone “naive idea”, “brute force first”, or
+“naive-to-optimized” bridge section before the guided-build ladder. If that
+contrast matters, place it inside Step 1 or the exact step that introduces the
+missing state or rule.
 
 ## Required Guided-Build Ladder
 
@@ -192,6 +196,7 @@ Place it before:
 Do not do these in tutorial mode:
 
 - “This is a standard backtracking / DP / greedy problem” as the opening move
+- a standalone `naive idea` / `naive-to-optimized` section before the guided-build steps
 - code before the reasoning path
 - unexplained variables like `used`, `path`, `dp`, `leftMax`
 - one-paragraph jumps from statement to final formula

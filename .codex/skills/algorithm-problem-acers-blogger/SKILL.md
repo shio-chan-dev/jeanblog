@@ -1,6 +1,6 @@
 ---
 name: algorithm-problem-acers-blogger
-description: v0.1.3 - Create publishable Hugo ACERS posts for concrete algorithm problems across LeetCode/Codeforces/AtCoder/Luogu/custom sources when the user wants a guided-build tutorial that develops code step by step before the final answer.
+description: v0.1.4 - Create publishable Hugo ACERS posts for concrete algorithm problems across LeetCode/Codeforces/AtCoder/Luogu/custom sources when the user wants a guided-build tutorial that develops code step by step before the final answer.
 ---
 
 # Algorithm Problem ACERS Blogger
@@ -44,7 +44,8 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
      - show one slow branch / trace before the full code,
      - then include `Assemble the Full Code`,
      - then include a clean `Reference Answer`.
-   - Include naive-to-optimized thought process and correctness reasoning.
+   - Include correctness reasoning.
+   - If a brute-force contrast or wrong instinct is useful, fold it into `Step 1` or the exact numbered step where it justifies a new state or rule.
    - Include practical steps, runnable examples, FAQs, best practices, meta info, and CTA.
 7. For algorithm problems, append multi-language implementations (Python, C, C++, Go, Rust, JS) unless user requests a subset.
 8. Validate:
@@ -82,6 +83,7 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
 - If the final method is a known template, explain why the problem evidence leads to that template before presenting finished code.
 - Do not split the teaching flow into three redundant sections that repeat the same content in different words.
 - Do not show the full finished code before the guided-build steps and the assembly step are complete.
+- Do not generate a standalone section such as `The naive idea exposes the real problems`, `naive approach`, or `naive-to-optimized`; embed any needed contrast inside the numbered guided-build steps.
 
 ## Verification
 - Front matter is valid and category/tag choices match the selected path.

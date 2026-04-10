@@ -1,6 +1,6 @@
 ---
 name: leetcode-acers-blogger
-description: v0.1.3 - Route concrete LeetCode problem writeup requests to the ACERS blogger with `problem_source=leetcode` and guided-build tutorial flow when the user wants a publishable Hugo post.
+description: v0.1.4 - Route concrete LeetCode problem writeup requests to the ACERS blogger with `problem_source=leetcode` and guided-build tutorial flow when the user wants a publishable Hugo post.
 ---
 
 # LeetCode ACERS Hugo Blogger (Compatibility)
@@ -44,6 +44,7 @@ Use when the user explicitly asks for LeetCode problem writeups or names this sk
 - Do not include secrets or private data.
 - Do not move a LeetCode post into Hot100 unless the request or task context clearly targets that collection.
 - Do not skip the guided-build section and jump straight to the named template or final code.
+- Do not generate a standalone `naive idea` / `naive-to-optimized` section; any necessary contrast must live inside the numbered guided-build steps.
 
 ## Verification
 - Confirm the delegated skill still sees `problem_source=leetcode`.

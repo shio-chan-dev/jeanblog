@@ -10,7 +10,8 @@
 - The guided-build section uses numbered steps with one question/reasoning move per step.
 - The article includes `Assemble the Full Code`.
 - The article includes a clean `Reference Answer`.
-- Explanation/principles and naive-to-optimized reasoning are included.
+- Explanation/principles and correctness reasoning are included.
+- No standalone `naive idea`, `naive approach`, or `naive-to-optimized` section appears; any such contrast is embedded inside the guided-build steps.
 - Complexity analysis is included (time and space).
 - Worked example or trace is included.
 - Common pitfalls/edge cases are covered.

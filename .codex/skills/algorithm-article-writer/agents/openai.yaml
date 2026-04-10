@@ -1,4 +1,4 @@
 interface:
   display_name: "Algorithm Article Writer"
-  short_description: "v0.1.2 - Write guided-build algorithm articles"
-  default_prompt: "Use $algorithm-article-writer to draft a publishable long-form algorithm concept or technique article for this Hugo blog with a step-by-step guided build, assembled full code, reference answer, runnable examples, and complete front matter."
+  short_description: "v0.1.3 - Write guided-build algorithm articles"
+  default_prompt: "Use $algorithm-article-writer to draft a publishable long-form algorithm concept or technique article for this Hugo blog with a step-by-step guided build, assembled full code, reference answer, runnable examples, no standalone naive-idea section, and complete front matter."

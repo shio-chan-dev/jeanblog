@@ -19,6 +19,9 @@ For tutorial-style articles, prefer:
 7. assembled full code
 8. clean reference answer
 
+If a brute-force contrast or common wrong instinct is useful, place it inside
+the relevant numbered step. Do not create a standalone bridge section for it.
+
 ## Required Guided-Build Flow
 
 ### 1. Start from a tiny task
@@ -93,6 +96,7 @@ For tutorial-style articles, prefer:
 Avoid:
 
 - technique label in the first sentence
+- standalone `naive idea` / `naive-to-optimized` section before the guided-build steps
 - code before the mental model
 - unexplained state variables
 - conclusion-first summaries with no derivation path

@@ -49,6 +49,7 @@
 - Optimization target (time/space/accuracy):
 
 ## Build It Step by Step
+- If a brute-force contrast matters, fold it into the exact step where it motivates a new state or rule; do not add a separate `naive idea` section.
 - Step 1:
   - Question:
   - Reasoning:

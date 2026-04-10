@@ -1,6 +1,6 @@
 ---
 name: algorithm-article-writer
-description: v0.1.2 - Write long-form, high-density algorithm concept or technique posts for this Hugo blog when the user wants a guided-build tutorial that develops code step by step before the final answer.
+description: v0.1.3 - Write long-form, high-density algorithm concept or technique posts for this Hugo blog when the user wants a guided-build tutorial that develops code step by step before the final answer.
 ---
 
 # Algorithm Article Writer
@@ -34,7 +34,8 @@ Use when the user requests an algorithm explanation post (concept, technique, or
    - At least one runnable code snippet (no pseudocode-only solutions).
    - At least one worked example (input/output or trace).
    - A guided-build tutorial section that is written as numbered steps, introduces one idea and one code fragment at a time, then assembles the full code before the final reference answer.
-   - Naive-to-optimized reasoning path and tradeoffs.
+   - Tradeoffs and correctness reasoning.
+   - If a brute-force contrast or wrong instinct is helpful, fold it into the relevant numbered step instead of creating a standalone section for it.
    - Correctness reasoning (proof sketch or invariant).
 8. Run a deepening pass for the chosen concepts using `references/deepening-ladder.md`.
 9. Run an anchor pass using `references/depth-checklist.md`; add missing numeric examples, constraints, formulas, or counterexamples.
@@ -79,6 +80,7 @@ Use when the user requests an algorithm explanation post (concept, technique, or
 - No secrets or PII.
 - Do not present the named technique or final formula before the tutorial section has shown the bottleneck and key observation that justify it.
 - Do not split the teaching flow into redundant “steps”, “implementation”, and “code” sections that restate the same content.
+- Do not generate a standalone `naive idea`, `brute force first`, or `naive-to-optimized` section; embed that contrast inside the guided-build steps if it is needed at all.
 - Every major section must include at least one concrete anchor as defined in `references/depth-checklist.md`.
 - `readingTime` must be >= the computed estimate from `scripts/estimate_reading_time.py`.
 - If the estimate is below the minimum threshold, deepen the chosen core concepts (do not add unrelated parallel topics).
