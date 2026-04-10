@@ -8,13 +8,13 @@ description: "A practical guide to LeetCode 78 covering subset backtracking, the
 keywords: ["Subsets", "backtracking", "startIndex", "power set", "LeetCode 78", "Hot100"]
 ---
 
-> **Subtitle / Summary**  
+> **Subtitle / Summary**
 > Subsets is the cleanest entry point into Hot100 backtracking. The main thing to stabilize is not “enumerate everything”, but the three invariants behind the template: `path`, `startIndex`, and “every node is already a valid answer”.
 
-- **Reading time**: 10-12 min  
-- **Tags**: `Hot100`, `backtracking`, `subsets`, `DFS`  
-- **SEO keywords**: Subsets, backtracking, startIndex, power set, LeetCode 78  
-- **Meta description**: Learn the stable backtracking template for LeetCode 78, with engineering analogies, pitfalls, and runnable multi-language solutions.  
+- **Reading time**: 10-12 min
+- **Tags**: `Hot100`, `backtracking`, `subsets`, `DFS`
+- **SEO keywords**: Subsets, backtracking, startIndex, power set, LeetCode 78
+- **Meta description**: Learn the stable backtracking template for LeetCode 78, with engineering analogies, pitfalls, and runnable multi-language solutions.
 
 ---
 
@@ -88,19 +88,20 @@ output: [[],[0]]
 
 ## C — Concepts
 
-### Why this is the right first backtracking problem
+### How To Build The Solution From Scratch
 
-This problem removes most secondary difficulty and leaves only the skeleton:
+#### Step 1: Start from a tiny example
 
-1. store the current choice in `path`
-2. decide where the next layer may start
-3. restore state after recursion
+Take `nums = [1,2,3]`.
 
-That is exactly why it should come before problems like permutations or combination sum.
+Do not ask “how do I generate the whole power set?” yet.
+Ask the smaller question:
 
-### The search tree
+- I have already chosen some elements
+- where may I continue choosing from
+- when is the current path already a valid answer by itself
 
-For `nums = [1,2,3]`, the tree looks like this:
+That produces a tree like this:
 
 ```text
 []
@@ -113,33 +114,125 @@ For `nums = [1,2,3]`, the tree looks like this:
 |- [3]
 ```
 
-Every node is a subset, so every node must be collected.
+This single example already shows the two key facts:
 
-### The stable template
+- every node is a valid subset
+- once you choose `1`, later layers must not go back and build the same subset in a different order
 
-```text
-dfs(start):
-    collect current path
-    for i in [start .. n-1]:
-        choose nums[i]
-        dfs(i + 1)
-        undo nums[i]
+#### Step 2: What must the partial answer remember?
+
+If we are building one subset gradually, we need a state that stores the chosen elements so far.
+That is why we need `path`.
+
+```python
+path = []
 ```
 
-`i + 1` is the critical boundary.  
-It means later layers only look to the right, so `[1,2]` is generated once and `[2,1]` is never produced as a separate state.
+`path` means:
 
----
+- the current branch of the search tree
+- not the full answer set
 
-## Practical Steps
+#### Step 3: How do we avoid order-based duplicates?
 
-1. Create `res` and `path`
-2. Define `dfs(startIndex)`
-3. As soon as `dfs` begins, push a snapshot of `path` into the answer
-4. Iterate from `startIndex` to the end
-5. Choose one number, recurse with `i + 1`, then undo the choice
+Subsets are combination-style results, so `[1,2]` and `[2,1]` must not appear separately.
+The stable way to prevent that is to restrict each layer to start from one boundary index.
 
-Runnable Python example:
+```python
+def dfs(start: int) -> None:
+    ...
+```
+
+Here `start` means:
+
+- the first index the current layer is allowed to use
+- do not go back to earlier elements
+
+#### Step 4: When do we collect one answer?
+
+In this problem, the current path is already a valid subset as soon as it exists.
+There is no target sum and no required fixed length.
+
+So collection happens at the beginning of each DFS call:
+
+```python
+res.append(path.copy())
+```
+
+The `.copy()` matters because `path` will keep changing later.
+
+#### Step 5: What choices are available next?
+
+At the current layer, we only need to iterate from `start` to the end.
+
+```python
+for i in range(start, len(nums)):
+    ...
+```
+
+That boundary is what makes the logic subset-style instead of permutation-style.
+
+#### Step 6: What changes after choosing one element?
+
+If we choose `nums[i]`, we add it to the current path and recurse on the suffix to the right.
+
+```python
+path.append(nums[i])
+dfs(i + 1)
+```
+
+The `i + 1` is the critical move:
+
+- the current element is already decided
+- later layers must continue to the right only
+
+#### Step 7: What must be undone?
+
+After recursion returns, we restore the old state by removing the last chosen element.
+
+```python
+path.pop()
+```
+
+That lets the loop try the next candidate at the same depth.
+
+#### Step 8: Walk one branch slowly
+
+Still using `nums = [1,2,3]`:
+
+Start:
+
+- `path = []`
+- `start = 0`
+
+Enter `dfs(0)`:
+
+- collect `[]`
+
+Choose `1`:
+
+- `path = [1]`
+- call `dfs(1)`
+- collect `[1]`
+
+Inside that call, choose `2`:
+
+- `path = [1,2]`
+- call `dfs(2)`
+- collect `[1,2]`
+
+Then choose `3`:
+
+- `path = [1,2,3]`
+- call `dfs(3)`
+- collect `[1,2,3]`
+
+Then backtrack with `pop()`, return to `[1,2]`, and keep exploring the next branches.
+The full solution is just this pattern repeated across the tree.
+
+### Assemble the Full Code
+
+Now combine the fragments into the first complete working implementation.
 
 ```python
 from typing import List
@@ -165,13 +258,51 @@ if __name__ == "__main__":
     print(subsets([0]))
 ```
 
+### Reference Answer
+
+For LeetCode submission style, the same logic becomes:
+
+```python
+from typing import List
+
+
+class Solution:
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        res: List[List[int]] = []
+        path: List[int] = []
+
+        def dfs(start: int) -> None:
+            res.append(path.copy())
+            for i in range(start, len(nums)):
+                path.append(nums[i])
+                dfs(i + 1)
+                path.pop()
+
+        dfs(0)
+        return res
+```
+
+### What method did we just build?
+
+Its formal name is:
+
+- backtracking
+- combination-style search
+- `startIndex` boundary control
+
+But the more important part is the invariant set:
+
+- `path` means “what has already been chosen”
+- `start` means “where the current layer may continue”
+- every node is already a valid answer, so collection happens before deeper recursion
+
 ---
 
 ## E — Engineering
 
 ### Scenario 1: feature-flag bundle generation (Python)
 
-**Background**: enumerate all possible flag bundles for offline experiment planning.  
+**Background**: enumerate all possible flag bundles for offline experiment planning.
 **Why it fits**: each flag is either included or not included, which is exactly a subset model.
 
 ```python
@@ -187,7 +318,7 @@ print(all_flag_sets(["new-ui", "cache-v2", "risk-guard"]))
 
 ### Scenario 2: policy-module candidate sets (Go)
 
-**Background**: a backend risk system wants to test all combinations of several rule modules.  
+**Background**: a backend risk system wants to test all combinations of several rule modules.
 **Why it fits**: “pick any subset of modules” is the same combinational space.
 
 ```go
@@ -215,7 +346,7 @@ func main() {
 
 ### Scenario 3: saved filter preset generation (JavaScript)
 
-**Background**: a frontend app wants to precompute filter presets for demos or regression coverage.  
+**Background**: a frontend app wants to precompute filter presets for demos or regression coverage.
 **Why it fits**: each filter can be enabled or disabled, so the full set of presets is a power set.
 
 ```javascript
@@ -285,7 +416,7 @@ console.log(subsets(["tag", "price", "stock"]));
 
 ### CTA
 
-If this is your first backtracking problem today, write it once from memory after reading.  
+If this is your first backtracking problem today, write it once from memory after reading.
 That is the fastest way to make the template stick.
 
 ---

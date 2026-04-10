@@ -104,21 +104,6 @@ output: []
 
 ## C — Concepts
 
-### The naive idea exposes the real problems
-
-If you begin with “just try everything and keep the combinations whose sum is `target`”, two issues appear immediately:
-
-- you need a stable way to avoid counting `[2,2,3]` and `[2,3,2]` separately
-- you need a cheap way to stop exploring branches that are already impossible
-
-That is why this problem is not just “brute force with recursion.”  
-The stable model is:
-
-- `path` stores the current combination
-- `remain` tells us how far we still are from the target
-- `start` prevents order-based duplicates
-- sorting lets us cut off impossible suffixes with one `break`
-
 ### How To Build The Solution From Scratch
 
 #### Step 1: Start from a tiny but non-trivial example
@@ -136,6 +121,11 @@ This tiny example already reveals two facts:
 
 - the problem is about combinations, not permutations
 - we need to keep track of how much is still missing
+
+It also shows why a stable boundary is necessary:
+
+- `[2,2,3]` and `[2,3,2]` must not both appear
+- once a candidate is already larger than the remaining target, later candidates are useless too after sorting
 
 #### Step 2: What must the partial answer remember?
 

@@ -8,13 +8,13 @@ description: "A practical guide to LeetCode 46 covering used[] state tracking, l
 keywords: ["Permutations", "backtracking", "used array", "DFS", "LeetCode 46", "Hot100"]
 ---
 
-> **Subtitle / Summary**  
+> **Subtitle / Summary**
 > If Subsets teaches the skeleton of combination-style backtracking, Permutations teaches the core of state-based backtracking: at each position, choose one unused element, continue until the path length reaches `n`, and only then collect the answer.
 
-- **Reading time**: 10-12 min  
-- **Tags**: `Hot100`, `backtracking`, `permutations`, `DFS`  
-- **SEO keywords**: Permutations, backtracking, used array, DFS, LeetCode 46  
-- **Meta description**: Learn the stable permutation backtracking template for LeetCode 46, with state recovery, engineering analogies, and runnable multi-language solutions.  
+- **Reading time**: 10-12 min
+- **Tags**: `Hot100`, `backtracking`, `permutations`, `DFS`
+- **SEO keywords**: Permutations, backtracking, used array, DFS, LeetCode 46
+- **Meta description**: Learn the stable permutation backtracking template for LeetCode 46, with state recovery, engineering analogies, and runnable multi-language solutions.
 
 ---
 
@@ -31,14 +31,14 @@ The key difference between combinations and permutations is simple:
 - combinations care about which elements are chosen
 - permutations also care about the order of those elements
 
-So in this problem, `[1,2,3]` and `[1,3,2]` are different valid answers.  
+So in this problem, `[1,2,3]` and `[1,3,2]` are different valid answers.
 That immediately changes the template:
 
 - `startIndex` is no longer enough
 - every layer must be able to consider all positions again
 - we need explicit state to record which elements are already used
 
-That is exactly why LeetCode 46 is a foundational backtracking problem.  
+That is exactly why LeetCode 46 is a foundational backtracking problem.
 It forces you to reason clearly about state selection and state recovery.
 
 ## Core Concepts
@@ -54,7 +54,7 @@ It forces you to reason clearly about state selection and state recovery.
 
 ### Problem Restatement
 
-Given an array `nums` of distinct integers, return all possible permutations.  
+Given an array `nums` of distinct integers, return all possible permutations.
 The answer may be returned in any order.
 
 ### Input / Output
@@ -95,33 +95,9 @@ output: [[1]]
 
 ## C — Concepts
 
-### Build it from scratch
+### How To Build The Solution From Scratch
 
-The cleanest way to think about permutations is not "memorize a backtracking template."
-It is:
-
-- what can go in the 1st position?
-- after that, what can go in the 2nd?
-- after that, what can go in the 3rd?
-
-For `nums = [1, 2, 3]`, that means:
-
-- first choose `1`, `2`, or `3`
-- if you choose `1`, the next choice is between `2` and `3`
-- if you then choose `2`, only `3` is left
-- that gives one complete permutation: `[1, 2, 3]`
-
-Then you go back and try a different earlier choice:
-
-- `[1, 3, 2]`
-- `[2, 1, 3]`
-- `[2, 3, 1]`
-- `[3, 1, 2]`
-- `[3, 2, 1]`
-
-That is why permutations naturally form a search tree.
-
-### Step 1: start from a tiny example
+#### Step 1: Start from a tiny example
 
 Take `nums = [1, 2, 3]`.
 
@@ -131,7 +107,7 @@ Instead of asking "how do I generate all permutations?", ask the smaller questio
 
 That shift makes the recursion much easier to design.
 
-### Step 2: decide what state a partial answer needs
+#### Step 2: Decide what state a partial answer needs
 
 While building one permutation, we need three pieces of state:
 
@@ -154,7 +130,7 @@ At the beginning:
 
 That means we have not chosen anything yet.
 
-### Step 3: define the recursive subproblem
+#### Step 3: Define the recursive subproblem
 
 The recursive question is:
 
@@ -169,7 +145,7 @@ def dfs() -> None:
 
 It can directly read and modify `res`, `path`, and `used`.
 
-### Step 4: define the stopping condition
+#### Step 4: Define the stopping condition
 
 When is one permutation complete?
 
@@ -186,7 +162,7 @@ Two details matter here:
 - we collect only at leaf nodes, because only then is the permutation complete
 - we must append `path.copy()` instead of `path`, because `path` will keep changing during backtracking
 
-### Step 5: list the available choices
+#### Step 5: List the available choices
 
 At any point, the next number can be any element that is not already used.
 
@@ -198,7 +174,7 @@ for i, x in enumerate(nums):
 
 So every DFS level scans the full array, but only unused numbers are eligible.
 
-### Step 6: make one choice
+#### Step 6: Make one choice
 
 If `x` is unused, choose it by updating the state:
 
@@ -209,7 +185,7 @@ path.append(x)
 
 Now the partial permutation is one element longer.
 
-### Step 7: recurse on the smaller problem
+#### Step 7: Recurse on the smaller problem
 
 After choosing the next number, solve the rest of the problem:
 
@@ -219,7 +195,7 @@ After choosing the next number, solve the rest of the problem:
 dfs()
 ```
 
-### Step 8: undo the choice
+#### Step 8: Undo the choice
 
 After exploring every permutation that starts with that choice, restore the old state so the loop can try the next option.
 
@@ -236,37 +212,7 @@ recurse
 undo
 ```
 
-### Step 9: combine the pieces
-
-```python
-from typing import List
-
-
-def permute(nums: List[int]) -> List[List[int]]:
-    res: List[List[int]] = []
-    path: List[int] = []
-    used = [False] * len(nums)
-
-    def dfs() -> None:
-        if len(path) == len(nums):
-            res.append(path.copy())
-            return
-
-        for i, x in enumerate(nums):
-            if used[i]:
-                continue
-
-            used[i] = True
-            path.append(x)
-            dfs()
-            path.pop()
-            used[i] = False
-
-    dfs()
-    return res
-```
-
-### Step 10: walk one branch slowly
+#### Step 9: Walk one branch slowly
 
 For `nums = [1, 2, 3]`:
 
@@ -308,25 +254,89 @@ That produces `[1, 3, 2]`.
 
 The full search keeps repeating that same pattern until every branch has been explored.
 
-### How to think through it during an interview or while coding
+### Assemble the Full Code
 
-If you want to derive this method from scratch, ask these five questions:
+Now combine the fragments above into the first complete working solution.
+
+```python
+from typing import List
+
+
+def permute(nums: List[int]) -> List[List[int]]:
+    res: List[List[int]] = []
+    path: List[int] = []
+    used = [False] * len(nums)
+
+    def dfs() -> None:
+        if len(path) == len(nums):
+            res.append(path.copy())
+            return
+
+        for i, x in enumerate(nums):
+            if used[i]:
+                continue
+
+            used[i] = True
+            path.append(x)
+            dfs()
+            path.pop()
+            used[i] = False
+
+    dfs()
+    return res
+```
+
+### Reference Answer
+
+For LeetCode submission style, the same logic becomes:
+
+```python
+from typing import List
+
+
+class Solution:
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res: List[List[int]] = []
+        path: List[int] = []
+        used = [False] * len(nums)
+
+        def dfs() -> None:
+            if len(path) == len(nums):
+                res.append(path.copy())
+                return
+
+            for i, x in enumerate(nums):
+                if used[i]:
+                    continue
+                used[i] = True
+                path.append(x)
+                dfs()
+                path.pop()
+                used[i] = False
+
+        dfs()
+        return res
+```
+
+### What mental model should stick?
+
+If you want to derive this from scratch during an interview or while coding, ask:
 
 1. Can I build the answer one position at a time?
-2. What does a partial answer look like?
+2. What does the partial answer look like?
 3. When is the partial answer complete?
 4. What choices are available next?
 5. What state must I undo before trying the next choice?
 
 For permutations, the answers are:
 
-- yes, build one slot at a time
+- yes, fill one slot at a time
 - the partial answer is `path`
 - it is complete when `len(path) == len(nums)`
 - the next choice is any unused number
 - after recursion, undo with both `path.pop()` and `used[i] = False`
 
-That is the full mental model.
+That is the full model.
 The code is only a direct translation of that reasoning.
 
 ---
@@ -335,7 +345,7 @@ The code is only a direct translation of that reasoning.
 
 ### Scenario 1: task execution order enumeration (Python)
 
-**Background**: an offline scheduler wants to compare how different task orders affect the final result.  
+**Background**: an offline scheduler wants to compare how different task orders affect the final result.
 **Why it fits**: when order changes behavior, the search space is permutation-shaped.
 
 ```python
@@ -354,7 +364,7 @@ print(orders(["fetch", "score", "notify"]))
 
 ### Scenario 2: API regression order testing (Go)
 
-**Background**: the same set of API calls may trigger different cache or state paths when called in different orders.  
+**Background**: the same set of API calls may trigger different cache or state paths when called in different orders.
 **Why it fits**: validating order sensitivity is directly a permutation problem.
 
 ```go
@@ -384,7 +394,7 @@ func main() {
 
 ### Scenario 3: animation order exploration (JavaScript)
 
-**Background**: during UI prototyping, a team wants to try several orders of animation steps.  
+**Background**: during UI prototyping, a team wants to try several orders of animation steps.
 **Why it fits**: different step orders produce different user experiences.
 
 ```javascript
@@ -451,7 +461,7 @@ console.log(permute(["fade", "scale", "slide"]));
 
 ### CTA
 
-After reading this, try rewriting the template once from memory and explain out loud why `used[]` is necessary.  
+After reading this, try rewriting the template once from memory and explain out loud why `used[]` is necessary.
 That one habit will make the distinction between combinations and permutations much harder to forget.
 
 ---
