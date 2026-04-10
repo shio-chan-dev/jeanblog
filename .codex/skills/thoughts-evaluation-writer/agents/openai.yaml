@@ -1,0 +1,4 @@
+interface:
+  display_name: "Thoughts Evaluation Writer"
+  short_description: "v0.1.0 - Write conclusion-first tool and workflow evaluation posts"
+  default_prompt: "Use $thoughts-evaluation-writer to draft a publishable jeanblog thoughts post that evaluates a tool, workflow, or system with a clear thesis, point-by-point comparison, explicit fit/not-fit boundaries, and complete Hugo front matter."
