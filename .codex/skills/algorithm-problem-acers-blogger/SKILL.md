@@ -1,6 +1,6 @@
 ---
 name: algorithm-problem-acers-blogger
-description: v0.1.4 - Create publishable Hugo ACERS posts for concrete algorithm problems across LeetCode/Codeforces/AtCoder/Luogu/custom sources when the user wants a guided-build tutorial that develops code step by step before the final answer.
+description: v0.1.5 - Create publishable Hugo ACERS posts for concrete algorithm problems across LeetCode/Codeforces/AtCoder/Luogu/custom sources when the user wants a guided-build tutorial that develops code step by step from the problem statement before the final answer.
 ---
 
 # Algorithm Problem ACERS Blogger
@@ -35,7 +35,14 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
      - `content/zh/dev/algorithm/`: `["逻辑与算法"]`.
      - Other paths: mirror nearby posts in the same folder; if unavailable, ask user before inventing taxonomy.
 6. Write the full ACERS article in the target language:
-   - Include title/subtitle, target readers, background/motivation, core concepts.
+   - Include title/subtitle and meta information first.
+   - Start the article body with the problem block under `A — Algorithm`:
+     - `Problem Restatement`,
+     - `Input / Output`,
+     - `Examples`,
+     - `Constraints`.
+   - Only after the problem block, include `Target Readers`, `Background / Motivation`, or a short `Core Concepts` glossary if they still materially help the teaching flow.
+   - Do not place `Target Readers`, `Background / Motivation`, or `Core Concepts` before the problem statement in algorithm-problem posts.
    - Include one mandatory guided-build tutorial section before the final polished algorithm section:
      - write it as numbered `Step 1`, `Step 2`, `Step 3`... moves,
      - make each step answer one question only,
@@ -80,6 +87,7 @@ Use when the user provides an algorithm problem (online judge or custom) and wan
 - Do not include secrets or private data.
 - Do not place a post under `hot100/` unless the user explicitly asks for Hot100 or the task context clearly requires that collection.
 - Do not jump directly from the problem statement to the final trick or template label.
+- Do not place `Target Readers`, `Background / Motivation`, or `Core Concepts` before `Problem Restatement` / examples / constraints in algorithm-problem posts.
 - If the final method is a known template, explain why the problem evidence leads to that template before presenting finished code.
 - Do not split the teaching flow into three redundant sections that repeat the same content in different words.
 - Do not show the full finished code before the guided-build steps and the assembly step are complete.

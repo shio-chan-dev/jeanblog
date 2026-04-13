@@ -1,4 +1,4 @@
 interface:
   display_name: "LeetCode ACERS Blogger"
-  short_description: "v0.1.4 - Route LeetCode writeups to guided-build ACERS"
-  default_prompt: "Use $leetcode-acers-blogger to turn this LeetCode problem into a publishable Hugo ACERS post with a step-by-step guided build, assembled full code, reference answer, no standalone naive-idea section, the correct LeetCode path, and complete front matter."
+  short_description: "v0.1.5 - Route LeetCode writeups to guided-build ACERS"
+  default_prompt: "Use $leetcode-acers-blogger to turn this LeetCode problem into a publishable Hugo ACERS post that starts with the problem block, then uses a step-by-step guided build, assembled full code, reference answer, no standalone naive-idea section, the correct LeetCode path, and complete front matter."

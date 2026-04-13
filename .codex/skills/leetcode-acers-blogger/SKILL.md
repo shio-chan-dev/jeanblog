@@ -1,6 +1,6 @@
 ---
 name: leetcode-acers-blogger
-description: v0.1.4 - Route concrete LeetCode problem writeup requests to the ACERS blogger with `problem_source=leetcode` and guided-build tutorial flow when the user wants a publishable Hugo post.
+description: v0.1.5 - Route concrete LeetCode problem writeup requests to the ACERS blogger with `problem_source=leetcode` and guided-build tutorial flow that starts from the problem statement when the user wants a publishable Hugo post.
 ---
 
 # LeetCode ACERS Hugo Blogger (Compatibility)
@@ -41,6 +41,7 @@ Use when the user explicitly asks for LeetCode problem writeups or names this sk
 - Do not invent constraints, inputs, or outputs.
 - Follow `docs/leetcode_std.md` ACERS requirements.
 - Use runnable code and include reasoning path, not final answer only.
+- Start LeetCode problem posts with the problem block before any `Target Readers`, `Background / Motivation`, or standalone `Core Concepts` section.
 - Do not include secrets or private data.
 - Do not move a LeetCode post into Hot100 unless the request or task context clearly targets that collection.
 - Do not skip the guided-build section and jump straight to the named template or final code.
@@ -50,4 +51,5 @@ Use when the user explicitly asks for LeetCode problem writeups or names this sk
 - Confirm the delegated skill still sees `problem_source=leetcode`.
 - Confirm the final path stays under `content/<lang>/alg/leetcode/` unless the user or task explicitly targets `hot100/`.
 - Confirm the final category remains `LeetCode` unless the user requested a different taxonomy.
+- Confirm the problem statement, examples, and constraints appear before any `Target Readers`, `Background / Motivation`, or standalone `Core Concepts` section.
 - Confirm the tutorial section is a numbered step-by-step build that leads into `Assemble the Full Code` and `Reference Answer`.

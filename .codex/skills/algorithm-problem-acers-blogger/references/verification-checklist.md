@@ -7,6 +7,7 @@ Run this checklist before delivering an algorithm-problem ACERS post.
 - Output path matches `references/source-path-policy.md` or an explicit user
   override.
 - The article follows the ACERS structure required by `docs/leetcode_std.md`.
+- The problem block (`Problem Restatement`, `Input / Output`, `Examples`, `Constraints`) appears before any `Target Readers`, `Background / Motivation`, or standalone `Core Concepts` section.
 - The tutorial section is a numbered guided build, not just a high-level derivation summary.
 - The guided build introduces state and code fragments step by step before any full solution appears.
 - The article includes both `Assemble the Full Code` and `Reference Answer`.
