@@ -18,37 +18,6 @@ keywords: ["Subsets", "backtracking", "startIndex", "power set", "LeetCode 78", 
 
 ---
 
-## Target Readers
-
-- Hot100 learners starting the backtracking block today
-- Developers who can write DFS but still mix up combinations and permutations
-- Engineers who need to enumerate feature sets, candidate policies, or configuration bundles
-
-## Background / Motivation
-
-Many “real” problems reduce to a subset model:
-
-- which feature flags should be enabled together
-- which rules should be combined into one experiment
-- which filters should be included in a saved preset
-
-What makes LeetCode 78 valuable is that the problem is deliberately simple:
-
-- all numbers are distinct
-- there is no target sum
-- there is no duplicate-removal complication
-
-That simplicity lets you focus on the template itself before adding pruning, fixed lengths, or duplicate handling.
-
-## Core Concepts
-
-- **`path`**: the current chosen elements on the recursion path
-- **`startIndex`**: the first candidate index allowed in the current layer
-- **Preorder collection**: in the subsets problem, every node in the search tree is already one valid answer
-- **Backtrack undo**: after recursion returns, remove the last chosen element
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -83,6 +52,37 @@ output: [[],[0]]
 - `1 <= nums.length <= 10`
 - `-10 <= nums[i] <= 10`
 - all elements of `nums` are distinct
+
+---
+
+## Target Readers
+
+- Hot100 learners starting the backtracking block today
+- Developers who can write DFS but still mix up combinations and permutations
+- Engineers who need to enumerate feature sets, candidate policies, or configuration bundles
+
+## Background / Motivation
+
+Many “real” problems reduce to a subset model:
+
+- which feature flags should be enabled together
+- which rules should be combined into one experiment
+- which filters should be included in a saved preset
+
+What makes LeetCode 78 valuable is that the problem is deliberately simple:
+
+- all numbers are distinct
+- there is no target sum
+- there is no duplicate-removal complication
+
+That simplicity lets you focus on the template itself before adding pruning, fixed lengths, or duplicate handling.
+
+## Core Concepts
+
+- **`path`**: the current chosen elements on the recursion path
+- **`startIndex`**: the first candidate index allowed in the current layer
+- **Preorder collection**: in the subsets problem, every node in the search tree is already one valid answer
+- **Backtrack undo**: after recursion returns, remove the last chosen element
 
 ---
 

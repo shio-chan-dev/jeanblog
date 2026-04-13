@@ -18,41 +18,6 @@ keywords: ["Combination Sum", "backtracking", "pruning", "remain", "DFS", "LeetC
 
 ---
 
-## Target Readers
-
-- Hot100 learners who already finished `78. Subsets` and now want the next backtracking upgrade
-- Developers who understand recursion in general but still get confused when one candidate may be reused
-- Readers who want a stable template they can transfer to `40` and `216`, not just one memorized answer
-
-## Background / Motivation
-
-`39. Combination Sum` is a good second backtracking problem because it forces you to manage three things at the same time:
-
-- it is still a combination problem, so order must not create duplicates
-- the same number may be chosen multiple times
-- the target value gives us a natural pruning boundary
-
-That combination is exactly where many learners stop “following the pattern” and start needing a real model.
-
-The model we want is:
-
-- what partial answer are we building
-- how far are we from the target
-- where may the next layer continue
-- when can a whole suffix of the search be cut off immediately
-
-Once that model is stable, Combination Sum stops feeling special and starts feeling reusable.
-
-## Core Concepts
-
-- **`path`**: the numbers currently chosen in the active combination
-- **`remain`**: how much is still needed to reach `target`
-- **`start` / `startIndex`**: the first index allowed in the current layer
-- **Reusable candidates**: after choosing `candidates[i]`, the next call still starts from `i`
-- **Sorted pruning**: once a sorted value is greater than `remain`, later values are impossible too
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -99,6 +64,41 @@ output: []
 - all elements of `candidates` are distinct
 - `1 <= target <= 40`
 - the number of unique combinations is guaranteed to be less than `150`
+
+---
+
+## Target Readers
+
+- Hot100 learners who already finished `78. Subsets` and now want the next backtracking upgrade
+- Developers who understand recursion in general but still get confused when one candidate may be reused
+- Readers who want a stable template they can transfer to `40` and `216`, not just one memorized answer
+
+## Background / Motivation
+
+`39. Combination Sum` is a good second backtracking problem because it forces you to manage three things at the same time:
+
+- it is still a combination problem, so order must not create duplicates
+- the same number may be chosen multiple times
+- the target value gives us a natural pruning boundary
+
+That combination is exactly where many learners stop “following the pattern” and start needing a real model.
+
+The model we want is:
+
+- what partial answer are we building
+- how far are we from the target
+- where may the next layer continue
+- when can a whole suffix of the search be cut off immediately
+
+Once that model is stable, Combination Sum stops feeling special and starts feeling reusable.
+
+## Core Concepts
+
+- **`path`**: the numbers currently chosen in the active combination
+- **`remain`**: how much is still needed to reach `target`
+- **`start` / `startIndex`**: the first index allowed in the current layer
+- **Reusable candidates**: after choosing `candidates[i]`, the next call still starts from `i`
+- **Sorted pruning**: once a sorted value is greater than `remain`, later values are impossible too
 
 ---
 

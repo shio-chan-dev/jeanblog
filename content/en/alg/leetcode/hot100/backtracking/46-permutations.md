@@ -18,38 +18,6 @@ keywords: ["Permutations", "backtracking", "used array", "DFS", "LeetCode 46", "
 
 ---
 
-## Target Readers
-
-- Hot100 learners who have already finished `78. Subsets` and want the next backtracking template
-- Developers who understand recursion but still make mistakes when restoring state
-- Engineers who need to enumerate execution orders, test sequences, or ordering-sensitive plans
-
-## Background / Motivation
-
-The key difference between combinations and permutations is simple:
-
-- combinations care about which elements are chosen
-- permutations also care about the order of those elements
-
-So in this problem, `[1,2,3]` and `[1,3,2]` are different valid answers.
-That immediately changes the template:
-
-- `startIndex` is no longer enough
-- every layer must be able to consider all positions again
-- we need explicit state to record which elements are already used
-
-That is exactly why LeetCode 46 is a foundational backtracking problem.
-It forces you to reason clearly about state selection and state recovery.
-
-## Core Concepts
-
-- **`path`**: the permutation currently being built
-- **`used[i]`**: whether `nums[i]` has already been placed in the current path
-- **Leaf-only collection**: only when `path.length == nums.length` do we have a full permutation
-- **State recovery**: on return, both `path` and `used[i]` must be restored
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -90,6 +58,38 @@ output: [[1]]
 - `1 <= nums.length <= 6`
 - `-10 <= nums[i] <= 10`
 - all integers in `nums` are distinct
+
+---
+
+## Target Readers
+
+- Hot100 learners who have already finished `78. Subsets` and want the next backtracking template
+- Developers who understand recursion but still make mistakes when restoring state
+- Engineers who need to enumerate execution orders, test sequences, or ordering-sensitive plans
+
+## Background / Motivation
+
+The key difference between combinations and permutations is simple:
+
+- combinations care about which elements are chosen
+- permutations also care about the order of those elements
+
+So in this problem, `[1,2,3]` and `[1,3,2]` are different valid answers.
+That immediately changes the template:
+
+- `startIndex` is no longer enough
+- every layer must be able to consider all positions again
+- we need explicit state to record which elements are already used
+
+That is exactly why LeetCode 46 is a foundational backtracking problem.
+It forces you to reason clearly about state selection and state recovery.
+
+## Core Concepts
+
+- **`path`**: the permutation currently being built
+- **`used[i]`**: whether `nums[i]` has already been placed in the current path
+- **Leaf-only collection**: only when `path.length == nums.length` do we have a full permutation
+- **State recovery**: on return, both `path` and `used[i]` must be restored
 
 ---
 
