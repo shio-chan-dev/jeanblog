@@ -18,26 +18,6 @@ keywords: ["Check If All 1's Are at Least Length K Places Away", "event spacing"
 
 ---
 
-## Target Readers
-
-- LeetCode learners building stable templates  
-- Engineers working on monitoring / risk control / behavior analytics  
-- Developers who need spacing or rate-limit validations
-
-## Background / Motivation
-
-Many systems require events to be spaced apart: login failures, alarms, sensitive actions, API calls, etc.  
-This problem maps directly to **event spacing validation**.  
-A one-pass, O(1)-memory solution is ideal for real-time systems.
-
-## Core Concepts
-
-- **Event spacing**: at least `k` zeros between two `1`s  
-- **Online validation**: only the last event index is needed  
-- **Boundary handling**: initialize `last = -k-1` to avoid special cases
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -65,6 +45,26 @@ output = true
 nums = [1,0,1], k = 2
 output = false
 ```
+
+---
+
+## Target Readers
+
+- LeetCode learners building stable templates  
+- Engineers working on monitoring / risk control / behavior analytics  
+- Developers who need spacing or rate-limit validations
+
+## Background / Motivation
+
+Many systems require events to be spaced apart: login failures, alarms, sensitive actions, API calls, etc.  
+This problem maps directly to **event spacing validation**.  
+A one-pass, O(1)-memory solution is ideal for real-time systems.
+
+## Core Concepts
+
+- **Event spacing**: at least `k` zeros between two `1`s  
+- **Online validation**: only the last event index is needed  
+- **Boundary handling**: initialize `last = -k-1` to avoid special cases
 
 ---
 

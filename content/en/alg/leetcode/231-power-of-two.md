@@ -18,26 +18,6 @@ keywords: ["Power of Two", "bit manipulation", "binary", "O(1)", "LeetCode 231"]
 
 ---
 
-## Target Readers
-
-- LeetCode learners building a bit-manipulation toolkit  
-- Backend / systems engineers who need alignment or capacity checks  
-- Anyone who wants stable O(1) integer tests
-
-## Background / Motivation
-
-Power-of-two checks show up everywhere: hash table capacities, memory alignment, sharding, FFT window sizes.  
-Looping or using floating-point logs is slower and prone to corner-case bugs.  
-The bitwise method is fast, simple, and reliable.
-
-## Core Concepts
-
-- **Binary form**: a power of two has exactly one `1` in its binary representation  
-- **Bitwise AND**: `n & (n - 1)` clears the lowest set bit  
-- **Positive-only**: `n` must be greater than 0
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -67,6 +47,26 @@ Input: n = 12
 Output: false
 Explanation: 12 in binary is 1100, which has multiple 1s
 ```
+
+---
+
+## Target Readers
+
+- LeetCode learners building a bit-manipulation toolkit  
+- Backend / systems engineers who need alignment or capacity checks  
+- Anyone who wants stable O(1) integer tests
+
+## Background / Motivation
+
+Power-of-two checks show up everywhere: hash table capacities, memory alignment, sharding, FFT window sizes.  
+Looping or using floating-point logs is slower and prone to corner-case bugs.  
+The bitwise method is fast, simple, and reliable.
+
+## Core Concepts
+
+- **Binary form**: a power of two has exactly one `1` in its binary representation  
+- **Bitwise AND**: `n & (n - 1)` clears the lowest set bit  
+- **Positive-only**: `n` must be greater than 0
 
 ---
 

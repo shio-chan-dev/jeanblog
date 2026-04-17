@@ -18,31 +18,6 @@ keywords: ["Add Two Numbers", "LeetCode 2", "linked list carry", "dummy node", "
 
 ---
 
-## Target Readers
-
-- Beginners building a stable template for linked-list problems
-- Intermediate developers who often miss carry or boundary cases
-- Engineers who want to transfer algorithmic thinking to stream-style data processing
-
-## Background / Motivation
-
-This looks like an entry-level LeetCode problem, but it trains practical skills you will reuse:
-
-- Synchronous progression across multiple input streams (`l1`, `l2`)
-- Cross-iteration state propagation (`carry`)
-- Boundary completeness (different lengths, final carry node)
-
-These three appear frequently in production systems: chunked amount accumulation, multi-source counter merge, and streaming aggregation with backfill.
-
-## Core Concepts
-
-- **Reverse-order storage**: ones digit at the head, then tens, then hundreds...
-- **Digit-wise addition**: each round handles only `x + y + carry`
-- **Carry propagation**: `carry = sum // 10`, current digit `sum % 10`
-- **Dummy node**: avoids special handling when creating the result head
-
----
-
 ## A — Algorithm (Problem & Algorithm)
 
 ### Problem Restatement
@@ -74,6 +49,31 @@ Input: l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
 Explanation: 9999999 + 9999 = 10009998
 Output: [8,9,9,9,0,0,0,1]
 ```
+
+---
+
+## Target Readers
+
+- Beginners building a stable template for linked-list problems
+- Intermediate developers who often miss carry or boundary cases
+- Engineers who want to transfer algorithmic thinking to stream-style data processing
+
+## Background / Motivation
+
+This looks like an entry-level LeetCode problem, but it trains practical skills you will reuse:
+
+- Synchronous progression across multiple input streams (`l1`, `l2`)
+- Cross-iteration state propagation (`carry`)
+- Boundary completeness (different lengths, final carry node)
+
+These three appear frequently in production systems: chunked amount accumulation, multi-source counter merge, and streaming aggregation with backfill.
+
+## Core Concepts
+
+- **Reverse-order storage**: ones digit at the head, then tens, then hundreds...
+- **Digit-wise addition**: each round handles only `x + y + carry`
+- **Carry propagation**: `carry = sum // 10`, current digit `sum % 10`
+- **Dummy node**: avoids special handling when creating the result head
 
 ---
 

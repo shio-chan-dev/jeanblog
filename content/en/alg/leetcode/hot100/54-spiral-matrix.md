@@ -18,33 +18,6 @@ keywords: ["Spiral Matrix", "clockwise spiral traversal", "boundary shrinking", 
 
 ---
 
-## Target Readers
-
-- Hot100 learners who want a reliable “matrix simulation” template  
-- Intermediate engineers who often get boundary cases wrong  
-- Anyone working with grids (visualization, raster data, path generation)
-
-## Background / Motivation
-
-Matrix problems are notorious for being “easy to code, hard to get 100% correct”.  
-One extra loop or one missed boundary check can break single-row/single-column cases or cause duplicated output.
-
-Spiral Matrix is a great training problem because it forces you to make the **loop invariant** explicit:
-
-- What region is still unvisited?
-- How do we shrink it safely after finishing an edge?
-
-If you can express that invariant clearly, the code becomes short and robust.
-
-## Core Concepts
-
-- **Boundaries**: `top / bottom / left / right` define the current unvisited rectangle  
-- **Layer**: each iteration peels one outer “ring” (top row, right col, bottom row, left col)  
-- **Shrink**: after finishing an edge, move the boundary inward (`top++`, `right--`, `bottom--`, `left++`)  
-- **Loop invariant**: the unvisited region is always `top..bottom × left..right`
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -81,6 +54,33 @@ matrix =
 ]
 output: [1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]
 ```
+
+---
+
+## Target Readers
+
+- Hot100 learners who want a reliable “matrix simulation” template  
+- Intermediate engineers who often get boundary cases wrong  
+- Anyone working with grids (visualization, raster data, path generation)
+
+## Background / Motivation
+
+Matrix problems are notorious for being “easy to code, hard to get 100% correct”.  
+One extra loop or one missed boundary check can break single-row/single-column cases or cause duplicated output.
+
+Spiral Matrix is a great training problem because it forces you to make the **loop invariant** explicit:
+
+- What region is still unvisited?
+- How do we shrink it safely after finishing an edge?
+
+If you can express that invariant clearly, the code becomes short and robust.
+
+## Core Concepts
+
+- **Boundaries**: `top / bottom / left / right` define the current unvisited rectangle  
+- **Layer**: each iteration peels one outer “ring” (top row, right col, bottom row, left col)  
+- **Shrink**: after finishing an edge, move the boundary inward (`top++`, `right--`, `bottom--`, `left++`)  
+- **Loop invariant**: the unvisited region is always `top..bottom × left..right`
 
 ---
 

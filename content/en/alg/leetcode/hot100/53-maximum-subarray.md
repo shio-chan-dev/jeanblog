@@ -18,25 +18,6 @@ keywords: ["Maximum Subarray", "Kadane", "dynamic programming", "O(n)", "Hot100"
 
 ---
 
-## Target Readers
-
-- Hot100 learners building stable templates  
-- Engineers analyzing peak segments in time series  
-- Anyone who wants a clean O(n) solution
-
-## Background / Motivation
-
-Maximum subarray sum appears in P&L streaks, KPI lift windows, anomaly bursts, and throughput gains.  
-The naive O(n^2) enumeration does not scale. Kadane's algorithm solves it in one pass.
-
-## Core Concepts
-
-- **Subarray**: contiguous, non-empty segment  
-- **State**: `dp[i]` = best sum ending at index `i`  
-- **Kadane**: if the running sum is negative, drop it and restart
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -64,6 +45,25 @@ explanation: subarray [4,-1,2,1] has sum 6
 nums = [1]
 output = 1
 ```
+
+---
+
+## Target Readers
+
+- Hot100 learners building stable templates  
+- Engineers analyzing peak segments in time series  
+- Anyone who wants a clean O(n) solution
+
+## Background / Motivation
+
+Maximum subarray sum appears in P&L streaks, KPI lift windows, anomaly bursts, and throughput gains.  
+The naive O(n^2) enumeration does not scale. Kadane's algorithm solves it in one pass.
+
+## Core Concepts
+
+- **Subarray**: contiguous, non-empty segment  
+- **State**: `dp[i]` = best sum ending at index `i`  
+- **Kadane**: if the running sum is negative, drop it and restart
 
 ---
 

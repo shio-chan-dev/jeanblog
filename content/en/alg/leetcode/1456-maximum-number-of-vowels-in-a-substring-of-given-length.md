@@ -18,25 +18,6 @@ keywords: ["Maximum Number of Vowels", "Sliding Window", "Fixed Window", "O(n)",
 
 ---
 
-## Target Readers
-
-- LeetCode learners who want stable templates  
-- Engineers working on windowed metrics  
-- Anyone building real-time counters
-
-## Background / Motivation
-
-Many engineering tasks ask: “What is the maximum count in any fixed-length window?”  
-Recomputing every window is O(nk). Sliding window updates in O(1) per step, giving O(n).
-
-## Core Concepts
-
-- **Fixed sliding window**: length `k`, move right one step each time  
-- **Incremental update**: add incoming item, remove outgoing item  
-- **Condition counting**: count only items matching a predicate
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -64,6 +45,25 @@ output = 3
 s = "aeiou", k = 2
 output = 2
 ```
+
+---
+
+## Target Readers
+
+- LeetCode learners who want stable templates  
+- Engineers working on windowed metrics  
+- Anyone building real-time counters
+
+## Background / Motivation
+
+Many engineering tasks ask: “What is the maximum count in any fixed-length window?”  
+Recomputing every window is O(nk). Sliding window updates in O(1) per step, giving O(n).
+
+## Core Concepts
+
+- **Fixed sliding window**: length `k`, move right one step each time  
+- **Incremental update**: add incoming item, remove outgoing item  
+- **Condition counting**: count only items matching a predicate
 
 ---
 

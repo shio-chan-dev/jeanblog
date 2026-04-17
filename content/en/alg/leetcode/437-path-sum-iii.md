@@ -18,38 +18,6 @@ keywords: ["Path Sum III", "tree prefix sum", "prefix sum hash map", "DFS", "Lee
 
 ---
 
-## Target Readers
-
-- LeetCode learners who want a reusable “tree + hash map” template  
-- People who tend to write O(n²) when the path does not have to start at the root  
-- Engineers working with hierarchical data (call traces, org trees) who need “downward segment” statistics
-
-## Background / Motivation
-
-Many “tree path” problems hide a trap:
-you naturally assume paths start at the root, or end at leaves — but this problem allows the path to start and end at **any nodes**, as long as the direction is downward (parent → child).
-
-That means:
-
-- Maintaining only a “root-to-current” DP state is not enough  
-- Enumerating all start nodes degrades to O(n²) in a skewed tree  
-- Sliding window does not apply (node values can be negative, so there is no monotonicity)
-
-The key skill worth internalizing is:
-
-> Turn “any downward path” into “the difference of two prefix sums on the same DFS path”.
-
-Once you own this model, a lot of tree counting problems collapse into the familiar recipe: **prefix sum + frequency map**.
-
-## Core Concepts
-
-- **Downward path**: can only go from parent to child (no backtracking, no cross-branch jumps)  
-- **Prefix sum**: the sum along the path from the root to the current node  
-- **Difference counting**: if `curSum - prevSum = target`, then `prevSum = curSum - target`  
-- **Path-local hash map**: the map must represent prefix sums on the *current DFS stack*; you must undo it on backtracking
-
----
-
 ## A — Algorithm (Problem & Algorithm)
 
 ### Problem Restatement
@@ -92,6 +60,38 @@ targetSum = 3
 output: 2
 explain: 1->2, 3
 ```
+
+---
+
+## Target Readers
+
+- LeetCode learners who want a reusable “tree + hash map” template  
+- People who tend to write O(n²) when the path does not have to start at the root  
+- Engineers working with hierarchical data (call traces, org trees) who need “downward segment” statistics
+
+## Background / Motivation
+
+Many “tree path” problems hide a trap:
+you naturally assume paths start at the root, or end at leaves — but this problem allows the path to start and end at **any nodes**, as long as the direction is downward (parent → child).
+
+That means:
+
+- Maintaining only a “root-to-current” DP state is not enough  
+- Enumerating all start nodes degrades to O(n²) in a skewed tree  
+- Sliding window does not apply (node values can be negative, so there is no monotonicity)
+
+The key skill worth internalizing is:
+
+> Turn “any downward path” into “the difference of two prefix sums on the same DFS path”.
+
+Once you own this model, a lot of tree counting problems collapse into the familiar recipe: **prefix sum + frequency map**.
+
+## Core Concepts
+
+- **Downward path**: can only go from parent to child (no backtracking, no cross-branch jumps)  
+- **Prefix sum**: the sum along the path from the root to the current node  
+- **Difference counting**: if `curSum - prevSum = target`, then `prevSum = curSum - target`  
+- **Path-local hash map**: the map must represent prefix sums on the *current DFS stack*; you must undo it on backtracking
 
 ---
 

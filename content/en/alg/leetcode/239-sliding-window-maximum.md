@@ -26,27 +26,6 @@ This article follows the ACERS template with reusable engineering patterns and m
 
 ---
 
-## Target Readers
-
-- People practicing LeetCode / Hot100
-- Mid-level developers who want a reusable “sliding window + monotonic queue” template
-- Engineers working on real-time monitoring, log analytics, or risk control
-
-## Background / Motivation
-
-Rolling-window maximum appears everywhere: latency monitoring, price spikes, temperature alerts,
-real-time smoothing, and many more. The brute-force approach recomputes max per window in O(nk),
-which is unacceptable for large n. The monotonic queue reduces it to O(n), making it the most
-practical engineering choice.
-
-## Core Concepts
-
-- **Sliding window**: a fixed-length window of size k
-- **Monotonic queue**: values are kept in decreasing order; the front is always the max
-- **Index maintenance**: indices let us evict out-of-window elements
-
----
-
 ## A — Algorithm (Problem & Algorithm)
 
 ### Problem Restatement
@@ -75,6 +54,27 @@ output = [3,3,5,5,6,7]
 nums = [1], k = 1
 output = [1]
 ```
+
+---
+
+## Target Readers
+
+- People practicing LeetCode / Hot100
+- Mid-level developers who want a reusable “sliding window + monotonic queue” template
+- Engineers working on real-time monitoring, log analytics, or risk control
+
+## Background / Motivation
+
+Rolling-window maximum appears everywhere: latency monitoring, price spikes, temperature alerts,
+real-time smoothing, and many more. The brute-force approach recomputes max per window in O(nk),
+which is unacceptable for large n. The monotonic queue reduces it to O(n), making it the most
+practical engineering choice.
+
+## Core Concepts
+
+- **Sliding window**: a fixed-length window of size k
+- **Monotonic queue**: values are kept in decreasing order; the front is always the max
+- **Index maintenance**: indices let us evict out-of-window elements
 
 ---
 

@@ -18,26 +18,6 @@ keywords: ["Trapping Rain Water", "two pointers", "left right max", "O(n)", "Hot
 
 ---
 
-## Target Readers
-
-- Hot100 learners building core templates  
-- Engineers handling capacity/volume constraints  
-- Anyone who wants a clean O(n) solution
-
-## Background / Motivation
-
-Trapped water is a proxy for “capacity under boundary constraints.”  
-It appears in cache headroom estimation, buffer overflow analysis, and terrain capacity modeling.  
-The naive O(n^2) method is too slow; the two-pointer approach reduces it to O(n).
-
-## Core Concepts
-
-- **Local water level**: `water[i] = min(maxLeft[i], maxRight[i]) - height[i]`  
-- **Boundary constraints**: the lower side limits water  
-- **Two pointers**: maintain left/right maxima in one pass
-
----
-
 ## A — Algorithm
 
 ### Problem Restatement
@@ -64,6 +44,26 @@ output = 6
 height = [4,2,0,3,2,5]
 output = 9
 ```
+
+---
+
+## Target Readers
+
+- Hot100 learners building core templates  
+- Engineers handling capacity/volume constraints  
+- Anyone who wants a clean O(n) solution
+
+## Background / Motivation
+
+Trapped water is a proxy for “capacity under boundary constraints.”  
+It appears in cache headroom estimation, buffer overflow analysis, and terrain capacity modeling.  
+The naive O(n^2) method is too slow; the two-pointer approach reduces it to O(n).
+
+## Core Concepts
+
+- **Local water level**: `water[i] = min(maxLeft[i], maxRight[i]) - height[i]`  
+- **Boundary constraints**: the lower side limits water  
+- **Two pointers**: maintain left/right maxima in one pass
 
 ---
 

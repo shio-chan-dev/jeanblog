@@ -18,35 +18,6 @@ keywords: ["LRU Cache", "LeetCode 146", "hash map doubly linked list", "cache ev
 
 ---
 
-## Target Readers
-
-- LeetCode learners who want to master data-structure composition
-- Backend/middleware engineers implementing local caches
-- Interview candidates who know the answer headline but not the invariants
-
-## Background / Motivation
-
-Caching trades space for time, but cache space is limited.  
-When full, we must evict keys. LRU (Least Recently Used) assumes:
-
-- Recently accessed data is more likely to be accessed again
-- Long-idle data is a better eviction candidate
-
-Real-world examples:
-
-- API response caching
-- Database hot-record caching
-- Local page/session state caching
-
-## Core Concepts
-
-- **LRU policy**: evict the least recently used key
-- **Access refresh**: successful `get` must make key most recently used
-- **Capacity constraint**: `put` on new key may trigger immediate eviction
-- **O(1) average complexity**: neither `get` nor `put` can do linear scans
-
----
-
 ## A — Algorithm (Problem & Algorithm)
 
 ### Problem Restatement
@@ -85,6 +56,35 @@ cache.put(1, 10)
 cache.put(1, 99)   // update value, key=1 is refreshed as most recent
 cache.get(1)       // return 99
 ```
+
+---
+
+## Target Readers
+
+- LeetCode learners who want to master data-structure composition
+- Backend/middleware engineers implementing local caches
+- Interview candidates who know the answer headline but not the invariants
+
+## Background / Motivation
+
+Caching trades space for time, but cache space is limited.  
+When full, we must evict keys. LRU (Least Recently Used) assumes:
+
+- Recently accessed data is more likely to be accessed again
+- Long-idle data is a better eviction candidate
+
+Real-world examples:
+
+- API response caching
+- Database hot-record caching
+- Local page/session state caching
+
+## Core Concepts
+
+- **LRU policy**: evict the least recently used key
+- **Access refresh**: successful `get` must make key most recently used
+- **Capacity constraint**: `put` on new key may trigger immediate eviction
+- **O(1) average complexity**: neither `get` nor `put` can do linear scans
 
 ---
 
