@@ -19,6 +19,35 @@ keywords: ["Palindrome Linked List", "fast slow pointers", "reverse second half"
 
 ---
 
+## A - Algorithm (Problem and Algorithm)
+
+### Problem Restatement
+
+Given the head of a singly linked list `head`, return `true` if it is a palindrome; otherwise return `false`.
+
+### Input / Output
+
+| Name | Type | Description |
+| --- | --- | --- |
+| head | ListNode | head of singly linked list |
+| return | bool | whether list is palindrome |
+
+### Example 1
+
+```text
+input:  1 -> 2 -> 2 -> 1
+output: true
+```
+
+### Example 2
+
+```text
+input:  1 -> 2
+output: false
+```
+
+---
+
 ## Target Readers
 
 - Hot100 learners who want to master the "middle + reverse" linked-list combo
@@ -53,74 +82,226 @@ So we need a template that is:
 
 ---
 
-## A - Algorithm (Problem and Algorithm)
+## C - Concepts (Core Ideas)
 
-### Problem Restatement
+### How To Build The Solution From Scratch
 
-Given the head of a singly linked list `head`, return `true` if it is a palindrome; otherwise return `false`.
+#### Step 1: Start from the real obstacle, not the word "palindrome"
 
-### Input / Output
-
-| Name | Type | Description |
-| --- | --- | --- |
-| head | ListNode | head of singly linked list |
-| return | bool | whether list is palindrome |
-
-### Example 1
-
-```text
-input:  1 -> 2 -> 2 -> 1
-output: true
-```
-
-### Example 2
-
-```text
-input:  1 -> 2
-output: false
-```
-
----
-
-## Thought Process: From Array Copy to In-Place Reversal
-
-### Naive approach: copy to array
-
-1. Traverse list and copy values to an array
-2. Use two pointers on array to check palindrome
-
-Pros: simple and robust.
-Cons: needs `O(n)` extra memory.
-
-### Better observation
-
-If we can reverse only the second half of the list, then both halves become forward-comparable.
-
-Example:
+Take:
 
 ```text
 1 -> 2 -> 3 -> 2 -> 1
 ```
 
-Reverse second half around middle:
+To verify a palindrome, we want to compare:
+
+- first node with last node
+- second node with second-last node
+
+But a singly linked list cannot move backward.
+That is the whole difficulty.
+
+#### Step 2: Acknowledge the direct solution first
+
+The simplest correct approach is:
+
+1. copy values into an array
+2. compare from both ends
+
+This is easy, but it uses `O(n)` extra space.
+So the real challenge is:
+
+> can we make the list itself expose a forward-comparable second half?
+
+#### Step 3: Ask what transformation would make symmetric comparison possible
+
+If the second half were reversed in place, then both sides could be read forward.
+
+For:
 
 ```text
-left side forward:  1 -> 2 -> 3
-right side forward: 1 -> 2
+1 -> 2 -> 3 -> 2 -> 1
 ```
 
-Now compare node by node.
+after reversing the second half, the comparable fronts become:
 
-### Final method
+```text
+left forward:   1 -> 2 -> 3
+right forward:  1 -> 2
+```
 
-1. Find end of first half (fast/slow)
-2. Reverse second half
-3. Compare first half and reversed second half
-4. Reverse back and reconnect (restore)
+Now the palindrome check becomes an ordinary two-pointer forward scan.
 
----
+#### Step 4: Decide where the second half begins
 
-## C - Concepts (Core Ideas)
+We first need the end of the first half.
+Fast/slow pointers do exactly that:
+
+```python
+fast = head
+slow = head
+while fast.next and fast.next.next:
+    fast = fast.next.next
+    slow = slow.next
+```
+
+When the loop ends:
+
+- `slow` is the middle for odd length
+- `slow` is the left-middle tail for even length
+
+So `slow.next` is the start of the second half we want to reverse.
+
+#### Step 5: Reverse only the second half
+
+Now run the standard list reversal on:
+
+```python
+second_half_start = reverse_list(first_half_end.next)
+```
+
+This does not solve the whole problem yet.
+It only converts the hidden backward comparison into a visible forward comparison.
+
+#### Step 6: Compare, then restore
+
+Use two pointers:
+
+- `p1` from the original head
+- `p2` from the reversed second half
+
+If every compared pair matches, the list is a palindrome.
+Then reverse the second half again and reconnect it, so the original structure is preserved.
+
+That restoration step matters in real code, not just in interviews.
+
+#### Step 7: Walk one trace slowly
+
+For:
+
+```text
+1 -> 2 -> 2 -> 1
+```
+
+the first half ends at the first `2`.
+Reverse the second half:
+
+```text
+1 -> 2 -> 1 -> 2
+        ^
+    reversed start
+```
+
+Now compare:
+
+- `1` vs `1`
+- `2` vs `2`
+
+All pairs match, so return `True`, then restore the suffix.
+
+#### Step 8: Reduce the method to one sentence
+
+LeetCode 234 is "find the midpoint, reverse the second half to make comparison forward-only, compare both halves, then restore."
+
+### Assemble the Full Code
+
+```python
+from __future__ import annotations
+
+
+class ListNode:
+    def __init__(self, val: int):
+        self.val = val
+        self.next: ListNode | None = None
+
+
+def reverse_list(head: ListNode | None) -> ListNode | None:
+    prev = None
+    cur = head
+    while cur:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev
+
+
+def end_of_first_half(head: ListNode) -> ListNode:
+    fast = head
+    slow = head
+    while fast.next and fast.next.next:
+        fast = fast.next.next
+        slow = slow.next  # type: ignore[assignment]
+    return slow
+
+
+def is_palindrome(head: ListNode | None) -> bool:
+    if head is None or head.next is None:
+        return True
+
+    first_half_end = end_of_first_half(head)
+    second_half_start = reverse_list(first_half_end.next)
+
+    p1 = head
+    p2 = second_half_start
+    ok = True
+    while ok and p2 is not None:
+        if p1.val != p2.val:
+            ok = False
+        p1 = p1.next  # type: ignore[assignment]
+        p2 = p2.next
+
+    first_half_end.next = reverse_list(second_half_start)  # restore
+    return ok
+```
+
+### Reference Answer
+
+```python
+from __future__ import annotations
+
+
+class ListNode:
+    def __init__(self, val: int):
+        self.val = val
+        self.next: ListNode | None = None
+
+
+def reverse_list(head: ListNode | None) -> ListNode | None:
+    prev = None
+    cur = head
+    while cur:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev
+
+
+def end_of_first_half(head: ListNode) -> ListNode:
+    fast, slow = head, head
+    while fast.next and fast.next.next:
+        fast = fast.next.next
+        slow = slow.next  # type: ignore[assignment]
+    return slow
+
+
+def is_palindrome(head: ListNode | None) -> bool:
+    if head is None or head.next is None:
+        return True
+    first_half_end = end_of_first_half(head)
+    second_half_start = reverse_list(first_half_end.next)
+    p1, p2 = head, second_half_start
+    ok = True
+    while ok and p2:
+        if p1.val != p2.val:
+            ok = False
+        p1 = p1.next  # type: ignore[assignment]
+        p2 = p2.next
+    first_half_end.next = reverse_list(second_half_start)
+    return ok
+```
 
 ### Method Category
 
@@ -153,9 +334,6 @@ After check:
 - reconnect via `first_half_end.next`
 
 So external observers see the original structure.
-
----
-
 ## Practical Guide / Steps
 
 1. Return `true` for empty list or single node

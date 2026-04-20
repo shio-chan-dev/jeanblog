@@ -19,36 +19,6 @@ keywords: ["Reverse Linked List II", "sublist reversal", "dummy node", "head ins
 
 ---
 
-## Target Readers
-
-- Hot100 learners who already know 206 and want the interval version
-- Developers who often fail at linked-list boundary handling (`left = 1`, `right = n`)
-- Engineers building reusable pointer-rewiring templates
-
-## Background / Motivation
-
-LeetCode 206 reverses the whole list. LeetCode 92 asks for a stricter operation:
-
-- reverse only nodes from position `left` to `right`
-- keep prefix and suffix connected correctly
-
-This pattern appears in engineering-style chain structures:
-
-- replaying a partial compensation chain in reverse order
-- local reorder in an event sequence
-- in-place transformation without allocating new nodes
-
-The hard part is not algorithmic complexity; it is pointer safety and boundary consistency.
-
-## Core Concepts
-
-- **Dummy node**: unifies the `left = 1` case with all other cases
-- **Anchor predecessor `prev`**: ends at node `left - 1` (or dummy)
-- **Current tail `cur`**: starts at `prev.next` and remains tail of reversed block during loop
-- **Head insertion**: repeatedly detach `cur.next` and insert it right after `prev`
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -81,36 +51,233 @@ output: 5
 
 ---
 
-## Thought Process: From Naive to In-Place
+## Target Readers
 
-### Naive idea: array conversion
+- Hot100 learners who already know 206 and want the interval version
+- Developers who often fail at linked-list boundary handling (`left = 1`, `right = n`)
+- Engineers building reusable pointer-rewiring templates
 
-- Convert list to array
-- Reverse `array[left-1:right]`
-- Rebuild list (or rewrite values)
+## Background / Motivation
 
-Problems:
+LeetCode 206 reverses the whole list. LeetCode 92 asks for a stricter operation:
 
-- `O(n)` extra memory
-- may violate node-identity expectations in real systems
+- reverse only nodes from position `left` to `right`
+- keep prefix and suffix connected correctly
 
-### Key observation
+This pattern appears in engineering-style chain structures:
 
-You only need to rewire pointers inside the interval.
+- replaying a partial compensation chain in reverse order
+- local reorder in an event sequence
+- in-place transformation without allocating new nodes
 
-After locating `prev` (node before `left`), run this repeatedly:
+The hard part is not algorithmic complexity; it is pointer safety and boundary consistency.
 
-1. `nxt = cur.next`
-2. detach `nxt`: `cur.next = nxt.next`
-3. insert `nxt` after `prev`:
-   - `nxt.next = prev.next`
-   - `prev.next = nxt`
+## Core Concepts
 
-Repeat `right - left` times.
+- **Dummy node**: unifies the `left = 1` case with all other cases
+- **Anchor predecessor `prev`**: ends at node `left - 1` (or dummy)
+- **Current tail `cur`**: starts at `prev.next` and remains tail of reversed block during loop
+- **Head insertion**: repeatedly detach `cur.next` and insert it right after `prev`
 
 ---
 
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Shrink the task to the smallest interval-reversal example
+
+Take:
+
+```text
+1 -> 2 -> 3 -> 4 -> 5
+left = 2, right = 4
+```
+
+The target is:
+
+```text
+1 -> 4 -> 3 -> 2 -> 5
+```
+
+So we are not reversing the whole list.
+We must preserve:
+
+- the prefix before `left`
+- the suffix after `right`
+
+Only the middle block is allowed to change direction.
+
+#### Step 2: Ask which node really controls the whole operation
+
+The critical node is not `left` itself.
+It is the node just before `left`.
+
+Why?
+Because after reversal we must reconnect the new block head back into the unchanged prefix.
+
+That is why we first locate:
+
+```python
+prev = node_before_left
+cur = prev.next
+```
+
+Here:
+
+- `prev` anchors the interval from outside
+- `cur` starts as the first node of the interval
+
+#### Step 3: Ask why a dummy node removes boundary chaos
+
+If `left = 1`, there is no real "node before left."
+Without a dummy node, the head case becomes special.
+
+So we unify every case with:
+
+```python
+dummy = ListNode(0, head)
+prev = dummy
+```
+
+Then moving `prev` forward `left - 1` steps always lands at the predecessor of the reversing block.
+
+#### Step 4: Decide what one local move should do
+
+We do not reverse the whole interval in one shot.
+Instead, each round takes the node after `cur` and moves it to the front of the interval.
+
+That single move is:
+
+```python
+nxt = cur.next
+cur.next = nxt.next
+nxt.next = prev.next
+prev.next = nxt
+```
+
+This is called head insertion inside the target interval.
+
+#### Step 5: Notice which pointer does not move
+
+After one head-insertion round:
+
+- `prev` still stays before the interval
+- `cur` still stays at the tail of the already reversed part
+
+Only `nxt` is extracted and inserted after `prev`.
+That is why the loop remains stable instead of losing track of the sublist.
+
+#### Step 6: Define when the interval is fully reversed
+
+The interval length is:
+
+```text
+right - left + 1
+```
+
+The first node `cur` is already in place as the tail of the future reversed block.
+So we only need:
+
+```text
+right - left
+```
+
+head-insertion rounds.
+
+#### Step 7: Walk one trace slowly
+
+Still using:
+
+```text
+1 -> 2 -> 3 -> 4 -> 5
+left = 2, right = 4
+```
+
+Start:
+
+- `prev = 1`
+- `cur = 2`
+
+Round 1: move `3` after `1`
+
+```text
+1 -> 3 -> 2 -> 4 -> 5
+```
+
+Round 2: move `4` after `1`
+
+```text
+1 -> 4 -> 3 -> 2 -> 5
+```
+
+Done.
+
+#### Step 8: Reduce the method to one invariant
+
+`prev` always stays before the interval, and `cur` always stays at the tail of the already reversed part.
+
+### Assemble the Full Code
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reverse_between(head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
+    if not head or left == right:
+        return head
+
+    dummy = ListNode(0, head)
+    prev = dummy
+    for _ in range(left - 1):
+        prev = prev.next
+
+    cur = prev.next
+    for _ in range(right - left):
+        nxt = cur.next
+        cur.next = nxt.next
+        nxt.next = prev.next
+        prev.next = nxt
+
+    return dummy.next
+```
+
+### Reference Answer
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reverse_between(head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
+    if not head or left == right:
+        return head
+
+    dummy = ListNode(0, head)
+    prev = dummy
+    for _ in range(left - 1):
+        prev = prev.next
+
+    cur = prev.next
+    for _ in range(right - left):
+        nxt = cur.next
+        cur.next = nxt.next
+        nxt.next = prev.next
+        prev.next = nxt
+
+    return dummy.next
+```
 
 ### Method Category
 
@@ -149,9 +316,6 @@ round 2 (move 4 after 1):
              ^
             cur
 ```
-
----
-
 ## Practical Guide / Steps
 
 1. Create `dummy`, set `dummy.next = head`

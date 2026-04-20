@@ -19,36 +19,6 @@ keywords: ["Sort List", "linked list merge sort", "divide and conquer", "LeetCod
 
 ---
 
-## Target Readers
-
-- Hot100 learners building reusable linked-list templates
-- Developers who struggle with split-and-reconnect pointer safety
-- Engineers who want a clear answer to "why merge sort for linked lists"
-
-## Background / Motivation
-
-Sorting linked structures appears in real systems:
-
-- post-processing chained tasks by priority
-- offline reordering of append-only linked logs
-- memory-conscious restructuring with minimal copying
-
-If you directly copy array-sorting intuition to linked lists, you usually hit:
-
-- no O(1) random access
-- expensive and error-prone pointer shuffling for quicksort-style partitioning
-
-So this problem is fundamentally about **algorithm-data-structure fit**.
-
-## Core Concepts
-
-- **Divide and Conquer**: split list to subproblems, then merge upward
-- **Fast/slow middle finding**: `slow` moves 1 step, `fast` moves 2
-- **Linked-list merge**: linear splice of two sorted sublists
-- **Stable sorting**: equal keys keep relative order
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -79,44 +49,265 @@ output: -1 -> 0 -> 3 -> 4 -> 5
 
 ---
 
-## Thought Process: From Naive to Optimal
+## Target Readers
 
-### Naive approach: copy to array and sort
+- Hot100 learners building reusable linked-list templates
+- Developers who struggle with split-and-reconnect pointer safety
+- Engineers who want a clear answer to "why merge sort for linked lists"
 
-- Read values into array
-- Use built-in sort
-- Rebuild list
+## Background / Motivation
 
-Tradeoff:
+Sorting linked structures appears in real systems:
 
-- O(n) extra memory
-- misses the core linked-list manipulation skill target
+- post-processing chained tasks by priority
+- offline reordering of append-only linked logs
+- memory-conscious restructuring with minimal copying
 
-### Key observation
+If you directly copy array-sorting intuition to linked lists, you usually hit:
 
-Linked lists are good at:
+- no O(1) random access
+- expensive and error-prone pointer shuffling for quicksort-style partitioning
 
-- cutting (`next = null`)
-- linear traversal
-- splicing (`next` rewiring)
+So this problem is fundamentally about **algorithm-data-structure fit**.
 
-This exactly matches merge sort:
+## Core Concepts
 
-1. split around middle
-2. sort each half
-3. merge two sorted halves in linear time
-
-### Method selection
-
-Use top-down merge sort on list:
-
-- Time: `O(n log n)`
-- Extra: recursion stack `O(log n)`
-- clean, stable, and interview-practical
+- **Divide and Conquer**: split list to subproblems, then merge upward
+- **Fast/slow middle finding**: `slow` moves 1 step, `fast` moves 2
+- **Linked-list merge**: linear splice of two sorted sublists
+- **Stable sorting**: equal keys keep relative order
 
 ---
 
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from the smallest unsorted list that reveals the structure
+
+Take:
+
+```text
+4 -> 2 -> 1 -> 3
+```
+
+We want:
+
+```text
+1 -> 2 -> 3 -> 4
+```
+
+For arrays, "sort" often means random access and swapping.
+For linked lists, those are awkward.
+So the first real question is:
+
+> what kind of sorting work matches linked-list strengths?
+
+#### Step 2: Ask what a linked list is naturally good at
+
+A linked list is good at:
+
+- finding a middle by linear scan
+- cutting into two pieces with one `next = None`
+- merging two already sorted chains by pointer rewiring
+
+That is almost a perfect description of merge sort.
+So we should not force an array-style sorting mindset onto a linked list.
+
+#### Step 3: Define the smaller subproblem first
+
+Let:
+
+```python
+sort_list(head)
+```
+
+mean:
+
+> return the sorted list built from the same nodes starting at `head`.
+
+Then the smallest solved cases are obvious:
+
+```python
+if head is None or head.next is None:
+    return head
+```
+
+An empty list or single node is already sorted.
+
+#### Step 4: Decide how to split the list safely
+
+We need two roughly equal halves.
+The usual tool is fast/slow pointers:
+
+```python
+slow, fast = head, head.next
+while fast and fast.next:
+    slow = slow.next
+    fast = fast.next.next
+```
+
+When the loop ends, `slow` sits at the tail of the left half.
+So we cut at:
+
+```python
+mid = slow.next
+slow.next = None
+```
+
+Now one list becomes two smaller lists.
+
+#### Step 5: Decide how sorted halves should be combined
+
+Once both halves are sorted recursively, the remaining job is not "sort again."
+It is just:
+
+```python
+merge(left, right)
+```
+
+This is the same linear two-list merge idea as LeetCode 21:
+
+- compare current heads
+- append the smaller node
+- move that pointer forward
+
+#### Step 6: Why merge sort fits better than most alternatives
+
+Merge sort works here because every expensive linked-list weakness is avoided:
+
+- no random indexing
+- no backward scan
+- no large-scale node swapping
+
+Instead we only do:
+
+- split
+- recurse
+- merge
+
+That gives `O(n log n)` time with clean pointer logic.
+
+#### Step 7: Walk one recursion tree slowly
+
+For:
+
+```text
+4 -> 2 -> 1 -> 3
+```
+
+split into:
+
+```text
+4 -> 2
+1 -> 3
+```
+
+then into single nodes:
+
+```text
+4 | 2 | 1 | 3
+```
+
+merge upward:
+
+```text
+2 -> 4
+1 -> 3
+```
+
+final merge:
+
+```text
+1 -> 2 -> 3 -> 4
+```
+
+That is exactly the recursion we want the code to express.
+
+#### Step 8: Reduce the method to one sentence
+
+LeetCode 148 is "keep splitting the list around the middle until each piece is trivially sorted, then merge the pieces back upward."
+
+### Assemble the Full Code
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
+    if head is None or head.next is None:
+        return head
+
+    slow, fast = head, head.next
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    mid = slow.next
+    slow.next = None
+
+    left = sort_list(head)
+    right = sort_list(mid)
+    return merge(left, right)
+
+
+def merge(a: Optional[ListNode], b: Optional[ListNode]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    while a and b:
+        if a.val <= b.val:
+            tail.next, a = a, a.next
+        else:
+            tail.next, b = b, b.next
+        tail = tail.next
+    tail.next = a if a else b
+    return dummy.next
+```
+
+### Reference Answer
+
+```python
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def sortList(head):
+    if not head or not head.next:
+        return head
+
+    slow, fast = head, head.next
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    mid = slow.next
+    slow.next = None
+
+    left = sortList(head)
+    right = sortList(mid)
+    return merge(left, right)
+
+
+def merge(a, b):
+    dummy = ListNode()
+    t = dummy
+    while a and b:
+        if a.val <= b.val:
+            t.next, a = a, a.next
+        else:
+            t.next, b = b, b.next
+        t = t.next
+    t.next = a if a else b
+    return dummy.next
+```
 
 ### Method Category
 
@@ -139,9 +330,6 @@ Therefore, the final result is sorted.
 By Master theorem:
 
 - `T(n) = O(n log n)`
-
----
-
 ## Practice Guide / Steps
 
 1. Return directly for `0/1` node list

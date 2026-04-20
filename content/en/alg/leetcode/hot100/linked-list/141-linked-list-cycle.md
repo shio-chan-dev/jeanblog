@@ -19,6 +19,38 @@ keywords: ["Linked List Cycle", "Floyd cycle detection", "fast slow pointers", "
 
 ---
 
+## A - Algorithm (Problem and Algorithm)
+
+### Problem Restatement
+
+Given head node `head` of a singly linked list, determine whether there is a cycle in the list.
+Return `true` if a cycle exists, else `false`.
+
+### Input / Output
+
+| Name | Type | Description |
+| --- | --- | --- |
+| head | ListNode | head of singly linked list (can be null) |
+| return | bool | whether cycle exists |
+
+### Example 1
+
+```text
+head: 3 -> 2 -> 0 -> -4
+               ^     |
+               |_____|
+output: true
+```
+
+### Example 2
+
+```text
+head: 1 -> 2 -> null
+output: false
+```
+
+---
+
 ## Target Readers
 
 - Hot100 learners and interview candidates
@@ -52,70 +84,182 @@ Floyd fast/slow pointer detection is the standard solution for this profile.
 
 ---
 
-## A - Algorithm (Problem and Algorithm)
-
-### Problem Restatement
-
-Given head node `head` of a singly linked list, determine whether there is a cycle in the list.
-Return `true` if a cycle exists, else `false`.
-
-### Input / Output
-
-| Name | Type | Description |
-| --- | --- | --- |
-| head | ListNode | head of singly linked list (can be null) |
-| return | bool | whether cycle exists |
-
-### Example 1
-
-```text
-head: 3 -> 2 -> 0 -> -4
-               ^     |
-               |_____|
-output: true
-```
-
-### Example 2
-
-```text
-head: 1 -> 2 -> null
-output: false
-```
-
----
-
-## Thought Process: From Hash Set to Floyd
-
-### Naive approach: record visited nodes
-
-Traverse nodes and store each node reference in a set:
-
-- seen again => cycle
-- reaches null => no cycle
-
-Pros: easy to reason about.
-Cons: `O(n)` extra memory.
-
-### Key observation
-
-If a cycle exists, once both pointers enter the cycle:
-
-- fast gains 1 node per step over slow
-- relative gap changes modulo cycle length
-- gap must become 0 eventually
-
-So they must meet inside the cycle.
-
-### Final choice
-
-Floyd cycle detection:
-
-- time `O(n)`
-- extra space `O(1)`
-
----
-
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from a tiny example that can never terminate
+
+Take this list:
+
+```text
+1 -> 2 -> 3 -> 4
+     ^         |
+     |_________|
+```
+
+If you keep following `next`, you never reach `null`.
+So the real question is not about node values at all.
+It is:
+
+> will traversal eventually revisit an old node?
+
+The most direct solution is a visited set.
+It works, but it costs `O(n)` extra space.
+
+#### Step 2: Ask whether we really need to remember every node
+
+If a cycle exists, the deeper structure is about relative speed:
+
+- `slow` moves 1 step
+- `fast` moves 2 steps
+
+```python
+slow = slow.next
+fast = fast.next.next
+```
+
+That turns the problem into a chase problem instead of a storage problem.
+
+#### Step 3: Define when the work is settled
+
+There are only two endings:
+
+- `fast` hits the end of the list, so there is no cycle
+- `slow` and `fast` meet, so there is a cycle
+
+That immediately gives the safe loop condition:
+
+```python
+while fast is not None and fast.next is not None:
+    ...
+```
+
+#### Step 4: Why does meeting prove a cycle?
+
+Once both pointers enter the cycle:
+
+- `slow` advances by 1 each round
+- `fast` advances by 2 each round
+
+So `fast` gains 1 node per round on `slow`.
+Inside a finite cycle, that relative gap keeps changing modulo the cycle length until it becomes zero.
+
+That is why this check is enough:
+
+```python
+if slow is fast:
+    return True
+```
+
+#### Step 5: Why is there no false positive on an acyclic list?
+
+Because in an acyclic list there is a real tail.
+The faster pointer reaches:
+
+- `fast is None`
+- or `fast.next is None`
+
+before any meeting can happen.
+
+So Floyd stays clean:
+
+- meet => cycle
+- fall off the list => no cycle
+
+#### Step 6: Walk one concrete trace
+
+Using the same cyclic example:
+
+Start:
+
+- `slow = 1`
+- `fast = 1`
+
+After one round:
+
+- `slow = 2`
+- `fast = 3`
+
+After two rounds:
+
+- `slow = 3`
+- `fast = 2`
+
+After three rounds:
+
+- `slow = 4`
+- `fast = 4`
+
+They meet, so the list must contain a cycle.
+
+#### Step 7: Reduce the whole method to one sentence
+
+The reusable idea is:
+
+> with a speed gap, `fast` either falls off an acyclic list or catches `slow` inside a cycle.
+
+### Assemble the Full Code
+
+```python
+from typing import Optional, List
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def has_cycle(head: Optional[ListNode]) -> bool:
+    slow = head
+    fast = head
+    while fast is not None and fast.next is not None:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            return True
+    return False
+
+
+def build(values: List[int], pos: int) -> Optional[ListNode]:
+    if not values:
+        return None
+    nodes = [ListNode(v) for v in values]
+    for i in range(len(nodes) - 1):
+        nodes[i].next = nodes[i + 1]
+    if pos != -1:
+        nodes[-1].next = nodes[pos]
+    return nodes[0]
+
+
+if __name__ == "__main__":
+    print(has_cycle(build([3, 2, 0, -4], 1)))  # True
+    print(has_cycle(build([1, 2], -1)))        # False
+```
+
+### Reference Answer
+
+```python
+from typing import Optional, List
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def hasCycle(head: Optional[ListNode]) -> bool:
+    slow = head
+    fast = head
+    while fast is not None and fast.next is not None:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            return True
+    return False
+```
 
 ### Method Category
 
@@ -142,9 +286,6 @@ Before `fast = fast.next.next`, we must ensure:
 - `fast.next != null`
 
 Otherwise null dereference happens.
-
----
-
 ## Practical Guide / Steps
 
 1. Initialize `slow = head`, `fast = head`

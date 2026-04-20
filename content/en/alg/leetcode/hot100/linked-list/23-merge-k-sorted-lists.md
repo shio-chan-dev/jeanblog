@@ -19,32 +19,6 @@ keywords: ["Merge K Sorted Lists", "divide and conquer", "k-way merge", "LeetCod
 
 ---
 
-## Target Readers
-
-- Hot100 learners who have finished LeetCode 21 and want the next-level merge template
-- Developers who need predictable performance for k-way ordered data merge
-- Engineers preparing for linked-list and divide-and-conquer interview rounds
-
-## Background / Motivation
-
-This problem appears in many production forms:
-
-- merge sorted outputs from multiple shards
-- combine sorted event streams from multiple services
-- aggregate sorted pagination slices
-
-The hard part is not correctness alone; it is controlling cost when `k` grows.
-
-## Core Concepts
-
-- **N**: total number of nodes across all lists
-- **k**: number of lists
-- **Sequential merge**: merge one list into the current result repeatedly
-- **Divide-and-conquer merge**: merge in balanced rounds
-- **Min-heap k-way merge**: keep current head from each list in a heap
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -74,27 +48,248 @@ output: []
 
 ---
 
+## Target Readers
+
+- Hot100 learners who have finished LeetCode 21 and want the next-level merge template
+- Developers who need predictable performance for k-way ordered data merge
+- Engineers preparing for linked-list and divide-and-conquer interview rounds
+
+## Background / Motivation
+
+This problem appears in many production forms:
+
+- merge sorted outputs from multiple shards
+- combine sorted event streams from multiple services
+- aggregate sorted pagination slices
+
+The hard part is not correctness alone; it is controlling cost when `k` grows.
+
+## Core Concepts
+
+- **N**: total number of nodes across all lists
+- **k**: number of lists
+- **Sequential merge**: merge one list into the current result repeatedly
+- **Divide-and-conquer merge**: merge in balanced rounds
+- **Min-heap k-way merge**: keep current head from each list in a heap
+
+---
+
 ## C - Concepts (Core Ideas)
 
-### Thought Process: Naive -> Bottleneck -> Better Structure
+### How To Build The Solution From Scratch
 
-1. **Flatten + sort**
-   - O(N log N), O(N) extra space
-   - ignores that each list is already sorted
+#### Step 1: Start from the smallest example that is no longer just "merge two lists"
 
-2. **Sequential merge**
-   - `(((l1 merge l2) merge l3) ...)`
-   - repeated scanning of early nodes can degrade toward O(Nk)
+Take:
 
-3. **Key observation**
-   - Balanced pairwise merges form a merge tree
-   - each level processes about N nodes
-   - number of levels is about log k
+```text
+l1: 1 -> 4
+l2: 1 -> 3
+l3: 2 -> 6
+```
 
-4. **Method choice**
-   - Divide-and-conquer merge
-   - Time: O(N log k)
-   - Extra space: O(log k) recursion stack
+We already know how to merge **two** sorted lists from LeetCode 21.
+So this problem is not asking us to invent a brand-new local merge rule.
+It is asking a scheduling question:
+
+> in what order should we reuse `merge_two` so the total work stays small?
+
+#### Step 2: Reject the tempting left-to-right schedule
+
+The most direct idea is:
+
+```text
+((l1 merge l2) merge l3) merge l4 ...
+```
+
+This works, but the merged result keeps getting longer.
+That means early nodes can be scanned again and again.
+
+If there are `k` lists of similar size, this repeated rescanning can drift toward `O(Nk)`.
+So the merge rule is fine; the schedule is bad.
+
+#### Step 3: Ask what one reusable subproblem should mean
+
+We want a function that solves:
+
+> merge all lists inside an interval `[l, r]`.
+
+If we can solve the left half and the right half, then the remaining work is again just:
+
+```python
+merge_two(left_result, right_result)
+```
+
+That turns the whole problem back into the already-familiar two-list merge.
+
+#### Step 4: Balance the merge tree
+
+Instead of always merging into one growing result, merge in rounds:
+
+```text
+(l1,l2) (l3,l4) (l5,l6) ...
+```
+
+then merge those results again.
+
+This creates a balanced merge tree:
+
+- each level processes about `N` nodes in total
+- the number of levels is about `log k`
+
+So every node participates in only about `log k` merge rounds.
+
+#### Step 5: Define the smaller recursive problem
+
+Let:
+
+```python
+solve(l, r)
+```
+
+mean:
+
+> the fully merged sorted list built from `lists[l]` through `lists[r]`.
+
+Then the base case is immediate:
+
+```python
+if l == r:
+    return lists[l]
+```
+
+because one list is already sorted.
+
+#### Step 6: Define how one level combines results
+
+Split the interval in the middle:
+
+```python
+m = (l + r) // 2
+left = solve(l, m)
+right = solve(m + 1, r)
+return merge_two(left, right)
+```
+
+This is the whole structure.
+The local merge logic still comes from LeetCode 21; divide-and-conquer only decides the merge order.
+
+#### Step 7: Walk one merge tree slowly
+
+For:
+
+```text
+[l1, l2, l3, l4]
+```
+
+the recursion becomes:
+
+```text
+solve(0, 3)
+├─ solve(0, 1) -> merge_two(l1, l2)
+└─ solve(2, 3) -> merge_two(l3, l4)
+```
+
+Then the final step is:
+
+```text
+merge_two(merge(l1,l2), merge(l3,l4))
+```
+
+No list is forced to absorb all later lists by itself.
+That is exactly why the work stays balanced.
+
+#### Step 8: Reduce the method to one sentence
+
+LeetCode 23 is "reuse `merge_two`, but arrange the merges as a balanced tree instead of a long chain."
+
+### Assemble the Full Code
+
+```python
+from typing import List, Optional
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def merge_two(a: Optional[ListNode], b: Optional[ListNode]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    while a and b:
+        if a.val <= b.val:
+            nxt = a.next
+            tail.next = a
+            a.next = None
+            a = nxt
+        else:
+            nxt = b.next
+            tail.next = b
+            b.next = None
+            b = nxt
+        tail = tail.next
+    tail.next = a if a else b
+    return dummy.next
+
+
+def merge_k_lists(lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+    if not lists:
+        return None
+
+    def solve(l: int, r: int) -> Optional[ListNode]:
+        if l == r:
+            return lists[l]
+        m = (l + r) // 2
+        return merge_two(solve(l, m), solve(m + 1, r))
+
+    return solve(0, len(lists) - 1)
+```
+
+### Reference Answer
+
+```python
+from typing import List, Optional
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def merge_two(a: Optional[ListNode], b: Optional[ListNode]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    while a and b:
+        if a.val <= b.val:
+            nxt = a.next
+            tail.next = a
+            a.next = None
+            a = nxt
+        else:
+            nxt = b.next
+            tail.next = b
+            b.next = None
+            b = nxt
+        tail = tail.next
+    tail.next = a if a else b
+    return dummy.next
+
+
+def merge_k_lists(lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+    if not lists:
+        return None
+
+    def solve(l: int, r: int) -> Optional[ListNode]:
+        if l == r:
+            return lists[l]
+        m = (l + r) // 2
+        return merge_two(solve(l, m), solve(m + 1, r))
+
+    return solve(0, len(lists) - 1)
+```
 
 ### Method Category
 
@@ -108,9 +303,6 @@ For interval `[l, r]`:
 
 - `solve(l, r)` returns a fully sorted merge of all lists in that interval
 - if left and right halves are correctly merged, `mergeTwo(left, right)` preserves sorted order and includes every node exactly once
-
----
-
 ## Practice Guide / Steps
 
 1. Reuse a stable `mergeTwo` helper (LeetCode 21 template)

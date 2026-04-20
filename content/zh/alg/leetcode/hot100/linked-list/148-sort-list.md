@@ -18,36 +18,6 @@ keywords: ["Sort List", "排序链表", "链表归并排序", "分治", "LeetCod
 
 ---
 
-## 目标读者
-
-- 正在刷 Hot100，想把链表题模板系统化的同学  
-- 做链表题经常在“切分和拼接”环节出错的开发者  
-- 想搞清楚“为什么链表排序优先用归并”而不是快排的人
-
-## 背景 / 动机
-
-链表排序在工程里并不罕见：
-
-- 合并来自多个来源的链式任务队列  
-- 对按时间追加的链式日志做离线整理  
-- 对内存敏感结构进行“尽量少拷贝”的重排
-
-如果把数组排序思维直接搬过来，往往会遇到：
-
-- 链表不支持 O(1) 随机访问，分区/堆操作代价高  
-- 频繁节点移动容易写出复杂且脆弱的代码
-
-所以这题本质是：**为链表选择正确的数据结构友好算法**。
-
-## 核心概念
-
-- **分治（Divide & Conquer）**：把链表二分到最小子问题，再向上合并  
-- **快慢指针找中点**：`slow` 每次 1 步，`fast` 每次 2 步  
-- **链表归并**：两个有序链表线性拼接成一个有序链表  
-- **稳定排序**：相等元素相对次序可保持
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目还原
@@ -78,43 +48,271 @@ keywords: ["Sort List", "排序链表", "链表归并排序", "分治", "LeetCod
 
 ---
 
-## 思路推导（从朴素到最优）
+## 目标读者
 
-### 朴素做法：转数组再排序
+- 正在刷 Hot100，想把链表题模板系统化的同学  
+- 做链表题经常在“切分和拼接”环节出错的开发者  
+- 想搞清楚“为什么链表排序优先用归并”而不是快排的人
 
-- 遍历链表把值放到数组  
-- 调库排序后重建链表
+## 背景 / 动机
 
-问题：
+链表排序在工程里并不罕见：
 
-- 额外空间 O(n)  
-- 违背“基于链表结构做排序”的训练目标
+- 合并来自多个来源的链式任务队列  
+- 对按时间追加的链式日志做离线整理  
+- 对内存敏感结构进行“尽量少拷贝”的重排
 
-### 关键观察
+如果把数组排序思维直接搬过来，往往会遇到：
 
-链表最擅长的是：
+- 链表不支持 O(1) 随机访问，分区/堆操作代价高  
+- 频繁节点移动容易写出复杂且脆弱的代码
 
-- 切分（断开 `next`）  
-- 线性遍历  
-- 拼接（改 `next`）
+所以这题本质是：**为链表选择正确的数据结构友好算法**。
 
-这正好匹配归并排序：
+## 核心概念
 
-1. 找中点切成两半  
-2. 分别排好序  
-3. 线性归并
-
-### 方法选择
-
-采用 **Top-Down 归并排序**：
-
-- 时间：`O(n log n)`  
-- 额外空间：递归栈 `O(log n)`  
-- 代码结构清晰，稳定可复用
+- **分治（Divide & Conquer）**：把链表二分到最小子问题，再向上合并  
+- **快慢指针找中点**：`slow` 每次 1 步，`fast` 每次 2 步  
+- **链表归并**：两个有序链表线性拼接成一个有序链表  
+- **稳定排序**：相等元素相对次序可保持
 
 ---
 
 ## C — Concepts（核心思想）
+
+### 思路是怎么推出来的
+
+#### Step 1：先用一个最小乱序链表看问题本质
+
+例如：
+
+```text
+4 -> 2 -> 1 -> 3
+```
+
+目标是：
+
+```text
+1 -> 2 -> 3 -> 4
+```
+
+如果这是数组，我们会自然想到随机访问、交换元素、原地 partition。
+但链表并不擅长这些动作。
+
+所以第一步不是急着套某个排序模板，而是先问：
+
+> 哪种排序过程最符合链表的结构特性？
+
+#### Step 2：链表真正擅长的操作是什么？
+
+链表最擅长的是：
+
+- 用快慢指针找中点
+- 通过改 `next` 把一条链切成两半
+- 把两条有序链线性归并起来
+
+这三个动作，刚好就是归并排序最核心的三步：
+
+1. 切分
+2. 递归排好左右两半
+3. 把两半归并回来
+
+所以 148 题天然更像“链表版 merge sort”，而不是“数组版 sort”。
+
+#### Step 3：先把子问题定义清楚
+
+定义：
+
+```python
+sort_list(head)
+```
+
+表示：
+
+> 把从 `head` 开始的这条链表排好序，并返回排序后的新头结点。
+
+最小子问题立刻就有了：
+
+```python
+if head is None or head.next is None:
+    return head
+```
+
+空链表和单节点链表天然有序。
+
+#### Step 4：怎么把链表安全地一分为二？
+
+需要两段尽量平衡的子链表，所以用快慢指针找中点：
+
+```python
+slow, fast = head, head.next
+while fast and fast.next:
+    slow = slow.next
+    fast = fast.next.next
+```
+
+循环结束后，`slow` 落在左半段尾部。
+于是：
+
+```python
+mid = slow.next
+slow.next = None
+```
+
+这样原链表就被真正切成了左右两半。
+
+#### Step 5：左右两半排好后，剩下的工作是什么？
+
+不是“再排序一次”，而只是：
+
+```python
+merge(left, right)
+```
+
+也就是 21 题那种双有序链表归并：
+
+- 比较两边当前头节点
+- 取较小者接到结果后面
+- 对应指针前进
+
+这个过程天然是线性的，非常适合链表。
+
+#### Step 6：为什么归并排序比别的选择更贴合链表？
+
+因为它避开了链表最不擅长的事：
+
+- 不需要随机访问
+- 不需要大量交换节点位置
+- 不需要从尾往前扫描
+
+它只要求：
+
+- 切开
+- 递归
+- 拼回
+
+所以能稳定拿到 `O(n log n)` 时间复杂度，而且指针逻辑相对清晰。
+
+#### Step 7：慢速走一棵递归树
+
+对于：
+
+```text
+4 -> 2 -> 1 -> 3
+```
+
+先切成：
+
+```text
+4 -> 2
+1 -> 3
+```
+
+再继续切成单节点：
+
+```text
+4 | 2 | 1 | 3
+```
+
+向上归并：
+
+```text
+2 -> 4
+1 -> 3
+```
+
+最后再归并一次：
+
+```text
+1 -> 2 -> 3 -> 4
+```
+
+代码里写的递归，表达的正是这棵“先拆后并”的树。
+
+#### Step 8：把方法压缩成一句模板
+
+148 题可以记成：先把链表不断从中间切小，再把排好序的两半按 21 题模板归并回来。
+
+### Assemble the Full Code
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def sort_list(head: Optional[ListNode]) -> Optional[ListNode]:
+    if head is None or head.next is None:
+        return head
+
+    slow, fast = head, head.next
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    mid = slow.next
+    slow.next = None
+
+    left = sort_list(head)
+    right = sort_list(mid)
+    return merge(left, right)
+
+
+def merge(a: Optional[ListNode], b: Optional[ListNode]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    while a and b:
+        if a.val <= b.val:
+            tail.next, a = a, a.next
+        else:
+            tail.next, b = b, b.next
+        tail = tail.next
+    tail.next = a if a else b
+    return dummy.next
+```
+
+### Reference Answer
+
+```python
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def sortList(head):
+    if not head or not head.next:
+        return head
+
+    slow, fast = head, head.next
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    mid = slow.next
+    slow.next = None
+
+    left = sortList(head)
+    right = sortList(mid)
+    return merge(left, right)
+
+
+def merge(a, b):
+    dummy = ListNode()
+    t = dummy
+    while a and b:
+        if a.val <= b.val:
+            t.next, a = a, a.next
+        else:
+            t.next, b = b, b.next
+        t = t.next
+    t.next = a if a else b
+    return dummy.next
+```
 
 ### 方法归类
 
@@ -135,9 +333,6 @@ keywords: ["Sort List", "排序链表", "链表归并排序", "分治", "LeetCod
 设 `T(n) = 2T(n/2) + O(n)`，由主定理得：
 
 - `T(n) = O(n log n)`
-
----
-
 ## 实践指南 / 步骤
 
 1. 若 `head` 为空或仅一个节点，直接返回  

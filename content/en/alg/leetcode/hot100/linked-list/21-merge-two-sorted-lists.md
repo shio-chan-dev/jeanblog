@@ -19,31 +19,6 @@ keywords: ["Merge Two Sorted Lists", "sentinel node", "two pointers", "linked li
 
 ---
 
-## Target Readers
-
-- Hot100 learners preparing linked-list interview templates
-- Developers who often lose nodes while rewiring `next`
-- Engineers who need stable O(1)-extra-space merge patterns
-
-## Background / Motivation
-
-This is a small problem with large transfer value:
-
-- It is a direct building block of `merge k sorted lists`
-- It reinforces pointer safety under in-place rewiring
-- It mirrors real-world merging of two already sorted streams
-
-If this template is stable in your hands, many linked-list and divide-and-conquer problems become easier.
-
-## Core Concepts
-
-- **Sorted linked list**: non-decreasing values along `next`
-- **Splicing merge**: reuse original nodes by rewiring pointers
-- **Sentinel (dummy) node**: avoids special handling for the head of result
-- **Tail pointer**: always points to the last node in merged list
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -77,41 +52,233 @@ output: 0 -> 5
 
 ---
 
-## Thought Process: From Naive to Optimal
+## Target Readers
 
-### Naive approach: flatten + sort + rebuild
+- Hot100 learners preparing linked-list interview templates
+- Developers who often lose nodes while rewiring `next`
+- Engineers who need stable O(1)-extra-space merge patterns
 
-1. Read values from both lists into array
-2. Sort the array
-3. Recreate a new linked list
+## Background / Motivation
 
-Problems:
+This is a small problem with large transfer value:
 
-- O(m+n) extra space
-- violates the spirit of "splice original nodes"
+- It is a direct building block of `merge k sorted lists`
+- It reinforces pointer safety under in-place rewiring
+- It mirrors real-world merging of two already sorted streams
 
-### Key observation
+If this template is stable in your hands, many linked-list and divide-and-conquer problems become easier.
 
-Both lists are already sorted.
-At each step, the next smallest node must be one of the two current heads.
+## Core Concepts
 
-So we can:
-
-- compare current nodes
-- append smaller one to result tail
-- move that list pointer forward
-
-### Method choice
-
-Use **sentinel + two pointers**:
-
-- O(m+n) time
-- O(1) extra space (excluding sentinel node)
-- stable and interview-friendly
+- **Sorted linked list**: non-decreasing values along `next`
+- **Splicing merge**: reuse original nodes by rewiring pointers
+- **Sentinel (dummy) node**: avoids special handling for the head of result
+- **Tail pointer**: always points to the last node in merged list
 
 ---
 
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from the smallest merge that still shows the pattern
+
+Take:
+
+```text
+list1: 1 -> 2 -> 4
+list2: 1 -> 3 -> 4
+```
+
+The goal is not to sort again from scratch.
+The goal is to keep pulling the smallest current head from two lists that are already sorted.
+
+That means the next output node must always be one of these two nodes:
+
+- `list1` head
+- `list2` head
+
+#### Step 2: Decide what state the partial answer needs
+
+To build the result online, we need three moving pointers:
+
+- `tail`: the end of the merged result
+- `p1`: current head of the remaining part of `list1`
+- `p2`: current head of the remaining part of `list2`
+
+```python
+tail = dummy
+p1 = list1
+p2 = list2
+```
+
+#### Step 3: Ask why a sentinel node helps
+
+Without a sentinel, the very first append needs special handling:
+
+- is this the first node?
+- what is the result head?
+
+With a sentinel, every append becomes the same operation:
+
+```python
+tail.next = node
+tail = tail.next
+```
+
+That removes head-specific branching from the main loop.
+
+#### Step 4: Define one merge step
+
+As long as both lists are non-empty, the next smallest node is whichever head has the smaller value:
+
+```python
+if p1.val <= p2.val:
+    ...
+else:
+    ...
+```
+
+Then we append that node to `tail.next`.
+
+#### Step 5: What state changes after one choice?
+
+Suppose we choose `p1`.
+Then three things must happen together:
+
+```python
+tail.next = p1
+p1 = p1.next
+tail = tail.next
+```
+
+If we choose `p2`, it is the symmetric update.
+
+#### Step 6: When can comparison stop?
+
+The moment one list becomes empty, the remaining part of the other list is already sorted.
+So we can attach the whole remainder in one move:
+
+```python
+tail.next = p1 if p1 is not None else p2
+```
+
+That is why the full merge stays linear.
+
+#### Step 7: Walk one concrete trace
+
+Start:
+
+- `p1 = 1`
+- `p2 = 1`
+- `tail = dummy`
+
+Choose `p1` first:
+
+- result: `1`
+- `p1` moves to `2`
+
+Now compare `2` and `1`, so choose `p2`:
+
+- result: `1 -> 1`
+- `p2` moves to `3`
+
+Then compare `2` and `3`, choose `2`, and keep repeating the same local action.
+
+#### Step 8: Reduce the whole method to one sentence
+
+The stable template is:
+
+> keep `tail` at the end of the result, compare `p1` and `p2`, append the smaller head, and finally attach the remaining suffix.
+
+### Assemble the Full Code
+
+```python
+from typing import List, Optional
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def merge_two_lists(list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+    dummy = ListNode(0)
+    tail = dummy
+    p1, p2 = list1, list2
+
+    while p1 is not None and p2 is not None:
+        if p1.val <= p2.val:
+            nxt = p1.next
+            tail.next = p1
+            p1.next = None
+            p1 = nxt
+        else:
+            nxt = p2.next
+            tail.next = p2
+            p2.next = None
+            p2 = nxt
+        tail = tail.next
+
+    tail.next = p1 if p1 is not None else p2
+    return dummy.next
+
+
+def from_list(arr: List[int]) -> Optional[ListNode]:
+    dummy = ListNode()
+    cur = dummy
+    for x in arr:
+        cur.next = ListNode(x)
+        cur = cur.next
+    return dummy.next
+
+
+def to_list(head: Optional[ListNode]) -> List[int]:
+    out: List[int] = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+
+
+if __name__ == "__main__":
+    l1 = from_list([1, 2, 4])
+    l2 = from_list([1, 3, 4])
+    print(to_list(merge_two_lists(l1, l2)))
+    print(to_list(merge_two_lists(None, from_list([0, 5]))))
+```
+
+### Reference Answer
+
+```python
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def merge_two_lists(list1, list2):
+    dummy = ListNode(0)
+    tail = dummy
+    p1, p2 = list1, list2
+
+    while p1 and p2:
+        if p1.val <= p2.val:
+            nxt = p1.next
+            tail.next = p1
+            p1.next = None
+            p1 = nxt
+        else:
+            nxt = p2.next
+            tail.next = p2
+            p2.next = None
+            p2 = nxt
+        tail = tail.next
+
+    tail.next = p1 if p1 else p2
+    return dummy.next
+```
 
 ### Method Category
 
@@ -134,9 +301,6 @@ When one list ends, append the rest of the other list directly.
 
 If `p1` is null, all remaining nodes in `p2` are already in sorted order and all are >= `tail.val`.
 So attaching `tail.next = p2` preserves sorted order.
-
----
-
 ## Practice Guide / Steps
 
 1. Create `dummy` and set `tail = dummy`

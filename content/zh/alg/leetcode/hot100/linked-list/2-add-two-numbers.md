@@ -18,31 +18,6 @@ keywords: ["Add Two Numbers", "两数相加", "链表进位", "LeetCode 2", "dum
 
 ---
 
-## 目标读者
-
-- 刚开始刷链表题，想建立稳定解题模板的同学
-- 对「进位」和「边界处理」容易写错的中级开发者
-- 希望把算法思维迁移到工程数据流处理的工程师
-
-## 背景 / 动机
-
-看似只是 LeetCode 入门题，但它练的能力非常实用：
-
-- 多输入流同步推进（`l1`、`l2` 两个指针）
-- 状态跨轮传播（`carry` 进位）
-- 边界完整性（长度不同、最后一位进位）
-
-这三点在工程里非常常见，例如金额分片累加、多源日志计数合并、流式统计补位等。
-
-## 核心概念
-
-- **逆序存储**：个位在链表头部，十位在下一节点，以此类推
-- **逐位相加**：每轮只处理一个位，值来自 `x + y + carry`
-- **进位传播**：`carry = sum // 10`，当前位 `digit = sum % 10`
-- **哨兵节点（dummy）**：避免首次插入时区分“头节点是否为空”
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目重述
@@ -77,54 +52,264 @@ keywords: ["Add Two Numbers", "两数相加", "链表进位", "LeetCode 2", "dum
 
 ---
 
-## 思路推导：从朴素到最优
+## 目标读者
 
-### 朴素思路 1：先转整数再相加
+- 刚开始刷链表题，想建立稳定解题模板的同学
+- 对「进位」和「边界处理」容易写错的中级开发者
+- 希望把算法思维迁移到工程数据流处理的工程师
 
-- 把链表转成整数 `n1`、`n2`
-- 做 `n1 + n2`
-- 再把结果拆位转回链表
+## 背景 / 动机
 
-问题：
+看似只是 LeetCode 入门题，但它练的能力非常实用：
 
-- 在很多语言里会溢出（数字位数很长）
-- 额外做了「构造大整数」和「拆整数」两次转换
-- 偏离题目本质（链表逐位处理）
+- 多输入流同步推进（`l1`、`l2` 两个指针）
+- 状态跨轮传播（`carry` 进位）
+- 边界完整性（长度不同、最后一位进位）
 
-### 朴素思路 2：先转数组再按位加
+这三点在工程里非常常见，例如金额分片累加、多源日志计数合并、流式统计补位等。
 
-- 把两链表都转数组
-- 再从低位到高位相加
+## 核心概念
 
-问题：
+- **逆序存储**：个位在链表头部，十位在下一节点，以此类推
+- **逐位相加**：每轮只处理一个位，值来自 `x + y + carry`
+- **进位传播**：`carry = sum // 10`，当前位 `digit = sum % 10`
+- **哨兵节点（dummy）**：避免首次插入时区分“头节点是否为空”
 
-- 需要 O(m+n) 额外空间
-- 其实链表已是低位在前，不需要再中转
+---
 
-### 关键观察
+## C — Concepts（核心思想）
 
-- 链表本来就是从个位开始，正好适合「竖式加法」顺序
-- 每轮只需要当前两位 + 进位，不依赖更高位
-- 因此可以单遍扫描完成
+### 思路是怎么推出来的
 
-### 方法选择
+#### Step 1：先看题目给出的数字方向
 
-使用 `dummy + tail` 构建结果链表，循环条件为：
+例如：
+
+```text
+l1 = 2 -> 4 -> 3
+l2 = 5 -> 6 -> 4
+```
+
+它们表示的其实是：
+
+```text
+342 + 465
+```
+
+注意链表的存储方向是“个位在前”。
+这意味着我们一开始拿到的，恰好就是竖式加法最先要处理的那一位。
+
+#### Step 2：所以这题真正要记住什么状态？
+
+做竖式加法时，每一轮只依赖三件事：
+
+- 当前 `l1` 这一位
+- 当前 `l2` 这一位
+- 上一轮留下来的进位 `carry`
+
+同时，为了把结果依次接出来，我们还需要：
+
+- `dummy`：结果链表哑节点
+- `tail`：结果链表当前尾指针
+
+这说明整题根本不需要把整个数字先“组装回去”。
+
+#### Step 3：为什么没必要转整数、转数组、再倒回来？
+
+因为题目已经把数字按“从低位到高位”的顺序放进链表了。
+这正好就是竖式加法的处理顺序。
+
+如果还要：
+
+- 转整数
+- 或转数组
+
+反而是在绕远路：
+
+- 可能溢出
+- 需要额外空间
+- 把原本可以单遍完成的事复杂化
+
+#### Step 4：先定义一轮加法到底做什么
+
+每一轮都只做同一件小事：
+
+```python
+x = l1.val if l1 else 0
+y = l2.val if l2 else 0
+s = x + y + carry
+carry = s // 10
+digit = s % 10
+```
+
+然后把 `digit` 接到结果链表尾部。
+
+这就是把小学竖式加法直接翻译成链表流程。
+
+#### Step 5：循环什么时候才能停？
+
+只要下面三者里还有一个没处理完，就不能停：
+
+- `l1` 还有节点
+- `l2` 还有节点
+- `carry` 还不为 0
+
+所以循环条件自然就是：
 
 ```text
 while l1 != null or l2 != null or carry != 0
 ```
 
-每轮：
+最后这个 `carry` 很重要，它负责处理像 `5 + 5 = 10` 这种最高位进位。
 
-1. 取当前位 `x`、`y`（空节点当 0）
-2. `sum = x + y + carry`
-3. 新节点值 `sum % 10`
-4. 更新 `carry = sum // 10`
+#### Step 6：慢速走一轮完整例子
 
----
+还是用：
 
-## C — Concepts（核心思想）
+```text
+2 -> 4 -> 3
+5 -> 6 -> 4
+```
+
+第一轮：
+
+- `2 + 5 + 0 = 7`
+- 写入 `7`
+- `carry = 0`
+
+第二轮：
+
+- `4 + 6 + 0 = 10`
+- 写入 `0`
+- `carry = 1`
+
+第三轮：
+
+- `3 + 4 + 1 = 8`
+- 写入 `8`
+- `carry = 0`
+
+结果就是：
+
+```text
+7 -> 0 -> 8
+```
+
+#### Step 7：把方法压缩成一句模板
+
+2 题可以记成：顺着链表直接做竖式加法，每轮处理当前两位和进位，并把新的一位接到结果尾部。
+
+### Assemble the Full Code
+
+```python
+from typing import Optional, List
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def add_two_numbers(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+    dummy = ListNode(0)
+    tail = dummy
+    carry = 0
+
+    while l1 is not None or l2 is not None or carry:
+        x = l1.val if l1 is not None else 0
+        y = l2.val if l2 is not None else 0
+        s = x + y + carry
+        carry = s // 10
+        tail.next = ListNode(s % 10)
+        tail = tail.next
+
+        if l1 is not None:
+            l1 = l1.next
+        if l2 is not None:
+            l2 = l2.next
+
+    return dummy.next
+
+
+def build(nums: List[int]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    for n in nums:
+        tail.next = ListNode(n)
+        tail = tail.next
+    return dummy.next
+
+
+def dump(head: Optional[ListNode]) -> List[int]:
+    out: List[int] = []
+    while head is not None:
+        out.append(head.val)
+        head = head.next
+    return out
+
+
+if __name__ == "__main__":
+    a = build([2, 4, 3])
+    b = build([5, 6, 4])
+    print(dump(add_two_numbers(a, b)))  # [7, 0, 8]
+```
+
+### Reference Answer
+
+```python
+from typing import Optional, List
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+class Solution:
+    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = ListNode(0)
+        tail = dummy
+        carry = 0
+
+        while l1 is not None or l2 is not None or carry:
+            x = l1.val if l1 else 0
+            y = l2.val if l2 else 0
+            s = x + y + carry
+            carry = s // 10
+            tail.next = ListNode(s % 10)
+            tail = tail.next
+
+            if l1:
+                l1 = l1.next
+            if l2:
+                l2 = l2.next
+
+        return dummy.next
+
+
+def build(nums: List[int]) -> Optional[ListNode]:
+    d = ListNode()
+    t = d
+    for v in nums:
+        t.next = ListNode(v)
+        t = t.next
+    return d.next
+
+
+def dump(head: Optional[ListNode]) -> List[int]:
+    out: List[int] = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+
+
+if __name__ == "__main__":
+    ans = Solution().addTwoNumbers(build([2, 4, 3]), build([5, 6, 4]))
+    print(dump(ans))  # [7, 0, 8]
+```
 
 ### 算法类型归类
 
@@ -150,9 +335,6 @@ c_(k+1) = floor(s_k / 10)
 - 每轮产出的 `digit_k` 就是结果的第 `k` 位
 - `carry` 把“超过 9 的部分”准确传给下一轮
 - 当两链表都结束但 `carry=1` 时，补一个末尾节点即可
-
----
-
 ## 实践指南 / 步骤
 
 1. 初始化 `dummy` 和 `tail`，`carry = 0`

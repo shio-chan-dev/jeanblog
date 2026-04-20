@@ -18,31 +18,6 @@ keywords: ["LeetCode 19", "删除链表倒数第N个结点", "Remove Nth Node Fr
 
 ---
 
-## 目标读者
-
-- 刚开始刷链表题，想建立稳定解题模板的同学  
-- 知道快慢指针，但容易在边界条件上出错的开发者  
-- 希望把“题解能力”迁移到工程链式数据处理场景的后端/系统工程师
-
-## 背景 / 动机
-
-“删除倒数第 N 个节点”是链表题里的经典中档题，常见难点不在删除本身，而在：
-
-- 单链表不能回退，无法直接从尾部向前数；
-- 可能删除头节点，导致返回值处理复杂；
-- 一旦 `next` 指针处理失误，容易断链或越界。
-
-掌握它的价值在于：  
-你会形成一套可复用的“哨兵节点 + 双指针间距控制”模板，这对后续链表题（分组翻转、分割、合并）都很关键。
-
-## 核心概念
-
-- **单链表（Singly Linked List）**：每个节点只有 `next` 指针，只能向后遍历。  
-- **哨兵节点（dummy）**：在头结点前增加一个虚拟节点，统一“删除头节点”和“删除中间节点”的处理逻辑。  
-- **快慢指针固定间距**：先让 `fast` 领先 `slow` 共 `n` 步，再同步前进；当 `fast` 到达末尾时，`slow` 正好停在目标节点前驱。
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目重述
@@ -101,22 +76,228 @@ dummy -> 1 -> 2 -> 3 -> 4 -> 5 -> null
 
 ---
 
+## 目标读者
+
+- 刚开始刷链表题，想建立稳定解题模板的同学  
+- 知道快慢指针，但容易在边界条件上出错的开发者  
+- 希望把“题解能力”迁移到工程链式数据处理场景的后端/系统工程师
+
+## 背景 / 动机
+
+“删除倒数第 N 个节点”是链表题里的经典中档题，常见难点不在删除本身，而在：
+
+- 单链表不能回退，无法直接从尾部向前数；
+- 可能删除头节点，导致返回值处理复杂；
+- 一旦 `next` 指针处理失误，容易断链或越界。
+
+掌握它的价值在于：  
+你会形成一套可复用的“哨兵节点 + 双指针间距控制”模板，这对后续链表题（分组翻转、分割、合并）都很关键。
+
+## 核心概念
+
+- **单链表（Singly Linked List）**：每个节点只有 `next` 指针，只能向后遍历。  
+- **哨兵节点（dummy）**：在头结点前增加一个虚拟节点，统一“删除头节点”和“删除中间节点”的处理逻辑。  
+- **快慢指针固定间距**：先让 `fast` 领先 `slow` 共 `n` 步，再同步前进；当 `fast` 到达末尾时，`slow` 正好停在目标节点前驱。
+
+---
+
 ## C — Concepts（核心思想）
 
-### 思路推导：从朴素到最优
+### 思路是怎么推出来的
 
-1. **朴素法：转数组后删除再重建**  
-   - 能做，但需要 O(L) 额外空间；  
-   - 链表题里属于“绕开链表特性”的解法，不够优雅。
+#### Step 1：先问清真正要删的是谁
 
-2. **改进法：两趟遍历（先求长度，再找第 `L-n` 个）**  
-   - 时间 O(L)，空间 O(1)，已经可接受；  
-   - 但需要两次扫描，且头删仍要特判或引入 dummy。
+题目说“删除倒数第 `n` 个节点”，但写链表代码时，真正有用的不是目标节点本身，而是：
 
-3. **最佳法：一趟双指针 + 哨兵节点（本文主解）**  
-   - `fast` 先走 `n` 步，保持与 `slow` 的固定间距；  
-   - 两者同步前进直到 `fast.next == null`；  
-   - `slow.next` 就是待删除节点，直接跳过它。
+> 目标节点的前驱是谁？
+
+因为单链表删除动作永远是：
+
+```python
+prev.next = prev.next.next
+```
+
+所以我们要找的其实是“倒数第 `n` 个节点的前一个节点”。
+
+#### Step 2：为什么数组法和两趟法不够好？
+
+数组法当然能做：
+
+- 先把链表放进数组
+- 算出位置
+- 再删除或重建
+
+但它用了额外空间，而且绕开了链表本身。
+
+两趟法也能做：
+
+- 第一趟求总长度 `L`
+- 第二趟走到第 `L-n` 个位置
+
+这已经是 `O(L)` 时间、`O(1)` 空间，但还不够干净，因为它需要两次扫描。
+
+#### Step 3：怎么把“倒数”改写成“固定间距”？
+
+如果让 `fast` 先走 `n` 步，那么之后只要让 `slow` 和 `fast` 一起走，就会始终保持：
+
+```text
+slow 与 fast 之间间隔 n 个节点
+```
+
+这样当 `fast` 到达尾部时，`slow` 就自然停在目标前驱。
+
+这就是双指针间距法的核心。
+
+#### Step 4：为什么还要引入 `dummy`？
+
+如果要删除的正好是头节点，前驱并不存在。  
+这会让代码多出一堆“是不是删头”的特判。
+
+加一个哨兵节点后：
+
+```python
+dummy = ListNode(0, head)
+fast = slow = dummy
+```
+
+“删除头节点”就和“删除中间节点”统一了，因为头节点现在也有前驱了。
+
+#### Step 5：什么时候说明定位完成？
+
+当 `fast.next is None` 时，说明 `fast` 已经在最后一个节点上。  
+由于固定间距始终保持为 `n`，这时：
+
+- `slow.next` 正好就是倒数第 `n` 个节点
+
+所以删除动作只需要：
+
+```python
+slow.next = slow.next.next
+```
+
+#### Step 6：慢速走一轮示例
+
+看：
+
+```text
+1 -> 2 -> 3 -> 4 -> 5, n = 2
+```
+
+先让 `fast` 走 2 步后：
+
+- `slow = dummy`
+- `fast = 2`
+
+然后同步走：
+
+- `slow = 1`, `fast = 3`
+- `slow = 2`, `fast = 4`
+- `slow = 3`, `fast = 5`
+
+此时 `fast.next == null`，停止。  
+所以 `slow.next` 就是节点 `4`，直接跳过它即可。
+
+#### Step 7：把它压成一句模板
+
+这题真正要固定下来的不是“倒数第 n 个”，而是：
+
+> 用 `dummy` 消掉删头特判，再让 `fast` 先走 `n` 步，借固定间距把“倒数定位”变成“前驱定位”。
+
+### Assemble the Full Code
+
+```python
+from typing import List, Optional
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def remove_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
+    dummy = ListNode(0, head)
+    fast = slow = dummy
+
+    for _ in range(n):
+        fast = fast.next
+
+    while fast.next is not None:
+        fast = fast.next
+        slow = slow.next
+
+    slow.next = slow.next.next
+    return dummy.next
+
+
+def from_list(nums: List[int]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    for x in nums:
+        tail.next = ListNode(x)
+        tail = tail.next
+    return dummy.next
+
+
+def to_list(head: Optional[ListNode]) -> List[int]:
+    out: List[int] = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+
+
+if __name__ == "__main__":
+    print(to_list(remove_nth_from_end(from_list([1, 2, 3, 4, 5]), 2)))  # [1,2,3,5]
+    print(to_list(remove_nth_from_end(from_list([1]), 1)))              # []
+    print(to_list(remove_nth_from_end(from_list([1, 2]), 2)))           # [2]
+```
+
+### Reference Answer
+
+```python
+from typing import Optional, List
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def remove_nth_from_end(head: Optional[ListNode], n: int) -> Optional[ListNode]:
+    dummy = ListNode(0, head)
+    fast = slow = dummy
+    for _ in range(n):
+        fast = fast.next
+    while fast.next is not None:
+        fast = fast.next
+        slow = slow.next
+    slow.next = slow.next.next
+    return dummy.next
+
+
+def from_list(nums: List[int]) -> Optional[ListNode]:
+    dummy = ListNode()
+    cur = dummy
+    for x in nums:
+        cur.next = ListNode(x)
+        cur = cur.next
+    return dummy.next
+
+
+def to_list(head: Optional[ListNode]) -> List[int]:
+    out = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+
+
+if __name__ == "__main__":
+    h = from_list([1, 2, 3, 4, 5])
+    print(to_list(remove_nth_from_end(h, 2)))  # [1, 2, 3, 5]
+```
 
 ### 方法归类
 
@@ -134,9 +315,6 @@ dummy -> 1 -> 2 -> 3 -> 4 -> 5 -> null
 - 删除 `slow.next` 就等价于删除倒数第 `n` 个节点。
 
 这就是一趟算法成立的关键不变量。
-
----
-
 ## 实践指南 / 步骤
 
 1. 创建哨兵节点：`dummy.next = head`。  

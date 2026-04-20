@@ -18,35 +18,6 @@ keywords: ["Palindrome Linked List", "回文链表", "fast slow pointers", "reve
 
 ---
 
-## 目标读者
-
-- 刷 Hot100，想掌握“链表中点 + 原地反转”组合拳的学习者  
-- 面试中经常遇到“回文/对称/镜像”类题的开发者  
-- 关注空间效率、且需要保证数据结构不被破坏的工程实践者
-
-## 背景 / 动机
-
-在数组里判断回文很简单：左右指针向中间收缩即可。  
-但在单链表里，你只能顺着 `next` 单向走，无法从尾部回看，这就让“对称比较”变得不那么直接。
-
-工程上常见的约束也与题目一致：
-
-- 结构不能改（不能改值、不能打标记、不能改 next 永久化）  
-- 额外内存有限（不想把所有节点拷贝到数组里）  
-
-因此我们需要一个 **线性时间、常数空间、且能恢复结构** 的模板解法。
-
-## 核心概念
-
-| 概念 | 含义 | 作用 |
-| --- | --- | --- |
-| 回文 | 从左到右与从右到左相同 | 需要做“对称比较” |
-| 快慢指针 | `fast` 每次两步、`slow` 每次一步 | O(n) 找到链表中点 |
-| 原地反转 | 改指针方向把链表片段反转 | 把“后半段”变成可从前往后比较 |
-| 结构恢复 | 比较完成后再反转回去并接回 | 满足“链表保持原结构”要求 |
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目还原
@@ -77,44 +48,269 @@ keywords: ["Palindrome Linked List", "回文链表", "fast slow pointers", "reve
 
 ---
 
-## 思路推导：从“拷贝到数组”到“原地反转并恢复”
+## 目标读者
 
-### 朴素方案：拷贝到数组再做双指针
+- 刷 Hot100，想掌握“链表中点 + 原地反转”组合拳的学习者  
+- 面试中经常遇到“回文/对称/镜像”类题的开发者  
+- 关注空间效率、且需要保证数据结构不被破坏的工程实践者
 
-1. 遍历链表把值放入数组 `arr`  
-2. 用数组左右指针判断回文  
+## 背景 / 动机
 
-优点：简单、容易写对。  
-缺点：额外空间 O(n)，在大链表或内存敏感场景不理想。
+在数组里判断回文很简单：左右指针向中间收缩即可。  
+但在单链表里，你只能顺着 `next` 单向走，无法从尾部回看，这就让“对称比较”变得不那么直接。
 
-### 次优方案：用栈存前半段
+工程上常见的约束也与题目一致：
 
-用快慢指针找中点的同时，把前半段入栈；之后出栈与后半段比较。  
-仍然需要 O(n) 额外空间（栈），只是把“数组”换成“栈”。
+- 结构不能改（不能改值、不能打标记、不能改 next 永久化）  
+- 额外内存有限（不想把所有节点拷贝到数组里）  
 
-### 关键观察：如果能把后半段倒过来，就能像数组一样对称比较
+因此我们需要一个 **线性时间、常数空间、且能恢复结构** 的模板解法。
 
-单链表的问题在于“无法从尾部往前”。  
-但如果我们把 **后半段原地反转**，后半段就变成“从尾到头”的顺序了：
+## 核心概念
 
-```text
-1 -> 2 -> 3 -> 2 -> 1
-           ^ 反转这段后：
-1 -> 2 -> 3 -> 1 -> 2
-           ^ second_half_start
-```
-
-于是：
-
-- 从头开始的指针 `p` 走 `1,2,3,...`
-- 从反转后的后半段指针 `q` 走 `1,2,...`
-
-逐一比较即可判断回文。  
-比较完成后，再把后半段反转回去并接回去，就能恢复原结构。
+| 概念 | 含义 | 作用 |
+| --- | --- | --- |
+| 回文 | 从左到右与从右到左相同 | 需要做“对称比较” |
+| 快慢指针 | `fast` 每次两步、`slow` 每次一步 | O(n) 找到链表中点 |
+| 原地反转 | 改指针方向把链表片段反转 | 把“后半段”变成可从前往后比较 |
+| 结构恢复 | 比较完成后再反转回去并接回 | 满足“链表保持原结构”要求 |
 
 ---
 
 ## C — Concepts（核心思想）
+
+### 思路是怎么推出来的
+
+#### Step 1：先看真正的困难，而不是“回文”两个字
+
+例如：
+
+```text
+1 -> 2 -> 3 -> 2 -> 1
+```
+
+判断回文，本质是在比：
+
+- 第一个和最后一个
+- 第二个和倒数第二个
+
+但单链表只能往前走，不能往后退。
+这才是这题最核心的障碍。
+
+#### Step 2：先承认最直接的正确解
+
+最容易写对的方法当然是：
+
+1. 把链表值拷到数组
+2. 用左右双指针判断回文
+
+这个做法很稳，但额外空间是 `O(n)`。
+所以真正的问题变成：
+
+> 能不能不借助数组，也把“后半段倒着看”这件事做出来？
+
+#### Step 3：什么变换能把“倒着比”改成“正着比”？
+
+如果把后半段原地反转，那么左右两边就都能从前往后读。
+
+例如：
+
+```text
+1 -> 2 -> 3 -> 2 -> 1
+```
+
+把后半段反转后，可比较的两端会变成：
+
+```text
+左侧正向：1 -> 2 -> 3
+右侧正向：1 -> 2
+```
+
+这样就能像数组一样做对称比较了。
+
+#### Step 4：先找清楚“后半段”从哪里开始
+
+要反转后半段，先得知道中点在哪里。
+快慢指针正好适合这件事：
+
+```python
+fast = head
+slow = head
+while fast.next and fast.next.next:
+    fast = fast.next.next
+    slow = slow.next
+```
+
+循环结束后：
+
+- 奇数长度时，`slow` 在正中间
+- 偶数长度时，`slow` 在左半段末尾
+
+所以 `slow.next` 就是后半段起点。
+
+#### Step 5：只反转后半段，不碰前半段
+
+接着做：
+
+```python
+second_half_start = reverse_list(first_half_end.next)
+```
+
+这一句的意义不是“已经判断完了”，而是把原本只能倒着看的后半段，变成可以正着扫描的链。
+
+#### Step 6：比较完以后还要恢复
+
+然后用两个指针：
+
+- `p1` 从头结点开始
+- `p2` 从反转后的后半段开始
+
+逐个比较即可。
+
+比较结束后，再把后半段反转回去并接回原链表。
+这一点在工程里很重要，因为调用方往往默认链表结构不会被永久改坏。
+
+#### Step 7：慢速走一个例子
+
+看：
+
+```text
+1 -> 2 -> 2 -> 1
+```
+
+前半段末尾是第一个 `2`。
+把后半段 `2 -> 1` 反转后，比较链就变成：
+
+```text
+前半：1 -> 2
+后半：1 -> 2
+```
+
+逐项比较都相等，于是返回 `True`，最后把后半段再翻回去。
+
+#### Step 8：把方法压缩成一句模板
+
+234 题可以记成：找中点，反转后半段，把“倒着比”改成“正着比”，比较后再恢复原链表。
+
+### Assemble the Full Code
+
+```python
+from __future__ import annotations
+
+
+class ListNode:
+    def __init__(self, val: int):
+        self.val = val
+        self.next: ListNode | None = None
+
+
+def reverse_list(head: ListNode | None) -> ListNode | None:
+    prev = None
+    cur = head
+    while cur:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev
+
+
+def end_of_first_half(head: ListNode) -> ListNode:
+    fast = head
+    slow = head
+    while fast.next and fast.next.next:
+        fast = fast.next.next
+        slow = slow.next  # type: ignore[assignment]
+    return slow
+
+
+def is_palindrome(head: ListNode | None) -> bool:
+    if head is None or head.next is None:
+        return True
+
+    first_half_end = end_of_first_half(head)
+    second_half_start = reverse_list(first_half_end.next)
+
+    p1 = head
+    p2 = second_half_start
+    ok = True
+    while ok and p2 is not None:
+        if p1.val != p2.val:
+            ok = False
+        p1 = p1.next  # type: ignore[assignment]
+        p2 = p2.next
+
+    # Restore list.
+    first_half_end.next = reverse_list(second_half_start)
+    return ok
+
+
+def build(vals):
+    dummy = ListNode(0)
+    cur = dummy
+    for v in vals:
+        cur.next = ListNode(v)
+        cur = cur.next
+    return dummy.next
+
+
+if __name__ == "__main__":
+    a = build([1, 2, 2, 1])
+    b = build([1, 2])
+    print(is_palindrome(a))  # True
+    print(is_palindrome(b))  # False
+```
+
+### Reference Answer
+
+```python
+from __future__ import annotations
+
+
+class ListNode:
+    def __init__(self, val: int):
+        self.val = val
+        self.next: ListNode | None = None
+
+
+def reverse_list(head: ListNode | None) -> ListNode | None:
+    prev = None
+    cur = head
+    while cur:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev
+
+
+def end_of_first_half(head: ListNode) -> ListNode:
+    fast = head
+    slow = head
+    while fast.next and fast.next.next:
+        fast = fast.next.next
+        slow = slow.next  # type: ignore[assignment]
+    return slow
+
+
+def is_palindrome(head: ListNode | None) -> bool:
+    if head is None or head.next is None:
+        return True
+    first_end = end_of_first_half(head)
+    second = reverse_list(first_end.next)
+
+    ok = True
+    p1 = head
+    p2 = second
+    while ok and p2 is not None:
+        if p1.val != p2.val:
+            ok = False
+        p1 = p1.next  # type: ignore[assignment]
+        p2 = p2.next
+
+    first_end.next = reverse_list(second)  # restore
+    return ok
+```
 
 ### 方法归类
 
@@ -131,9 +327,6 @@ keywords: ["Palindrome Linked List", "回文链表", "fast slow pointers", "reve
 
 然后反转 `first_half_end.next` 作为后半段的头。  
 比较时只需要遍历后半段长度即可（后半段长度 <= 前半段长度）。
-
----
-
 ## 实践指南 / 步骤
 
 1. 若链表为空或只有 1 个节点，直接返回 true  
@@ -773,4 +966,3 @@ const a4 = new ListNode(1);
 a1.next = a2; a2.next = a3; a3.next = a4;
 console.log(isPalindrome(a1));
 ```
-

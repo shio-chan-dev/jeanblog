@@ -18,38 +18,6 @@ keywords: ["Reverse Nodes in k-Group", "K个一组翻转链表", "分组反转",
 
 ---
 
-## 目标读者
-
-- 已掌握 206 / 92，希望攻克“多区间连续反转”的 Hot100 学习者
-- 链表题常在边界和拼接步骤出错的中级开发者
-- 需要构建稳定“链表分段处理”模板的工程师
-
-## 背景 / 动机
-
-在工程里，链式结构的批处理并不少见：
-
-- 任务链按固定批次重排执行
-- 流水线节点按批回滚或重放
-- 数据清洗链表按批次做原地变换
-
-这类场景的核心诉求是：
-
-- **组内变换**（例如反转）
-- **组间保持顺序**
-- **尾部残组按规则保留**（不足 k 不反转）
-
-LeetCode 25 正是这个能力的典型建模。
-
-## 核心概念
-
-- **哑节点（dummy）**：统一处理头节点参与反转的场景
-- **组前驱（groupPrev）**：指向当前组前一个节点
-- **组尾探针（kth）**：从 `groupPrev` 出发找第 k 个节点，判断是否够一组
-- **组后继（groupNext）**：当前组反转后要接回的后半链头
-- **组内原地反转**：只反转 `[groupStart, kth]` 区间
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目还原
@@ -82,44 +50,249 @@ LeetCode 25 正是这个能力的典型建模。
 
 ---
 
-## 思路推导（从朴素到最优）
+## 目标读者
 
-### 朴素做法：数组化再分段反转
+- 已掌握 206 / 92，希望攻克“多区间连续反转”的 Hot100 学习者
+- 链表题常在边界和拼接步骤出错的中级开发者
+- 需要构建稳定“链表分段处理”模板的工程师
 
-- 把链表读到数组
-- 每 k 个元素反转后重建链表
+## 背景 / 动机
 
-问题：
+在工程里，链式结构的批处理并不少见：
 
-- 额外空间 O(n)
-- 题目要求“改指针，不改值”时不满足约束
+- 任务链按固定批次重排执行
+- 流水线节点按批回滚或重放
+- 数据清洗链表按批次做原地变换
 
-### 关键观察
+这类场景的核心诉求是：
 
-任务可以拆成重复的三步：
+- **组内变换**（例如反转）
+- **组间保持顺序**
+- **尾部残组按规则保留**（不足 k 不反转）
 
-1. 判断当前是否有完整 k 节点
-2. 有则反转这一段
-3. 反转后接回主链，推进到下一组
+LeetCode 25 正是这个能力的典型建模。
 
-本质是“分组驱动的区间反转”，可以复用 92 的区间反转思想。
+## 核心概念
 
-### 方法选择
-
-采用：
-
-- `dummy + groupPrev` 维护全局链接
-- `kth` 判断分组完整性
-- 每组做一次原地反转
-
-满足：
-
-- 时间 O(n)
-- 空间 O(1)
+- **哑节点（dummy）**：统一处理头节点参与反转的场景
+- **组前驱（groupPrev）**：指向当前组前一个节点
+- **组尾探针（kth）**：从 `groupPrev` 出发找第 k 个节点，判断是否够一组
+- **组后继（groupNext）**：当前组反转后要接回的后半链头
+- **组内原地反转**：只反转 `[groupStart, kth]` 区间
 
 ---
 
 ## C — Concepts（核心思想）
+
+### 思路是怎么推出来的
+
+#### Step 1：先用最小例子看清这题到底难在哪
+
+看：
+
+```text
+1 -> 2 -> 3 -> 4 -> 5, k = 3
+```
+
+答案是：
+
+```text
+3 -> 2 -> 1 -> 4 -> 5
+```
+
+这个例子立刻暴露出两个约束：
+
+- 只有“完整的 k 个节点”才能翻转
+- 不足 k 的尾组必须原样保留
+
+所以这题不是无脑连续反转，而是“先确认够一组，再做局部反转”。
+
+#### Step 2：每一轮真正需要先知道哪些边界？
+
+处理当前组之前，至少要拿到三个位置：
+
+- `groupPrev`：当前组前一个节点
+- `kth`：当前组第 k 个节点
+- `groupNext`：当前组后一个节点
+
+这三个指针把“组前、组内、组后”边界全部固定住了。
+没有它们，后面的反转和接回都很容易乱。
+
+#### Step 3：为什么一定要先找 `kth` 再改指针？
+
+因为题目要求：
+
+```text
+不足 k 个节点就不要翻转
+```
+
+这意味着我们必须在动任何指针之前，先确认当前组是否完整。
+
+所以每一轮外层循环都从这里开始：
+
+```python
+kth = group_prev
+for _ in range(k):
+    kth = kth.next
+    if not kth:
+        return dummy.next
+```
+
+一旦扫描失败，就说明尾组不够长，直接结束，原链表尾部自然保持不变。
+
+#### Step 4：确认完整组后，把它视为一个局部区间反转
+
+当 `[groupPrev.next, kth]` 这段已经确认是完整一组时，问题就退化成“反转一个局部区间”。
+
+设：
+
+```python
+group_next = kth.next
+prev = group_next
+cur = group_prev.next
+```
+
+这里最关键的是 `prev = group_next`。
+这样组内反转结束后，新的组尾会自动接回后半链，不需要额外补救。
+
+#### Step 5：组内一轮反转到底做什么？
+
+每一轮都把 `cur` 从“尚未反转部分”挪到“已反转部分”前面：
+
+```python
+nxt = cur.next
+cur.next = prev
+prev = cur
+cur = nxt
+```
+
+这其实就是 206 题的三指针模板，只不过停止条件不再是 `None`，而是 `group_next`。
+
+#### Step 6：一组反转完之后，怎么安全接回主链？
+
+内层循环结束后：
+
+- `prev` 已经是这一组反转后的新头
+- `group_prev.next` 还指着旧组头，而旧组头现在正好变成新组尾
+
+于是接回动作就是：
+
+```python
+new_group_tail = group_prev.next
+group_prev.next = prev
+group_prev = new_group_tail
+```
+
+最后这一句非常关键，它让外层循环能从“下一组前驱”继续推进。
+
+#### Step 7：慢速走一组看看
+
+还是用：
+
+```text
+1 -> 2 -> 3 -> 4 -> 5, k = 3
+```
+
+第一轮：
+
+- `groupPrev = dummy`
+- `kth = 3`
+- `groupNext = 4`
+
+把 `[1,2,3]` 反转并接回 `4`：
+
+```text
+3 -> 2 -> 1 -> 4 -> 5
+```
+
+然后把 `groupPrev` 移到 `1`。
+接着继续往后找一组，发现只剩 `4 -> 5`，不足 3 个，于是结束。
+
+#### Step 8：把方法压缩成一句模板
+
+25 题就是：先探测够不够一整组，够就局部反转并接回，不够就立刻停。
+
+### Assemble the Full Code
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reverse_k_group(head: Optional[ListNode], k: int) -> Optional[ListNode]:
+    if not head or k <= 1:
+        return head
+
+    dummy = ListNode(0, head)
+    group_prev = dummy
+
+    while True:
+        kth = group_prev
+        for _ in range(k):
+            kth = kth.next
+            if not kth:
+                return dummy.next
+
+        group_next = kth.next
+        prev = group_next
+        cur = group_prev.next
+
+        while cur != group_next:
+            nxt = cur.next
+            cur.next = prev
+            prev = cur
+            cur = nxt
+
+        new_group_tail = group_prev.next
+        group_prev.next = prev
+        group_prev = new_group_tail
+```
+
+### Reference Answer
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reverse_k_group(head: Optional[ListNode], k: int) -> Optional[ListNode]:
+    if not head or k <= 1:
+        return head
+
+    dummy = ListNode(0, head)
+    group_prev = dummy
+
+    while True:
+        kth = group_prev
+        for _ in range(k):
+            kth = kth.next
+            if not kth:
+                return dummy.next
+
+        group_next = kth.next
+        prev = group_next
+        cur = group_prev.next
+
+        while cur != group_next:
+            nxt = cur.next
+            cur.next = prev
+            prev = cur
+            cur = nxt
+
+        new_group_tail = group_prev.next
+        group_prev.next = prev
+        group_prev = new_group_tail
+```
 
 ### 方法归类
 
@@ -153,9 +326,6 @@ dummy -> c -> b -> a -> d -> e -> f -> g
                      ^
                  新 groupPrev
 ```
-
----
-
 ## 实践指南 / 步骤
 
 1. 创建 `dummy.next = head`，初始化 `groupPrev = dummy`

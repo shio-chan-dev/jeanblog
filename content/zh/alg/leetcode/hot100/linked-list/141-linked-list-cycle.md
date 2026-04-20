@@ -18,34 +18,6 @@ keywords: ["Linked List Cycle", "环形链表", "快慢指针", "Floyd", "判环
 
 ---
 
-## 目标读者
-
-- 正在刷 Hot100 / 准备面试的同学  
-- 想把“链表双指针”沉淀成稳定模板的中级开发者  
-- 在工程里需要识别循环引用、链式结构异常的同学（C/C++/Go/Rust/JS 皆适用）
-
-## 背景 / 动机
-
-链表出现环在工程里并不罕见：  
-例如手写内存池的 free list、对象引用链、状态机/任务编排的 next 指针、配置链路的“下一跳”等。
-
-一旦出现环：
-
-- 遍历会进入死循环（CPU 占用飙高，日志刷爆）  
-- 资源释放/回收会卡死（例如释放链表节点时无限循环）  
-- 监控定位困难（看起来像“偶发卡死”，本质是结构性错误）
-
-因此你需要一个**不依赖额外内存、可在线检测**的判环方法：Floyd 快慢指针就是这类问题的标准答案。
-
-## 核心概念
-
-- **环（Cycle）**：从某个节点开始，沿 `next` 指针走若干步能回到自己  
-- **pos（评测用）**：题目描述里的 `pos` 仅用于评测系统构造数据；你的函数不会收到 `pos` 参数  
-- **快慢指针（Floyd）**：慢指针每次走 1 步，快指针每次走 2 步；若存在环，二者必定在环内相遇  
-- **指针相等 vs 值相等**：判环必须比较“节点身份”（引用/地址），不能只比 `val`（值可能重复）
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目还原
@@ -83,26 +55,235 @@ head: 1 -> 2 -> null
 
 ---
 
+## 目标读者
+
+- 正在刷 Hot100 / 准备面试的同学  
+- 想把“链表双指针”沉淀成稳定模板的中级开发者  
+- 在工程里需要识别循环引用、链式结构异常的同学（C/C++/Go/Rust/JS 皆适用）
+
+## 背景 / 动机
+
+链表出现环在工程里并不罕见：  
+例如手写内存池的 free list、对象引用链、状态机/任务编排的 next 指针、配置链路的“下一跳”等。
+
+一旦出现环：
+
+- 遍历会进入死循环（CPU 占用飙高，日志刷爆）  
+- 资源释放/回收会卡死（例如释放链表节点时无限循环）  
+- 监控定位困难（看起来像“偶发卡死”，本质是结构性错误）
+
+因此你需要一个**不依赖额外内存、可在线检测**的判环方法：Floyd 快慢指针就是这类问题的标准答案。
+
+## 核心概念
+
+- **环（Cycle）**：从某个节点开始，沿 `next` 指针走若干步能回到自己  
+- **pos（评测用）**：题目描述里的 `pos` 仅用于评测系统构造数据；你的函数不会收到 `pos` 参数  
+- **快慢指针（Floyd）**：慢指针每次走 1 步，快指针每次走 2 步；若存在环，二者必定在环内相遇  
+- **指针相等 vs 值相等**：判环必须比较“节点身份”（引用/地址），不能只比 `val`（值可能重复）
+
+---
+
 ## C — Concepts（核心思想）
 
-### 思路推导：从“记录访问过的节点”到“追及相遇”
+### 思路是怎么推出来的
 
-1. **直观方案：哈希表记录 visited**  
-   遍历链表，把每个节点的“身份”（引用/地址）放入集合；  
-   - 再次遇到同一个节点 ⇒ 有环  
-   - 走到 `null` ⇒ 无环  
-   这很直观，但需要 O(n) 额外空间。
+#### Step 1：先拿一个最小但不平凡的例子
 
-2. **关键观察：如果有环，快指针会在环内追上慢指针**  
-   进入环后，快指针每轮比慢指针多走 1 步（2 - 1 = 1），相当于在环上做“追及”。  
-   环的长度是有限的，因此“距离差”会在模环长意义下不断变化，最终变为 0 —— 两者相遇。
+看这条链：
 
-3. **方法选择：Floyd 判环（O(1) 额外空间）**  
-   用两个指针：  
-   - `slow = slow.next`  
-   - `fast = fast.next.next`  
-   若 `fast` 或 `fast.next` 变为 `null` ⇒ 无环；  
-   若 `slow == fast`（同一节点）⇒ 有环。
+```text
+1 -> 2 -> 3 -> 4
+     ^         |
+     |_________|
+```
+
+如果你从头一直顺着 `next` 走，会发现自己永远到不了 `null`。  
+所以这题不是“比较值”，而是“判断遍历会不会重新回到旧节点”。
+
+最直观的办法当然是：
+
+- 每访问一个节点，就把它放进 `visited`
+- 如果某个节点第二次出现，说明有环
+
+这能做对，但空间是 `O(n)`。
+
+#### Step 2：问一句，真的需要记住所有节点吗？
+
+如果有环，问题的本质不是“节点集合”，而是：
+
+> 在同一条链上，两个不同速度的指针会不会追上彼此？
+
+这就是 Floyd 思想的入口：
+
+- `slow` 每次走 1 步
+- `fast` 每次走 2 步
+
+```python
+slow = slow.next
+fast = fast.next.next
+```
+
+#### Step 3：先定义什么情况下工作已经结束
+
+只有两种结局：
+
+- `fast` 先撞到 `null`，说明链表有尾巴，因此无环
+- `slow` 和 `fast` 在某个节点相遇，说明存在环
+
+所以循环条件自然是：
+
+```python
+while fast is not None and fast.next is not None:
+    ...
+```
+
+这一步的关键不是语法，而是先把“无环时谁先结束”想清楚。
+
+#### Step 4：为什么相遇就足以证明有环？
+
+进入环之后：
+
+- `slow` 每轮前进 1 格
+- `fast` 每轮前进 2 格
+
+于是 `fast` 相对 `slow` 每轮会多追 1 格。  
+环长是有限的，所以这个相对距离会在模环长意义下不断变化，最终一定归零。
+
+换句话说，只要两者都进了环，就一定会发生一次：
+
+```python
+if slow is fast:
+    return True
+```
+
+#### Step 5：那无环时为什么不会误判？
+
+如果无环，链表最终会走到尾部。  
+由于 `fast` 比 `slow` 更快，它一定先遇到：
+
+- `fast is None`
+- 或 `fast.next is None`
+
+这时循环结束，直接返回 `False`。
+
+所以 Floyd 的判断逻辑其实非常干净：
+
+- 相遇 => 有环
+- 提前掉出链表 => 无环
+
+#### Step 6：慢速走一轮状态变化
+
+还是看刚才那条链。
+
+开始：
+
+- `slow = 1`
+- `fast = 1`
+
+第一轮后：
+
+- `slow = 2`
+- `fast = 3`
+
+第二轮后：
+
+- `slow = 3`
+- `fast = 2`
+
+第三轮后：
+
+- `slow = 4`
+- `fast = 4`
+
+相遇，于是可以立刻判定有环。
+
+#### Step 7：把规则压缩成一句模板
+
+这题真正要记住的是：
+
+> 用 `fast/slow` 做速度差；无环时 `fast` 会先到尾，有环时两者会在环内相遇。
+
+一旦这句话稳定，代码就会非常短。
+
+### Assemble the Full Code
+
+```python
+from typing import Optional, List
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def has_cycle(head: Optional[ListNode]) -> bool:
+    slow = head
+    fast = head
+    while fast is not None and fast.next is not None:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            return True
+    return False
+
+
+def build_list(values: List[int], pos: int) -> Optional[ListNode]:
+    if not values:
+        return None
+    nodes = [ListNode(v) for v in values]
+    for i in range(len(nodes) - 1):
+        nodes[i].next = nodes[i + 1]
+    if pos != -1:
+        nodes[-1].next = nodes[pos]
+    return nodes[0]
+
+
+if __name__ == "__main__":
+    head1 = build_list([3, 2, 0, -4], pos=1)
+    print(has_cycle(head1))  # True
+    head2 = build_list([1, 2], pos=-1)
+    print(has_cycle(head2))  # False
+```
+
+### Reference Answer
+
+```python
+from typing import Optional, List
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def hasCycle(head: Optional[ListNode]) -> bool:
+    slow = head
+    fast = head
+    while fast is not None and fast.next is not None:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            return True
+    return False
+
+
+def build(values: List[int], pos: int) -> Optional[ListNode]:
+    if not values:
+        return None
+    nodes = [ListNode(v) for v in values]
+    for i in range(len(nodes) - 1):
+        nodes[i].next = nodes[i + 1]
+    if pos != -1:
+        nodes[-1].next = nodes[pos]
+    return nodes[0]
+
+
+if __name__ == "__main__":
+    print(hasCycle(build([3, 2, 0, -4], 1)))  # True
+    print(hasCycle(build([1, 2], -1)))        # False
+```
 
 ### 方法归类
 
@@ -120,9 +301,6 @@ head: 1 -> 2 -> null
 因此快指针相对慢指针每轮“追近 1 格”。  
 假设某一时刻它们在环上的相对距离为 `d`（0 ≤ d < L），每轮后变成 `(d - 1) mod L`。  
 连续做 L 轮后，总会出现 d = 0，即相遇。
-
----
-
 ## 实践指南 / 步骤
 
 1. 若 `head == null` 直接返回 `false`  

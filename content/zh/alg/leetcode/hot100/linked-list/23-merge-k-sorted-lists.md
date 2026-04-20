@@ -18,33 +18,6 @@ keywords: ["Merge k Sorted Lists", "合并K个升序链表", "分治归并", "Le
 
 ---
 
-## 目标读者
-
-- 正在刷 Hot100，已经掌握 LeetCode 21 的同学
-- 想把“双链表归并”升级为“k 路归并模板”的开发者
-- 在服务端做多路有序流合并（日志、时间线、分片结果）的工程师
-
-## 背景 / 动机
-
-LeetCode 23 是 LeetCode 21 的自然升级版：
-
-- 21：2 路归并
-- 23：k 路归并
-
-核心挑战不在“能不能合并”，而在“如何把复杂度控制在可接受范围”。
-
-如果每次把结果链表继续和下一条链表做串行归并，早期节点会被反复遍历，实际性能很容易退化。
-
-## 核心概念
-
-- **N**：所有链表节点总数
-- **k**：链表条数
-- **串行归并**：从左到右不断把当前结果和下一条链表合并
-- **分治归并**：像归并排序一样，两两合并，按层收敛
-- **最小堆方案**：维护 k 个当前头节点，每次弹出最小值并推进其所在链表
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目还原
@@ -75,26 +48,268 @@ LeetCode 23 是 LeetCode 21 的自然升级版：
 
 ---
 
+## 目标读者
+
+- 正在刷 Hot100，已经掌握 LeetCode 21 的同学
+- 想把“双链表归并”升级为“k 路归并模板”的开发者
+- 在服务端做多路有序流合并（日志、时间线、分片结果）的工程师
+
+## 背景 / 动机
+
+LeetCode 23 是 LeetCode 21 的自然升级版：
+
+- 21：2 路归并
+- 23：k 路归并
+
+核心挑战不在“能不能合并”，而在“如何把复杂度控制在可接受范围”。
+
+如果每次把结果链表继续和下一条链表做串行归并，早期节点会被反复遍历，实际性能很容易退化。
+
+## 核心概念
+
+- **N**：所有链表节点总数
+- **k**：链表条数
+- **串行归并**：从左到右不断把当前结果和下一条链表合并
+- **分治归并**：像归并排序一样，两两合并，按层收敛
+- **最小堆方案**：维护 k 个当前头节点，每次弹出最小值并推进其所在链表
+
+---
+
 ## C — Concepts（核心思想）
 
-### 思路推导：从朴素到最优
+### 思路是怎么推出来的
 
-1. **朴素法 A：拉平到数组后排序**  
-   - 复杂度：O(N log N)
-   - 问题：没有利用“每条链表本身有序”这个结构信息
+#### Step 1：先用一个“已经不是 21 题”的最小例子
 
-2. **朴素法 B：串行归并**  
-   - 做法：`(((l1 merge l2) merge l3) merge ...)`
-   - 问题：结果链表会越来越长，早期节点被重复扫描，最坏近似 O(Nk)
+看这组三条链表：
 
-3. **关键观察：两两归并可形成平衡合并树**  
-   - 第 1 层：k 条链表两两合并
-   - 第 2 层：k/2 条链表再两两合并
-   - 共约 `log k` 层，每层总处理节点数约 N
+```text
+l1: 1 -> 4
+l2: 1 -> 3
+l3: 2 -> 6
+```
 
-4. **方法选择：分治归并**  
-   - 总复杂度：O(N log k)
-   - 额外空间：递归栈 O(log k)（不算节点本身）
+我们其实已经会做“两个有序链表合并”了。
+所以这题真正新增的难点不是单次比较规则，而是：
+
+> 该按什么顺序复用 `merge_two`，才能让总工作量别失控？
+
+#### Step 2：先排除最顺手但代价不稳的串行归并
+
+最直接的写法是：
+
+```text
+((l1 merge l2) merge l3) merge l4 ...
+```
+
+它当然能做对，但有个隐藏问题：
+
+- 结果链表会越来越长
+- 早期节点会被反复参与后续归并
+
+如果 `k` 很大，这种“一个大结果不断并入下一条链表”的做法，最坏会逼近 `O(Nk)`。
+
+问题不在“不会合并”，而在“合并顺序不平衡”。
+
+#### Step 3：把问题改写成一个可复用的小子问题
+
+我们希望定义：
+
+```python
+solve(l, r)
+```
+
+它表示：
+
+> 把 `lists[l]` 到 `lists[r]` 这些链表全部合并后的结果。
+
+一旦这个定义成立，事情就简单了：
+
+- 左半边先合并好
+- 右半边先合并好
+- 最后再把左右结果做一次 `merge_two`
+
+这说明 23 题其实是在“调度很多次 21 题”。
+
+#### Step 4：为什么要按二叉树方式两两归并？
+
+如果我们按层做两两归并：
+
+```text
+(l1,l2) (l3,l4) (l5,l6) ...
+```
+
+那么会形成一棵平衡合并树：
+
+- 每一层总共处理的节点数大约都是 `N`
+- 层数大约只有 `log k`
+
+也就是说，每个节点只会在约 `log k` 层里被处理，而不是被一个不断变大的结果链表反复拖着走。
+
+#### Step 5：先把递归边界说清楚
+
+当区间里只剩一条链表时：
+
+```python
+if l == r:
+    return lists[l]
+```
+
+因为单条链表本来就是有序的，不需要再处理。
+
+这个 base case 也是整个分治定义能落地的关键。
+
+#### Step 6：再定义“一层分治”到底做什么
+
+把区间从中间切开：
+
+```python
+mid = (l + r) // 2
+left = solve(l, mid)
+right = solve(mid + 1, r)
+return merge_two(left, right)
+```
+
+注意这里没有新魔法。
+局部合并仍然是 21 题模板，变化的只是“谁先和谁合并”。
+
+#### Step 7：慢速走一棵合并树
+
+假设有四条链表：
+
+```text
+[l1, l2, l3, l4]
+```
+
+分治过程是：
+
+```text
+solve(0, 3)
+├─ solve(0, 1) -> merge_two(l1, l2)
+└─ solve(2, 3) -> merge_two(l3, l4)
+```
+
+最后再做：
+
+```text
+merge_two(merge(l1,l2), merge(l3,l4))
+```
+
+这样不会出现“前面合好的大链表不断被后面小链表反复扫描”的问题。
+
+#### Step 8：把方法压缩成一句话
+
+23 题不是发明新的合并规则，而是把 `merge_two` 按平衡二叉树的顺序复用起来。
+
+### Assemble the Full Code
+
+```python
+from typing import List, Optional
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def merge_two(a: Optional[ListNode], b: Optional[ListNode]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    while a and b:
+        if a.val <= b.val:
+            nxt = a.next
+            tail.next = a
+            a.next = None
+            a = nxt
+        else:
+            nxt = b.next
+            tail.next = b
+            b.next = None
+            b = nxt
+        tail = tail.next
+    tail.next = a if a else b
+    return dummy.next
+
+
+def merge_k_lists(lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+    if not lists:
+        return None
+
+    def solve(left: int, right: int) -> Optional[ListNode]:
+        if left == right:
+            return lists[left]
+        mid = (left + right) // 2
+        return merge_two(solve(left, mid), solve(mid + 1, right))
+
+    return solve(0, len(lists) - 1)
+
+
+def from_list(arr: List[int]) -> Optional[ListNode]:
+    dummy = ListNode()
+    cur = dummy
+    for x in arr:
+        cur.next = ListNode(x)
+        cur = cur.next
+    return dummy.next
+
+
+def to_list(head: Optional[ListNode]) -> List[int]:
+    out: List[int] = []
+    while head:
+        out.append(head.val)
+        head = head.next
+    return out
+
+
+if __name__ == "__main__":
+    lists = [from_list([1, 4, 5]), from_list([1, 3, 4]), from_list([2, 6])]
+    print(to_list(merge_k_lists(lists)))
+```
+
+### Reference Answer
+
+```python
+from typing import List, Optional
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def merge_two(a: Optional[ListNode], b: Optional[ListNode]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    while a and b:
+        if a.val <= b.val:
+            nxt = a.next
+            tail.next = a
+            a.next = None
+            a = nxt
+        else:
+            nxt = b.next
+            tail.next = b
+            b.next = None
+            b = nxt
+        tail = tail.next
+    tail.next = a if a else b
+    return dummy.next
+
+
+def merge_k_lists(lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+    if not lists:
+        return None
+
+    def solve(l: int, r: int) -> Optional[ListNode]:
+        if l == r:
+            return lists[l]
+        m = (l + r) // 2
+        return merge_two(solve(l, m), solve(m + 1, r))
+
+    return solve(0, len(lists) - 1)
+```
 
 ### 方法归类
 
@@ -108,9 +323,6 @@ LeetCode 23 是 LeetCode 21 的自然升级版：
 
 - `mergeRange(lists, l, r)` 返回的是 `lists[l..r]` 全部节点的升序合并结果
 - 子问题正确时，`mergeTwo(left, right)` 仍保持升序且不丢节点
-
----
-
 ## 实践指南 / 步骤
 
 1. 先写好 `mergeTwo`（LeetCode 21 模板）

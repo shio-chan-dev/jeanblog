@@ -19,34 +19,6 @@ keywords: ["Intersection of Two Linked Lists", "two pointers", "switch heads", "
 
 ---
 
-## Target Readers
-
-- Hot100 learners who want a reusable linked-list two-pointer template
-- Developers who often confuse "same value" with "same node"
-- Engineers working with shared tail structures in chain-like data
-
-## Background / Motivation
-
-This problem looks simple, but it forces you to separate three concepts:
-
-1. **Intersection means sharing the exact same node object**, not equal values
-2. You cannot modify structure (no rewriting `next`, no marking nodes)
-3. You still need linear performance
-
-The most practical solution is the switch-head two-pointer method.
-It needs no hash set and no precomputed lengths, yet synchronizes both pointers in at most `m+n` steps.
-
-## Core Concepts
-
-| Concept | Meaning | Note |
-| --- | --- | --- |
-| Same node | Two pointers reference the same memory object | Pointer/reference equality |
-| Shared suffix | Two lists share all nodes from some node onward | After intersection, tails are identical |
-| Switch-head two pointers | At list end, jump to the other list head | Equalizes total traveled distance |
-| No-cycle assumption | Problem guarantees no cycle in the structure | Otherwise cycle handling is required |
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -87,38 +59,203 @@ output: null
 
 ---
 
-## Thought Process: From Hash to O(1) Template
+## Target Readers
 
-### Naive approach: hash all nodes in A
+- Hot100 learners who want a reusable linked-list two-pointer template
+- Developers who often confuse "same value" with "same node"
+- Engineers working with shared tail structures in chain-like data
 
-1. Traverse A and put each node address into a hash set
-2. Traverse B and return the first node found in the set
+## Background / Motivation
 
-Pros: direct and easy to implement.
-Cons: O(m) extra space.
+This problem looks simple, but it forces you to separate three concepts:
 
-### O(1) approach #1: length alignment
+1. **Intersection means sharing the exact same node object**, not equal values
+2. You cannot modify structure (no rewriting `next`, no marking nodes)
+3. You still need linear performance
 
-1. Compute lengths `m` and `n`
-2. Advance the longer list by `abs(m-n)`
-3. Move both pointers together until they meet
+The most practical solution is the switch-head two-pointer method.
+It needs no hash set and no precomputed lengths, yet synchronizes both pointers in at most `m+n` steps.
 
-This is O(1) space, but requires separate length passes.
+## Core Concepts
 
-### O(1) approach #2 (most practical): switch-head two pointers
-
-Initialize `pA=headA`, `pB=headB`:
-
-- Move one step each round
-- If a pointer reaches `null`, redirect it to the other list head
-
-Intuition:
-`pA` walks path `A + B`, `pB` walks path `B + A`.
-Both paths have equal total length, so they synchronize at the intersection, or both become `null`.
+| Concept | Meaning | Note |
+| --- | --- | --- |
+| Same node | Two pointers reference the same memory object | Pointer/reference equality |
+| Shared suffix | Two lists share all nodes from some node onward | After intersection, tails are identical |
+| Switch-head two pointers | At list end, jump to the other list head | Equalizes total traveled distance |
+| No-cycle assumption | Problem guarantees no cycle in the structure | Otherwise cycle handling is required |
 
 ---
 
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from the picture, not the code
+
+Suppose:
+
+```text
+A: a1 -> a2 -> c1 -> c2
+B: b1 ------> c1 -> c2
+```
+
+The answer is node `c1`.
+Notice what matters:
+
+- not equal values
+- not equal positions
+- the same node object in memory
+
+So this is a pointer-identity problem, not a value-comparison problem.
+
+#### Step 2: Ask what the most direct correct solution would remember
+
+The straightforward idea is:
+
+1. put every node in `A` into a hash set
+2. walk `B`
+3. the first node already in the set is the intersection
+
+This is correct and easy, but it costs `O(m)` extra space.
+
+#### Step 3: Ask what really prevents two pointers from meeting naturally
+
+If both lists had the same prefix length before the shared tail, synchronous walking would work immediately.
+The real obstacle is:
+
+```text
+len(prefixA) != len(prefixB)
+```
+
+So the problem is not how to compare nodes.
+It is how to make both pointers spend the same total distance before comparing in lockstep.
+
+#### Step 4: Turn "length alignment" into a self-balancing walk
+
+One O(1)-space solution is:
+
+- compute both lengths
+- advance the longer list first
+- then walk together
+
+The switch-head trick does the same alignment implicitly:
+
+```python
+p = head_a
+q = head_b
+while p is not q:
+    p = p.next if p else head_b
+    q = q.next if q else head_a
+```
+
+Now:
+
+- `p` walks path `A + B`
+- `q` walks path `B + A`
+
+Both combined paths have the same total length.
+
+#### Step 5: Why does switching heads remove the offset?
+
+Suppose `A` has a longer private prefix than `B`.
+Then `p` spends that extra distance early, while `q` spends it later after switching to `A`.
+
+After both pointers have traversed one full cross-list pass, the length difference is canceled automatically.
+From that point on, they are aligned relative to the shared tail.
+
+#### Step 6: Define the stopping condition precisely
+
+The loop stops only when:
+
+- both pointers hit the same real node, which is the intersection
+- or both become `None`, which means there is no intersection
+
+That second case is important: no extra branch is needed.
+`None is None` ends the loop naturally.
+
+#### Step 7: Walk one concrete trace
+
+Take:
+
+```text
+A: 4 -> 1 -> 8 -> 4 -> 5
+B: 5 -> 6 -> 1 -> 8 -> 4 -> 5
+```
+
+At first, `p` and `q` are offset because the non-shared prefixes have different lengths.
+After one pointer finishes its own list and switches heads, the offset is canceled.
+Then both pointers enter the shared tail together and meet at node `8`.
+
+#### Step 8: Reduce the method to one sentence
+
+LeetCode 160 is "make both pointers walk `A + B` and `B + A`; equal total distance removes the prefix mismatch automatically."
+
+### Assemble the Full Code
+
+```python
+from __future__ import annotations
+
+
+class ListNode:
+    def __init__(self, val: int):
+        self.val = val
+        self.next: ListNode | None = None
+
+
+def get_intersection_node(head_a: ListNode | None, head_b: ListNode | None) -> ListNode | None:
+    p, q = head_a, head_b
+    while p is not q:
+        p = p.next if p else head_b
+        q = q.next if q else head_a
+    return p
+
+
+if __name__ == "__main__":
+    # Build shared tail: c1 -> c2 -> c3
+    c1 = ListNode(8)
+    c2 = ListNode(4)
+    c3 = ListNode(5)
+    c1.next = c2
+    c2.next = c3
+
+    # A: a1 -> a2 -> c1
+    a1 = ListNode(4)
+    a2 = ListNode(1)
+    a1.next = a2
+    a2.next = c1
+
+    # B: b1 -> b2 -> b3 -> c1
+    b1 = ListNode(5)
+    b2 = ListNode(6)
+    b3 = ListNode(1)
+    b1.next = b2
+    b2.next = b3
+    b3.next = c1
+
+    ans = get_intersection_node(a1, b1)
+    print(ans.val if ans else None)  # 8
+```
+
+### Reference Answer
+
+```python
+from __future__ import annotations
+
+
+class ListNode:
+    def __init__(self, x: int):
+        self.val = x
+        self.next: ListNode | None = None
+
+
+def get_intersection_node(head_a: ListNode | None, head_b: ListNode | None) -> ListNode | None:
+    p, q = head_a, head_b
+    while p is not q:
+        p = p.next if p else head_b
+        q = q.next if q else head_a
+    return p
+```
 
 ### Method category
 
@@ -146,9 +283,6 @@ Pointer travel:
 
 Both walk `a+b+c` before entering the same alignment point.
 So within `m+n` steps, they either meet at the intersection or both reach `null`.
-
----
-
 ## Practice Guide / Steps
 
 1. Initialize `pA=headA`, `pB=headB`

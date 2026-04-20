@@ -18,36 +18,6 @@ keywords: ["Copy List with Random Pointer", "随机链表的复制", "深拷贝"
 
 ---
 
-## 目标读者
-
-- 刷 LeetCode 时对 `random` 指针题目不够稳的开发者
-- 想厘清“浅拷贝 vs 深拷贝”差异的同学
-- 希望把算法思路迁移到工程对象复制场景的工程师
-
-## 背景 / 动机
-
-普通链表只要复制 `val` 和 `next`，逻辑很直观；  
-但随机链表多了一个 `random` 指针，它可能：
-
-- 指向任意节点（前面、后面、自己）
-- 也可能是 `null`
-
-这使问题从“线性复制”变成“带额外引用关系的结构复制”。  
-工程里常见等价问题：
-
-- 复制工作流节点对象，同时保留跨步骤跳转关系
-- 复制缓存对象图，保持对象间引用一致
-- 复制会话链，保持回溯/快捷索引引用
-
-## 核心概念
-
-- **浅拷贝（Shallow Copy）**：只复制节点壳，内部引用仍指向旧对象
-- **深拷贝（Deep Copy）**：新建完整对象图，所有引用都指向新对象
-- **节点身份映射**：`old_node -> new_node`，是重建 `random` 的关键
-- **结构等价**：新链表应与旧链表在值与指针关系上同构，但完全不共享节点
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目重述
@@ -88,34 +58,236 @@ keywords: ["Copy List with Random Pointer", "随机链表的复制", "深拷贝"
 
 ---
 
-## 思路推导：从朴素到可维护方案
+## 目标读者
 
-### 朴素误区：边遍历边“即时”处理 random
+- 刷 LeetCode 时对 `random` 指针题目不够稳的开发者
+- 想厘清“浅拷贝 vs 深拷贝”差异的同学
+- 希望把算法思路迁移到工程对象复制场景的工程师
 
-如果你在第一次遇到节点时就想设置 `new.random`，会遇到问题：
+## 背景 / 动机
 
-- `random` 目标节点可能还没复制出来
-- 需要反复回填，代码分支复杂，容易漏边界
+普通链表只要复制 `val` 和 `next`，逻辑很直观；  
+但随机链表多了一个 `random` 指针，它可能：
 
-### 关键观察
+- 指向任意节点（前面、后面、自己）
+- 也可能是 `null`
 
-`random` 无法独立于“节点身份映射”存在。  
-只要建立 `old -> new` 的映射，所有指针重建都变成查表操作。
+这使问题从“线性复制”变成“带额外引用关系的结构复制”。  
+工程里常见等价问题：
 
-### 方法选择：两趟遍历 + 哈希映射
+- 复制工作流节点对象，同时保留跨步骤跳转关系
+- 复制缓存对象图，保持对象间引用一致
+- 复制会话链，保持回溯/快捷索引引用
 
-1. 第一趟：复制每个节点值，建立映射 `map[old] = new`
-2. 第二趟：根据映射重建 `next` 与 `random`
+## 核心概念
 
-这套方案的优点：
-
-- 思路直观，调试成本低
-- 正确性好证明
-- 在面试和工程里都易维护
+- **浅拷贝（Shallow Copy）**：只复制节点壳，内部引用仍指向旧对象
+- **深拷贝（Deep Copy）**：新建完整对象图，所有引用都指向新对象
+- **节点身份映射**：`old_node -> new_node`，是重建 `random` 的关键
+- **结构等价**：新链表应与旧链表在值与指针关系上同构，但完全不共享节点
 
 ---
 
 ## C — Concepts（核心思想）
+
+### 思路是怎么推出来的
+
+#### Step 1：先用最小例子看出 `random` 为什么比 `next` 麻烦
+
+假设有这样一段链：
+
+```text
+7 -> 13 -> 11
+      ^     |
+      |_____|
+```
+
+这里：
+
+- `next` 只沿主链线性往后
+- `random` 可能指向前面、后面，或者 `null`
+
+所以这题不是“顺着链表把节点复制一遍”那么简单。
+我们真正要复制的是一张“节点关系图”。
+
+#### Step 2：先说清楚“深拷贝”到底要保留什么
+
+一个正确答案必须同时保留：
+
+- 每个节点的值
+- `next` 连接关系
+- `random` 连接关系
+- 但所有节点对象都必须是新的
+
+也就是说，我们不是只拷值，而是在重建“原节点身份 -> 新节点身份”的对应关系。
+
+#### Step 3：为什么边遍历边设置 `random` 会很别扭？
+
+如果你第一次遇到原节点时就想写：
+
+```python
+new.random = ???
+```
+
+问题是 `random` 指向的那个目标节点，可能还没被复制出来。
+
+这样就会出现：
+
+- 需要回填
+- 需要额外分支
+- 很容易漏掉 `null`、前指、后指等边界
+
+说明当前真正缺的不是某个判断，而是一张映射表：
+
+```python
+old_node -> new_node
+```
+
+#### Step 4：第一趟先只做一件事：建立身份映射
+
+第一趟遍历时，先给每个旧节点创建一个新节点：
+
+```python
+mp[cur] = Node(cur.val)
+```
+
+此时先不要急着连指针。
+我们只是确保一件事：
+
+> 每个旧节点都已经有唯一对应的新节点。
+
+这一步是后面安全重建 `next` 和 `random` 的前提。
+
+#### Step 5：第二趟再统一重建两套指针
+
+当所有 clone 节点都已经存在以后，连线就变成纯查表：
+
+```python
+mp[cur].next = mp.get(cur.next)
+mp[cur].random = mp.get(cur.random)
+```
+
+这里 `get` 很自然地处理了 `None`。
+更关键的是，`next` 和 `random` 都复用了同一张身份映射表。
+
+#### Step 6：慢速走一个节点
+
+假设原节点 `13` 满足：
+
+- `next -> 11`
+- `random -> 7`
+
+第一趟结束后，`mp[11]` 和 `mp[7]` 都已经存在。
+于是第二趟里可以直接写：
+
+```python
+mp[13].next = mp[11]
+mp[13].random = mp[7]
+```
+
+整个过程不需要猜测，也不需要临时修补未来节点。
+
+#### Step 7：把方法压缩成一句模板
+
+138 题可以记成：先把所有节点 clone 出来建立 `old -> new` 映射，再用这张映射一次性补齐 `next` 和 `random`。
+
+### Assemble the Full Code
+
+```python
+from typing import Optional, List
+
+
+class Node:
+    def __init__(self, x: int, next: Optional["Node"] = None, random: Optional["Node"] = None):
+        self.val = x
+        self.next = next
+        self.random = random
+
+
+def copy_random_list(head: Optional[Node]) -> Optional[Node]:
+    if head is None:
+        return None
+
+    mp = {}
+    cur = head
+    while cur is not None:
+        mp[cur] = Node(cur.val)
+        cur = cur.next
+
+    cur = head
+    while cur is not None:
+        mp[cur].next = mp.get(cur.next)
+        mp[cur].random = mp.get(cur.random)
+        cur = cur.next
+
+    return mp[head]
+
+
+def build(arr: List[List[Optional[int]]]) -> Optional[Node]:
+    if not arr:
+        return None
+    nodes = [Node(v) for v, _ in arr]
+    for i in range(len(nodes) - 1):
+        nodes[i].next = nodes[i + 1]
+    for i, (_, r) in enumerate(arr):
+        nodes[i].random = nodes[r] if r is not None else None
+    return nodes[0]
+
+
+def dump(head: Optional[Node]) -> List[List[Optional[int]]]:
+    out = []
+    idx = {}
+    cur, i = head, 0
+    while cur is not None:
+        idx[cur] = i
+        cur = cur.next
+        i += 1
+    cur = head
+    while cur is not None:
+        out.append([cur.val, idx.get(cur.random)])
+        cur = cur.next
+    return out
+
+
+if __name__ == "__main__":
+    data = [[7, None], [13, 0], [11, 4], [10, 2], [1, 0]]
+    src = build(data)
+    cp = copy_random_list(src)
+    print(dump(cp))
+```
+
+### Reference Answer
+
+```python
+from typing import Optional
+
+
+class Node:
+    def __init__(self, x: int, next: Optional["Node"] = None, random: Optional["Node"] = None):
+        self.val = x
+        self.next = next
+        self.random = random
+
+
+class Solution:
+    def copyRandomList(self, head: Optional[Node]) -> Optional[Node]:
+        if head is None:
+            return None
+
+        mp = {}
+        cur = head
+        while cur is not None:
+            mp[cur] = Node(cur.val)
+            cur = cur.next
+
+        cur = head
+        while cur is not None:
+            mp[cur].next = mp.get(cur.next)
+            mp[cur].random = mp.get(cur.random)
+            cur = cur.next
+
+        return mp[head]
+```
 
 ### 算法归类
 
@@ -143,9 +315,6 @@ keywords: ["Copy List with Random Pointer", "随机链表的复制", "深拷贝"
 - 第一趟后，对每个旧节点 `u` 都有唯一新节点 `f(u)`
 - 第二趟对每条边 `u -> v`，设 `f(u).ptr = f(v)`（`v` 可为空）
 - 因为每条 `next/random` 都按映射重连，所以结构完全等价且无旧节点泄漏
-
----
-
 ## 实践指南 / 步骤
 
 1. 特判空链表：`head == null` 直接返回 `null`

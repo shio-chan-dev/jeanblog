@@ -18,36 +18,6 @@ keywords: ["Copy List with Random Pointer", "Random Pointer List Copy", "Deep Co
 
 ---
 
-## Target Readers
-
-- Developers who feel shaky on `random` pointer problems while practicing LeetCode
-- Learners who want to clearly understand "shallow copy vs deep copy"
-- Engineers who want to transfer algorithmic thinking to real object-copy scenarios
-
-## Background / Motivation
-
-For a normal linked list, copying `val` and `next` is straightforward.  
-A random-pointer list adds one more pointer, `random`, which can:
-
-- Point to any node (earlier node, later node, or itself)
-- Or be `null`
-
-That turns the problem from "linear copy" into "structure copy with extra references."  
-Common engineering equivalents include:
-
-- Copying workflow node objects while preserving cross-step jump relationships
-- Copying cached object graphs while keeping internal references consistent
-- Copying session chains while preserving backtracking / shortcut references
-
-## Core Concepts
-
-- **Shallow Copy**: copies only the node shell; internal references still point to old objects
-- **Deep Copy**: rebuilds a full object graph; all references point to new objects
-- **Node Identity Mapping**: `old_node -> new_node`, the key to rebuilding `random`
-- **Structural Equivalence**: the new list is isomorphic to the old one in values and pointer relations, while sharing no nodes
-
----
-
 ## A — Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -88,34 +58,234 @@ Explanation: The first node's random points to the second node, and the second n
 
 ---
 
-## Thought Process: From Naive to Maintainable Solution
+## Target Readers
 
-### Naive Pitfall: handling `random` immediately during traversal
+- Developers who feel shaky on `random` pointer problems while practicing LeetCode
+- Learners who want to clearly understand "shallow copy vs deep copy"
+- Engineers who want to transfer algorithmic thinking to real object-copy scenarios
 
-If you try to set `new.random` when first visiting a node, you hit this issue:
+## Background / Motivation
 
-- The target node of `random` may not have been copied yet
-- You need repeated backfilling, which increases branching complexity and risks missing edge cases
+For a normal linked list, copying `val` and `next` is straightforward.  
+A random-pointer list adds one more pointer, `random`, which can:
 
-### Key Observation
+- Point to any node (earlier node, later node, or itself)
+- Or be `null`
 
-`random` cannot be rebuilt correctly without a node-identity mapping.  
-Once `old -> new` mapping exists, all pointer reconstruction becomes simple lookup operations.
+That turns the problem from "linear copy" into "structure copy with extra references."  
+Common engineering equivalents include:
 
-### Method Selection: two passes + hash mapping
+- Copying workflow node objects while preserving cross-step jump relationships
+- Copying cached object graphs while keeping internal references consistent
+- Copying session chains while preserving backtracking / shortcut references
 
-1. First pass: copy node values and build mapping `map[old] = new`
-2. Second pass: rebuild `next` and `random` from that mapping
+## Core Concepts
 
-Advantages of this approach:
-
-- Intuitive and easy to debug
-- Easy to prove correctness
-- Maintainable in both interviews and production code
+- **Shallow Copy**: copies only the node shell; internal references still point to old objects
+- **Deep Copy**: rebuilds a full object graph; all references point to new objects
+- **Node Identity Mapping**: `old_node -> new_node`, the key to rebuilding `random`
+- **Structural Equivalence**: the new list is isomorphic to the old one in values and pointer relations, while sharing no nodes
 
 ---
 
 ## C — Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from the smallest example that shows why `random` is harder than `next`
+
+Suppose:
+
+```text
+7 -> 13 -> 11
+      ^     |
+      |_____|
+```
+
+Here:
+
+- `next` is local and linear
+- `random` can point backward, forward, or to `null`
+
+So copying this list is not just "clone current node and move on."
+We must preserve a graph of node identities.
+
+#### Step 2: Ask what a correct copy must preserve
+
+A valid deep copy must keep:
+
+- the same node values
+- the same `next` topology
+- the same `random` topology
+- but with entirely new node objects
+
+That last point is the important one.
+We are not copying values only; we are rebuilding relationships between identities.
+
+#### Step 3: Why immediate `random` assignment becomes awkward
+
+If, during the first traversal, you try to set:
+
+```python
+new.random = ???
+```
+
+you may not have created the target copy yet.
+That causes messy branches and delayed backfilling.
+
+So the real missing state is:
+
+```python
+old_node -> new_node
+```
+
+Once that mapping exists, pointer reconstruction becomes a lookup problem.
+
+#### Step 4: Build the identity mapping first
+
+In the first pass, create one clone node for every original node:
+
+```python
+mp[cur] = Node(cur.val)
+```
+
+At this point, we are not wiring anything yet.
+We are only guaranteeing:
+
+> every original node already has a corresponding clone.
+
+That is the prerequisite for safe `next` and `random` reconstruction.
+
+#### Step 5: Rebuild both pointer systems in the second pass
+
+Now every target clone exists, so wiring becomes simple:
+
+```python
+mp[cur].next = mp.get(cur.next)
+mp[cur].random = mp.get(cur.random)
+```
+
+`get` handles the `None` case naturally.
+The important part is that both pointer fields are rebuilt from the same identity map.
+
+#### Step 6: Walk one node slowly
+
+Suppose original node `13` has:
+
+- `next -> 11`
+- `random -> 7`
+
+After pass 1, both `mp[11]` and `mp[7]` already exist.
+So in pass 2 we can wire:
+
+```python
+mp[13].next = mp[11]
+mp[13].random = mp[7]
+```
+
+No guessing, no forward-reference problem, no repair pass beyond the planned second traversal.
+
+#### Step 7: Reduce the method to one sentence
+
+LeetCode 138 is "clone all nodes first to build `old -> new`, then rebuild `next` and `random` by looking up that map."
+
+### Assemble the Full Code
+
+```python
+from typing import Optional, List
+
+
+class Node:
+    def __init__(self, x: int, next: Optional["Node"] = None, random: Optional["Node"] = None):
+        self.val = x
+        self.next = next
+        self.random = random
+
+
+def copy_random_list(head: Optional[Node]) -> Optional[Node]:
+    if head is None:
+        return None
+
+    mp = {}
+    cur = head
+    while cur is not None:
+        mp[cur] = Node(cur.val)
+        cur = cur.next
+
+    cur = head
+    while cur is not None:
+        mp[cur].next = mp.get(cur.next)
+        mp[cur].random = mp.get(cur.random)
+        cur = cur.next
+
+    return mp[head]
+
+
+def build(arr: List[List[Optional[int]]]) -> Optional[Node]:
+    if not arr:
+        return None
+    nodes = [Node(v) for v, _ in arr]
+    for i in range(len(nodes) - 1):
+        nodes[i].next = nodes[i + 1]
+    for i, (_, r) in enumerate(arr):
+        nodes[i].random = nodes[r] if r is not None else None
+    return nodes[0]
+
+
+def dump(head: Optional[Node]) -> List[List[Optional[int]]]:
+    out = []
+    idx = {}
+    cur, i = head, 0
+    while cur is not None:
+        idx[cur] = i
+        cur = cur.next
+        i += 1
+    cur = head
+    while cur is not None:
+        out.append([cur.val, idx.get(cur.random)])
+        cur = cur.next
+    return out
+
+
+if __name__ == "__main__":
+    data = [[7, None], [13, 0], [11, 4], [10, 2], [1, 0]]
+    src = build(data)
+    cp = copy_random_list(src)
+    print(dump(cp))
+```
+
+### Reference Answer
+
+```python
+from typing import Optional
+
+
+class Node:
+    def __init__(self, x: int, next: Optional["Node"] = None, random: Optional["Node"] = None):
+        self.val = x
+        self.next = next
+        self.random = random
+
+
+class Solution:
+    def copyRandomList(self, head: Optional[Node]) -> Optional[Node]:
+        if head is None:
+            return None
+
+        mp = {}
+        cur = head
+        while cur is not None:
+            mp[cur] = Node(cur.val)
+            cur = cur.next
+
+        cur = head
+        while cur is not None:
+            mp[cur].next = mp.get(cur.next)
+            mp[cur].random = mp.get(cur.random)
+            cur = cur.next
+
+        return mp[head]
+```
 
 ### Algorithm Classification
 
@@ -143,9 +313,6 @@ where `f` is the mapping `old -> new`.
 - After pass one, each old node `u` has a unique copied node `f(u)`
 - In pass two, for each edge `u -> v`, set `f(u).ptr = f(v)` (`v` may be null)
 - Because each `next/random` edge is rewired via `f`, the copied structure is fully equivalent and contains no leaked references to old nodes
-
----
-
 ## Practical Guide / Steps
 
 1. Handle empty list first: if `head == null`, return `null`

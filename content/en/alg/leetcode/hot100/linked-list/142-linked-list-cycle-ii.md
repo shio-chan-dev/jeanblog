@@ -19,38 +19,6 @@ keywords: ["Linked List Cycle II", "cycle entry", "Floyd", "fast slow pointers",
 
 ---
 
-## Target Readers
-
-- Hot100 learners who want to fully internalize the `141 -> 142` linked-list template family
-- Developers who need to locate where a pointer chain becomes cyclic
-- Interview candidates who want to explain why "reset to head" works
-
-## Background / Motivation
-
-In real systems, cycle corruption in chain structures can cause:
-
-- endless traversal loops
-- stuck cleanup tasks
-- misleadingly stable but non-progressing runtime behavior
-
-Detecting whether a cycle exists is helpful, but operations/debugging usually require more:
-
-- **where does the cycle begin?**
-
-That exact requirement is modeled by LeetCode 142.
-
-## Core Concepts
-
-| Concept | Meaning | Why it matters |
-| --- | --- | --- |
-| Cycle | Following `next` eventually revisits a node | causes non-terminating traversals |
-| Entry node | First node where linear prefix enters the loop | required return value |
-| Floyd algorithm | `slow` moves 1 step, `fast` moves 2 steps | O(1) extra memory |
-| Meeting point | First collision inside cycle | bridge to entry localization |
-| Identity equality | compare node reference, not node value | value duplicates are common |
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -90,34 +58,202 @@ output: null
 
 ---
 
-## Thought Process: From Hashing to Floyd + Reset
+## Target Readers
 
-### Naive approach: visited set
+- Hot100 learners who want to fully internalize the `141 -> 142` linked-list template family
+- Developers who need to locate where a pointer chain becomes cyclic
+- Interview candidates who want to explain why "reset to head" works
 
-Traverse nodes and store references in a hash set:
+## Background / Motivation
 
-- if current node already exists in set, it is the entry
-- if traversal reaches `null`, there is no cycle
+In real systems, cycle corruption in chain structures can cause:
 
-Pros: straightforward.
-Cons: O(n) extra space.
+- endless traversal loops
+- stuck cleanup tasks
+- misleadingly stable but non-progressing runtime behavior
 
-### Constraint-driven upgrade
+Detecting whether a cycle exists is helpful, but operations/debugging usually require more:
 
-Need O(1) extra memory while still returning the entry node.
+- **where does the cycle begin?**
 
-### Key observation
+That exact requirement is modeled by LeetCode 142.
 
-Floyd gives two phases:
+## Core Concepts
 
-1. **Detection**: if `slow` and `fast` meet, cycle exists
-2. **Localization**: move one pointer to `head`, keep the other at meeting point; step both by 1 until they meet again
-
-Second meeting point is exactly the cycle entry.
+| Concept | Meaning | Why it matters |
+| --- | --- | --- |
+| Cycle | Following `next` eventually revisits a node | causes non-terminating traversals |
+| Entry node | First node where linear prefix enters the loop | required return value |
+| Floyd algorithm | `slow` moves 1 step, `fast` moves 2 steps | O(1) extra memory |
+| Meeting point | First collision inside cycle | bridge to entry localization |
+| Identity equality | compare node reference, not node value | value duplicates are common |
 
 ---
 
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from the smallest picture that separates "has cycle" from "where is the entry"
+
+Imagine:
+
+```text
+head -> a -> b -> c -> d
+              ^         |
+              |_________|
+```
+
+Here:
+
+- the list does have a cycle
+- the answer is specifically node `b`
+
+So LeetCode 142 is stricter than LeetCode 141.
+Detection alone is not enough; we need the first node where the linear prefix enters the loop.
+
+#### Step 2: Ask what the most direct correct solution would remember
+
+The simplest approach is:
+
+- traverse node by node
+- store each node reference in a set
+- the first repeated node is the entry
+
+This is easy to reason about, but it costs `O(n)` extra space.
+The problem becomes interesting only when we try to keep memory at `O(1)`.
+
+#### Step 3: Reuse Floyd for phase 1 and define when the work is settled
+
+With Floyd:
+
+- `slow` moves 1 step
+- `fast` moves 2 steps
+
+Then exactly one of two things happens:
+
+- `fast` reaches `null` or `fast.next` reaches `null`, so there is no cycle
+- `slow` and `fast` meet inside the cycle
+
+That meeting gives us more than a boolean result: it gives us a concrete node already inside the loop.
+
+#### Step 4: Ask what information the meeting point gives us
+
+Suppose:
+
+- `a` = distance from `head` to cycle entry
+- `b` = distance from cycle entry to first meeting point
+- `c` = cycle length
+
+At the first meeting:
+
+- `slow` traveled `a + b`
+- `fast` traveled `2(a + b)`
+
+Their distance difference must be whole cycle lengths:
+
+```text
+2(a + b) - (a + b) = k * c
+=> a + b = k * c
+=> a = k * c - b
+```
+
+This means:
+
+- from `head` to entry: `a` steps
+- from meeting point to entry: also `a` steps modulo the cycle
+
+That is the hidden structure we need for localization.
+
+#### Step 5: Turn the math into a second pointer phase
+
+Once `slow` meets `fast`, keep one pointer at that meeting node and reset the other to `head`:
+
+```python
+p1 = head
+p2 = slow
+```
+
+Now move both one step at a time.
+Because both are exactly `a` steps away from the entry in the modular sense, their next meeting point must be the entry.
+
+#### Step 6: Walk one concrete trace
+
+Take:
+
+```text
+3 -> 2 -> 0 -> -4
+     ^         |
+     |_________|
+```
+
+The entry is node `2`.
+Floyd first meets somewhere inside the cycle, not necessarily at `2`.
+But after resetting one pointer to `head` and moving both one step at a time, they align at `2`.
+
+That is why the algorithm returns the entry instead of an arbitrary cycle node.
+
+#### Step 7: Reduce the method to one sentence
+
+LeetCode 142 is "use Floyd to get one guaranteed node inside the cycle, then align `head` and meeting point to walk into the entry together."
+
+### Assemble the Full Code
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def detect_cycle(head: Optional[ListNode]) -> Optional[ListNode]:
+    slow = head
+    fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            p1 = head
+            p2 = slow
+            while p1 is not p2:
+                p1 = p1.next
+                p2 = p2.next
+            return p1
+    return None
+```
+
+### Reference Answer
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def detect_cycle(head: Optional[ListNode]) -> Optional[ListNode]:
+    slow = head
+    fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            p1 = head
+            p2 = slow
+            while p1 is not p2:
+                p1 = p1.next
+                p2 = p2.next
+            return p1
+    return None
+```
 
 ### Method Category
 
@@ -157,9 +293,6 @@ So moving one pointer from `head` and one from `meeting`, both one step each rou
 
 During phase 2, both pointers have equal remaining distance (modulo cycle) to entry.
 Equal-speed synchronous movement preserves this equality, so collision point is entry.
-
----
-
 ## Practical Guide / Steps
 
 1. Initialize `slow = head`, `fast = head`

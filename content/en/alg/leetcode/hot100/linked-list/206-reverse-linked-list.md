@@ -19,33 +19,6 @@ keywords: ["Reverse Linked List", "three pointers", "iterative", "recursive", "L
 
 ---
 
-## Target Readers
-
-- Hot100 learners and interview candidates
-- Developers who often hit null-pointer or broken-chain bugs in list problems
-- Engineers who want stable pointer manipulation patterns in C/C++/Rust/Go
-
-## Background / Motivation
-
-In production code, "reverse linked list" may not appear as a LeetCode function, but the skill is highly transferable:
-
-- Reorder nodes in-place with **O(1)** extra memory
-- Keep link integrity while changing direction
-- Handle `head = null` and single-node lists without special-case chaos
-
-If this template is truly internalized, many list problems become straightforward: reverse sublist, reverse k-group, palindrome list, and so on.
-
-## Core Concepts
-
-- **Singly linked list**: each node has one `next` pointer
-- **Broken-link risk**: if you overwrite `cur.next` before saving old next, you lose the remaining chain
-- **Three pointers (`prev`, `cur`, `next`)**: save successor, reverse link, then advance
-- **Loop invariant**:
-  - `prev` is always the head of the already reversed part
-  - `cur` is always the head of the not-yet-processed part
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -75,37 +48,222 @@ output: 2 -> 1 -> null
 
 ---
 
-## Thought Process: From Naive to In-Place
+## Target Readers
 
-### Naive idea: copy values and rebuild
+- Hot100 learners and interview candidates
+- Developers who often hit null-pointer or broken-chain bugs in list problems
+- Engineers who want stable pointer manipulation patterns in C/C++/Rust/Go
 
-- Traverse list, collect values, rebuild in reverse order
-- Works, but uses O(n) extra memory and creates new nodes
+## Background / Motivation
 
-For interviews and systems code, this is usually not what is asked.
+In production code, "reverse linked list" may not appear as a LeetCode function, but the skill is highly transferable:
 
-### Key observation
+- Reorder nodes in-place with **O(1)** extra memory
+- Keep link integrity while changing direction
+- Handle `head = null` and single-node lists without special-case chaos
 
-You do not need new nodes.  
-You only need to rewire `next`.
+If this template is truly internalized, many list problems become straightforward: reverse sublist, reverse k-group, palindrome list, and so on.
 
-For current node `cur`:
+## Core Concepts
 
-1. Save old successor: `next = cur.next`
-2. Reverse pointer: `cur.next = prev`
-3. Move forward: `prev = cur`, `cur = next`
-
-### Method choice
-
-Use iterative three-pointer template:
-
-- Time: O(n)
-- Extra space: O(1)
-- Stable and stack-safe
+- **Singly linked list**: each node has one `next` pointer
+- **Broken-link risk**: if you overwrite `cur.next` before saving old next, you lose the remaining chain
+- **Three pointers (`prev`, `cur`, `next`)**: save successor, reverse link, then advance
+- **Loop invariant**:
+  - `prev` is always the head of the already reversed part
+  - `cur` is always the head of the not-yet-processed part
 
 ---
 
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from the smallest useful example
+
+Take:
+
+```text
+1 -> 2 -> 3 -> null
+```
+
+The target is not to build a new list with reversed values.
+It is to turn the links into:
+
+```text
+3 -> 2 -> 1 -> null
+```
+
+So this problem is really about pointer direction, not value order.
+
+#### Step 2: Decide what the partial answer must remember
+
+At any point we need to know two list fronts:
+
+- the head of the already reversed prefix
+- the head of the not-yet-processed suffix
+
+That is exactly:
+
+```python
+prev = None
+cur = head
+```
+
+Here:
+
+- `prev` means "head of the reversed part"
+- `cur` means "head of the remaining part"
+
+#### Step 3: Ask why one more variable is necessary
+
+Before reversing this edge:
+
+```python
+cur.next = prev
+```
+
+we must save the original successor, or the rest of the list becomes unreachable.
+
+So every round begins with:
+
+```python
+nxt = cur.next
+```
+
+This is the most important safety move in the whole problem.
+
+#### Step 4: Define one loop iteration precisely
+
+Each iteration does only one job:
+
+> move `cur` from the untouched suffix to the front of the reversed prefix.
+
+That forces the order:
+
+```python
+nxt = cur.next
+cur.next = prev
+prev = cur
+cur = nxt
+```
+
+If you reorder these lines carelessly, you usually break the chain.
+
+#### Step 5: Define when the work is complete
+
+When `cur is None`, the untouched suffix is empty.
+So every node is already inside the reversed prefix, and the new head is:
+
+```python
+return prev
+```
+
+#### Step 6: Walk one branch slowly
+
+Still using:
+
+```text
+1 -> 2 -> 3 -> null
+```
+
+Start:
+
+- `prev = null`
+- `cur = 1`
+
+After one round:
+
+- `1.next = null`
+- `prev = 1`
+- `cur = 2`
+
+After two rounds:
+
+- `2.next = 1`
+- `prev = 2`
+- `cur = 3`
+
+After three rounds:
+
+- `3.next = 2`
+- `prev = 3`
+- `cur = null`
+
+So the answer is `3`.
+
+#### Step 7: Reduce the whole template to one invariant
+
+The reusable statement is:
+
+> `prev` always points to the reversed prefix, and `cur` always points to the untouched suffix.
+
+Once that invariant feels stable, `206`, `92`, `25`, and `234` all become easier.
+
+### Assemble the Full Code
+
+```python
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reverse_list(head):
+    prev = None
+    cur = head
+    while cur is not None:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev
+
+
+def from_list(arr):
+    dummy = ListNode()
+    tail = dummy
+    for x in arr:
+        tail.next = ListNode(x)
+        tail = tail.next
+    return dummy.next
+
+
+def to_list(head):
+    ans = []
+    while head:
+        ans.append(head.val)
+        head = head.next
+    return ans
+
+
+if __name__ == "__main__":
+    h = from_list([1, 2, 3, 4, 5])
+    print(to_list(reverse_list(h)))
+```
+
+### Reference Answer
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def reverseList(head: Optional[ListNode]) -> Optional[ListNode]:
+    prev = None
+    cur = head
+    while cur is not None:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev
+```
 
 ### Method Category
 
@@ -135,9 +293,6 @@ Recursive idea:
 3. Set `head.next = null` to cut old forward link
 
 Readable, but stack usage is O(n).
-
----
-
 ## Practical Guide / Steps
 
 1. Initialize `prev = null`, `cur = head`

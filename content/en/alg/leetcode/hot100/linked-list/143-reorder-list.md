@@ -19,35 +19,6 @@ keywords: ["Reorder List", "split reverse merge", "linked list", "LeetCode 143",
 
 ---
 
-## Target Readers
-
-- Hot100 learners who want a stable linked-list rewire template
-- Developers who can reverse lists but still fail on alternating merge details
-- Engineers preparing for interviews where O(1) extra space is required
-
-## Background / Motivation
-
-At first glance, this looks like simple reordering.
-In reality, it tests whether you can safely perform **three dependent pointer operations** in one workflow:
-
-1. Split one list into two valid lists
-2. Reverse one half in-place
-3. Alternate-merge without cycles or node loss
-
-Most bugs come from boundary handling and pointer update order, not from "algorithmic complexity" itself.
-
-## Core Concepts
-
-- **Target order**: `L0 -> Ln -> L1 -> Ln-1 -> L2 -> ...`
-- **In-place constraint**: do not allocate a new list
-- **Three-phase pipeline**:
-  1. middle split (`slow/fast`)
-  2. reverse second half
-  3. alternating merge
-- **Critical safety rule**: cut first half tail (`slow.next = null`) before merge
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -84,40 +55,285 @@ output: 1 -> 5 -> 2 -> 4 -> 3
 
 ---
 
-## Thought Process: From Naive to In-Place Optimal
+## Target Readers
 
-### Naive idea 1: copy to array, rebuild by two pointers
+- Hot100 learners who want a stable linked-list rewire template
+- Developers who can reverse lists but still fail on alternating merge details
+- Engineers preparing for interviews where O(1) extra space is required
 
-- Put all nodes into an array
-- Use `i` from left and `j` from right
-- Reconnect in target order
+## Background / Motivation
 
-This is straightforward, but costs O(n) extra memory.
+At first glance, this looks like simple reordering.
+In reality, it tests whether you can safely perform **three dependent pointer operations** in one workflow:
 
-### Naive idea 2: repeatedly find tail and splice
+1. Split one list into two valid lists
+2. Reverse one half in-place
+3. Alternate-merge without cycles or node loss
 
-- Keep taking tail and inserting after current head-side node
+Most bugs come from boundary handling and pointer update order, not from "algorithmic complexity" itself.
 
-This becomes O(n^2), too slow for larger inputs.
+## Core Concepts
 
-### Key observation
-
-The target sequence always alternates:
-
-- first half in natural order
-- second half in reverse order
-
-So the right decomposition is:
-
-1. split at middle
-2. reverse right half once
-3. weave two lists alternately
-
-This gives O(n) time and O(1) extra space.
+- **Target order**: `L0 -> Ln -> L1 -> Ln-1 -> L2 -> ...`
+- **In-place constraint**: do not allocate a new list
+- **Three-phase pipeline**:
+  1. middle split (`slow/fast`)
+  2. reverse second half
+  3. alternating merge
+- **Critical safety rule**: cut first half tail (`slow.next = null`) before merge
 
 ---
 
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from the target order itself
+
+For:
+
+```text
+1 -> 2 -> 3 -> 4 -> 5
+```
+
+the required result is:
+
+```text
+1 -> 5 -> 2 -> 4 -> 3
+```
+
+That is not a sort, and it is not a plain reversal.
+The pattern is:
+
+- take one node from the front
+- then one node from the back
+- repeat
+
+So we need a way to expose the tail side in forward-traversal order.
+
+#### Step 2: Reject the two obvious but weak approaches
+
+Array rebuild works:
+
+- store all nodes in an array
+- pick from left and right ends
+
+But it uses `O(n)` extra space.
+
+Repeatedly finding the tail in the list itself also works in principle, but becomes `O(n^2)`.
+So neither matches the intended linked-list solution.
+
+#### Step 3: Ask what hidden structure the target order reveals
+
+Look again at:
+
+```text
+1 -> 5 -> 2 -> 4 -> 3
+```
+
+This can be seen as:
+
+- left half in original order: `1 -> 2 -> 3`
+- right half in reverse order: `5 -> 4`
+- then weave them alternately
+
+That immediately suggests a three-stage plan:
+
+1. split at the middle
+2. reverse the second half
+3. merge the two halves alternately
+
+#### Step 4: Define the split point first
+
+Use fast/slow pointers to find the middle:
+
+```python
+slow, fast = head, head
+while fast.next and fast.next.next:
+    slow = slow.next
+    fast = fast.next.next
+```
+
+Then:
+
+```python
+second = slow.next
+slow.next = None
+```
+
+Now the list is cleanly split into two parts.
+
+#### Step 5: Reverse the second half once
+
+We now want the tail side to become forward-readable:
+
+```python
+prev = None
+cur = second
+while cur:
+    nxt = cur.next
+    cur.next = prev
+    prev = cur
+    cur = nxt
+second = prev
+```
+
+After this, `second` starts at the former tail.
+
+#### Step 6: Weave the two lists in alternating order
+
+Now the problem becomes:
+
+- one list gives `L0 -> L1 -> L2 ...`
+- the other gives `Rn -> Rn-1 ...`
+
+So one merge round is:
+
+```python
+first.next = second
+second.next = n1
+```
+
+then advance both lists.
+This is not a value merge; it is an alternating pointer weave.
+
+#### Step 7: Walk one trace slowly
+
+Start:
+
+```text
+1 -> 2 -> 3 -> 4 -> 5
+```
+
+Split:
+
+```text
+first:  1 -> 2 -> 3
+second: 4 -> 5
+```
+
+Reverse second:
+
+```text
+second: 5 -> 4
+```
+
+Weave:
+
+```text
+1 -> 5 -> 2 -> 4 -> 3
+```
+
+That is exactly the required order.
+
+#### Step 8: Reduce the method to one sentence
+
+LeetCode 143 is "split the list, reverse the right half, then weave left and right alternately."
+
+### Assemble the Full Code
+
+```python
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reorder_list(head):
+    if head is None or head.next is None:
+        return
+
+    # 1) find middle
+    slow, fast = head, head
+    while fast.next and fast.next.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    # 2) split and reverse second half
+    second = slow.next
+    slow.next = None
+    prev = None
+    cur = second
+    while cur:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    second = prev
+
+    # 3) merge two lists alternately
+    first = head
+    while second:
+        n1 = first.next
+        n2 = second.next
+        first.next = second
+        second.next = n1
+        first = n1 if n1 else second
+        second = n2
+
+
+def from_list(arr):
+    dummy = ListNode()
+    tail = dummy
+    for x in arr:
+        tail.next = ListNode(x)
+        tail = tail.next
+    return dummy.next
+
+
+def to_list(head):
+    ans = []
+    while head:
+        ans.append(head.val)
+        head = head.next
+    return ans
+
+
+if __name__ == "__main__":
+    h = from_list([1, 2, 3, 4, 5])
+    reorder_list(h)
+    print(to_list(h))  # [1, 5, 2, 4, 3]
+```
+
+### Reference Answer
+
+```python
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reorder_list(head):
+    if head is None or head.next is None:
+        return
+
+    slow, fast = head, head
+    while fast.next and fast.next.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    second = slow.next
+    slow.next = None
+
+    prev = None
+    cur = second
+    while cur:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    second = prev
+
+    first = head
+    while second:
+        n1 = first.next
+        n2 = second.next
+        first.next = second
+        second.next = n1
+        first = n1 if n1 else second
+        second = n2
+```
 
 ### Method category
 
@@ -139,9 +355,6 @@ This gives O(n) time and O(1) extra space.
   `L0, Ln, L1, Ln-1, ...`
 
 No node is duplicated because each node moves from one source list once.
-
----
-
 ## Practice Guide / Steps
 
 1. Handle trivial lists (`0/1/2` nodes): already ordered

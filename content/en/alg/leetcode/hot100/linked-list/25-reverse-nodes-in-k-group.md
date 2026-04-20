@@ -19,38 +19,6 @@ keywords: ["Reverse Nodes in k-Group", "group reversal", "linked list", "LeetCod
 
 ---
 
-## Target Readers
-
-- Hot100 learners who already finished 206/92 and want the next linked-list jump
-- Developers who often fail at boundary handling and reconnection in pointer-heavy tasks
-- Engineers building reusable templates for chunk-based list transformation
-
-## Background / Motivation
-
-In real systems, chain structures are often processed in batches:
-
-- replay compensation tasks per fixed batch size
-- local reorder of pipeline nodes by chunk
-- in-place structure rewrite without reallocating all nodes
-
-These tasks require:
-
-- transformation **inside each batch**
-- stable order **between batches**
-- clear rule for incomplete tail batches (keep unchanged)
-
-LeetCode 25 models exactly this requirement.
-
-## Core Concepts
-
-- **Dummy node**: removes head-special branches
-- **`groupPrev`**: predecessor of the current group
-- **`kth` probe**: checks whether a full group of size `k` exists
-- **`groupNext`**: first node after the current group
-- **In-place group reversal**: reverse only `[groupStart, kth]`
-
----
-
 ## A - Algorithm (Problem and Algorithm)
 
 ### Problem Restatement
@@ -83,45 +51,251 @@ output: 3 -> 2 -> 1 -> 4 -> 5
 
 ---
 
-## Thought Process: From Naive to Optimal
+## Target Readers
 
-### Naive approach: array conversion and rebuild
+- Hot100 learners who already finished 206/92 and want the next linked-list jump
+- Developers who often fail at boundary handling and reconnection in pointer-heavy tasks
+- Engineers building reusable templates for chunk-based list transformation
 
-- Convert linked list to array
-- Reverse every full k-sized segment
-- Rebuild list from array
+## Background / Motivation
 
-Problems:
+In real systems, chain structures are often processed in batches:
 
-- O(n) extra memory
-- violates pointer-modification intent in many interview/engineering contexts
+- replay compensation tasks per fixed batch size
+- local reorder of pipeline nodes by chunk
+- in-place structure rewrite without reallocating all nodes
 
-### Key observation
+These tasks require:
 
-The process can be decomposed into a repeating loop:
+- transformation **inside each batch**
+- stable order **between batches**
+- clear rule for incomplete tail batches (keep unchanged)
 
-1. verify current group has `k` nodes
-2. reverse this group in-place
-3. reconnect and move to next group
+LeetCode 25 models exactly this requirement.
 
-This is "interval reversal" repeated under group control.
+## Core Concepts
 
-### Method selection
-
-Use:
-
-- `dummy + groupPrev` to anchor global structure
-- `kth` scanning to validate group completeness
-- in-place pointer reversal per full group
-
-Result:
-
-- O(n) time
-- O(1) extra space
+- **Dummy node**: removes head-special branches
+- **`groupPrev`**: predecessor of the current group
+- **`kth` probe**: checks whether a full group of size `k` exists
+- **`groupNext`**: first node after the current group
+- **In-place group reversal**: reverse only `[groupStart, kth]`
 
 ---
 
 ## C - Concepts (Core Ideas)
+
+### How To Build The Solution From Scratch
+
+#### Step 1: Start from the smallest example that shows the real difficulty
+
+Take:
+
+```text
+1 -> 2 -> 3 -> 4 -> 5, k = 3
+```
+
+The answer is:
+
+```text
+3 -> 2 -> 1 -> 4 -> 5
+```
+
+This immediately shows two constraints:
+
+- full groups of size `k` must be reversed
+- the last incomplete group must stay unchanged
+
+So the problem is not "keep reversing forever."
+It is "reverse only verified full blocks."
+
+#### Step 2: Ask what each outer loop must know before touching pointers
+
+For the current group we need three boundary references:
+
+- `groupPrev`: the node before this group
+- `kth`: the k-th node of this group
+- `groupNext`: the first node after this group
+
+Those names already explain the whole control flow.
+Without them, reconnection becomes error-prone.
+
+#### Step 3: Why must we scan `kth` first?
+
+Suppose fewer than `k` nodes remain.
+Then the correct action is:
+
+```text
+do nothing and stop
+```
+
+So we must confirm group completeness before rewiring any pointer.
+
+That is why every round starts with:
+
+```python
+kth = group_prev
+for _ in range(k):
+    kth = kth.next
+    if not kth:
+        return dummy.next
+```
+
+If this scan fails, the tail block is intentionally preserved.
+
+#### Step 4: Reuse the interval-reversal idea locally
+
+Once `[groupPrev.next, kth]` is confirmed to be a full group, the task becomes a local reversal problem.
+
+Let:
+
+```python
+group_next = kth.next
+prev = group_next
+cur = group_prev.next
+```
+
+Now we reverse nodes until `cur` reaches `group_next`.
+Initializing `prev` with `group_next` is the key trick: it makes the reversed group reconnect to the remaining suffix automatically.
+
+#### Step 5: Define one reversal move inside the group
+
+Each inner-loop iteration moves one node from the untouched part of the group onto the reversed front:
+
+```python
+nxt = cur.next
+cur.next = prev
+prev = cur
+cur = nxt
+```
+
+This is the same three-pointer reversal as LeetCode 206, but its stopping boundary is `group_next`, not `None`.
+
+#### Step 6: Reconnect and advance to the next group
+
+After the inner loop:
+
+- `prev` is the new head of this reversed group
+- `group_prev.next` is still the old group head, which has now become the new tail
+
+So:
+
+```python
+new_group_tail = group_prev.next
+group_prev.next = prev
+group_prev = new_group_tail
+```
+
+That last line is what advances the outer loop safely.
+
+#### Step 7: Walk one group slowly
+
+Still using:
+
+```text
+1 -> 2 -> 3 -> 4 -> 5, k = 3
+```
+
+First round:
+
+- `groupPrev = dummy`
+- `kth = 3`
+- `groupNext = 4`
+
+Reverse `[1,2,3]` while pointing the new tail toward `4`:
+
+```text
+3 -> 2 -> 1 -> 4 -> 5
+```
+
+Now `groupPrev` moves to `1`.
+From there we try to scan another full group, fail because only `4 -> 5` remains, and stop.
+
+#### Step 8: Reduce the method to one sentence
+
+LeetCode 25 is "scan a full block first, reverse that block locally, reconnect it, then jump to the next block."
+
+### Assemble the Full Code
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reverse_k_group(head: Optional[ListNode], k: int) -> Optional[ListNode]:
+    if not head or k <= 1:
+        return head
+
+    dummy = ListNode(0, head)
+    group_prev = dummy
+
+    while True:
+        kth = group_prev
+        for _ in range(k):
+            kth = kth.next
+            if not kth:
+                return dummy.next
+
+        group_next = kth.next
+        prev = group_next
+        cur = group_prev.next
+
+        while cur != group_next:
+            nxt = cur.next
+            cur.next = prev
+            prev = cur
+            cur = nxt
+
+        new_group_tail = group_prev.next
+        group_prev.next = prev
+        group_prev = new_group_tail
+```
+
+### Reference Answer
+
+```python
+from typing import Optional
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reverse_k_group(head: Optional[ListNode], k: int) -> Optional[ListNode]:
+    if not head or k <= 1:
+        return head
+
+    dummy = ListNode(0, head)
+    group_prev = dummy
+
+    while True:
+        kth = group_prev
+        for _ in range(k):
+            kth = kth.next
+            if not kth:
+                return dummy.next
+
+        group_next = kth.next
+        prev = group_next
+        cur = group_prev.next
+
+        while cur != group_next:
+            nxt = cur.next
+            cur.next = prev
+            prev = cur
+            cur = nxt
+
+        new_group_tail = group_prev.next
+        group_prev.next = prev
+        group_prev = new_group_tail
+```
 
 ### Method Category
 
@@ -155,9 +329,6 @@ dummy -> c -> b -> a -> d -> e -> f -> g
                      ^
                  new groupPrev
 ```
-
----
-
 ## Practical Guide / Steps
 
 1. Initialize `dummy.next = head`, set `groupPrev = dummy`

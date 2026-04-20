@@ -18,31 +18,6 @@ keywords: ["Reverse Linked List", "反转链表", "三指针", "迭代", "递归
 
 ---
 
-## 目标读者
-
-- 正在刷 Hot100 / 准备面试的同学  
-- 写链表题经常断链/空指针、希望建立稳定模板的中级开发者  
-- 需要在 C/C++/Rust 等语言里熟练处理指针与所有权的工程师
-
-## 背景 / 动机
-
-在真实工程里，“反转链表”不一定以 LeetCode 的形态出现，但它背后的能力非常通用：
-
-- 你要在 **O(1) 额外空间** 下重排节点顺序（例如复用节点对象，避免额外分配）  
-- 你要理解 **指针重连的顺序**：先保留 `next`，再改 `cur.next`，否则就会断链  
-- 你要能写出 **不会特判地狱**、对 `head = null` 也稳的实现
-
-把这题做成模板后，很多链表题（如反转区间、k 组反转、判断回文链表）都会变得顺手很多。
-
-## 核心概念
-
-- **单链表**：每个节点只有一个 `next` 指针指向后继  
-- **断链风险**：一旦把 `cur.next` 改掉而没保存原来的 next，就丢失后半段  
-- **三指针（prev / cur / next）**：用 `next` 暂存后继，再把 `cur.next` 指向 `prev`  
-- **循环不变量**：`prev` 永远指向“已反转部分”的头；`cur` 永远指向“未处理部分”的头
-
----
-
 ## A — Algorithm（题目与算法）
 
 ### 题目还原
@@ -72,37 +47,242 @@ keywords: ["Reverse Linked List", "反转链表", "三指针", "迭代", "递归
 
 ---
 
+## 目标读者
+
+- 正在刷 Hot100 / 准备面试的同学  
+- 写链表题经常断链/空指针、希望建立稳定模板的中级开发者  
+- 需要在 C/C++/Rust 等语言里熟练处理指针与所有权的工程师
+
+## 背景 / 动机
+
+在真实工程里，“反转链表”不一定以 LeetCode 的形态出现，但它背后的能力非常通用：
+
+- 你要在 **O(1) 额外空间** 下重排节点顺序（例如复用节点对象，避免额外分配）  
+- 你要理解 **指针重连的顺序**：先保留 `next`，再改 `cur.next`，否则就会断链  
+- 你要能写出 **不会特判地狱**、对 `head = null` 也稳的实现
+
+把这题做成模板后，很多链表题（如反转区间、k 组反转、判断回文链表）都会变得顺手很多。
+
+## 核心概念
+
+- **单链表**：每个节点只有一个 `next` 指针指向后继  
+- **断链风险**：一旦把 `cur.next` 改掉而没保存原来的 next，就丢失后半段  
+- **三指针（prev / cur / next）**：用 `next` 暂存后继，再把 `cur.next` 指向 `prev`  
+- **循环不变量**：`prev` 永远指向“已反转部分”的头；`cur` 永远指向“未处理部分”的头
+
+---
+
 ## C — Concepts（核心思想）
 
-### 思路推导：从“重新建链”到“原地指针反转”
+### 思路是怎么推出来的
 
-1. **朴素想法：把值拷贝出来再重建链表**  
-   - 先遍历把值存到数组  
-   - 再从后往前新建节点串起来  
-   缺点：需要 O(n) 额外空间，而且“重建节点”在工程里通常意味着额外分配与 GC/内存碎片。
+#### Step 1：先用最小例子看“反转”到底在改什么
 
-2. **关键观察：反转只是在重连 next 指针**  
-   对于当前节点 `cur`，我们希望把：
+看链表：
 
 ```text
-prev <- cur -> next
+1 -> 2 -> 3 -> null
 ```
 
-   变成：
+目标不是“生成一条新链”，而是把方向改成：
 
 ```text
-prev <- cur    next(待处理)
+3 -> 2 -> 1 -> null
 ```
 
-   本质操作就是：
+所以这题的核心不是值顺序，而是 `next` 指针方向。
 
-```text
+把值拷贝到数组再重建当然能做，但那是在逃避链表本身的操作。
+
+#### Step 2：当前部分答案最少要记住什么？
+
+如果我们从左到右处理节点，那么每一轮都需要知道两段链：
+
+- 已经反转好的前缀头是谁
+- 还没处理的后缀头是谁
+
+这就是两个核心状态：
+
+```python
+prev = None
+cur = head
+```
+
+其中：
+
+- `prev` 表示“已反转部分的头”
+- `cur` 表示“未处理部分的头”
+
+#### Step 3：为什么还要多一个 `next`？
+
+因为一旦你执行：
+
+```python
 cur.next = prev
 ```
 
-   但在做这句之前，必须先把原来的 `cur.next` 保存下来，否则链表后半段会丢失。
+原来的后继就断掉了。  
+所以在改指针之前，必须先把旧的后继存起来：
 
-3. **方法选择：三指针迭代（O(1) 额外空间）**
+```python
+nxt = cur.next
+```
+
+这一步就是整题最容易翻车的地方。
+
+#### Step 4：一轮循环到底解决什么子问题？
+
+每一轮都只做一件事：
+
+> 把 `cur` 这个节点，从“未处理部分”挪到“已反转部分”的最前面。
+
+所以一轮的顺序必须固定成：
+
+```python
+nxt = cur.next
+cur.next = prev
+prev = cur
+cur = nxt
+```
+
+不要换顺序。换了通常就会断链。
+
+#### Step 5：什么时候说明整个工作完成了？
+
+当 `cur is None` 时，说明“未处理部分”已经空了。  
+这时所有节点都已经被移进反转后的前缀里，新的头节点就是：
+
+```python
+return prev
+```
+
+#### Step 6：慢速走一条分支
+
+还是看：
+
+```text
+1 -> 2 -> 3 -> null
+```
+
+开始时：
+
+- `prev = null`
+- `cur = 1`
+
+第一轮后：
+
+- `1.next = null`
+- `prev = 1`
+- `cur = 2`
+
+第二轮后：
+
+- `2.next = 1`
+- `prev = 2`
+- `cur = 3`
+
+第三轮后：
+
+- `3.next = 2`
+- `prev = 3`
+- `cur = null`
+
+结束，返回 `3`。
+
+#### Step 7：把它压成一句模板
+
+这题真正要固定下来的不是“反转链表”四个字，而是这个循环不变量：
+
+> `prev` 永远指向已反转部分的头，`cur` 永远指向未处理部分的头。
+
+只要这个不变量稳，`206 / 92 / 25 / 234` 都会更顺。
+
+### Assemble the Full Code
+
+```python
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+
+def reverse_list(head):
+    prev = None
+    cur = head
+    while cur is not None:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev
+
+
+def from_list(a):
+    dummy = ListNode()
+    tail = dummy
+    for x in a:
+        tail.next = ListNode(x)
+        tail = tail.next
+    return dummy.next
+
+
+def to_list(head):
+    res = []
+    while head is not None:
+        res.append(head.val)
+        head = head.next
+    return res
+
+
+if __name__ == "__main__":
+    head = from_list([1, 2, 3, 4, 5])
+    print(to_list(reverse_list(head)))
+```
+
+### Reference Answer
+
+```python
+from typing import List, Optional
+
+
+class ListNode:
+    def __init__(self, val: int = 0, next: Optional["ListNode"] = None):
+        self.val = val
+        self.next = next
+
+
+def reverseList(head: Optional[ListNode]) -> Optional[ListNode]:
+    prev = None
+    cur = head
+    while cur is not None:
+        nxt = cur.next
+        cur.next = prev
+        prev = cur
+        cur = nxt
+    return prev
+
+
+def from_list(a: List[int]) -> Optional[ListNode]:
+    dummy = ListNode()
+    tail = dummy
+    for x in a:
+        tail.next = ListNode(x)
+        tail = tail.next
+    return dummy.next
+
+
+def to_list(head: Optional[ListNode]) -> List[int]:
+    res: List[int] = []
+    while head is not None:
+        res.append(head.val)
+        head = head.next
+    return res
+
+
+if __name__ == "__main__":
+    head = from_list([1, 2, 3, 4, 5])
+    print(to_list(reverseList(head)))
+```
 
 ### 方法归类
 
@@ -134,9 +314,6 @@ cur.next = prev
 - 最后把 `head.next = null` 断开旧指针，避免成环  
 
 递归写法更“优雅”，但会用到函数调用栈（空间不是 O(1)）。
-
----
-
 ## 实践指南 / 步骤
 
 ### 迭代三指针（推荐模板）

@@ -1,195 +1,213 @@
 ---
-title: "LeetCode 146：LRU 缓存设计（O(1)）哈希表 + 双向链表实战"
-date: 2026-02-11T08:02:05+08:00
+title: "Hot100: LRU Cache Hash Table + Doubly Linked List O(1) ACERS Guide"
+date: 2026-04-20T09:36:56+08:00
 draft: false
+url: "/alg/leetcode/hot100/146-lru-cache/"
 categories: ["LeetCode"]
-tags: ["LRU", "哈希表", "双向链表", "缓存", "LeetCode 146"]
-description: "LRUCache 的核心是用哈希表做 O(1) 定位、双向链表维护最近使用顺序，实现 get/put 平均 O(1)。本文按 ACERS 模板给出推导、工程应用与多语言代码。"
-keywords: ["LRU Cache", "LeetCode 146", "哈希表 双向链表", "缓存淘汰策略", "O(1) get put"]
+tags: ["Hot100", "LRU", "hash table", "doubly linked list", "cache", "LeetCode 146"]
+description: "Design an LRU cache where both get and put run in O(1) average time by combining a hash table with a doubly linked list. This ACERS guide derives the data-structure split and includes runnable multi-language implementations."
+keywords: ["LRU Cache", "hash table doubly linked list", "O(1) get put", "LeetCode 146", "Hot100", "cache eviction"]
 ---
 
-> **副标题 / 摘要**  
-> 这题不是“背答案题”，而是缓存系统的基本功：如何在常数时间内同时满足“快速访问”和“按最近最少使用淘汰”。本文从朴素方案推到最优结构，并给出可运行的多语言实现。
+> **Subtitle / Summary**  
+> LeetCode 146 is not a memorize-the-template problem. It is the core cache-design exercise: how to support fast lookup and fast recency updates at the same time.
 
-- **预计阅读时长**：14~18 分钟  
-- **标签**：`LRU`、`哈希表`、`双向链表`、`系统设计`  
-- **SEO 关键词**：LRU Cache, LeetCode 146, 哈希表, 双向链表, O(1)  
-- **元描述**：通过哈希表 + 双向链表实现 LRU 缓存，`get/put` 平均 O(1)，附工程场景、常见坑与六语言实现。  
+- **Reading time**: 14-18 min  
+- **Tags**: `Hot100`, `LRU`, `hash table`, `doubly linked list`  
+- **SEO keywords**: LRU Cache, hash table + doubly linked list, O(1) get put, LeetCode 146, Hot100  
+- **Meta description**: A derivation-first ACERS guide to LRU Cache using a hash table plus doubly linked list, with engineering scenarios, pitfalls, and runnable multi-language code.
 
 ---
 
-## A — Algorithm（题目与算法）
+## A - Algorithm (Problem and Algorithm)
 
-### 题目重述
+### Problem Restatement
 
-设计并实现一个满足 LRU 约束的数据结构 `LRUCache`：
+Design a data structure `LRUCache` with:
 
-- `LRUCache(int capacity)`：用正整数容量初始化
-- `int get(int key)`：若 key 存在返回 value，否则返回 `-1`
-- `void put(int key, int value)`：
-  - key 已存在：更新 value，并视作最近使用
-  - key 不存在：插入新键值对
-  - 若超出容量：淘汰最久未使用的 key
+- `LRUCache(int capacity)` initializes the cache with a positive capacity
+- `int get(int key)` returns the value if the key exists, otherwise `-1`
+- `void put(int key, int value)` inserts or updates the key
 
-并要求 `get` 和 `put` 平均时间复杂度为 `O(1)`。
+The cache must evict the **least recently used** key when capacity is exceeded, and both `get` and `put` must run in average `O(1)` time.
 
-### 示例 1（操作序列）
+### Input / Output
+
+| Operation | Input | Output | Meaning |
+| --- | --- | --- | --- |
+| constructor | `capacity` | cache object | initialize cache |
+| `get(key)` | `key` | value or `-1` | lookup + refresh recency |
+| `put(key, value)` | `key`, `value` | none | insert/update + maybe evict |
+
+### Example 1
 
 ```text
 LRUCache cache = new LRUCache(2)
-cache.put(1, 1)    // 缓存: {1=1}
-cache.put(2, 2)    // 缓存: {1=1, 2=2}
-cache.get(1)       // 返回 1，且 1 变成最近使用
-cache.put(3, 3)    // 容量满，淘汰 key=2
-cache.get(2)       // 返回 -1
-cache.put(4, 4)    // 淘汰 key=1
-cache.get(1)       // 返回 -1
-cache.get(3)       // 返回 3
-cache.get(4)       // 返回 4
+cache.put(1, 1)    // cache: {1=1}
+cache.put(2, 2)    // cache: {1=1, 2=2}
+cache.get(1)       // returns 1, and 1 becomes most recently used
+cache.put(3, 3)    // evicts key 2
+cache.get(2)       // returns -1
+cache.put(4, 4)    // evicts key 1
+cache.get(1)       // returns -1
+cache.get(3)       // returns 3
+cache.get(4)       // returns 4
 ```
 
-### 示例 2（更新已有键）
+### Example 2
 
 ```text
 LRUCache cache = new LRUCache(2)
 cache.put(1, 10)
-cache.put(1, 99)   // 更新 value，且 1 视作最近使用
-cache.get(1)       // 返回 99
+cache.put(1, 99)   // update existing key, still becomes most recent
+cache.get(1)       // returns 99
 ```
 
 ---
 
-## 目标读者
+## Target Readers
 
-- 正在刷 LeetCode 中等题、想吃透“数据结构组合技”的同学
-- 做后端/中间件，需要实现或优化本地缓存的工程师
-- 面试中经常被问到 LRU，但只记住结论、没掌握细节的人
+- Hot100 learners who want to understand the structure instead of memorizing it
+- Backend engineers building local caches or request-result stores
+- Interview candidates who know the answer shape but cannot yet justify it
 
-## 背景 / 动机
+## Background / Motivation
 
-缓存是“空间换时间”，但空间是有限的。  
-当缓存满了，必须淘汰一些键。LRU（Least Recently Used，最近最少使用）假设：
+Any cache has two separate concerns:
 
-- 最近被访问的数据，将来更可能再次访问
-- 很久没访问的数据，优先淘汰更合理
+- how to find data quickly
+- how to decide what to evict when the cache is full
 
-工程里常见于：
+LRU assumes that recently used entries are more likely to be used again soon, so older untouched entries should be removed first.
+This policy shows up in:
 
-- 接口响应缓存
-- 数据库热点记录缓存
-- 页面/会话本地状态缓存
+- API response caches
+- local metadata caches
+- browser-side data reuse
+- service configuration hot paths
 
-## 核心概念
+The difficulty is not the policy itself.
+It is making both lookup and recency updates fast enough.
 
-- **LRU 策略**：淘汰“最久未使用”的键
-- **访问即更新新鲜度**：`get` 成功后要把该 key 标为“最近使用”
-- **容量约束**：`put` 新 key 造成超容时，需要立即驱逐一个最旧键
-- **O(1) 平均复杂度**：`get` 和 `put` 都不能线性扫描
+## Core Concepts
+
+- **LRU (Least Recently Used)**: evict the key that has not been used for the longest time
+- **Recency update on access**: a successful `get` changes the key's position in the usage order
+- **Average `O(1)` operations**: no linear scan on `get` or `put`
+- **Structure split**:
+  - hash table for fast key lookup
+  - doubly linked list for fast order updates
 
 ---
 
-## C — Concepts（核心思想）
+## C - Concepts (Core Ideas)
 
-### 思路是怎么推出来的
+### How To Build The Solution From Scratch
 
-#### Step 1：先从操作要求反推需要维护什么状态
+#### Step 1: Start from the operational requirements, not the final template name
 
-LRU 的关键不是“能存键值对”，而是要同时维护：
+An LRU cache must support all of these at once:
 
-- `get(key)` / `put(key, value)` 都要尽量 O(1)
-- 一旦访问某个 key，它就变成“最近使用”
-- 容量满时，要淘汰“最久未使用”
+- find a key quickly
+- mark a key as "most recent" after access
+- remove the least recent key when full
 
-所以我们实际上要维护两类信息：
+So the real question is:
 
-- key 对应哪个节点
-- 节点的“新旧顺序”是什么
+> what state must be maintained so both lookup and recency changes stay constant-time?
 
-#### Step 2：为什么单用数组或单用链表都不够？
+#### Step 2: Why one structure alone is not enough
 
-只用数组时：
+If we use only an array:
 
-- 容易按顺序找到最旧元素
-- 但把某个 key 挪到“最新位置”通常要 O(n)
+- the order is visible
+- but moving an accessed entry to the front is usually `O(n)`
 
-只用链表时：
+If we use only a linked list:
 
-- 头尾插删很快
-- 但要先找到某个 key 对应节点，仍然要 O(n)
+- moving nodes can be fast
+- but finding a key is `O(n)`
 
-说明这题不是某一种结构单打独斗能完成的，而是两种能力必须组合：
+If we use only a hash table:
 
-- 快速找节点
-- 快速改顺序
+- lookup is fast
+- but the table does not remember which key is oldest or newest
 
-#### Step 3：把两种需求拆给两个结构
+So the problem is inherently a combination problem.
 
-最自然的分工就是：
+#### Step 3: Split the responsibilities cleanly
 
-- **哈希表**负责 `key -> node`
-- **双向链表**负责维护访问顺序
+The natural split is:
 
-双向链表里：
+- **hash table**: `key -> node`
+- **doubly linked list**: maintain recency order
 
-- 头部表示最近使用（MRU）
-- 尾部表示最久未使用（LRU）
+In the list:
 
-之所以要双向，不是为了炫技巧，而是为了 O(1) 把任意节点摘出来再插回头部。
+- front = most recently used (MRU)
+- back = least recently used (LRU)
 
-#### Step 4：先定义四个底层原子动作
+We need a doubly linked list because removing an arbitrary node in O(1) requires direct access to both neighbors.
 
-一旦选了“哈希表 + 双向链表”，真正的实现就只剩四个基础操作：
+#### Step 4: Define the atomic list operations first
 
-1. `_remove(node)`：把节点从当前链表位置摘掉
-2. `_add_front(node)`：把节点插到头部
-3. `_move_front(node)`：访问后移到头部
-4. `_pop_lru()`：弹出尾部最旧节点
+Once the structure split is clear, the whole design reduces to four atomic operations:
 
-上层 `get` / `put` 都只是复用这四个动作。
+1. `_remove(node)` removes a node from its current position
+2. `_add_front(node)` inserts a node right after the head sentinel
+3. `_move_front(node)` refreshes recency after access
+4. `_pop_lru()` removes the node right before the tail sentinel
 
-#### Step 5：`get` 到底在做什么？
+Everything else is just orchestration around these operations.
 
-`get(key)` 不是“查完就结束”。
-一旦命中，这个 key 的使用时间就被刷新了，所以必须：
+#### Step 5: Ask what `get` really does
 
-1. 从哈希表找到节点
-2. 把该节点移动到头部
-3. 返回它的值
+`get(key)` is not just lookup.
+If the key exists, the key has now been used again.
 
-如果没命中，直接返回 `-1`。
+So a successful `get` must do three things:
 
-#### Step 6：`put` 到底在做什么？
+1. look up the node from the hash table
+2. move that node to the front of the linked list
+3. return the stored value
 
-`put(key, value)` 分两种情况：
+If the key does not exist, return `-1`.
 
-- key 已存在：
-  - 更新值
-  - 移到头部
-- key 不存在：
-  - 若容量已满，先弹出尾部 LRU 节点，并从哈希表删除
-  - 再创建新节点，插到头部，并写入哈希表
+#### Step 6: Ask what `put` really does
 
-这样“淘汰最旧”和“更新最新”都能保持 O(1)。
+`put(key, value)` has two branches:
 
-#### Step 7：慢速走一个操作序列
+- key already exists:
+  - update the value
+  - move the node to the front
+- key does not exist:
+  - if cache is full, evict the current LRU node
+  - create the new node
+  - insert it at the front
+  - add it to the hash table
 
-假设容量是 2：
+This is why the list and the map must stay synchronized at all times.
+
+#### Step 7: Walk one short trace slowly
+
+Capacity = 2:
 
 ```text
 put(1,1)  -> [1]
-put(2,2)  -> [2,1]   # 头部最新
+put(2,2)  -> [2,1]   front is newest
 get(1)    -> [1,2]
-put(3,3)  -> 淘汰 2，得到 [3,1]
+put(3,3)  -> evict 2, get [3,1]
 ```
 
-这个过程说明：
+Notice the split:
 
-- 哈希表负责快速找到 `1`
-- 双向链表负责把 `1` 移到头部、把 `2` 从尾部淘汰
+- hash table finds `1` in O(1)
+- doubly linked list moves `1` to the front in O(1)
+- tail-side eviction removes `2` in O(1)
 
-#### Step 8：把方法压缩成一句模板
+#### Step 8: Reduce the method to one sentence
 
-146 题可以记成：哈希表解决“找得快”，双向链表解决“改顺序快”，两者组合后 LRU 才能真正做到 O(1)。
+LeetCode 146 is "use a hash table to find nodes fast and a doubly linked list to reorder and evict nodes fast."
 
 ### Assemble the Full Code
 
@@ -206,8 +224,8 @@ class LRUCache:
     def __init__(self, capacity: int):
         self.cap = capacity
         self.map = {}
-        self.head = Node()  # MRU side sentinel
-        self.tail = Node()  # LRU side sentinel
+        self.head = Node()  # MRU-side sentinel
+        self.tail = Node()  # LRU-side sentinel
         self.head.next = self.tail
         self.tail.prev = self.head
 
@@ -241,26 +259,29 @@ class LRUCache:
     def put(self, key: int, value: int) -> None:
         if self.cap == 0:
             return
+
         node = self.map.get(key)
         if node is not None:
             node.val = value
             self._move_front(node)
             return
+
         if len(self.map) == self.cap:
             old = self._pop_lru()
             del self.map[old.key]
+
         node = Node(key, value)
         self.map[key] = node
         self._add_front(node)
 
 
 if __name__ == "__main__":
-    c = LRUCache(2)
-    c.put(1, 1)
-    c.put(2, 2)
-    print(c.get(1))  # 1
-    c.put(3, 3)
-    print(c.get(2))  # -1
+    cache = LRUCache(2)
+    cache.put(1, 1)
+    cache.put(2, 2)
+    print(cache.get(1))  # 1
+    cache.put(3, 3)
+    print(cache.get(2))  # -1
 ```
 
 ### Reference Answer
@@ -314,7 +335,7 @@ class LRUCache:
         if self.cap == 0:
             return
         node = self.map.get(key)
-        if node:
+        if node is not None:
             node.val = value
             self._move_front(node)
             return
@@ -324,51 +345,43 @@ class LRUCache:
         node = Node(key, value)
         self.map[key] = node
         self._add_front(node)
-
-
-if __name__ == "__main__":
-    c = LRUCache(2)
-    c.put(1, 1)
-    c.put(2, 2)
-    print(c.get(1))  # 1
-    c.put(3, 3)
-    print(c.get(2))  # -1
-    c.put(4, 4)
-    print(c.get(1), c.get(3), c.get(4))  # -1 3 4
 ```
 
-### 数据结构模型
+### Data Structure Model
 
-```text
-HashMap: key -> Node*
+- `map[key] = node` lets us locate an entry in average O(1)
+- the doubly linked list stores entries in recency order
+- `head` and `tail` sentinels remove boundary branches for insertions and removals
 
-DoubleList:
-head <-> n1 <-> n2 <-> ... <-> nk <-> tail
-^ 最近使用(MRU)                        最久未使用(LRU) ^
-```
+### Loop / State Invariant
 
-### 循环不变量
+At all times:
 
-- 链表从头到尾按“新 -> 旧”排列
-- 哈希表中的每个 key 都指向链表中唯一节点
-- 链表节点数 == 哈希表元素数
+1. every key in the map points to exactly one real list node
+2. every real list node belongs to exactly one key in the map
+3. nodes are ordered from MRU near `head` to LRU near `tail`
 
-### 关键操作原子化
+Correctness is mostly about preserving these three facts after each operation.
 
-- `remove(node)`：把任意节点从链表摘下（O(1)）
-- `add_front(node)`：把节点插到头部（O(1)）
-- `move_to_front(node)`：`remove + add_front`（O(1)）
-- `pop_back()`：删除尾前节点（真实 LRU）（O(1)）
-## 实践指南 / 步骤
+### Why atomic list operations matter
 
-1. 定义双向节点：`key, value, prev, next`
-2. 建立两个哨兵节点 `head/tail`，避免边界特判
-3. 用 `dict/map` 保存 `key -> node`
-4. `get` 命中后移动节点到头部
-5. `put` 新键前先检查容量，必要时 `pop_back` 并从 map 删除
-6. 每次插入都放头部，表示最近访问
+If `_remove`, `_add_front`, `_move_front`, and `_pop_lru` are correct, then:
 
-Python 最小可运行示例：
+- `get` becomes "lookup + move"
+- `put` becomes "update or evict + insert"
+
+That decomposition keeps the implementation defendable and debuggable.
+
+## Practice Guide / Steps
+
+1. Build a doubly linked list with `head` and `tail` sentinels.
+2. Store `key -> node` in a hash table.
+3. Implement `_remove(node)` and `_add_front(node)` first.
+4. Implement `_move_front(node)` and `_pop_lru()` from those primitives.
+5. In `get`, return `-1` on miss; otherwise move the node to the front.
+6. In `put`, update if the key exists; otherwise evict from the tail when full, then insert the new node at the front.
+
+Runnable Python example (`lru_cache.py`):
 
 ```python
 class Node:
@@ -383,27 +396,26 @@ class LRUCache:
     def __init__(self, capacity: int):
         self.cap = capacity
         self.map = {}
-        self.head = Node()  # MRU side sentinel
-        self.tail = Node()  # LRU side sentinel
+        self.head = Node()
+        self.tail = Node()
         self.head.next = self.tail
         self.tail.prev = self.head
 
-    def _remove(self, node: Node) -> None:
-        p, n = node.prev, node.next
-        p.next = n
-        n.prev = p
+    def _remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
 
-    def _add_front(self, node: Node) -> None:
+    def _add_front(self, node):
         node.prev = self.head
         node.next = self.head.next
         self.head.next.prev = node
         self.head.next = node
 
-    def _move_front(self, node: Node) -> None:
+    def _move_front(self, node):
         self._remove(node)
         self._add_front(node)
 
-    def _pop_lru(self) -> Node:
+    def _pop_lru(self):
         node = self.tail.prev
         self._remove(node)
         return node
@@ -435,138 +447,239 @@ if __name__ == "__main__":
     c = LRUCache(2)
     c.put(1, 1)
     c.put(2, 2)
-    print(c.get(1))  # 1
+    print(c.get(1))
     c.put(3, 3)
-    print(c.get(2))  # -1
+    print(c.get(2))
 ```
 
 ---
 
-## E — Engineering（工程应用）
+## Explanation / Why This Works
 
-### 场景 1：接口响应短期缓存（Python）
+The whole design comes from splitting two responsibilities that no single simple structure can satisfy alone:
 
-**背景**：热点接口短时间内重复请求同参数。  
-**为什么适用**：最近访问的数据命中概率高，LRU 能在固定内存内保留热键。
+- the hash table answers "where is this key?"
+- the doubly linked list answers "which key is newest or oldest?"
+
+Because nodes can be removed and inserted in O(1), and keys can be located in O(1) on average, the combined operations also stay O(1) on average.
+
+---
+
+## E - Engineering (Real-world Scenarios)
+
+### Scenario 1: short-lived API response cache (Python)
+
+**Background**: a backend service caches recent endpoint results.  
+**Why it fits**: lookups and recency refreshes must stay cheap under load.
 
 ```python
-import time
+from collections import OrderedDict
 
-cache = {}
 
-def fetch_user_profile(uid: int) -> dict:
-    # 假设这里是慢查询
-    time.sleep(0.02)
-    return {"uid": uid, "name": f"user-{uid}"}
+class TinyLRU:
+    def __init__(self, cap):
+        self.cap = cap
+        self.data = OrderedDict()
 
-print(fetch_user_profile(7))
+    def get(self, key):
+        if key not in self.data:
+            return None
+        self.data.move_to_end(key, last=False)
+        return self.data[key]
+
+    def put(self, key, value):
+        if key in self.data:
+            self.data[key] = value
+            self.data.move_to_end(key, last=False)
+            return
+        if len(self.data) == self.cap:
+            self.data.popitem(last=True)
+        self.data[key] = value
+        self.data.move_to_end(key, last=False)
 ```
 
-### 场景 2：服务端配置中心本地缓存（Go）
+### Scenario 2: service configuration hot cache (Go)
 
-**背景**：微服务频繁读取配置，远端拉取有网络开销。  
-**为什么适用**：最近使用配置更可能继续被访问，LRU 控制本地缓存体积。
+**Background**: a service keeps the most recently requested config entries in memory.  
+**Why it fits**: fast hits and cheap eviction are more important than perfect historical statistics.
 
 ```go
 package main
 
-import "fmt"
+import (
+	"container/list"
+	"fmt"
+)
+
+type entry struct {
+	key string
+	val string
+}
 
 func main() {
-	// 实际工程中可把 LRU 封装成 config client 的一层
-	fmt.Println("config cache ready with LRU policy")
+	ll := list.New()
+	pos := map[string]*list.Element{}
+	put := func(key, val string, cap int) {
+		if e, ok := pos[key]; ok {
+			e.Value = entry{key: key, val: val}
+			ll.MoveToFront(e)
+			return
+		}
+		if ll.Len() == cap {
+			back := ll.Back()
+			delete(pos, back.Value.(entry).key)
+			ll.Remove(back)
+		}
+		pos[key] = ll.PushFront(entry{key: key, val: val})
+	}
+	put("a", "1", 2)
+	put("b", "2", 2)
+	put("c", "3", 2)
+	fmt.Println(ll.Front().Value)
 }
 ```
 
-### 场景 3：前端页面数据缓存（JavaScript）
+### Scenario 3: frontend page-data cache (JavaScript)
 
-**背景**：单页应用切换路由时，希望复用最近看过的数据。  
-**为什么适用**：最近页面最可能被返回访问，LRU 可以减少重复请求。
+**Background**: a browser view keeps recently opened page data to avoid refetching.  
+**Why it fits**: the UI needs cheap updates when users revisit one of the recent pages.
 
 ```javascript
-const pageState = new Map();
-pageState.set("feed?page=1", { items: [1, 2, 3] });
-console.log(pageState.get("feed?page=1"));
+class TinyLRU {
+  constructor(capacity) {
+    this.cap = capacity;
+    this.map = new Map();
+  }
+
+  get(key) {
+    if (!this.map.has(key)) return undefined;
+    const value = this.map.get(key);
+    this.map.delete(key);
+    this.map.set(key, value);
+    return value;
+  }
+
+  put(key, value) {
+    if (this.map.has(key)) this.map.delete(key);
+    else if (this.map.size === this.cap) {
+      const lruKey = this.map.keys().next().value;
+      this.map.delete(lruKey);
+    }
+    this.map.set(key, value);
+  }
+}
 ```
 
 ---
 
-## R — Reflection（反思与深入）
+## R - Reflection (Complexity, Alternatives, Tradeoffs)
 
-### 复杂度分析
+### Complexity
 
-- `get`：哈希查找 + 链表移动，平均 `O(1)`
-- `put`：哈希查找/插入 + 链表插删，平均 `O(1)`
-- 空间复杂度：`O(capacity)`
+- `get`: average `O(1)`
+- `put`: average `O(1)`
+- Space: `O(capacity)`
 
-### 替代方案对比
+### Alternatives
 
-| 方案 | `get` | `put` | 问题 |
-| --- | --- | --- | --- |
-| 仅哈希表 + 时间戳 | O(1) | 淘汰常需 O(n) 扫描 | 逐出慢 |
-| 仅链表 | O(n) | O(1) | 查找慢 |
-| 哈希表 + 双向链表 | O(1) | O(1) | 实现稍复杂但最稳 |
+| Method | Lookup | Recency update | Eviction | Notes |
+| --- | --- | --- | --- | --- |
+| Array only | O(n) | O(n) | O(1) or O(n) | poor for updates |
+| Linked list only | O(n) | O(1) | O(1) | poor for lookup |
+| Hash table only | O(1) | hard | hard | no order information |
+| Hash table + doubly linked list | O(1) avg | O(1) | O(1) | intended solution |
 
-### 常见错误思路
+### Common mistakes
 
-- 命中 `get` 后忘记“提升新鲜度”（不移动到头部）
-- `put` 已有 key 时只改值，不调整最近使用顺序
-- 淘汰时只删链表节点，忘删哈希表映射（产生脏指针）
-- 容量为 `0` 时未处理，导致逻辑异常
+1. Forgetting to move a key to the front after `get`.
+2. Updating the list but not the hash table, or vice versa.
+3. Using a singly linked list and then discovering arbitrary removal is no longer O(1).
+4. Forgetting to store `key` inside the node, making eviction cleanup harder.
 
-### 为什么该方法最工程可行
+### Why this is the best practical method
 
-- 性能稳定：常数时间行为可预期
-- 可扩展：容易加 TTL、统计命中率、并发锁
-- 结构清晰：拆成原子操作后便于单测与排障
+It directly matches the two required capabilities:
 
----
+- key lookup
+- ordered eviction
 
-## 常见问题与注意事项（FAQ）
-
-### Q1：为什么需要双向链表，单向不行吗？
-
-单向链表删除任意节点需要前驱指针，通常要先遍历。双向链表可 O(1) 删除任意已知节点。
-
-### Q2：为什么要存 `key` 在链表节点里？
-
-淘汰尾节点时，需要从哈希表删除对应 key。若节点不存 key，就无法 O(1) 删除 map 项。
-
-### Q3：这题和 LFU 有什么区别？
-
-LRU 按“最近访问时间”淘汰，LFU 按“访问频次”淘汰。LFU 维护结构更复杂，更新成本更高。
+No simpler structure covers both without sacrificing one of the O(1) requirements.
 
 ---
 
-## 最佳实践与建议
+## FAQ and Notes
 
-- 强制使用哨兵头尾，避免空链与单节点特判
-- 把链表原子操作私有化：`remove/add_front/move/pop_back`
-- 写操作序列单测而不是只测最终状态
-- 先保证正确性，再讨论并发与锁粒度
+1. **Why do we need a doubly linked list instead of a singly linked list?**  
+   Because removing an arbitrary node in O(1) requires access to its predecessor and successor.
 
----
+2. **Why must the node store the `key` as well as the `value`?**  
+   When evicting from the tail, we must also delete the key from the hash table.
 
-## S — Summary（总结）
-
-核心收获：
-
-1. LRU 的本质是“访问新鲜度排序 + 固定容量淘汰”。
-2. 达到 `O(1)` 的关键在于哈希表与双向链表组合，而非单一结构。
-3. 代码的稳定性来自不变量维护：顺序一致、映射一致、容量一致。
-4. 该题是工程缓存（本地热点数据、配置缓存、页面缓存）的基础模型。
-5. 掌握这题后，可自然进阶到 TTL-LRU、并发 LRU、LFU 等变体。
-
-推荐延伸阅读：
-
-- LeetCode 460 `LFU Cache`
-- `Redis` 淘汰策略文档（allkeys-lru / volatile-lru）
-- 《Designing Data-Intensive Applications》缓存章节
-- 系统设计中的本地缓存与一致性策略资料
+3. **How is this different from LFU?**  
+   LRU tracks recency only; LFU tracks usage frequency and usually needs a more complex structure.
 
 ---
 
-## 多语言可运行实现
+## Best Practices
+
+- Implement and test the four atomic list operations before `get` and `put`.
+- Use sentinels to remove edge-case branches at the list ends.
+- Keep the map and list updates in the same logical block.
+- Test edge cases: repeated `put` on same key, capacity 1, and capacity 0.
+
+---
+
+## S - Summary
+
+- LRU cache design is fundamentally a two-structure coordination problem.
+- The hash table gives O(1) average lookup.
+- The doubly linked list gives O(1) recency updates and O(1) tail eviction.
+- Once the atomic operations are correct, the whole design becomes straightforward.
+
+### Further Reading
+
+- LeetCode 146. LRU Cache
+- LeetCode 460. LFU Cache
+- Python `OrderedDict`
+- Go `container/list`
+
+---
+
+## Conclusion
+
+If you can explain why a hash table alone fails, why a linked list alone fails, and why the combined structure succeeds, then you understand the cache design, not just the answer.
+
+---
+
+## References
+
+- https://leetcode.com/problems/lru-cache/
+- https://docs.python.org/3/library/collections.html#collections.OrderedDict
+- https://pkg.go.dev/container/list
+- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+
+---
+
+## Meta Info
+
+- **Reading time**: 14-18 min
+- **Tags**: Hot100, LRU, hash table, doubly linked list, LeetCode 146
+- **SEO keywords**: LRU Cache, hash table + doubly linked list, O(1) get put, LeetCode 146, Hot100
+- **Meta description**: A derivation-first ACERS guide to LRU Cache using hash-table lookup and doubly linked list recency tracking, with runnable multi-language implementations.
+
+---
+
+## CTA
+
+After this article, do three drills:
+
+1. Re-implement `_remove`, `_add_front`, and `_pop_lru` without looking.
+2. Test the cache with repeated `put` on the same key.
+3. Compare this design with LFU to understand why LFU needs more bookkeeping.
+
+---
+
+## Multi-language Implementations (Python / C / C++ / Go / Rust / JS)
 
 ### Python
 
@@ -619,7 +732,7 @@ class LRUCache:
         if self.cap == 0:
             return
         node = self.map.get(key)
-        if node:
+        if node is not None:
             node.val = value
             self._move_front(node)
             return
@@ -957,11 +1070,11 @@ struct Node {
 struct LRUCache {
     cap: usize,
     len: usize,
-    map: HashMap<i32, usize>, // key -> node index
+    map: HashMap<i32, usize>,
     nodes: Vec<Node>,
     free: Vec<usize>,
-    head: usize, // sentinel
-    tail: usize, // sentinel
+    head: usize,
+    tail: usize,
 }
 
 impl LRUCache {
@@ -1169,13 +1282,3 @@ console.log(c.get(2)); // -1
 c.put(4, 4);
 console.log(c.get(1), c.get(3), c.get(4)); // -1 3 4
 ```
-
----
-
-## 行动号召（CTA）
-
-建议你现在直接做三步巩固：
-
-1. 不看答案手写一版 `remove / add_front / pop_back`。  
-2. 用操作序列压测边界：重复 put 同 key、容量为 1、容量为 0。  
-3. 进阶挑战 LeetCode 460（LFU），比较两者结构复杂度差异。  
