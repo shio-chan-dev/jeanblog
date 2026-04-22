@@ -83,11 +83,9 @@ This pattern transfers well to scheduling, layout generation, resource placement
 
 ## Core Concepts
 
-- **Row-by-row placement**: each DFS layer handles exactly one row
-- **`queens[row] = col`**: the queen position chosen for one row
-- **`cols[col]`**: whether a column is already occupied
-- **`diag1[row - col + n - 1]`**: whether a main diagonal is occupied
-- **`diag2[row + col]`**: whether an anti-diagonal is occupied
+- **Row-based DFS**: each layer decides only where the current row should place its queen
+- **`queens[row] = col`**: the partial answer we are building
+- **Legality checking**: first write a scanning version, then upgrade it to O(1) state lookups
 - **Leaf-only collection**: only a fully filled board is a valid answer
 
 ---
@@ -96,166 +94,259 @@ This pattern transfers well to scheduling, layout generation, resource placement
 
 ### How To Build The Solution From Scratch
 
-#### Step 1: Start from the smallest example that reveals conflicts
+#### Step 1: Write the roughest row-based DFS skeleton first
 
-Take `n = 4`.
+Before worrying about every constraint, answer one smaller question:
 
-If the queen in row `0` is placed at column `1`, then the next rows immediately inherit three kinds of restrictions:
+> what should one recursion layer mean?
 
-- column `1` is unavailable
-- one main diagonal is unavailable
-- one anti-diagonal is unavailable
-
-So this is not “search any empty cell on the whole board”.
-It is:
-
-- for the current row, which column may I place a queen in?
-- after that choice, which future positions become forbidden?
-
-#### Step 2: Why should the DFS be row-based?
-
-Because each row must contain exactly one queen.
-
-That means one DFS layer can be defined as “place the queen for row `row`”:
+Because each row must eventually contain exactly one queen, the cleanest choice is: `dfs(row)` means “we are deciding where to place the queen for row `row`”.
 
 ```python
 def dfs(row: int) -> None:
-    ...
+    if row == n:
+        return
+
+    for col in range(n):
+        dfs(row + 1)
 ```
 
-This is much cleaner than searching arbitrary cells across the board.
+This version is obviously incomplete, but it locks in the real subproblem:
 
-#### Step 3: What must the partial answer remember?
+- one recursion layer handles one row
+- the choice in that layer is which column to use
 
-If we place queens row by row, we only need to remember which column was chosen for each row:
+#### Step 2: Record what choice the current layer made
+
+Now the code needs a place to remember where earlier rows put their queens.
 
 ```python
 queens = [-1] * n
+
+def dfs(row: int) -> None:
+    if row == n:
+        return
+
+    for col in range(n):
+        queens[row] = col
+        dfs(row + 1)
+        queens[row] = -1
 ```
 
-Here `queens[row] = col` means the queen in `row` is placed at column `col`.
+This is still not correct yet, but the backtracking structure is finally visible:
 
-#### Step 4: How do we detect column conflicts?
+- `queens[row] = col` means “row `row` chooses column `col`”
+- recurse means “go decide the next row”
+- restoring `-1` means “undo this choice before trying another column”
 
-The first easy restriction is the column:
+#### Step 3: When does one branch become a full answer?
+
+When `row == n`, rows `0 .. n-1` have all been assigned.
+At that point we should not just `return`; we should convert `queens` into a board and collect it.
+
+```python
+def build_board() -> List[str]:
+    board = []
+    for col in queens:
+        board.append("." * col + "Q" + "." * (n - col - 1))
+    return board
+
+def dfs(row: int) -> None:
+    if row == n:
+        res.append(build_board())
+        return
+```
+
+At this stage the reader already knows:
+
+- what the recursion index means
+- what the partial answer means
+- what the leaf node must do
+
+#### Step 4: What is still missing? A legality check
+
+If we stop here, the search will also collect illegal boards.
+Two queens may land in the same column or on the same diagonal, and this code would still continue.
+
+So the next missing piece is not more framework.
+It is the simplest possible legality check:
+
+```python
+def is_valid(row: int, col: int) -> bool:
+    for prev_row in range(row):
+        prev_col = queens[prev_row]
+        if prev_col == col:
+            return False
+        if abs(prev_row - row) == abs(prev_col - col):
+            return False
+    return True
+```
+
+Then place it back into DFS:
+
+```python
+for col in range(n):
+    if not is_valid(row, col):
+        continue
+    queens[row] = col
+    dfs(row + 1)
+    queens[row] = -1
+```
+
+This version is already complete, correct, and runnable.
+It is just not optimized yet.
+
+#### Step 5: Explain diagonal conflict before talking about diagonal arrays
+
+This is where many readers get lost.
+`diag1` and `diag2` should not appear before the diagonal idea itself is stable.
+
+For one board cell `(row, col)`, a queen attacks not only the whole column, but also two slanted line families:
+
+- the top-left to bottom-right family
+- the top-right to bottom-left family
+
+If two cells lie on the same diagonal, then the absolute row difference equals the absolute column difference.
+
+That means this line in the naive checker:
+
+```python
+if abs(prev_row - row) == abs(prev_col - col):
+    return False
+```
+
+is really answering:
+
+> does `(row, col)` lie on the same diagonal as a previously placed queen?
+
+Once that geometric fact is clear, the later state arrays feel earned instead of magical.
+
+#### Step 6: This works, so where is it slow?
+
+The bottleneck is `is_valid()`.
+
+Every time we try one candidate `(row, col)`, we scan all previous rows again.
+That means we keep recomputing the same facts over and over.
+
+The first fact we can cache is column occupancy:
 
 ```python
 cols = [False] * n
 ```
 
-If `cols[col]` is already true, that column cannot be used again.
+Then column conflict becomes one direct lookup:
 
-#### Step 5: Why do we need two diagonal arrays?
+```python
+if cols[col]:
+    continue
+```
 
-A queen attacks along two diagonal directions.
-For a board cell `(row, col)`:
+This is the direction of the optimization:
 
-- all cells on the same main diagonal share `row - col`
-- all cells on the same anti-diagonal share `row + col`
+- the naive version scans old state
+- the optimized version queries occupancy state directly
 
-So we can store both families explicitly:
+#### Step 7: Now introduce the two diagonal arrays and what they store
+
+Only now is it the right time to define `diag1` and `diag2`, because now they have a clear job:
+replace the diagonal part of `is_valid()`.
+
+Every cell `(row, col)` belongs to one line from each diagonal family:
+
+- **main diagonal**: top-left to bottom-right, where all cells share the same `row - col`
+- **anti-diagonal**: top-right to bottom-left, where all cells share the same `row + col`
+
+So we can store whether one diagonal line is already occupied:
 
 ```python
 diag1 = [False] * (2 * n - 1)
 diag2 = [False] * (2 * n - 1)
 ```
 
-The index mapping is:
+These arrays do not store board cells.
+They store line occupancy:
 
-- main diagonal: `row - col + n - 1`
-- anti-diagonal: `row + col`
+- `diag1[i]` means main diagonal `i` is occupied
+- `diag2[i]` means anti-diagonal `i` is occupied
 
-#### Step 6: When is one branch complete?
-
-When `row == n`, all rows already have a valid queen placement.
-
-```python
-if row == n:
-    res.append(build_board())
-    return
-```
-
-That is the only moment when the current state is a full solution.
-
-#### Step 7: What choices are available in one layer?
-
-For the current row, the only choice is which column to use:
-
-```python
-for col in range(n):
-    ...
-```
-
-Each `col` represents one possible placement for the current row.
-
-#### Step 8: How do we test legality in O(1)?
-
-For one candidate `(row, col)`, compute the two diagonal indices:
+Because `row - col` can be negative, we shift it into a valid array range:
 
 ```python
 d1 = row - col + n - 1
 d2 = row + col
 ```
 
-If any state is already occupied, skip immediately:
+The order matters:
+
+- first observe the two diagonal families on the board
+- then notice the `row - col` / `row + col` rules
+- only then compress them into array indices
+
+#### Step 8: Replace the naive checker with O(1) state lookups
+
+Now we can swap out the scan-based checker entirely.
+
+First prepare the three occupancy structures:
 
 ```python
-if cols[col] or diag1[d1] or diag2[d2]:
-    continue
+cols = [False] * n
+diag1 = [False] * (2 * n - 1)
+diag2 = [False] * (2 * n - 1)
 ```
 
-This is the core optimization.
-We no longer scan the board to check attacks.
-
-#### Step 9: What state must be updated and undone?
-
-After choosing a legal column, update all related states:
+Then use them directly inside the DFS loop:
 
 ```python
-queens[row] = col
-cols[col] = True
-diag1[d1] = True
-diag2[d2] = True
+for col in range(n):
+    d1 = row - col + n - 1
+    d2 = row + col
+    if cols[col] or diag1[d1] or diag2[d2]:
+        continue
+
+    queens[row] = col
+    cols[col] = True
+    diag1[d1] = True
+    diag2[d2] = True
+
+    dfs(row + 1)
+
+    queens[row] = -1
+    cols[col] = False
+    diag1[d1] = False
+    diag2[d2] = False
 ```
 
-After the recursive call returns, undo all of them:
+This is where the optimized version grows naturally out of the earlier one:
 
-```python
-cols[col] = False
-diag1[d1] = False
-diag2[d2] = False
-queens[row] = -1
-```
+- `queens` is still the main state
+- `cols / diag1 / diag2` are helper states for O(1) legality checks
+- the choose / recurse / undo skeleton stays exactly the same
 
-Just like in permutation problems, the main state and helper state must be restored together.
+#### Step 9: Walk one branch slowly and watch the states move together
 
-#### Step 10: Walk one branch slowly
+Still use `n = 4`, and suppose row `0` chooses column `1`.
 
-Still using `n = 4`:
-
-Suppose row `0` places a queen at column `1`.
-
-Then:
+Then four facts change together:
 
 - `queens[0] = 1`
 - `cols[1] = True`
-- main diagonal index `0 - 1 + 3 = 2` becomes occupied
-- anti-diagonal index `0 + 1 = 1` becomes occupied
+- `diag1[0 - 1 + 3] = diag1[2] = True`
+- `diag2[0 + 1] = diag2[1] = True`
 
-Now row `1` tries every column:
+Now look at row `1`:
 
-- column `1` is blocked by `cols`
+- `col = 1` is blocked by `cols[1]`
 - some columns are blocked by `diag1`
-- some are blocked by `diag2`
+- some columns are blocked by `diag2`
 
-Only the surviving columns continue to deeper rows.
+Only columns that survive all three checks can continue.
 
-That is the whole search model:
+That means the final rhythm of the whole solution is very stable:
 
-- choose one legal column in the current row
-- mark all constraints
-- recurse to the next row
-- undo everything on return
+- choose one column for the current row
+- check three occupancy states
+- update the main state and helper states together
+- undo all of them together on return
 
 ### Assemble the Full Code
 
