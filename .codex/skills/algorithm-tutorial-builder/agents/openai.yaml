@@ -1,0 +1,4 @@
+interface:
+  display_name: "Algorithm Tutorial Builder"
+  short_description: "v0.1.1 - Build teaching-first algorithm tutorial drafts"
+  default_prompt: "Use $algorithm-tutorial-builder to turn this algorithm problem into a teaching-first guided build that starts from problem evidence, grows through a minimal correct base, shows the first correct naive version before any optimization, and ends with assembled full code and a reference answer, without forcing ACERS blog structure at this stage."
