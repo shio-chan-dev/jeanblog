@@ -319,16 +319,10 @@ class MultiHeadAttention(nn.Module):
 - 注意力之后更强的逐位置非线性变换
 - 更稳定的深层堆叠结构
 
-## Step 6：注意力只是加权混合，所以加上 FFN、残差和归一化
+## Step 6：注意力只是加权混合，所以先补上 FFN
 
 注意力本质上是在做“根据权重混合别人的值向量”。  
 如果只有这一层，表达力还不够。
-
-所以我们再补三样东西：
-
-1. **FFN**：逐位置的非线性变换
-2. **Residual**：保留原输入路径
-3. **LayerNorm**：让深层训练更稳
 
 这里的 **FFN, feed-forward network** 可以先理解成：
 
@@ -352,8 +346,30 @@ class FeedForward(nn.Module):
         return self.net(x)
 ```
 
-接着把它接进 encoder block。  
-这一步不要只定义成员变量，而是把信息流真正接起来：
+这一版现在能做到：
+
+- 给每个位置再做一次逐位置非线性变换，而不是只靠注意力做加权混合
+
+但它还缺：
+
+- 一个能稳定堆叠 attention 和 FFN 的外壳
+- 残差路径
+- 归一化
+
+## Step 7：有了 attention 和 FFN，还要把它们包成稳定的 encoder block
+
+到这一步，我们手里已经有两个部件了：
+
+- `MultiHeadAttention`
+- `FeedForward`
+
+但如果直接把它们生硬串起来，深层训练会不稳定。  
+所以这里再补两样结构件：
+
+1. **Residual**：保留原输入路径
+2. **LayerNorm**：让每一层输出保持更稳定的尺度
+
+真正的接法是：
 
 - 先做 self-attention
 - 再做残差 + 归一化
@@ -390,7 +406,7 @@ class EncoderBlock(nn.Module):
 - 目标侧自己的 masked self-attention
 - 目标侧读取编码器输出的 cross-attention
 
-## Step 7：光有 encoder 不够，decoder 还要“边看自己边看源序列”
+## Step 8：光有 encoder 不够，decoder 还要“边看自己边看源序列”
 
 解码器块和编码器块最大的差别是多了一层 **cross-attention**。
 
@@ -447,16 +463,7 @@ class DecoderBlock(nn.Module):
 
 ## 最后一段：把前面的模块接成一份最小可运行 Transformer
 
-下面这份代码包含：
-
-- token embedding
-- sinusoidal positional encoding
-- multi-head self-attention
-- encoder block
-- decoder block
-- causal mask
-- 最终词表投影
-
+下面不再重新解释每个模块的职责，只把前面已经长出来的部件按最终可运行形态汇总到一起。  
 它不是工业级实现，但已经是一个真正可运行的最小 encoder-decoder Transformer。
 
 ```python
@@ -716,8 +723,9 @@ if __name__ == "__main__":
 3. **Self-Attention** 解决“一个位置不会读取其他位置”的问题
 4. **Mask** 解决“解码器会偷看未来”的问题
 5. **Multi-Head** 解决“一个相似度空间不够用”的问题
-6. **FFN + Residual + LayerNorm** 解决“只有加权混合、深层不稳定”的问题
-7. **Cross-Attention** 解决“目标侧还不会读取源序列”的问题
+6. **FFN** 解决“只有加权混合、表达力不够”的问题
+7. **Residual + LayerNorm + EncoderBlock** 解决“模块能不能稳定堆起来”的问题
+8. **Cross-Attention + DecoderBlock** 解决“目标侧还不会读取源序列”的问题
 
 这就是为什么它最后会长成 encoder-decoder 的样子，而不是作者事先拍脑袋定出来的结构。
 

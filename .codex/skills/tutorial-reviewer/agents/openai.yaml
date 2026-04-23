@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tutorial Reviewer"
+  short_description: "v0.1.0 - Review guided-build tutorial drafts"
+  default_prompt: "Use $tutorial-reviewer to review a tutorial draft as a tutorial, not as a rewrite. Determine whether it passes or fails the guided-build teaching bar, check opening discipline, incremental code growth, late-step integrity, and final-code placement, then return a fixed-format verdict with concrete issues and revision targets."
