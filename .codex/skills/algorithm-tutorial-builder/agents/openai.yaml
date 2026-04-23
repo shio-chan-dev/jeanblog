@@ -1,4 +1,4 @@
 interface:
   display_name: "Algorithm Tutorial Builder"
-  short_description: "v0.2.0 - Build publishable algorithm and method tutorials"
-  default_prompt: "Use $algorithm-tutorial-builder to draft a publishable long-form, derivation-first tutorial about one concrete algorithm, method, or data structure for this Hugo blog, choose a repo-aligned path with minimal front matter and basic taxonomy, grow the mechanism step by step when code matters, and converge to one final runnable complete implementation or minimal complete demo without switching into LeetCode-style problem-solution framing."
+  short_description: "v0.2.1 - Build publishable algorithm and method tutorials"
+  default_prompt: "Use $algorithm-tutorial-builder to draft a publishable long-form, derivation-first tutorial about one concrete algorithm, method, or data structure for this Hugo blog. Start from one tiny task or concrete pressure point rather than target-audience/background/glossary material, introduce terms and formulas only at first real use, keep even late steps truly incremental by showing the current integrated code for new modules or blocks, and converge to one final runnable complete implementation or minimal complete demo without switching into LeetCode-style problem-solution framing."

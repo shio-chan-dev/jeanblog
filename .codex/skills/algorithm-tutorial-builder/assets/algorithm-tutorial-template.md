@@ -19,20 +19,25 @@ tags: ["<topic-tag-1>", "<topic-tag-2>"]
 - <Clear, keyword-rich, specific>
 
 ## Opening Summary
-- <1-2 sentences in the body: value + target reader>
+- <1-2 sentences in the body: what pressure/task the tutorial starts from and what complete build it will reach. Do not preview a component list.>
 
-## Target Audience
-- <Beginner/Intermediate/Advanced + who benefits>
-
-## Background / Motivation
-- <Why this algorithm matters, where it fails without it. Include a measurable bottleneck.>
+## Opening Pressure / Tiny Task
+- <Start the teaching body here. Use one tiny task, worked mini-scenario, or concrete pressure point.>
+- <The reader should feel what is missing before any glossary, audience, or theory section appears.>
 
 ## Quick Mastery Map (60-120s)
+- <Optional and short. Use only after the opening pressure, never before it.>
 - Problem shape:
 - Core idea in one line:
 - When to use / avoid:
 - Complexity headline (with n or d):
 - Common pitfall (with example or failure case):
+
+## Target Audience
+- <Optional and short. Place only after the opening pressure if it still helps.>
+
+## Background / Motivation
+- <Optional and compressed. Keep to a few lines and place only after the opening pressure. Include a measurable bottleneck.>
 
 ## Deepening Focus (PDKH Ladder)
 - Choose 1-2 core concepts to deepen (name them).
@@ -45,6 +50,7 @@ tags: ["<topic-tag-1>", "<topic-tag-2>"]
 - Isomorphism to a known template (what it reduces to):
 
 ## Core Concepts and Terms
+- <Optional synthesis section only if the tutorial still needs one later. Do not place this before the first build steps.>
 - Definitions:
 - Invariants or key properties:
 - Data structures:
@@ -66,6 +72,8 @@ tags: ["<topic-tag-1>", "<topic-tag-2>"]
   - Step 2: what first abstraction, state, or module fixes that?
   - Step 3: what new mechanism must be added next?
   - Step 4: after each addition, what can the current build already do and what does it still lack?
+- Introduce each term, formula, and module at first real use inside the relevant step.
+- If a later step adds a new module or block, show the current complete version of that unit after the addition. Do not stop at a constructor stub or a 2-3 line local fragment when the real growth point is a full class/block/forward.
 - One explicit trace, worked walkthrough, or mechanism example:
 
 ## Final Runnable Implementation / Minimal Complete Demo

@@ -28,6 +28,8 @@ the relevant numbered step. Do not create a standalone bridge section for it.
 
 - Show the smallest input or scenario where the method becomes interesting.
 - Make the reader feel what must be decided at each step.
+- This should be the first teaching section after front matter.
+- Do not insert `Target Audience`, `Background`, `Core Concepts`, or a formula summary before it.
 
 ### 2. Introduce the first necessary state
 
@@ -43,6 +45,7 @@ the relevant numbered step. Do not create a standalone bridge section for it.
 
 - This may be a base case, transition, loop, or invariant update.
 - Introduce it as the answer to one concrete question.
+- If the named term or formula first becomes necessary here, introduce it here rather than in an earlier glossary section.
 
 ### 5. Walk one branch or state trace
 
@@ -54,6 +57,12 @@ the relevant numbered step. Do not create a standalone bridge section for it.
 - Combine the fragments into one runnable complete implementation, end-to-end module, or minimal complete demo.
 - This is the first time the reader sees the whole code in one block.
 - Do not add a second duplicated “reference answer” section after it.
+
+### 7. Keep late steps truly incremental
+
+- Early steps are not the only ones that must grow code.
+- If Step 5, Step 6, or Step 7 introduces a real new module, class, or block, show the full current version of that unit after the addition.
+- Do not let late steps collapse into architecture talk plus a tiny local fragment when the reader actually needs the integrated code for that stage.
 
 ## Adapter Questions By Algorithm Family
 
@@ -92,13 +101,17 @@ the relevant numbered step. Do not create a standalone bridge section for it.
 Avoid:
 
 - technique label in the first sentence
+- `target audience`, `background`, or `core concepts` as the first teaching section
+- opening summary that previews all later components or modules
 - standalone `naive idea` / `naive-to-optimized` section before the guided-build steps
+- standalone glossary or formula sheet before the first build step
 - code before the mental model
 - unexplained state variables
 - conclusion-first summaries with no derivation path
 - full code before fragment-by-fragment construction
 - separate “steps”, “implementation”, and “code” sections that repeat the same material
 - duplicated `assembled code` / `reference answer` endings
+- late-step pseudo-growth where a new module is announced but the actual integrated block only appears in the final code
 
 ## Quick Check
 
@@ -108,3 +121,5 @@ Before delivery, confirm the article answers:
 2. What question does each step answer?
 3. After each addition, what can the current build already do and what still remains?
 4. How do the fragments converge to one final runnable complete implementation or demo?
+5. Are any terms, formulas, or modules introduced before the pressure actually requires them?
+6. Do late steps still show the current real code growth rather than reverting to high-level explanation?

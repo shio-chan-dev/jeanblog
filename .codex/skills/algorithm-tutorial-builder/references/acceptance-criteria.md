@@ -2,15 +2,18 @@
 
 ## Required Content
 - Title is clear and keyword-rich.
-- Target audience is explicit.
-- Background/motivation explains why the algorithm matters.
-- Core concepts and terms are defined.
+- The first teaching section after front matter starts from one tiny task, trace, or concrete pressure point.
+- If target audience/background are present, they do not appear before the first tiny task.
+- If core concepts and terms are present, they do not appear as an upfront glossary before the first build steps.
 - A derivation section is present and shows how the method is built from the pressure, limitation, or missing capability before naming the final trick.
 - The derivation section does not collapse into a one-problem OJ tutorial.
 - When code materially helps, the tutorial includes one final runnable complete implementation, end-to-end module, or minimal complete demo.
 - Explanation/principles and correctness reasoning are included.
+- Opening summary does not preview the full later component list.
 - No standalone `naive idea`, `naive approach`, or `naive-to-optimized` section appears; any such contrast is embedded inside the guided-build steps.
+- Terms, formulas, and module names are introduced at first real use rather than front-loaded in a preview section.
 - If earlier code fragments are used, they clearly feed into the final implementation/demo rather than ending in duplicate assembled/reference code sections.
+- If a later step introduces a new module, class, or block, that step shows the integrated current version of that unit instead of only a tiny local fragment or constructor stub.
 - Complexity analysis is included (time and space).
 - Worked example or trace is included.
 - Common pitfalls/edge cases are covered.
