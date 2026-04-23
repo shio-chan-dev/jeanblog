@@ -1,26 +1,17 @@
 ---
-title: "Hot100: N-Queens (Columns / Diagonals Backtracking ACERS Guide)"
+title: "Hot100: N-Queens Incremental Build Tutorial"
 date: 2026-04-19T14:49:56+08:00
 draft: false
 categories: ["LeetCode"]
 tags: ["Hot100", "backtracking", "constraint search", "board", "N-Queens", "LeetCode 51"]
-description: "A practical guide to LeetCode 51 that builds the N-Queens solution from scratch using row-by-row placement and O(1) conflict checks for columns and diagonals."
+description: "A teaching-first incremental tutorial for LeetCode 51 that grows the N-Queens solution from a tiny example and a minimal DFS into column and diagonal state optimization."
 keywords: ["N-Queens", "backtracking", "constraint search", "diagonals", "LeetCode 51", "Hot100"]
 ---
 
-> **Subtitle / Summary**
-> `51. N-Queens` is one of the key Hot100 constraint-search problems. The real lesson is not “try random cells on a board”, but “place queens row by row and turn conflict checks into O(1) state lookups”.
+`51. N-Queens` is best learned by watching the code grow one small step at a time.
+This tutorial keeps only the teaching path: tiny example, first DFS skeleton, first correct version, column-only optimization, then full diagonal-state optimization.
 
-- **Reading time**: 16-20 min
-- **Tags**: `Hot100`, `backtracking`, `constraint search`, `board`, `N-Queens`
-- **SEO keywords**: N-Queens, backtracking, constraint search, diagonals, LeetCode 51
-- **Meta description**: Learn LeetCode 51 by building row-based constraint search with columns and two diagonal state arrays, plus runnable multi-language solutions.
-
----
-
-## A — Algorithm
-
-### Problem Restatement
+## Problem
 
 The `n`-queens puzzle asks us to place `n` queens on an `n x n` chessboard so that no two queens attack each other.
 
@@ -30,19 +21,11 @@ Each solution is represented as a list of strings where:
 - `'Q'` means a queen
 - `'.'` means an empty cell
 
-### Input / Output
-
-| Name | Type | Description |
-| --- | --- | --- |
-| n | int | board size and number of queens |
-| return | `List[List[str]]` | all valid board configurations |
-
 ### Example 1
 
 ```text
 input: n = 4
 output: [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
-explanation: there are two distinct valid solutions for the 4-queens puzzle
 ```
 
 ### Example 2
@@ -58,49 +41,56 @@ output: [["Q"]]
 
 ---
 
-## Target Readers
+## Build It Step by Step
 
-- learners who know basic DFS but have not yet built a true multi-constraint search template
-- developers whose first instinct on board problems is still “scan the whole board every time”
-- readers who want a reusable model for row-by-row placement with O(1) legality checks
+### Step 1: Start from the smallest example that exposes the conflict
 
-## Background / Motivation
+First ask one concrete question:
 
-`51. N-Queens` is a classic constraint-search problem.
+> what actually becomes difficult after we place one queen?
 
-Unlike simpler backtracking tasks, every new queen introduces several simultaneous restrictions:
+Use `n = 4`.
+Suppose row `0` places a queen at column `1`.
 
-- its column is blocked
-- one main diagonal is blocked
-- one anti-diagonal is blocked
+Then the next rows do **not** get to choose from “all empty cells”.
+They immediately inherit three restrictions:
 
-That is why this problem matters.
-It teaches a general pattern:
+- column `1` is blocked
+- one top-left to bottom-right diagonal is blocked
+- one top-right to bottom-left diagonal is blocked
 
-> place objects in a fixed order, and make conflict checks constant-time through explicit state
+That tiny example already tells us the real structure of the problem:
 
-This pattern transfers well to scheduling, layout generation, resource placement, and other constrained search tasks.
+- we will place queens in some fixed order
+- each choice blocks future positions
 
-## Core Concepts
+This step does not add code yet.
+It gives us the evidence that the recursion should be about **one row at a time**, not about scanning arbitrary board cells.
 
-- **Row-based DFS**: each layer decides only where the current row should place its queen
-- **`queens[row] = col`**: the partial answer we are building
-- **Legality checking**: first write a scanning version, then upgrade it to O(1) state lookups
-- **Leaf-only collection**: only a fully filled board is a valid answer
+Current version can do:
 
----
+- identify the shape of the search space
 
-## C — Concepts
+It still lacks:
 
-### How To Build The Solution From Scratch
+- a named subproblem
+- any code structure
 
-#### Step 1: Write the roughest row-based DFS skeleton first
+### Step 2: Define the smaller subproblem and write the smallest DFS skeleton
 
-Before worrying about every constraint, answer one smaller question:
+Now solve one specific problem:
 
-> what should one recursion layer mean?
+> if rows `0 .. row-1` have already been handled, what remains?
 
-Because each row must eventually contain exactly one queen, the cleanest choice is: `dfs(row)` means “we are deciding where to place the queen for row `row`”.
+The remaining work is:
+
+> choose a column for row `row`, then solve the same problem for row `row + 1`
+
+So one recursion layer should mean:
+
+- `dfs(row)` = “decide where to place the queen for row `row`”
+
+Add this minimal skeleton:
 
 ```python
 def dfs(row: int) -> None:
@@ -111,38 +101,71 @@ def dfs(row: int) -> None:
         dfs(row + 1)
 ```
 
-This version is obviously incomplete, but it locks in the real subproblem:
+This is the first real code.
 
-- one recursion layer handles one row
-- the choice in that layer is which column to use
+Current version can do:
 
-#### Step 2: Record what choice the current layer made
+- express the row-based search structure
+- show that one layer corresponds to one row
 
-Now the code needs a place to remember where earlier rows put their queens.
+It still lacks:
+
+- any record of what columns were chosen
+- any way to collect an answer
+- any legality check
+
+### Step 3: Add the first state variable for the partial answer
+
+Now solve the next problem:
+
+> if we choose a column in one row, where do we store that choice?
+
+Add one state:
 
 ```python
 queens = [-1] * n
-
-def dfs(row: int) -> None:
-    if row == n:
-        return
-
-    for col in range(n):
-        queens[row] = col
-        dfs(row + 1)
-        queens[row] = -1
 ```
 
-This is still not correct yet, but the backtracking structure is finally visible:
+Here:
 
-- `queens[row] = col` means “row `row` chooses column `col`”
-- recurse means “go decide the next row”
-- restoring `-1` means “undo this choice before trying another column”
+- `queens[row] = col` means row `row` chooses column `col`
+- `-1` means that row is still unset
 
-#### Step 3: When does one branch become a full answer?
+In the previous DFS skeleton, replace the loop body with:
 
-When `row == n`, rows `0 .. n-1` have all been assigned.
-At that point we should not just `return`; we should convert `queens` into a board and collect it.
+```python
+for col in range(n):
+    queens[row] = col
+    dfs(row + 1)
+    queens[row] = -1
+```
+
+Now the code has the real backtracking rhythm:
+
+- choose
+- recurse
+- undo
+
+Current version can do:
+
+- remember one full path of choices
+- undo one choice before trying the next one
+
+It still lacks:
+
+- any leaf action when a full placement is reached
+- any legality check
+
+### Step 4: Add the completion rule and build the board
+
+Next question:
+
+> when does one branch become a complete answer?
+
+When `row == n`, every row already has a chosen column.
+So now we need one helper that converts `queens` into the required board strings.
+
+Add:
 
 ```python
 def build_board() -> List[str]:
@@ -150,156 +173,197 @@ def build_board() -> List[str]:
     for col in queens:
         board.append("." * col + "Q" + "." * (n - col - 1))
     return board
-
-def dfs(row: int) -> None:
-    if row == n:
-        res.append(build_board())
-        return
 ```
 
-At this stage the reader already knows:
+Then replace the base case:
 
-- what the recursion index means
-- what the partial answer means
-- what the leaf node must do
+```python
+if row == n:
+    res.append(build_board())
+    return
+```
 
-#### Step 4: What is still missing? A legality check
+At this point the code knows:
 
-If we stop here, the search will also collect illegal boards.
-Two queens may land in the same column or on the same diagonal, and this code would still continue.
+- what the partial state means
+- when a branch is complete
+- how to materialize one answer
 
-So the next missing piece is not more framework.
-It is the simplest possible legality check:
+Current version can do:
+
+- collect a full board if the choices happen to be legal
+
+It still lacks:
+
+- a rule that filters out illegal placements
+
+### Step 5: Add the first correct legality check
+
+Now solve the most urgent missing problem:
+
+> how do we know whether `(row, col)` is legal?
+
+The simplest correct answer is:
+
+- compare it with every queen already placed in rows `0 .. row-1`
+
+Add:
 
 ```python
 def is_valid(row: int, col: int) -> bool:
     for prev_row in range(row):
         prev_col = queens[prev_row]
+
         if prev_col == col:
             return False
+
         if abs(prev_row - row) == abs(prev_col - col):
             return False
+
     return True
 ```
 
-Then place it back into DFS:
+Now go back to the loop and replace it with:
 
 ```python
 for col in range(n):
     if not is_valid(row, col):
         continue
+
     queens[row] = col
     dfs(row + 1)
     queens[row] = -1
 ```
 
-This version is already complete, correct, and runnable.
-It is just not optimized yet.
+This is the first complete correct version.
+It is not optimized, but it is already a valid solver.
 
-#### Step 5: Explain diagonal conflict before talking about diagonal arrays
+Current version can do:
 
-This is where many readers get lost.
-`diag1` and `diag2` should not appear before the diagonal idea itself is stable.
+- generate all correct answers
+- reject same-column conflicts
+- reject diagonal conflicts
 
-For one board cell `(row, col)`, a queen attacks not only the whole column, but also two slanted line families:
+It still lacks:
 
-- the top-left to bottom-right family
-- the top-right to bottom-left family
+- efficient checking
 
-If two cells lie on the same diagonal, then the absolute row difference equals the absolute column difference.
+### Step 6: Keep the diagonal scan for now, but optimize columns first
 
-That means this line in the naive checker:
+Now ask a narrower optimization question:
 
-```python
-if abs(prev_row - row) == abs(prev_col - col):
-    return False
-```
+> which repeated check is the easiest to remove first?
 
-is really answering:
+The easiest one is the column check.
+We do **not** have to optimize everything at once.
 
-> does `(row, col)` lie on the same diagonal as a previously placed queen?
-
-Once that geometric fact is clear, the later state arrays feel earned instead of magical.
-
-#### Step 6: This works, so where is it slow?
-
-The bottleneck is `is_valid()`.
-
-Every time we try one candidate `(row, col)`, we scan all previous rows again.
-That means we keep recomputing the same facts over and over.
-
-The first fact we can cache is column occupancy:
+Add one new state:
 
 ```python
 cols = [False] * n
 ```
 
-Then column conflict becomes one direct lookup:
+This stores:
+
+- `cols[col] == True` if that column is already occupied
+
+Because column checking no longer needs the full `is_valid()`, split the old helper into a diagonal-only check.
+
+Add:
 
 ```python
-if cols[col]:
-    continue
+def is_valid_diagonal(row: int, col: int) -> bool:
+    for prev_row in range(row):
+        prev_col = queens[prev_row]
+        if abs(prev_row - row) == abs(prev_col - col):
+            return False
+    return True
 ```
 
-This is the direction of the optimization:
+Now replace the previous loop with this middle version:
 
-- the naive version scans old state
-- the optimized version queries occupancy state directly
+```python
+for col in range(n):
+    if cols[col]:
+        continue
+    if not is_valid_diagonal(row, col):
+        continue
 
-#### Step 7: Now introduce the two diagonal arrays and what they store
+    queens[row] = col
+    cols[col] = True
 
-Only now is it the right time to define `diag1` and `diag2`, because now they have a clear job:
-replace the diagonal part of `is_valid()`.
+    dfs(row + 1)
 
-Every cell `(row, col)` belongs to one line from each diagonal family:
+    cols[col] = False
+    queens[row] = -1
+```
 
-- **main diagonal**: top-left to bottom-right, where all cells share the same `row - col`
-- **anti-diagonal**: top-right to bottom-left, where all cells share the same `row + col`
+This middle version matters.
+It proves the final optimized answer does not appear in one jump.
 
-So we can store whether one diagonal line is already occupied:
+Current version can do:
+
+- check columns in O(1)
+- still check diagonals by scanning previous rows
+
+It still lacks:
+
+- O(1) diagonal checks
+
+### Step 7: Define what the diagonal helper arrays should store
+
+Now solve the next specific problem:
+
+> if columns can be cached, what exactly should be cached for diagonals?
+
+First stabilize the concept before the arrays:
+
+- cells on the same **main diagonal** share the same `row - col`
+- cells on the same **anti-diagonal** share the same `row + col`
+
+So the helper arrays should not store cells.
+They should store whether one diagonal line is already occupied.
+
+Add:
 
 ```python
 diag1 = [False] * (2 * n - 1)
 diag2 = [False] * (2 * n - 1)
 ```
 
-These arrays do not store board cells.
-They store line occupancy:
+Their meanings are:
 
-- `diag1[i]` means main diagonal `i` is occupied
-- `diag2[i]` means anti-diagonal `i` is occupied
+- `diag1[i]`: main diagonal `i` is occupied
+- `diag2[i]`: anti-diagonal `i` is occupied
 
-Because `row - col` can be negative, we shift it into a valid array range:
+Now add the index mapping:
 
 ```python
 d1 = row - col + n - 1
 d2 = row + col
 ```
 
-The order matters:
+The `+ n - 1` is only there because `row - col` can be negative.
 
-- first observe the two diagonal families on the board
-- then notice the `row - col` / `row + col` rules
-- only then compress them into array indices
+Current version can do:
 
-#### Step 8: Replace the naive checker with O(1) state lookups
+- name exactly what information the diagonal helpers should store
 
-Now we can swap out the scan-based checker entirely.
+It still lacks:
 
-First prepare the three occupancy structures:
+- wiring those helpers into the DFS loop
 
-```python
-cols = [False] * n
-diag1 = [False] * (2 * n - 1)
-diag2 = [False] * (2 * n - 1)
-```
+### Step 8: Replace the diagonal scan with full O(1) state checks
 
-Then use them directly inside the DFS loop:
+Now we can remove the last scan-based part.
+
+In the previous middle version, replace the legality section and the choose/undo section with:
 
 ```python
 for col in range(n):
     d1 = row - col + n - 1
     d2 = row + col
+
     if cols[col] or diag1[d1] or diag2[d2]:
         continue
 
@@ -316,41 +380,59 @@ for col in range(n):
     diag2[d2] = False
 ```
 
-This is where the optimized version grows naturally out of the earlier one:
+This is the final optimized version.
 
-- `queens` is still the main state
-- `cols / diag1 / diag2` are helper states for O(1) legality checks
-- the choose / recurse / undo skeleton stays exactly the same
+Notice what changed relative to the middle version:
 
-#### Step 9: Walk one branch slowly and watch the states move together
+- `cols[col]` stayed exactly the same
+- the diagonal scan was replaced by `diag1[d1]` and `diag2[d2]`
+- choose and undo now update three helper states instead of one
 
-Still use `n = 4`, and suppose row `0` chooses column `1`.
+Current version can do:
 
-Then four facts change together:
+- check columns in O(1)
+- check both diagonal families in O(1)
+- keep the same row-based DFS skeleton as all earlier versions
+
+It still lacks:
+
+- nothing essential; this is the finished logic
+
+### Step 9: Walk one branch slowly
+
+Still use `n = 4`.
+Suppose row `0` chooses column `1`.
+
+Then these facts become true together:
 
 - `queens[0] = 1`
 - `cols[1] = True`
 - `diag1[0 - 1 + 3] = diag1[2] = True`
 - `diag2[0 + 1] = diag2[1] = True`
 
-Now look at row `1`:
+Now move to row `1`.
 
-- `col = 1` is blocked by `cols[1]`
-- some columns are blocked by `diag1`
-- some columns are blocked by `diag2`
+When the loop tries candidates:
 
-Only columns that survive all three checks can continue.
+- `col = 1` fails immediately because `cols[1]` is already true
+- some candidates fail because `diag1[d1]` is true
+- some candidates fail because `diag2[d2]` is true
 
-That means the final rhythm of the whole solution is very stable:
+Only columns that survive all three tests continue.
 
-- choose one column for the current row
-- check three occupancy states
-- update the main state and helper states together
-- undo all of them together on return
+That is the whole final rhythm:
 
-### Assemble the Full Code
+- choose a column for the current row
+- check stored occupancy state
+- recurse
+- undo everything before the next choice
 
-Now assemble the full runnable version.
+---
+
+## Assemble the Full Code
+
+This is the first full version assembled from the incremental steps above.
+The logic still shows the build path clearly.
 
 ```python
 from typing import List
@@ -364,7 +446,7 @@ def solve_n_queens(n: int) -> List[List[str]]:
     diag2 = [False] * (2 * n - 1)
 
     def build_board() -> List[str]:
-        board: List[str] = []
+        board = []
         for col in queens:
             board.append("." * col + "Q" + "." * (n - col - 1))
         return board
@@ -377,27 +459,31 @@ def solve_n_queens(n: int) -> List[List[str]]:
         for col in range(n):
             d1 = row - col + n - 1
             d2 = row + col
+
             if cols[col] or diag1[d1] or diag2[d2]:
                 continue
 
             queens[row] = col
-            cols[col] = diag1[d1] = diag2[d2] = True
+            cols[col] = True
+            diag1[d1] = True
+            diag2[d2] = True
+
             dfs(row + 1)
-            cols[col] = diag1[d1] = diag2[d2] = False
+
             queens[row] = -1
+            cols[col] = False
+            diag1[d1] = False
+            diag2[d2] = False
 
     dfs(0)
     return res
-
-
-if __name__ == "__main__":
-    print(solve_n_queens(4))
-    print(solve_n_queens(1))
 ```
 
-### Reference Answer
+## Reference Answer
 
-For the LeetCode submission form:
+This is the submission-style LeetCode version.
+The logic is the same as the assembled code above.
+Only the outer wrapper changes.
 
 ```python
 from typing import List
@@ -412,7 +498,7 @@ class Solution:
         diag2 = [False] * (2 * n - 1)
 
         def build_board() -> List[str]:
-            board: List[str] = []
+            board = []
             for col in queens:
                 board.append("." * col + "Q" + "." * (n - col - 1))
             return board
@@ -425,570 +511,22 @@ class Solution:
             for col in range(n):
                 d1 = row - col + n - 1
                 d2 = row + col
+
                 if cols[col] or diag1[d1] or diag2[d2]:
                     continue
 
                 queens[row] = col
-                cols[col] = diag1[d1] = diag2[d2] = True
+                cols[col] = True
+                diag1[d1] = True
+                diag2[d2] = True
+
                 dfs(row + 1)
-                cols[col] = diag1[d1] = diag2[d2] = False
+
                 queens[row] = -1
+                cols[col] = False
+                diag1[d1] = False
+                diag2[d2] = False
 
         dfs(0)
         return res
-```
-
-### What method did we just build?
-
-Formally, it is:
-
-- backtracking
-- constraint search
-- row-by-row placement with explicit occupancy state
-
-But the most important reusable model is:
-
-- one layer handles exactly one row
-- `queens` stores the main placement state
-- `cols`, `diag1`, and `diag2` make legality checks O(1)
-- only a fully placed board is collected
-
----
-
-## E — Engineering
-
-### Scenario 1: Puzzle or board-layout prototype (Python)
-
-**Background**: a puzzle generator or teaching demo needs all valid non-conflicting placements on a small grid.  
-**Why this fits**: N-Queens is itself a classic constrained layout generation task.
-
-```python
-from typing import List
-
-
-def layouts(n: int) -> List[List[int]]:
-    res: List[List[int]] = []
-    pos = [-1] * n
-    cols = [False] * n
-    d1 = [False] * (2 * n - 1)
-    d2 = [False] * (2 * n - 1)
-
-    def dfs(row: int) -> None:
-        if row == n:
-            res.append(pos.copy())
-            return
-        for col in range(n):
-            a = row - col + n - 1
-            b = row + col
-            if cols[col] or d1[a] or d2[b]:
-                continue
-            pos[row] = col
-            cols[col] = d1[a] = d2[b] = True
-            dfs(row + 1)
-            cols[col] = d1[a] = d2[b] = False
-            pos[row] = -1
-
-    dfs(0)
-    return res
-
-
-print(layouts(4))
-```
-
-### Scenario 2: Grid device-placement prototype (Go)
-
-**Background**: a system prototype places one device per row on a grid, with column and diagonal-style interference constraints.  
-**Why this fits**: the structure is the same as N-Queens: row-based placement with multiple constant-time constraints.
-
-```go
-package main
-
-import "fmt"
-
-func placeDevices(n int) [][]int {
-	res := make([][]int, 0)
-	pos := make([]int, n)
-	for i := range pos {
-		pos[i] = -1
-	}
-	cols := make([]bool, n)
-	d1 := make([]bool, 2*n-1)
-	d2 := make([]bool, 2*n-1)
-
-	var dfs func(int)
-	dfs = func(row int) {
-		if row == n {
-			snapshot := append([]int(nil), pos...)
-			res = append(res, snapshot)
-			return
-		}
-		for col := 0; col < n; col++ {
-			a := row - col + n - 1
-			b := row + col
-			if cols[col] || d1[a] || d2[b] {
-				continue
-			}
-			pos[row] = col
-			cols[col], d1[a], d2[b] = true, true, true
-			dfs(row + 1)
-			cols[col], d1[a], d2[b] = false, false, false
-			pos[row] = -1
-		}
-	}
-
-	dfs(0)
-	return res
-}
-
-func main() {
-	fmt.Println(placeDevices(4))
-}
-```
-
-### Scenario 3: Frontend constrained layout preview (JavaScript)
-
-**Background**: a frontend design tool wants to preview all non-conflicting placements for one widget per row in a small grid.  
-**Why this fits**: once the constraints can be encoded as columns and two diagonal-like sets, the same template applies.
-
-```javascript
-function placements(n) {
-  const res = [];
-  const pos = new Array(n).fill(-1);
-  const cols = new Array(n).fill(false);
-  const d1 = new Array(2 * n - 1).fill(false);
-  const d2 = new Array(2 * n - 1).fill(false);
-
-  function dfs(row) {
-    if (row === n) {
-      res.push([...pos]);
-      return;
-    }
-    for (let col = 0; col < n; col += 1) {
-      const a = row - col + n - 1;
-      const b = row + col;
-      if (cols[col] || d1[a] || d2[b]) continue;
-      pos[row] = col;
-      cols[col] = d1[a] = d2[b] = true;
-      dfs(row + 1);
-      cols[col] = d1[a] = d2[b] = false;
-      pos[row] = -1;
-    }
-  }
-
-  dfs(0);
-  return res;
-}
-
-console.log(placements(4));
-```
-
----
-
-## R — Reflection
-
-### Complexity Analysis
-
-- Search time complexity: often summarized as `O(n!)`
-  - each row tries candidate columns
-  - pruning removes many branches in practice, but the upper bound is still permutation-like
-- Auxiliary space: `O(n)`
-  - `queens`, recursion depth, and occupancy states are all linear in `n`
-- If board construction is counted:
-  - each solution costs `O(n^2)` to materialize as strings
-  - total output cost also depends on the number of valid solutions
-
-### Comparison with other approaches
-
-| Method | Idea | Advantage | Limitation |
-| --- | --- | --- | --- |
-| Column + diagonal occupancy arrays | O(1) legality checks | stable and readable | slightly longer setup |
-| Scan the board every time | test attacks by walking rows/diagonals | easy to invent | slower and messier |
-| Bitmask optimization | compress state into integers | very fast | worse teaching fit for a first pass |
-
-### Common Mistakes
-
-- searching arbitrary board cells instead of fixing one row per layer
-- getting diagonal index formulas wrong
-- updating columns but forgetting to update or undo diagonals
-- storing `queens` directly instead of converting it into board strings
-
-## Common Questions and Pitfalls
-
-### Why is row-by-row placement enough?
-
-Because each row must contain exactly one queen.
-Once the recursion layer is defined as a row, the row constraint disappears from the search logic and only columns plus diagonals remain.
-
-### Why is the main diagonal index `row - col + n - 1`?
-
-All cells on one main diagonal share `row - col`, but that value can be negative.
-Adding `n - 1` shifts it safely into the array range `0 .. 2n-2`.
-
-### Can this problem be optimized further?
-
-Yes.
-
-A bitmask version can compress:
-
-- columns
-- main diagonals
-- anti-diagonals
-
-into integers for faster search.
-But the boolean-array version is the right one to stabilize first.
-
-## Best Practices and Recommendations
-
-- on grid-constraint problems, first ask whether recursion can be fixed by row or by column
-- convert repeated legality checks into array or bitmask lookups whenever possible
-- restore the main state and helper states together after recursion
-- get the `n = 4` version fully stable before touching bitmask optimizations
-
----
-
-## S — Summary
-
-- `51. N-Queens` is fundamentally a constraint-search template
-- once recursion is row-based, each layer becomes “which column is legal here?”
-- `cols`, `diag1`, and `diag2` reduce conflict checks to O(1)
-- the final answer is a string board, not just a raw column-position array
-- this pattern transfers well to many layout and placement problems
-
-### Recommended Follow-Up Reading
-
-- `52. N-Queens II`: same search structure, but count only
-- `46. Permutations`: another example of main state plus helper-state recovery
-- `37. Sudoku Solver`: a richer multi-constraint board search
-- bitmask N-Queens: the next optimization step after the boolean-array version is stable
-
-### Action Step
-
-Before learning the bitmask version, rewrite the boolean-array version from memory once.
-If you can explain why the recursion is row-based and why three occupancy states are enough, the core model is already solid.
-
----
-
-## Multi-Language Implementations
-
-### Python
-
-```python
-from typing import List
-
-
-def solve_n_queens(n: int) -> List[List[str]]:
-    res: List[List[str]] = []
-    queens = [-1] * n
-    cols = [False] * n
-    diag1 = [False] * (2 * n - 1)
-    diag2 = [False] * (2 * n - 1)
-
-    def build_board() -> List[str]:
-        board: List[str] = []
-        for col in queens:
-            board.append("." * col + "Q" + "." * (n - col - 1))
-        return board
-
-    def dfs(row: int) -> None:
-        if row == n:
-            res.append(build_board())
-            return
-        for col in range(n):
-            d1 = row - col + n - 1
-            d2 = row + col
-            if cols[col] or diag1[d1] or diag2[d2]:
-                continue
-            queens[row] = col
-            cols[col] = diag1[d1] = diag2[d2] = True
-            dfs(row + 1)
-            cols[col] = diag1[d1] = diag2[d2] = False
-            queens[row] = -1
-
-    dfs(0)
-    return res
-```
-
-### C
-
-```c
-#include <stdbool.h>
-#include <stdlib.h>
-
-typedef struct {
-    char*** data;
-    int* col_sizes;
-    int size;
-    int capacity;
-} Result;
-
-static void push_result(Result* res, int* queens, int n) {
-    if (res->size == res->capacity) {
-        res->capacity *= 2;
-        res->data = realloc(res->data, sizeof(char**) * res->capacity);
-        res->col_sizes = realloc(res->col_sizes, sizeof(int) * res->capacity);
-    }
-
-    char** board = malloc(sizeof(char*) * n);
-    for (int row = 0; row < n; ++row) {
-        board[row] = malloc(n + 1);
-        for (int col = 0; col < n; ++col) {
-            board[row][col] = '.';
-        }
-        board[row][n] = '\0';
-        board[row][queens[row]] = 'Q';
-    }
-
-    res->data[res->size] = board;
-    res->col_sizes[res->size] = n;
-    res->size += 1;
-}
-
-static void dfs(int n, int row, int* queens, bool* cols, bool* diag1, bool* diag2, Result* res) {
-    if (row == n) {
-        push_result(res, queens, n);
-        return;
-    }
-
-    for (int col = 0; col < n; ++col) {
-        int d1 = row - col + n - 1;
-        int d2 = row + col;
-        if (cols[col] || diag1[d1] || diag2[d2]) {
-            continue;
-        }
-
-        queens[row] = col;
-        cols[col] = diag1[d1] = diag2[d2] = true;
-        dfs(n, row + 1, queens, cols, diag1, diag2, res);
-        cols[col] = diag1[d1] = diag2[d2] = false;
-        queens[row] = -1;
-    }
-}
-
-char*** solveNQueens(int n, int* returnSize, int** returnColumnSizes) {
-    Result res = {0};
-    res.capacity = 16;
-    res.data = malloc(sizeof(char**) * res.capacity);
-    res.col_sizes = malloc(sizeof(int) * res.capacity);
-
-    int* queens = malloc(sizeof(int) * n);
-    for (int i = 0; i < n; ++i) {
-        queens[i] = -1;
-    }
-    bool* cols = calloc(n, sizeof(bool));
-    bool* diag1 = calloc(2 * n - 1, sizeof(bool));
-    bool* diag2 = calloc(2 * n - 1, sizeof(bool));
-
-    dfs(n, 0, queens, cols, diag1, diag2, &res);
-
-    free(queens);
-    free(cols);
-    free(diag1);
-    free(diag2);
-
-    *returnSize = res.size;
-    *returnColumnSizes = res.col_sizes;
-    return res.data;
-}
-```
-
-### C++
-
-```cpp
-#include <string>
-#include <vector>
-using namespace std;
-
-class Solution {
-public:
-    vector<vector<string>> solveNQueens(int n) {
-        vector<vector<string>> res;
-        vector<int> queens(n, -1);
-        vector<int> cols(n, 0);
-        vector<int> diag1(2 * n - 1, 0);
-        vector<int> diag2(2 * n - 1, 0);
-        dfs(0, n, queens, cols, diag1, diag2, res);
-        return res;
-    }
-
-private:
-    vector<string> buildBoard(const vector<int>& queens, int n) {
-        vector<string> board(n, string(n, '.'));
-        for (int row = 0; row < n; ++row) {
-            board[row][queens[row]] = 'Q';
-        }
-        return board;
-    }
-
-    void dfs(int row, int n, vector<int>& queens, vector<int>& cols, vector<int>& diag1, vector<int>& diag2, vector<vector<string>>& res) {
-        if (row == n) {
-            res.push_back(buildBoard(queens, n));
-            return;
-        }
-        for (int col = 0; col < n; ++col) {
-            int d1 = row - col + n - 1;
-            int d2 = row + col;
-            if (cols[col] || diag1[d1] || diag2[d2]) {
-                continue;
-            }
-            queens[row] = col;
-            cols[col] = diag1[d1] = diag2[d2] = 1;
-            dfs(row + 1, n, queens, cols, diag1, diag2, res);
-            cols[col] = diag1[d1] = diag2[d2] = 0;
-            queens[row] = -1;
-        }
-    }
-};
-```
-
-### Go
-
-```go
-package main
-
-func solveNQueens(n int) [][]string {
-	res := make([][]string, 0)
-	queens := make([]int, n)
-	for i := range queens {
-		queens[i] = -1
-	}
-	cols := make([]bool, n)
-	diag1 := make([]bool, 2*n-1)
-	diag2 := make([]bool, 2*n-1)
-
-	buildBoard := func() []string {
-		board := make([]string, n)
-		for row, col := range queens {
-			bytes := make([]byte, n)
-			for i := range bytes {
-				bytes[i] = '.'
-			}
-			bytes[col] = 'Q'
-			board[row] = string(bytes)
-		}
-		return board
-	}
-
-	var dfs func(int)
-	dfs = func(row int) {
-		if row == n {
-			res = append(res, buildBoard())
-			return
-		}
-		for col := 0; col < n; col++ {
-			d1 := row - col + n - 1
-			d2 := row + col
-			if cols[col] || diag1[d1] || diag2[d2] {
-				continue
-			}
-			queens[row] = col
-			cols[col], diag1[d1], diag2[d2] = true, true, true
-			dfs(row + 1)
-			cols[col], diag1[d1], diag2[d2] = false, false, false
-			queens[row] = -1
-		}
-	}
-
-	dfs(0)
-	return res
-}
-```
-
-### Rust
-
-```rust
-impl Solution {
-    pub fn solve_n_queens(n: i32) -> Vec<Vec<String>> {
-        let n = n as usize;
-        let mut res: Vec<Vec<String>> = Vec::new();
-        let mut queens = vec![usize::MAX; n];
-        let mut cols = vec![false; n];
-        let mut diag1 = vec![false; 2 * n - 1];
-        let mut diag2 = vec![false; 2 * n - 1];
-
-        fn build_board(queens: &[usize]) -> Vec<String> {
-            let n = queens.len();
-            let mut board = Vec::with_capacity(n);
-            for &col in queens.iter() {
-                let mut row = vec![b'.'; n];
-                row[col] = b'Q';
-                board.push(String::from_utf8(row).unwrap());
-            }
-            board
-        }
-
-        fn dfs(
-            row: usize,
-            n: usize,
-            queens: &mut Vec<usize>,
-            cols: &mut Vec<bool>,
-            diag1: &mut Vec<bool>,
-            diag2: &mut Vec<bool>,
-            res: &mut Vec<Vec<String>>,
-        ) {
-            if row == n {
-                res.push(build_board(queens));
-                return;
-            }
-            for col in 0..n {
-                let d1 = row + n - 1 - col;
-                let d2 = row + col;
-                if cols[col] || diag1[d1] || diag2[d2] {
-                    continue;
-                }
-                queens[row] = col;
-                cols[col] = true;
-                diag1[d1] = true;
-                diag2[d2] = true;
-                dfs(row + 1, n, queens, cols, diag1, diag2, res);
-                cols[col] = false;
-                diag1[d1] = false;
-                diag2[d2] = false;
-                queens[row] = usize::MAX;
-            }
-        }
-
-        dfs(0, n, &mut queens, &mut cols, &mut diag1, &mut diag2, &mut res);
-        res
-    }
-}
-```
-
-### JavaScript
-
-```javascript
-/**
- * @param {number} n
- * @return {string[][]}
- */
-var solveNQueens = function (n) {
-  const res = [];
-  const queens = new Array(n).fill(-1);
-  const cols = new Array(n).fill(false);
-  const diag1 = new Array(2 * n - 1).fill(false);
-  const diag2 = new Array(2 * n - 1).fill(false);
-
-  function buildBoard() {
-    return queens.map((col) => ".".repeat(col) + "Q" + ".".repeat(n - col - 1));
-  }
-
-  function dfs(row) {
-    if (row === n) {
-      res.push(buildBoard());
-      return;
-    }
-    for (let col = 0; col < n; col += 1) {
-      const d1 = row - col + n - 1;
-      const d2 = row + col;
-      if (cols[col] || diag1[d1] || diag2[d2]) continue;
-      queens[row] = col;
-      cols[col] = diag1[d1] = diag2[d2] = true;
-      dfs(row + 1);
-      cols[col] = diag1[d1] = diag2[d2] = false;
-      queens[row] = -1;
-    }
-  }
-
-  dfs(0);
-  return res;
-};
 ```
