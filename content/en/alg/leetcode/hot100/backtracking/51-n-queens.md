@@ -427,12 +427,7 @@ That is the whole final rhythm:
 - recurse
 - undo everything before the next choice
 
----
-
-## Assemble the Full Code
-
-This is the first full version assembled from the incremental steps above.
-The logic still shows the build path clearly.
+At this point, the code is already complete and runnable:
 
 ```python
 from typing import List
@@ -477,56 +472,4 @@ def solve_n_queens(n: int) -> List[List[str]]:
 
     dfs(0)
     return res
-```
-
-## Reference Answer
-
-This is the submission-style LeetCode version.
-The logic is the same as the assembled code above.
-Only the outer wrapper changes.
-
-```python
-from typing import List
-
-
-class Solution:
-    def solveNQueens(self, n: int) -> List[List[str]]:
-        res: List[List[str]] = []
-        queens = [-1] * n
-        cols = [False] * n
-        diag1 = [False] * (2 * n - 1)
-        diag2 = [False] * (2 * n - 1)
-
-        def build_board() -> List[str]:
-            board = []
-            for col in queens:
-                board.append("." * col + "Q" + "." * (n - col - 1))
-            return board
-
-        def dfs(row: int) -> None:
-            if row == n:
-                res.append(build_board())
-                return
-
-            for col in range(n):
-                d1 = row - col + n - 1
-                d2 = row + col
-
-                if cols[col] or diag1[d1] or diag2[d2]:
-                    continue
-
-                queens[row] = col
-                cols[col] = True
-                diag1[d1] = True
-                diag2[d2] = True
-
-                dfs(row + 1)
-
-                queens[row] = -1
-                cols[col] = False
-                diag1[d1] = False
-                diag2[d2] = False
-
-        dfs(0)
-        return res
 ```

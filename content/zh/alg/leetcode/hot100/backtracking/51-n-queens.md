@@ -424,12 +424,7 @@ for col in range(n):
 - 合法就一起更新主状态和辅助状态
 - 递归回来后再一起撤销
 
----
-
-## Assemble the Full Code
-
-这一版是把上面的增量步骤真正拼起来的第一份完整代码。
-它保留了明显的构建痕迹。
+走到这里，代码其实已经完整且可运行了：
 
 ```python
 from typing import List
@@ -474,55 +469,4 @@ def solve_n_queens(n: int) -> List[List[str]]:
 
     dfs(0)
     return res
-```
-
-## Reference Answer
-
-这一版只是更贴近 LeetCode 提交形式。
-逻辑和上面的 `Assemble the Full Code` 完全相同，没有新增任何新思路。
-
-```python
-from typing import List
-
-
-class Solution:
-    def solveNQueens(self, n: int) -> List[List[str]]:
-        res: List[List[str]] = []
-        queens = [-1] * n
-        cols = [False] * n
-        diag1 = [False] * (2 * n - 1)
-        diag2 = [False] * (2 * n - 1)
-
-        def build_board() -> List[str]:
-            board = []
-            for col in queens:
-                board.append("." * col + "Q" + "." * (n - col - 1))
-            return board
-
-        def dfs(row: int) -> None:
-            if row == n:
-                res.append(build_board())
-                return
-
-            for col in range(n):
-                d1 = row - col + n - 1
-                d2 = row + col
-
-                if cols[col] or diag1[d1] or diag2[d2]:
-                    continue
-
-                queens[row] = col
-                cols[col] = True
-                diag1[d1] = True
-                diag2[d2] = True
-
-                dfs(row + 1)
-
-                queens[row] = -1
-                cols[col] = False
-                diag1[d1] = False
-                diag2[d2] = False
-
-        dfs(0)
-        return res
 ```
