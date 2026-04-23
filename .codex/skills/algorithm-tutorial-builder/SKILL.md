@@ -10,7 +10,6 @@ Use when the user wants to learn or publish an algorithm solution as a true guid
 
 ## Bundled Resources
 - `docs/leetcode_std.md` for algorithm-post section expectations in this repo.
-- `.codex/skills/algorithm-problem-acers-blogger/references/derivation-first-tutorial.md` for the default guided-build ladder.
 - `.codex/skills/algorithm-tutorial-builder/references/incremental-build-contract.md` for the strict step template and anti-pattern checks.
 
 ## Workflow

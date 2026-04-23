@@ -1,6 +1,6 @@
 ---
 name: acers-blog-formatter
-description: v0.1.1 - Turn a stable teaching-first draft into a publishable Hugo ACERS post when the core tutorial logic is already correct and now needs ACERS-compatible blog structure, front matter, taxonomy, and reader-facing formatting.
+description: v0.1.2 - Turn a stable teaching-first draft into a publishable Hugo ACERS post when the core tutorial logic is already correct and now needs ACERS-compatible blog structure, front matter, taxonomy, and reader-facing formatting without reintroducing deprecated duplicate full-code sections.
 ---
 
 # ACERS Blog Formatter
@@ -29,7 +29,8 @@ Use when the tutorial logic is already stable and the next job is to make it pub
 5. Place the tutorial inside the correct reader-facing structure:
    - keep the problem block before `Target Readers`, `Background / Motivation`, or standalone `Core Concepts`,
    - keep the guided build inside `C — Concepts`,
-   - keep `Assemble the Full Code` and `Reference Answer` after the step-by-step derivation.
+   - preserve one final runnable code version,
+   - add `Assemble the Full Code` or `Reference Answer` only if the draft already needs them for real reader-facing value.
 6. Treat ACERS as a publishing shell:
    - keep the tutorial logic intact,
    - do not force a new derivation path just to fit section labels,
@@ -68,5 +69,5 @@ Use when the tutorial logic is already stable and the next job is to make it pub
 - Confirm the output is publishable Hugo Markdown with valid front matter.
 - Confirm the tutorial chain is preserved rather than flattened into a summary.
 - Confirm the problem block appears before audience/background sections.
-- Confirm `Assemble the Full Code` and `Reference Answer` remain after the guided build.
+- Confirm the formatter did not reintroduce duplicate full-code sections that the tutorial stage intentionally removed.
 - Confirm ACERS was applied as a publication structure rather than as a replacement for the reasoning flow.

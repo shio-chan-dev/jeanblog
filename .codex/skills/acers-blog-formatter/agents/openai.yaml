@@ -1,4 +1,4 @@
 interface:
   display_name: "ACERS Blog Formatter"
-  short_description: "v0.1.1 - Format stable tutorials into Hugo ACERS posts"
-  default_prompt: "Use $acers-blog-formatter to turn this stable teaching-first draft into a publishable Hugo ACERS post with valid front matter, the correct section order, preserved guided-build flow, and ACERS applied as the publication structure rather than as a rewrite of the tutorial logic."
+  short_description: "v0.1.2 - Format stable tutorials into Hugo ACERS posts"
+  default_prompt: "Use $acers-blog-formatter to turn this stable teaching-first draft into a publishable Hugo ACERS post with valid front matter, the correct section order, preserved guided-build flow, and ACERS applied as the publication structure rather than as a rewrite of the tutorial logic or a reason to reintroduce duplicate full-code sections."
