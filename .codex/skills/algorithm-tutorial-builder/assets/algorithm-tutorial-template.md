@@ -4,11 +4,22 @@
 > Include expert signals: abstraction, bounds intuition, decision criteria, and implementation realities.
 > Each major section must include at least one concrete anchor (number/constraint/formula/counterexample).
 
+## YAML Front Matter
+```yaml
+---
+title: "<clear, specific title>"
+date: 2026-01-01T00:00:00+08:00
+draft: false
+categories: ["<existing category>"]
+tags: ["<topic-tag-1>", "<topic-tag-2>"]
+---
+```
+
 ## Title
 - <Clear, keyword-rich, specific>
 
-## Subtitle / Summary
-- <1-2 sentences: value + target reader>
+## Opening Summary
+- <1-2 sentences in the body: value + target reader>
 
 ## Target Audience
 - <Beginner/Intermediate/Advanced + who benefits>
@@ -89,12 +100,7 @@
 - Practical limits (language/runtime quirks):
 - Typical optimizations and their risks (with example):
 
-## Engineering Scenarios
-1. Scenario A: background, why it fits, minimal code snippet.
-2. Scenario B: background, why it fits, minimal code snippet.
-3. Scenario C: background, why it fits, minimal code snippet.
-
-## Content Expansion Knobs (Use if below minimum reading time)
+## Deepening Knobs (Use if the tutorial still feels thin)
 - Deepen the chosen concepts with another PDKH step (e.g., formalization or counterexample).
 - Add a second worked example only if it is for the same chosen concept.
 - Add a quantified tradeoff table only if it compares variants of the same concept.
@@ -123,6 +129,3 @@
 
 ## References and Further Reading
 - ...
-
-## Call to Action
-- Try it, compare variants, or leave feedback.

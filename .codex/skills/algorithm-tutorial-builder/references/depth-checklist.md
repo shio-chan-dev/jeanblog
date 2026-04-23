@@ -24,5 +24,4 @@ Each major section must contain at least one concrete anchor. A concrete anchor 
 - Alternatives/Tradeoffs: include at least one quantified tradeoff.
 - Pitfalls: include at least one failure case example.
 - Summary: each takeaway must be actionable.
-- Reading time: compute estimate and ensure it is not below the threshold.
 - Deepening: identify 1-2 core concepts and apply the PDKH ladder steps to each.

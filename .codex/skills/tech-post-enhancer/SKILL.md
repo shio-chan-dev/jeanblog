@@ -1,12 +1,12 @@
 ---
 name: tech-post-enhancer
-description: v0.1.2 - Enhance a stable technical post when the teaching flow and ACERS-compatible blog structure are already in place and the user now wants stronger SEO, supporting sections, title polish, multi-language code, or engineering add-ons.
+description: v0.2.0 - Enhance a stable technical post when the core tutorial and minimal publishable structure are already in place and the user now wants stronger SEO, supporting sections, title polish, multi-language code, or engineering add-ons.
 ---
 
 # Tech Post Enhancer
 
 ## Trigger
-Use when a post is already structurally sound and the next goal is to make it stronger, richer, or more publishable without rewriting its core teaching logic. Typical triggers include SEO polish, CTA, better section names, more code languages, stronger summaries, FAQs, engineering applications, or extension sections. This stage assumes the post is already in ACERS or another repo-compatible publishable structure after its core derivation and final runnable code/demo are already in place.
+Use when a post is already structurally sound and the next goal is to make it stronger, richer, or more publishable without rewriting its core teaching logic. Typical triggers include SEO polish, CTA, better section names, more code languages, stronger summaries, FAQs, engineering applications, or extension sections. This stage assumes the post already has its core derivation, minimal publishable front matter, and final runnable code/demo in place.
 
 ## Bundled Resources
 - `docs/std.md` for general blog quality expectations.
@@ -42,7 +42,7 @@ Use when a post is already structurally sound and the next goal is to make it st
 - preserve core tutorial and structure
 - prefer high-signal additions over broad expansion
 - do not add new sections unless they materially improve the post
-- stage policy: enhancement happens after tutorial building and formatting, not before
+- stage policy: enhancement happens after tutorial building, not before
 
 ## Output Format
 - Enhancement Scope: `<requested upgrades>`
@@ -54,7 +54,7 @@ Use when a post is already structurally sound and the next goal is to make it st
 - Do not add fluff, generic inspiration, or repetitive summary paragraphs.
 - Do not add engineering scenarios or extra code languages with fake or non-runnable content.
 - Do not silently change taxonomy or file placement.
-- Do not automatically invoke `leetcode-tutorial-builder` or ACERS-formatting skills.
+- Do not automatically invoke tutorial-building skills.
 - Do not use enhancement work to compensate for a tutorial, derivation, or structure layer that is still weak.
 
 ## Verification

@@ -24,3 +24,8 @@
   Decision: Rename `algorithm-article-writer` to `algorithm-tutorial-builder`.
   Rationale: The skill no longer just writes an article shell. Its core job is to teach one concrete algorithm or method through derivation and incremental code growth, so `tutorial-builder` matches the actual responsibility better than `article-writer`.
   Scope: Rename `.codex/skills/algorithm-article-writer/` through the intermediate local rename to `.codex/skills/algorithm-tutorial-builder/`; update skill metadata, templates, prompts, and internal references.
+
+- Date: 2026-04-23
+  Decision: Remove `acers-blog-formatter` and let both tutorial builders output publishable posts directly.
+  Rationale: Path choice, slug, minimal front matter, and basic taxonomy are part of landing a tutorial in this repo. Keeping a separate formatter duplicated responsibility and forced an unnecessary extra stage.
+  Scope: Remove `.codex/skills/acers-blog-formatter/`; update `leetcode-tutorial-builder`, `algorithm-tutorial-builder`, `tech-post-enhancer`, and linked references so the canonical flow becomes `builder -> enhancer`.

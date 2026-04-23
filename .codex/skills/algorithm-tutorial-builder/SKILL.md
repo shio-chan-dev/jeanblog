@@ -1,6 +1,6 @@
 ---
 name: algorithm-tutorial-builder
-description: v0.1.6 - Build long-form, high-density algorithm and technique tutorials for this Hugo blog when the user wants to understand one concrete algorithm, data structure, or method itself rather than solve one LeetCode or OJ-style problem.
+description: v0.2.0 - Build publishable long-form, high-density algorithm and technique tutorials for this Hugo blog when the user wants to understand one concrete algorithm, data structure, or method itself rather than solve one LeetCode or OJ-style problem.
 ---
 
 # Algorithm Tutorial Builder
@@ -14,11 +14,10 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
 - `references/derivation-first-explanations.md` for teaching the method from the problem pressure rather than from the final trick.
 - `references/language-selection-rubric.md` for code-language selection.
 - `references/depth-checklist.md` and `references/deepening-ladder.md` for depth and anti-fluff passes.
-- `references/reading-time-estimator.md` plus `scripts/estimate_reading_time.py` for `readingTime`.
 - `references/acceptance-criteria.md` for final validation.
 
 ## Workflow
-1. Read `docs/std.md`, `assets/algorithm-tutorial-template.md`, `references/derivation-first-explanations.md`, `references/depth-checklist.md`, `references/reading-time-estimator.md`, and `references/deepening-ladder.md`.
+1. Read `docs/std.md`, `assets/algorithm-tutorial-template.md`, `references/derivation-first-explanations.md`, `references/depth-checklist.md`, and `references/deepening-ladder.md`.
 2. Gather required inputs: algorithm/topic, target audience, target language (or infer), code-language constraints, output path override, and any examples/constraints.
 3. Reject problem-solution requests early.
    - If the user provides one concrete problem statement with inputs, outputs, and constraints and the main job is “solve this problem step by step”, use `leetcode-tutorial-builder` instead.
@@ -33,7 +32,13 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
    - If ambiguous, ask; otherwise pick the best-fit language and record the assumption.
 6. Outline using the template; ensure every section from `docs/std.md` is covered.
 7. Choose 1-2 core concepts to deepen; list them explicitly in the outline.
-8. Draft a long-form, high-density tutorial with master-level structure:
+8. Add minimal publishable front matter and repo-aligned taxonomy:
+   - `title`, `date`, `draft`, `categories`, `tags`
+   - Use `date "+%Y-%m-%dT%H:%M:%S%:z"` for `date`.
+   - Default `draft` to `false` unless the user says otherwise.
+   - Keep taxonomy consistent with nearby posts in the chosen folder.
+   - Keep metadata minimal; do not add SEO keyword lists or computed reading-time fields.
+9. Draft a long-form, high-density tutorial with master-level structure:
    - At least one runnable code snippet (no pseudocode-only solutions).
    - At least one worked example (input/output or trace).
    - A derivation section that explains how the algorithm or method emerges from the problem pressure, historical limitation, or missing capability.
@@ -42,18 +47,11 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
    - Tradeoffs and correctness reasoning.
    - If an earlier approach or wrong instinct matters, use it only to motivate the method itself, not to mimic a LeetCode solution build around one judged input/output task.
    - Correctness reasoning (proof sketch or invariant).
-9. Run a deepening pass for the chosen concepts using `references/deepening-ladder.md`.
-10. Run an anchor pass using `references/depth-checklist.md`; add missing numeric examples, constraints, formulas, or counterexamples.
-11. Run an anti-fluff rewrite: remove generic phrasing and replace with concrete, testable statements.
-12. Compute reading time using `scripts/estimate_reading_time.py` and the rules in `references/reading-time-estimator.md`.
-   - If estimated minutes < `min_required` (default 15), deepen the chosen core concepts further; do not add unrelated parallel topics.
-   - Set `readingTime` to the computed estimate (rounded up); it must never be lower than the estimate.
-13. Fill YAML front matter:
-   - `title`, `subtitle`, `date`, `summary`, `tags`, `categories`, `keywords`, `readingTime`, `draft`.
-   - Use `date "+%Y-%m-%dT%H:%M:%S%:z"` for `date`.
-   - Target `readingTime` >= 15 minutes unless the user requests shorter.
-14. Validate with `references/acceptance-criteria.md` and fix gaps.
-15. Report output (path, date, notes, checks).
+10. Run a deepening pass for the chosen concepts using `references/deepening-ladder.md`.
+11. Run an anchor pass using `references/depth-checklist.md`; add missing numeric examples, constraints, formulas, or counterexamples.
+12. Run an anti-fluff rewrite: remove generic phrasing and replace with concrete, testable statements.
+13. Validate with `references/acceptance-criteria.md` and fix gaps.
+14. Report output (path, date, taxonomy, notes, checks).
 
 ## Required Inputs
 - Algorithm/topic and scope.
@@ -66,13 +64,15 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
 - Output path: `content/<lang>/dev/algorithm/` for non-AI algorithms.
 - Category: use existing taxonomy; default to `逻辑与算法` for `content/zh/dev/algorithm/`, otherwise mirror categories from nearby posts in the same folder or ask.
 - Tags: include `algorithms` plus topic-specific tags.
-- Reading time: long-form (>= 15 min) unless user requests shorter.
+- front matter policy: minimal Hugo front matter only
+- output shape: publishable tutorial post
 - Tutorial language: same as user request if not specified.
 - Code language: chosen via rubric; fallback to Python only if the rubric is inconclusive.
 
 ## Output Format
 - Path: `<file path>`
 - Date: `<timestamp used>`
+- Taxonomy: `<categories/tags>`
 - Notes: `<assumptions or missing info>`
 - Checks: `<tests run or "not run">`
 
@@ -86,13 +86,12 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
 - No secrets or PII.
 - Do not force concept tutorials into LeetCode-style “replace this loop with this loop” problem-solution construction.
 - Do use derivation-first growth when code matters: add one mechanism, state, or module at a time and connect it back to the current build.
-- Do not present the named technique or final formula before the article has shown the bottleneck, limitation, or missing capability that justify it.
+- Do not present the named technique or final formula before the tutorial has shown the bottleneck, limitation, or missing capability that justify it.
 - Do not split the teaching flow into redundant “steps”, “implementation”, and “code” sections that restate the same content.
 - Do not generate a fake problem-solution ladder just to imitate a tutorial; algorithm tutorials should derive the method, not masquerade as OJ writeups.
 - Do not end with duplicated `Assemble the Full Code` / `Reference Answer` sections; the derivation should converge to one final runnable complete implementation or minimal complete demo.
+- Do not add `readingTime`, `keywords`, CTA sections, or other enhancement-layer metadata by default.
 - Every major section must include at least one concrete anchor as defined in `references/depth-checklist.md`.
-- `readingTime` must be >= the computed estimate from `scripts/estimate_reading_time.py`.
-- If the estimate is below the minimum threshold, deepen the chosen core concepts (do not add unrelated parallel topics).
 
 ## Verification
 - Confirm the subject is a concrete algorithm, method, or data structure rather than one problem statement.
@@ -100,9 +99,9 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
 - Required sections from `docs/std.md` are present.
 - Final code/demo block is runnable and minimal when implementation is part of the tutorial goal.
 - References/links resolve.
-- `readingTime` is not lower than the computed estimate.
 - The tutorial derives the algorithm from problem pressure or capability gaps, not from a one-problem solution-construction flow.
 - If incremental code fragments appear, they clearly feed into the final runnable complete implementation/demo rather than duplicating it.
+- Confirm the output is publishable Hugo Markdown with minimal front matter.
 
 ## Acceptance Loop
 - Run `references/acceptance-criteria.md` and record pass/fail evidence.

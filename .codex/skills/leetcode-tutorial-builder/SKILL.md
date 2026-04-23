@@ -1,12 +1,12 @@
 ---
 name: leetcode-tutorial-builder
-description: v0.1.0 - Build teaching-first LeetCode and algorithm-problem tutorials when the user wants one concrete problem solution to be constructed step by step from problem evidence, with strict incremental code growth and one final runnable complete code version before any blog packaging or enhancement.
+description: v0.2.0 - Build publishable teaching-first LeetCode and algorithm-problem tutorials when the user wants one concrete problem solution to be constructed step by step from problem evidence, with strict incremental code growth, minimal front matter, and one final runnable complete code version.
 ---
 
 # LeetCode Tutorial Builder
 
 ## Trigger
-Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot100, Codeforces, AtCoder, Luogu, or a custom OJ-style problem with explicit input/output behavior. Use this before blog formatting when the main need is to make one problem solution teachable and incremental. Do not use it for articles about an algorithm, data structure, or technique itself when there is no single problem statement to solve.
+Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot100, Codeforces, AtCoder, Luogu, or a custom OJ-style problem with explicit input/output behavior. Use it when the main need is to make one problem solution teachable, incremental, and directly publishable in this Hugo blog. Do not use it for tutorials about an algorithm, data structure, or technique itself when there is no single problem statement to solve.
 
 ## Bundled Resources
 - `docs/leetcode_std.md` for algorithm-post section expectations in this repo.
@@ -14,16 +14,20 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
 
 ## Workflow
 1. Gather only the supplied problem facts: statement, constraints, examples, target language, and any required implementation language.
-2. Start from a tiny example or conflict pattern that exposes the pressure behind the solution. Do not start from a finished DFS/DP template unless the tiny example has already established why that template fits.
-3. Define the smaller subproblem explicitly in plain language before writing code. The reader should be able to answer: “if this partial state is already fixed, what remains to solve?”
-4. Build the tutorial as a sequence of working versions, not as disconnected explanation fragments. For each numbered step:
+2. Choose the output path and slug before drafting the post body.
+   - Default to `content/<lang>/alg/leetcode/<slug>.md`.
+   - If the request clearly belongs to an existing series folder such as `hot100` or `binary-search` and that folder already exists, place it there instead.
+   - Keep ASCII kebab-case filenames; preserve the slug once chosen.
+3. Start from a tiny example or conflict pattern that exposes the pressure behind the solution. Do not start from a finished DFS/DP template unless the tiny example has already established why that template fits.
+4. Define the smaller subproblem explicitly in plain language before writing code. The reader should be able to answer: “if this partial state is already fixed, what remains to solve?”
+5. Build the tutorial as a sequence of working versions, not as disconnected explanation fragments. For each numbered step:
    - solve exactly one concrete problem,
    - add exactly one new state, rule, or helper when possible,
    - say whether the new code is an addition or a replacement,
    - show the exact snippet being added or replaced,
    - state what the current version can do now,
    - state what it still lacks.
-5. Force the growth path to include these milestones when the problem family allows them:
+6. Force the growth path to include these milestones when the problem family allows them:
    - problem evidence,
    - smaller subproblem,
    - smallest runnable skeleton,
@@ -35,23 +39,29 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
    - final optimized version,
    - one slow trace,
    - one runnable complete code version.
-6. When moving from a naive version to an optimized version, preserve the bridge:
+7. When moving from a naive version to an optimized version, preserve the bridge:
    - first name the exact bottleneck,
    - then add the smallest helper state that removes one part of that bottleneck,
    - then wire that helper state back into the current code immediately,
    - then reassess what still remains slow.
-7. Keep the output teaching-first:
+8. Add minimal publishable front matter and repo-aligned taxonomy:
+   - `title`, `date`, `draft`, `categories`, `tags`
+   - Use `date "+%Y-%m-%dT%H:%M:%S%:z"` for `date`.
+   - Default `draft` to `false` unless the user says otherwise.
+   - Default `categories` to `["LeetCode"]` unless nearby repo examples or the requested series clearly imply a different existing category.
+   - Keep tags basic and topic-driven; do not expand into SEO keyword lists.
+9. Keep the output teaching-first:
    - prioritize reasoning and code growth,
-   - do not require ACERS structure by default,
-   - do not add Hugo front matter unless explicitly requested,
+   - produce publishable Hugo Markdown in the chosen `content/` path,
+   - use a clear reader-facing structure without requiring a separate formatting stage,
    - do not spend tokens on SEO, CTA, or marketing polish.
-8. If the problem family is clear, adapt the ladder:
+10. If the problem family is clear, adapt the ladder:
    - backtracking: tiny example -> layer meaning -> current choice -> completion -> first legality check -> first correct DFS -> one partial optimization -> full helper-state optimization,
    - DP: tiny example -> subproblem meaning -> base case -> first correct recurrence/table -> one optimization at a time,
    - graph: tiny example -> node/state meaning -> frontier container -> expansion rule -> first correct traversal -> optimization.
-9. By default, let the final incremental step become the runnable complete code. Do not add a separate `Assemble the Full Code` section unless the user explicitly asks for a post format that requires it.
-10. Do not add a separate `Reference Answer` section unless the user explicitly asks for a platform-specific wrapper such as a LeetCode `class Solution` shell. Even then, it must not introduce new logic.
-11. End with assumptions, missing facts, and what was inferred versus supplied.
+11. By default, let the final incremental step become the runnable complete code. Do not add a separate `Assemble the Full Code` section unless the user explicitly asks for a post format that requires it.
+12. Do not add a separate `Reference Answer` section unless the user explicitly asks for a platform-specific wrapper such as a LeetCode `class Solution` shell. Even then, it must not introduce new logic.
+13. End with assumptions, missing facts, and what was inferred versus supplied.
 
 ## Required Inputs
 - Problem statement or faithful summary.
@@ -62,16 +72,19 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
 ## Defaults
 - teaching mode: derivation-first
 - default implementation language: follow user request; otherwise prefer Python
-- output shape: tutorial draft, not final publishable blog post
-- structure policy: ACERS not required at this stage; publication formatting belongs to `acers-blog-formatter`
+- output shape: publishable tutorial post, not a draft-only reasoning note
+- output path: `content/<lang>/alg/leetcode/<slug>.md` unless an existing sub-series folder clearly fits better
+- front matter policy: minimal Hugo front matter only
 - step policy: every step must explicitly connect to the previous version
 - final-code policy: default to one final runnable code block, not duplicated full-code sections
-- domain policy: this skill is for problem-solving tutorials, not for standalone algorithm concept articles
+- metadata policy: keep only minimal publishable metadata; enhancement belongs to `tech-post-enhancer`
+- domain policy: this skill is for problem-solving tutorials, not for standalone algorithm tutorials
 
 ## Output Format
-- Working Title: `<draft title>`
+- Path: `<file path>`
 - Scope: `<problem + language + code language>`
-- Tutorial Draft: `<guided-build markdown>`
+- Taxonomy: `<categories/tags>`
+- Publishable Tutorial: `<guided-build markdown with minimal front matter>`
 - Notes: `<assumptions, missing facts, inferred pieces>`
 
 ## Guardrails
@@ -85,12 +98,13 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
 - Do not hide the bridge from “first correct version” to “optimized version”; if the optimization is staged, show the stages.
 - Do not add ritual `Assemble the Full Code` or `Reference Answer` sections when the last step already yields a runnable complete solution.
 - Do not jump from the statement to a named template or final trick in one paragraph.
-- Do not force the result into ACERS structure unless the user explicitly asks for that in this stage.
-- Do not automatically invoke blog-formatting or enhancement skills.
+- Do not add `readingTime`, `keywords`, CTA sections, or other enhancement-layer metadata by default.
+- Do not assume a separate formatting stage exists.
+- Do not automatically invoke enhancement skills.
 - Do not invent constraints, examples, or complexity claims.
 
 ## Verification
-- Confirm the input is one concrete problem rather than a general algorithm/topic article request.
+- Confirm the input is one concrete problem rather than a general algorithm/topic tutorial request.
 - Confirm the tutorial starts from problem evidence, not from a pre-decided final template.
 - Confirm the smaller subproblem is stated explicitly in plain language.
 - Confirm the tutorial contains a first correct version before the optimized version.
@@ -100,5 +114,5 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
 - Confirm there is a middle version when the optimization naturally happens in more than one stage.
 - Confirm the final step yields one runnable complete code version by default.
 - Confirm no duplicate full-code section was added unless the user explicitly needed a separate wrapper form.
-- Confirm the output is still a teaching-first draft rather than a packaging-heavy blog post.
-- Confirm ACERS-only publishing concerns were left to the formatting stage unless explicitly requested.
+- Confirm the output is publishable Hugo Markdown with minimal front matter.
+- Confirm the path, slug, and basic taxonomy follow existing repo conventions.
