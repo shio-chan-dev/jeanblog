@@ -1,16 +1,16 @@
 ---
-name: algorithm-tutorial-builder
-description: v0.1.3 - Build teaching-first algorithm tutorials when the user wants the solution to be constructed step by step from problem evidence, with strict incremental code growth from one working version to the next and the final step yielding one runnable complete code version before any ACERS formatting, blog packaging, or post enhancement.
+name: leetcode-tutorial-builder
+description: v0.1.0 - Build teaching-first LeetCode and algorithm-problem tutorials when the user wants one concrete problem solution to be constructed step by step from problem evidence, with strict incremental code growth and one final runnable complete code version before any blog packaging or enhancement.
 ---
 
-# Algorithm Tutorial Builder
+# LeetCode Tutorial Builder
 
 ## Trigger
-Use when the user wants to learn or publish an algorithm solution as a true guided build rather than as a polished final article. Use this before blog formatting when the main need is to make the reasoning path teachable and incremental.
+Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot100, Codeforces, AtCoder, Luogu, or a custom OJ-style problem with explicit input/output behavior. Use this before blog formatting when the main need is to make one problem solution teachable and incremental. Do not use it for articles about an algorithm, data structure, or technique itself when there is no single problem statement to solve.
 
 ## Bundled Resources
 - `docs/leetcode_std.md` for algorithm-post section expectations in this repo.
-- `.codex/skills/algorithm-tutorial-builder/references/incremental-build-contract.md` for the strict step template and anti-pattern checks.
+- `.codex/skills/leetcode-tutorial-builder/references/incremental-build-contract.md` for the strict step template and anti-pattern checks.
 
 ## Workflow
 1. Gather only the supplied problem facts: statement, constraints, examples, target language, and any required implementation language.
@@ -66,6 +66,7 @@ Use when the user wants to learn or publish an algorithm solution as a true guid
 - structure policy: ACERS not required at this stage; publication formatting belongs to `acers-blog-formatter`
 - step policy: every step must explicitly connect to the previous version
 - final-code policy: default to one final runnable code block, not duplicated full-code sections
+- domain policy: this skill is for problem-solving tutorials, not for standalone algorithm concept articles
 
 ## Output Format
 - Working Title: `<draft title>`
@@ -76,6 +77,7 @@ Use when the user wants to learn or publish an algorithm solution as a true guid
 ## Guardrails
 - Do not write a “teacher already knows the answer” retrospective explanation and call it a guided build.
 - Do not skip the tiny example or the explicit smaller-subproblem step when they are needed to justify the recursion or state design.
+- Do not use this skill for a concept-first algorithm article such as Transformer, Union-Find, Segment Tree, Bloom Filter, or PageRank when the user is not solving one concrete problem.
 - Do not ask “why do we need X?” before defining what `X` is.
 - Do not introduce optimized helper state before the slower correct version exposes the need for it.
 - Do not jump directly from the first correct version to the final optimized version when an intermediate version would make the evolution materially clearer.
@@ -88,6 +90,7 @@ Use when the user wants to learn or publish an algorithm solution as a true guid
 - Do not invent constraints, examples, or complexity claims.
 
 ## Verification
+- Confirm the input is one concrete problem rather than a general algorithm/topic article request.
 - Confirm the tutorial starts from problem evidence, not from a pre-decided final template.
 - Confirm the smaller subproblem is stated explicitly in plain language.
 - Confirm the tutorial contains a first correct version before the optimized version.

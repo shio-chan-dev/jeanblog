@@ -1,4 +1,0 @@
-interface:
-  display_name: "Algorithm Tutorial Builder"
-  short_description: "v0.1.3 - Build strict incremental tutorials with one final runnable code version"
-  default_prompt: "Use $algorithm-tutorial-builder to turn this algorithm problem into a teaching-first guided build that starts from a tiny example, states the smaller subproblem explicitly, grows through one connected code version at a time, shows the first correct naive version before optimization, includes any needed middle versions, and lets the final step itself become one runnable complete code version without ritual full-code or reference sections unless the user explicitly needs a wrapper."

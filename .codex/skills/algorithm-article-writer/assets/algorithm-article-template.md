@@ -49,33 +49,17 @@
 - Optimization target (time/space/accuracy):
 
 ## Build It Step by Step
-- If a brute-force contrast matters, fold it into the exact step where it motivates a new state or rule; do not add a separate `naive idea` section.
-- Step 1:
-  - Question:
-  - Reasoning:
-  - Code fragment:
-- Step 2:
-  - Question:
-  - Reasoning:
-  - Code fragment:
-- Step 3:
-  - Question:
-  - Reasoning:
-  - Code fragment:
-- Step 4:
-  - Question:
-  - Reasoning:
-  - Code fragment:
-- One explicit branch / state trace:
+- Explain how the method emerges from the pressure, bottleneck, or capability gap.
+- One good shape is:
+  - Step 1: what fails or is missing without this method?
+  - Step 2: what core abstraction fixes that?
+  - Step 3: what mechanism or module makes that abstraction work?
+  - Step 4: what minimal implementation skeleton demonstrates it?
+- One explicit trace, worked walkthrough, or mechanism example:
 
-## Assemble the Full Code
-- Show the first complete implementation built from the fragments above.
-- Explain only the integration points, not the whole reasoning again.
-
-## Reference Answer (Language: <X>)
-```<language>
-# clean final code
-```
+## Minimal Implementation Skeleton
+- Show one runnable implementation, demo, or module skeleton when code materially helps understanding.
+- Explain only the key integration points, not the whole reasoning again.
 
 ## Decision Criteria (Selection Guide)
 - Input size regimes (with thresholds):

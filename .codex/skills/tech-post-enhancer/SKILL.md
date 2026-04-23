@@ -54,7 +54,7 @@ Use when a post is already structurally sound and the next goal is to make it st
 - Do not add fluff, generic inspiration, or repetitive summary paragraphs.
 - Do not add engineering scenarios or extra code languages with fake or non-runnable content.
 - Do not silently change taxonomy or file placement.
-- Do not automatically invoke tutorial-building or ACERS-formatting skills.
+- Do not automatically invoke `leetcode-tutorial-builder` or ACERS-formatting skills.
 - Do not use enhancement work to compensate for a tutorial or structure layer that is still weak.
 
 ## Verification

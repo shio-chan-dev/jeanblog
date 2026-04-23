@@ -62,7 +62,7 @@ Use when the tutorial logic is already stable and the next job is to make it pub
 - Do not add SEO-heavy or promotional material beyond minimal publishable metadata unless explicitly asked.
 - Do not duplicate the same explanation across `Core Concepts`, tutorial steps, and implementation sections.
 - Do not move the problem block behind reader-background sections.
-- Do not automatically invoke tutorial-building or enhancement skills.
+- Do not automatically invoke `leetcode-tutorial-builder` or enhancement skills.
 - Do not flatten the guided build just to make the article look more formally ACERS.
 
 ## Verification

@@ -1,0 +1,4 @@
+interface:
+  display_name: "LeetCode Tutorial Builder"
+  short_description: "v0.1.0 - Build strict incremental problem tutorials"
+  default_prompt: "Use $leetcode-tutorial-builder to turn this LeetCode or OJ-style algorithm problem into a teaching-first guided build that starts from a tiny example, states the smaller subproblem explicitly, grows through one connected code version at a time, shows the first correct naive version before optimization, includes any needed middle versions, and lets the final step itself become one runnable complete code version without ritual full-code or reference sections unless the user explicitly needs a wrapper."

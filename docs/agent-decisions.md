@@ -12,5 +12,10 @@
 
 - Date: 2026-04-23
   Decision: Retire `algorithm-problem-acers-blogger` and `leetcode-acers-blogger` without compatibility wrappers.
-  Rationale: The repository now uses a clearer three-stage architecture: `algorithm-tutorial-builder` for derivation, `acers-blog-formatter` for publication structure, and `tech-post-enhancer` for optional strengthening. Keeping the old one-shot ACERS skills would duplicate responsibilities and preserve the wrong mental model.
+  Rationale: The repository now uses a clearer three-stage architecture: `leetcode-tutorial-builder` for derivation, `acers-blog-formatter` for publication structure, and `tech-post-enhancer` for optional strengthening. Keeping the old one-shot ACERS skills would duplicate responsibilities and preserve the wrong mental model.
   Scope: Remove `.codex/skills/algorithm-problem-acers-blogger/` and `.codex/skills/leetcode-acers-blogger/`; keep the three-stage skills as the canonical workflow.
+
+- Date: 2026-04-23
+  Decision: Rename `algorithm-tutorial-builder` to `leetcode-tutorial-builder` and narrow its scope to concrete OJ-style problem tutorials.
+  Rationale: The repository needed a harder boundary between “one problem solution” and “one algorithm article”. Naming the problem skill after LeetCode-style/OJ problem solving makes the split obvious at trigger time and reduces overlap with `algorithm-article-writer`.
+  Scope: Rename `.codex/skills/algorithm-tutorial-builder/` to `.codex/skills/leetcode-tutorial-builder/`; update references and metadata.

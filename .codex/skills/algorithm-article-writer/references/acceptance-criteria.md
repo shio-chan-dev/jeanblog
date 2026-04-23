@@ -6,10 +6,9 @@
 - Target audience is explicit.
 - Background/motivation explains why the algorithm matters.
 - Core concepts and terms are defined.
-- A guided-build tutorial section is present and shows how the method is built from the problem before naming the final trick.
-- The guided-build section uses numbered steps with one question/reasoning move per step.
-- The article includes `Assemble the Full Code`.
-- The article includes a clean `Reference Answer`.
+- A derivation section is present and shows how the method is built from the pressure, limitation, or missing capability before naming the final trick.
+- The derivation section does not collapse into a one-problem OJ tutorial.
+- The article includes one runnable implementation, demo, or minimal implementation skeleton when code materially helps.
 - Explanation/principles and correctness reasoning are included.
 - No standalone `naive idea`, `naive approach`, or `naive-to-optimized` section appears; any such contrast is embedded inside the guided-build steps.
 - Complexity analysis is included (time and space).
@@ -35,6 +34,7 @@
 - Code is runnable and minimal.
 - Links and assets resolve.
 - No secrets or PII.
+- The article object is an algorithm or method, not one concrete OJ problem solution.
 
 ## Evidence to Record
 - Path, date, and any assumptions.
