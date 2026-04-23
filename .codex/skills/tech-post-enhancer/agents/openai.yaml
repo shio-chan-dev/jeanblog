@@ -1,4 +1,4 @@
 interface:
   display_name: "Tech Post Enhancer"
-  short_description: "v0.1.1 - Enhance stable technical posts without rewrites"
-  default_prompt: "Use $tech-post-enhancer to improve this already publishable technical post with only the requested enhancement layer, such as stronger metadata, title polish, CTA, engineering applications, extra code languages, or extension sections, while preserving the core teaching flow and existing ACERS-compatible structure."
+  short_description: "v0.1.2 - Enhance stable technical posts without rewrites"
+  default_prompt: "Use $tech-post-enhancer to improve this already publishable technical post with only the requested enhancement layer, such as stronger metadata, title polish, CTA, engineering applications, extra code languages, or extension sections, while preserving the core teaching flow, existing ACERS-compatible structure, and already-established final runnable code/demo."

@@ -14,7 +14,7 @@ Each major section must contain at least one concrete anchor. A concrete anchor 
 - Core Concepts: provide at least one formula with defined variables.
 - Feasibility/Lower Bound: state a limit and a case where it breaks.
 - Problem Framing: specify input size range and objective metric.
-- Build It Step by Step: include one tiny example, one explicit state introduction, one code fragment per step, and one concrete state trace.
+- Derive the Method Step by Step: include one tiny example, one explicit state introduction, one code or module fragment per major step, one concrete state trace, and one final runnable complete block when code is part of the learning goal.
 - Baseline/Bottleneck: include a simple baseline with complexity.
 - Key Observation: tie to the invariant and what it removes.
 - Steps: include at least one explicit intermediate state or transformation.

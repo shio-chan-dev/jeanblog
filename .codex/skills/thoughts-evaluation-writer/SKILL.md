@@ -13,7 +13,7 @@ into a publishable `thoughts` post for this Hugo blog. Typical prompts include:
 - "Write a publishable article comparing this system with my current workflow."
 - "Record what this tool is good for and not good for."
 
-Do not use for step-by-step tutorials, algorithm articles, LeetCode writeups, or
+Do not use for step-by-step tutorials, algorithm tutorials, LeetCode writeups, or
 pure factual explainers without a judgment or comparison angle.
 
 ## Bundled Resources

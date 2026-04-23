@@ -1,4 +1,4 @@
-# Acceptance Criteria (Algorithm Article Writer)
+# Acceptance Criteria (Algorithm Tutorial Builder)
 
 ## Required Content
 - Title is clear and keyword-rich.
@@ -8,9 +8,10 @@
 - Core concepts and terms are defined.
 - A derivation section is present and shows how the method is built from the pressure, limitation, or missing capability before naming the final trick.
 - The derivation section does not collapse into a one-problem OJ tutorial.
-- The article includes one runnable implementation, demo, or minimal implementation skeleton when code materially helps.
+- When code materially helps, the tutorial includes one final runnable complete implementation, end-to-end module, or minimal complete demo.
 - Explanation/principles and correctness reasoning are included.
 - No standalone `naive idea`, `naive approach`, or `naive-to-optimized` section appears; any such contrast is embedded inside the guided-build steps.
+- If earlier code fragments are used, they clearly feed into the final implementation/demo rather than ending in duplicate assembled/reference code sections.
 - Complexity analysis is included (time and space).
 - Worked example or trace is included.
 - Common pitfalls/edge cases are covered.
@@ -34,7 +35,7 @@
 - Code is runnable and minimal.
 - Links and assets resolve.
 - No secrets or PII.
-- The article object is an algorithm or method, not one concrete OJ problem solution.
+- The tutorial object is an algorithm or method, not one concrete OJ problem solution.
 
 ## Evidence to Record
 - Path, date, and any assumptions.

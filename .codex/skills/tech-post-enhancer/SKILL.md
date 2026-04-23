@@ -1,12 +1,12 @@
 ---
 name: tech-post-enhancer
-description: v0.1.1 - Enhance a stable technical post when the teaching flow and ACERS-compatible blog structure are already in place and the user now wants stronger SEO, supporting sections, title polish, multi-language code, or engineering add-ons.
+description: v0.1.2 - Enhance a stable technical post when the teaching flow and ACERS-compatible blog structure are already in place and the user now wants stronger SEO, supporting sections, title polish, multi-language code, or engineering add-ons.
 ---
 
 # Tech Post Enhancer
 
 ## Trigger
-Use when a post is already structurally sound and the next goal is to make it stronger, richer, or more publishable without rewriting its core teaching logic. Typical triggers include SEO polish, CTA, better section names, more code languages, stronger summaries, FAQs, engineering applications, or extension sections. This stage assumes the post is already in ACERS or another repo-compatible publishable structure.
+Use when a post is already structurally sound and the next goal is to make it stronger, richer, or more publishable without rewriting its core teaching logic. Typical triggers include SEO polish, CTA, better section names, more code languages, stronger summaries, FAQs, engineering applications, or extension sections. This stage assumes the post is already in ACERS or another repo-compatible publishable structure after its core derivation and final runnable code/demo are already in place.
 
 ## Bundled Resources
 - `docs/std.md` for general blog quality expectations.
@@ -55,7 +55,7 @@ Use when a post is already structurally sound and the next goal is to make it st
 - Do not add engineering scenarios or extra code languages with fake or non-runnable content.
 - Do not silently change taxonomy or file placement.
 - Do not automatically invoke `leetcode-tutorial-builder` or ACERS-formatting skills.
-- Do not use enhancement work to compensate for a tutorial or structure layer that is still weak.
+- Do not use enhancement work to compensate for a tutorial, derivation, or structure layer that is still weak.
 
 ## Verification
 - Confirm the enhanced post keeps the same teaching backbone.
@@ -63,3 +63,4 @@ Use when a post is already structurally sound and the next goal is to make it st
 - Confirm all added code blocks are runnable examples rather than pseudocode-only filler.
 - Confirm the enhancement layer did not bloat the article with redundant content.
 - Confirm the post was already structurally publishable before enhancement began.
+- Confirm the post already had its core derivation and final runnable code/demo before enhancement began.

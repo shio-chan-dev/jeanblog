@@ -17,5 +17,10 @@
 
 - Date: 2026-04-23
   Decision: Rename `algorithm-tutorial-builder` to `leetcode-tutorial-builder` and narrow its scope to concrete OJ-style problem tutorials.
-  Rationale: The repository needed a harder boundary between “one problem solution” and “one algorithm article”. Naming the problem skill after LeetCode-style/OJ problem solving makes the split obvious at trigger time and reduces overlap with `algorithm-article-writer`.
+  Rationale: The repository needed a harder boundary between “one problem solution” and “one algorithm tutorial”. Naming the problem skill after LeetCode-style/OJ problem solving makes the split obvious at trigger time and reduces overlap with the algorithm-teaching skill.
   Scope: Rename `.codex/skills/algorithm-tutorial-builder/` to `.codex/skills/leetcode-tutorial-builder/`; update references and metadata.
+
+- Date: 2026-04-23
+  Decision: Rename `algorithm-article-writer` to `algorithm-tutorial-builder`.
+  Rationale: The skill no longer just writes an article shell. Its core job is to teach one concrete algorithm or method through derivation and incremental code growth, so `tutorial-builder` matches the actual responsibility better than `article-writer`.
+  Scope: Rename `.codex/skills/algorithm-article-writer/` through the intermediate local rename to `.codex/skills/algorithm-tutorial-builder/`; update skill metadata, templates, prompts, and internal references.

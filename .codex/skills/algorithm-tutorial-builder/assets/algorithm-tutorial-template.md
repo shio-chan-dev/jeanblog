@@ -1,4 +1,4 @@
-# Algorithm Article Template (Long-Form, High-Density, Master-Level)
+# Algorithm Tutorial Template (Long-Form, High-Density, Master-Level)
 
 > Fill every section. Keep signal density high: each paragraph should add a new idea, tradeoff, or application detail.
 > Include expert signals: abstraction, bounds intuition, decision criteria, and implementation realities.
@@ -48,17 +48,19 @@
 - Constraints (if known, include a numeric range):
 - Optimization target (time/space/accuracy):
 
-## Build It Step by Step
+## Derive the Method Step by Step
 - Explain how the method emerges from the pressure, bottleneck, or capability gap.
-- One good shape is:
+- Use step-by-step growth when code materially helps:
   - Step 1: what fails or is missing without this method?
-  - Step 2: what core abstraction fixes that?
-  - Step 3: what mechanism or module makes that abstraction work?
-  - Step 4: what minimal implementation skeleton demonstrates it?
+  - Step 2: what first abstraction, state, or module fixes that?
+  - Step 3: what new mechanism must be added next?
+  - Step 4: after each addition, what can the current build already do and what does it still lack?
 - One explicit trace, worked walkthrough, or mechanism example:
 
-## Minimal Implementation Skeleton
-- Show one runnable implementation, demo, or module skeleton when code materially helps understanding.
+## Final Runnable Implementation / Minimal Complete Demo
+- End the derivation with one runnable complete implementation, end-to-end module, or minimal complete demo when code materially helps understanding.
+- Earlier fragments should converge into this block.
+- Do not add a second duplicated `Reference Answer` section after this one.
 - Explain only the key integration points, not the whole reasoning again.
 
 ## Decision Criteria (Selection Guide)

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Algorithm Article Writer"
-  short_description: "v0.1.4 - Write algorithm and method articles"
-  default_prompt: "Use $algorithm-article-writer to draft a publishable long-form article about one concrete algorithm, method, or data structure for this Hugo blog, deriving it from the pressure or limitation that motivates it, including runnable examples or a minimal implementation skeleton when helpful, and avoiding LeetCode-style problem-solution tutorial framing."

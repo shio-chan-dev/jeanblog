@@ -1,6 +1,6 @@
 # Guided-Build Explanations
 
-Use this reference when an algorithm article should teach the method by
+Use this reference when an algorithm tutorial should teach the method by
 constructing it step by step instead of opening with the final conclusion.
 
 ## Core Rule
@@ -8,16 +8,16 @@ constructing it step by step instead of opening with the final conclusion.
 Do not open with “Use X algorithm” unless the article is intentionally a terse
 reference note.
 
-For tutorial-style articles, prefer:
+For derivation-first algorithm tutorials, prefer:
 
 1. concrete problem pressure
 2. a tiny example or trace
 3. the first missing state
 4. the first code fragment
 5. the next missing rule
-6. the next code fragment
-7. assembled full code
-8. clean reference answer
+6. the next code fragment or module
+7. an explicit “what this version can do now / what it still lacks” connector
+8. one final runnable complete implementation or minimal complete demo
 
 If a brute-force contrast or common wrong instinct is useful, place it inside
 the relevant numbered step. Do not create a standalone bridge section for it.
@@ -49,15 +49,11 @@ the relevant numbered step. Do not create a standalone bridge section for it.
 - Follow the partial build on one real example.
 - Make the state changes explicit.
 
-### 6. Assemble the full code
+### 6. Converge to one final implementation
 
-- Combine the fragments into one complete implementation.
+- Combine the fragments into one runnable complete implementation, end-to-end module, or minimal complete demo.
 - This is the first time the reader sees the whole code in one block.
-
-### 7. Give the reference answer
-
-- Present the clean final version after the assembly.
-- The reference answer may be cleaner, but it must not depend on unexplained logic.
+- Do not add a second duplicated “reference answer” section after it.
 
 ## Adapter Questions By Algorithm Family
 
@@ -102,6 +98,7 @@ Avoid:
 - conclusion-first summaries with no derivation path
 - full code before fragment-by-fragment construction
 - separate “steps”, “implementation”, and “code” sections that repeat the same material
+- duplicated `assembled code` / `reference answer` endings
 
 ## Quick Check
 
@@ -109,5 +106,5 @@ Before delivery, confirm the article answers:
 
 1. What is the first state or fragment the reader needs?
 2. What question does each step answer?
-3. How do the fragments become full code?
-4. What is the final clean reference answer?
+3. After each addition, what can the current build already do and what still remains?
+4. How do the fragments converge to one final runnable complete implementation or demo?

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Algorithm Tutorial Builder"
+  short_description: "v0.1.6 - Build algorithm and method tutorials"
+  default_prompt: "Use $algorithm-tutorial-builder to draft a long-form, derivation-first tutorial about one concrete algorithm, method, or data structure for this Hugo blog, growing the mechanism step by step when code matters, and converging to one final runnable complete implementation or minimal complete demo without switching into LeetCode-style problem-solution framing."

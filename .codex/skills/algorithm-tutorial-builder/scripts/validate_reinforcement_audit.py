@@ -69,7 +69,7 @@ def main():
     parser.add_argument(
         "path",
         nargs="?",
-        default=".codex/skills/algorithm-article-writer/references/reinforcement-audit.jsonl",
+        default=".codex/skills/algorithm-tutorial-builder/references/reinforcement-audit.jsonl",
         help="Path to reinforcement-audit.jsonl",
     )
     args = parser.parse_args()

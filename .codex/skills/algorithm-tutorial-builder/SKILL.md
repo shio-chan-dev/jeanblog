@@ -1,16 +1,16 @@
 ---
-name: algorithm-article-writer
-description: v0.1.4 - Write long-form, high-density algorithm and technique articles for this Hugo blog when the user wants to understand one concrete algorithm, data structure, or method itself rather than solve one LeetCode or OJ-style problem.
+name: algorithm-tutorial-builder
+description: v0.1.6 - Build long-form, high-density algorithm and technique tutorials for this Hugo blog when the user wants to understand one concrete algorithm, data structure, or method itself rather than solve one LeetCode or OJ-style problem.
 ---
 
-# Algorithm Article Writer
+# Algorithm Tutorial Builder
 
 ## Trigger
-Use when the user requests an article about one concrete algorithm, data structure, or method: what it is, why it exists, how it works, how to implement it, and when to use it. Typical examples include Transformer, Union-Find, Segment Tree, Fenwick Tree, A*, Dijkstra, Bloom Filter, or PageRank. Do not use for LeetCode, Hot100, Codeforces, AtCoder, Luogu, or any other one-problem tutorial.
+Use when the user requests a tutorial about one concrete algorithm, data structure, or method: what it is, why it exists, how it works, how to implement it, and when to use it. Typical examples include Transformer, Union-Find, Segment Tree, Fenwick Tree, A*, Dijkstra, Bloom Filter, or PageRank. Do not use for LeetCode, Hot100, Codeforces, AtCoder, Luogu, or any other one-problem tutorial.
 
 ## Bundled Resources
 - `docs/std.md` for the project writing checklist.
-- `assets/algorithm-article-template.md` for the default article structure.
+- `assets/algorithm-tutorial-template.md` for the default tutorial structure.
 - `references/derivation-first-explanations.md` for teaching the method from the problem pressure rather than from the final trick.
 - `references/language-selection-rubric.md` for code-language selection.
 - `references/depth-checklist.md` and `references/deepening-ladder.md` for depth and anti-fluff passes.
@@ -18,7 +18,7 @@ Use when the user requests an article about one concrete algorithm, data structu
 - `references/acceptance-criteria.md` for final validation.
 
 ## Workflow
-1. Read `docs/std.md`, `assets/algorithm-article-template.md`, `references/derivation-first-explanations.md`, `references/depth-checklist.md`, `references/reading-time-estimator.md`, and `references/deepening-ladder.md`.
+1. Read `docs/std.md`, `assets/algorithm-tutorial-template.md`, `references/derivation-first-explanations.md`, `references/depth-checklist.md`, `references/reading-time-estimator.md`, and `references/deepening-ladder.md`.
 2. Gather required inputs: algorithm/topic, target audience, target language (or infer), code-language constraints, output path override, and any examples/constraints.
 3. Reject problem-solution requests early.
    - If the user provides one concrete problem statement with inputs, outputs, and constraints and the main job is “solve this problem step by step”, use `leetcode-tutorial-builder` instead.
@@ -33,13 +33,14 @@ Use when the user requests an article about one concrete algorithm, data structu
    - If ambiguous, ask; otherwise pick the best-fit language and record the assumption.
 6. Outline using the template; ensure every section from `docs/std.md` is covered.
 7. Choose 1-2 core concepts to deepen; list them explicitly in the outline.
-8. Draft a long-form, high-density article with master-level structure:
+8. Draft a long-form, high-density tutorial with master-level structure:
    - At least one runnable code snippet (no pseudocode-only solutions).
    - At least one worked example (input/output or trace).
    - A derivation section that explains how the algorithm or method emerges from the problem pressure, historical limitation, or missing capability.
-   - A minimal implementation skeleton or runnable demo when implementation is part of the learning goal.
+   - When implementation is part of the learning goal, the tutorial must culminate in one final runnable complete implementation, end-to-end module, or minimal complete demo.
+   - If earlier code fragments are used, each fragment must extend the current build and the tutorial must state what the current version can already do and what it still lacks.
    - Tradeoffs and correctness reasoning.
-   - If an earlier approach or wrong instinct matters, use it only to motivate the method itself, not to mimic a LeetCode solution build.
+   - If an earlier approach or wrong instinct matters, use it only to motivate the method itself, not to mimic a LeetCode solution build around one judged input/output task.
    - Correctness reasoning (proof sketch or invariant).
 9. Run a deepening pass for the chosen concepts using `references/deepening-ladder.md`.
 10. Run an anchor pass using `references/depth-checklist.md`; add missing numeric examples, constraints, formulas, or counterexamples.
@@ -66,7 +67,7 @@ Use when the user requests an article about one concrete algorithm, data structu
 - Category: use existing taxonomy; default to `逻辑与算法` for `content/zh/dev/algorithm/`, otherwise mirror categories from nearby posts in the same folder or ask.
 - Tags: include `algorithms` plus topic-specific tags.
 - Reading time: long-form (>= 15 min) unless user requests shorter.
-- Article language: same as user request if not specified.
+- Tutorial language: same as user request if not specified.
 - Code language: chosen via rubric; fallback to Python only if the rubric is inconclusive.
 
 ## Output Format
@@ -83,10 +84,12 @@ Use when the user requests an article about one concrete algorithm, data structu
 - Do not edit `themes/`, config files, or generated outputs.
 - Use ASCII filenames by default.
 - No secrets or PII.
-- Do not force concept articles into LeetCode-style “replace this loop with this loop” incremental code construction.
+- Do not force concept tutorials into LeetCode-style “replace this loop with this loop” problem-solution construction.
+- Do use derivation-first growth when code matters: add one mechanism, state, or module at a time and connect it back to the current build.
 - Do not present the named technique or final formula before the article has shown the bottleneck, limitation, or missing capability that justify it.
 - Do not split the teaching flow into redundant “steps”, “implementation”, and “code” sections that restate the same content.
-- Do not generate a fake problem-solution ladder just to imitate a tutorial; concept articles should derive the method, not masquerade as OJ writeups.
+- Do not generate a fake problem-solution ladder just to imitate a tutorial; algorithm tutorials should derive the method, not masquerade as OJ writeups.
+- Do not end with duplicated `Assemble the Full Code` / `Reference Answer` sections; the derivation should converge to one final runnable complete implementation or minimal complete demo.
 - Every major section must include at least one concrete anchor as defined in `references/depth-checklist.md`.
 - `readingTime` must be >= the computed estimate from `scripts/estimate_reading_time.py`.
 - If the estimate is below the minimum threshold, deepen the chosen core concepts (do not add unrelated parallel topics).
@@ -95,10 +98,11 @@ Use when the user requests an article about one concrete algorithm, data structu
 - Confirm the subject is a concrete algorithm, method, or data structure rather than one problem statement.
 - Front matter valid and required fields present.
 - Required sections from `docs/std.md` are present.
-- Code snippet is runnable and minimal.
+- Final code/demo block is runnable and minimal when implementation is part of the tutorial goal.
 - References/links resolve.
 - `readingTime` is not lower than the computed estimate.
-- The article derives the algorithm from problem pressure or capability gaps, not from a one-problem solution-construction flow.
+- The tutorial derives the algorithm from problem pressure or capability gaps, not from a one-problem solution-construction flow.
+- If incremental code fragments appear, they clearly feed into the final runnable complete implementation/demo rather than duplicating it.
 
 ## Acceptance Loop
 - Run `references/acceptance-criteria.md` and record pass/fail evidence.

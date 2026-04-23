@@ -77,7 +77,7 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
 ## Guardrails
 - Do not write a “teacher already knows the answer” retrospective explanation and call it a guided build.
 - Do not skip the tiny example or the explicit smaller-subproblem step when they are needed to justify the recursion or state design.
-- Do not use this skill for a concept-first algorithm article such as Transformer, Union-Find, Segment Tree, Bloom Filter, or PageRank when the user is not solving one concrete problem.
+- Do not use this skill for a concept-first algorithm tutorial such as Transformer, Union-Find, Segment Tree, Bloom Filter, or PageRank when the user is not solving one concrete problem.
 - Do not ask “why do we need X?” before defining what `X` is.
 - Do not introduce optimized helper state before the slower correct version exposes the need for it.
 - Do not jump directly from the first correct version to the final optimized version when an intermediate version would make the evolution materially clearer.
