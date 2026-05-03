@@ -1,278 +1,212 @@
 ---
-title: "Hot100: Subsets (Backtracking / startIndex ACERS Guide)"
-date: 2026-04-02T13:48:57+08:00
+title: "LeetCode 78: Subsets, Derive the startIndex Backtracking Template"
+date: 2026-05-03T14:25:07+08:00
 draft: false
 categories: ["LeetCode"]
-tags: ["Hot100", "backtracking", "subsets", "DFS", "startIndex", "LeetCode 78"]
-description: "A practical guide to LeetCode 78 covering subset backtracking, the startIndex invariant, and runnable multi-language implementations."
-keywords: ["Subsets", "backtracking", "startIndex", "power set", "LeetCode 78", "Hot100"]
+tags: ["Hot100", "backtracking", "subsets", "DFS", "LeetCode 78"]
 ---
 
-> **Subtitle / Summary**
-> Subsets is the cleanest entry point into Hot100 backtracking. The main thing to stabilize is not “enumerate everything”, but the three invariants behind the template: `path`, `startIndex`, and “every node is already a valid answer”.
+## Start From the Search Tree for `[1,2]`
 
-- **Reading time**: 10-12 min
-- **Tags**: `Hot100`, `backtracking`, `subsets`, `DFS`
-- **SEO keywords**: Subsets, backtracking, startIndex, power set, LeetCode 78
-- **Meta description**: Learn the stable backtracking template for LeetCode 78, with engineering analogies, pitfalls, and runnable multi-language solutions.
+The problem gives an integer array `nums` with distinct elements and asks for all possible subsets. The output order does not matter, and subset element order is not the point.
 
----
-
-## A — Algorithm
-
-### Problem Restatement
-
-Given an integer array `nums` whose elements are all distinct, return all possible subsets (the power set).
-
-The solution set must not contain duplicate subsets, and the answer order does not matter.
-
-### Input / Output
-
-| Name | Type | Description |
-| --- | --- | --- |
-| nums | int[] | array of distinct integers |
-| return | `List[List[int]]` | all possible subsets |
-
-### Example 1
+The smallest branching example is:
 
 ```text
-input: nums = [1,2,3]
-output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+nums = [1,2]
 ```
 
-### Example 2
+The answer should contain:
 
 ```text
-input: nums = [0]
-output: [[],[0]]
+[], [1], [1,2], [2]
 ```
 
-### Constraints
+It should not contain `[2,1]`. That means we are not generating all permutations. We are choosing elements into a set-like result where each combination appears once.
 
-- `1 <= nums.length <= 10`
-- `-10 <= nums[i] <= 10`
-- all elements of `nums` are distinct
-
----
-
-## Target Readers
-
-- Hot100 learners starting the backtracking block today
-- Developers who can write DFS but still mix up combinations and permutations
-- Engineers who need to enumerate feature sets, candidate policies, or configuration bundles
-
-## Background / Motivation
-
-Many “real” problems reduce to a subset model:
-
-- which feature flags should be enabled together
-- which rules should be combined into one experiment
-- which filters should be included in a saved preset
-
-What makes LeetCode 78 valuable is that the problem is deliberately simple:
-
-- all numbers are distinct
-- there is no target sum
-- there is no duplicate-removal complication
-
-That simplicity lets you focus on the template itself before adding pruning, fixed lengths, or duplicate handling.
-
-## Core Concepts
-
-- **`path`**: the current chosen elements on the recursion path
-- **`startIndex`**: the first candidate index allowed in the current layer
-- **Preorder collection**: in the subsets problem, every node in the search tree is already one valid answer
-- **Backtrack undo**: after recursion returns, remove the last chosen element
-
----
-
-## C — Concepts
-
-### How To Build The Solution From Scratch
-
-#### Step 1: Start from a tiny example
-
-Take `nums = [1,2,3]`.
-
-Do not ask “how do I generate the whole power set?” yet.
-Ask the smaller question:
-
-- I have already chosen some elements
-- where may I continue choosing from
-- when is the current path already a valid answer by itself
-
-That produces a tree like this:
+The construction tree looks like this:
 
 ```text
 []
 |- [1]
 |  |- [1,2]
-|  |  |- [1,2,3]
-|  |- [1,3]
 |- [2]
-|  |- [2,3]
-|- [3]
 ```
 
-This single example already shows the two key facts:
+Two facts fall out of this tree:
 
-- every node is a valid subset
-- once you choose `1`, later layers must not go back and build the same subset in a different order
+- Every node is already a valid subset.
+- After choosing `1`, the next layer may only look to the right, at `2`.
 
-#### Step 2: What must the partial answer remember?
+This tutorial builds one minimal Python solution.
 
-If we are building one subset gradually, we need a state that stores the chosen elements so far.
-That is why we need `path`.
+## Problem Facts
 
-```python
-path = []
+- Input: `nums`, with `1 <= nums.length <= 10`
+- Value range: `-10 <= nums[i] <= 10`
+- All elements in `nums` are distinct
+- Output: all possible subsets
+
+Example:
+
+```text
+Input: nums = [1,2,3]
+Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
 ```
 
-`path` means:
+## Step 1: Define What One Recursion Layer Means
 
-- the current branch of the search tree
-- not the full answer set
+If the current partial answer is `path`, the smaller problem is:
 
-#### Step 3: How do we avoid order-based duplicates?
+> Starting from some index, choose zero or more remaining elements to extend `path`.
 
-Subsets are combination-style results, so `[1,2]` and `[2,1]` must not appear separately.
-The stable way to prevent that is to restrict each layer to start from one boundary index.
+That starting index must be part of the state. Without it, `[1,2]` and `[2,1]` can be generated from different branches.
 
-```python
-def dfs(start: int) -> None:
-    ...
-```
+Start with the smallest skeleton. It keeps two pieces of state:
 
-Here `start` means:
-
-- the first index the current layer is allowed to use
-- do not go back to earlier elements
-
-#### Step 4: When do we collect one answer?
-
-In this problem, the current path is already a valid subset as soon as it exists.
-There is no target sum and no required fixed length.
-
-So collection happens at the beginning of each DFS call:
+- `path`: the elements chosen on the current branch
+- `res`: all subsets collected so far
 
 ```python
-res.append(path.copy())
-```
-
-The `.copy()` matters because `path` will keep changing later.
-
-#### Step 5: What choices are available next?
-
-At the current layer, we only need to iterate from `start` to the end.
-
-```python
-for i in range(start, len(nums)):
-    ...
-```
-
-That boundary is what makes the logic subset-style instead of permutation-style.
-
-#### Step 6: What changes after choosing one element?
-
-If we choose `nums[i]`, we add it to the current path and recurse on the suffix to the right.
-
-```python
-path.append(nums[i])
-dfs(i + 1)
-```
-
-The `i + 1` is the critical move:
-
-- the current element is already decided
-- later layers must continue to the right only
-
-#### Step 7: What must be undone?
-
-After recursion returns, we restore the old state by removing the last chosen element.
-
-```python
-path.pop()
-```
-
-That lets the loop try the next candidate at the same depth.
-
-#### Step 8: Walk one branch slowly
-
-Still using `nums = [1,2,3]`:
-
-Start:
-
-- `path = []`
-- `start = 0`
-
-Enter `dfs(0)`:
-
-- collect `[]`
-
-Choose `1`:
-
-- `path = [1]`
-- call `dfs(1)`
-- collect `[1]`
-
-Inside that call, choose `2`:
-
-- `path = [1,2]`
-- call `dfs(2)`
-- collect `[1,2]`
-
-Then choose `3`:
-
-- `path = [1,2,3]`
-- call `dfs(3)`
-- collect `[1,2,3]`
-
-Then backtrack with `pop()`, return to `[1,2]`, and keep exploring the next branches.
-The full solution is just this pattern repeated across the tree.
-
-### Assemble the Full Code
-
-Now combine the fragments into the first complete working implementation.
-
-```python
-from typing import List
-
-
-def subsets(nums: List[int]) -> List[List[int]]:
-    res: List[List[int]] = []
-    path: List[int] = []
+def subsets(nums: list[int]) -> list[list[int]]:
+    res: list[list[int]] = []
+    path: list[int] = []
 
     def dfs(start: int) -> None:
-        res.append(path.copy())
-        for i in range(start, len(nums)):
-            path.append(nums[i])
-            dfs(i + 1)
-            path.pop()
+        pass
 
     dfs(0)
     return res
-
-
-if __name__ == "__main__":
-    print(subsets([1, 2, 3]))
-    print(subsets([0]))
 ```
 
-### Reference Answer
+Now this version can:
 
-For LeetCode submission style, the same logic becomes:
+- Define the outer function and recursive function.
+- Reserve `start` as the boundary for the current layer.
+
+It still lacks:
+
+- A rule for collecting answers.
+- A way to enumerate choices in the current layer.
+
+## Step 2: Every Node Is an Answer, So Collect `path` First
+
+In the previous version, add the first rule inside `dfs`:
 
 ```python
-from typing import List
+def dfs(start: int) -> None:
+    res.append(path.copy())
+```
 
+Why collect immediately?
 
+Subsets do not require a fixed length or target sum. If `path` was formed by valid choices, it is already a valid subset.
+
+Why `copy()`?
+
+Because `path` will keep changing during recursion. Appending `path` itself would leave all saved answers pointing to the same mutable list.
+
+Now this version can:
+
+- Collect the empty subset `[]`.
+- Collect the current partial subset whenever a recursion layer starts.
+
+It still lacks:
+
+- Downward expansion; it can only collect the empty subset.
+
+## Step 3: Enumerate Only From `start` to the Right
+
+In the previous version, add the candidate range for the current layer:
+
+```python
+def dfs(start: int) -> None:
+    res.append(path.copy())
+
+    for i in range(start, len(nums)):
+        pass
+```
+
+The range `range(start, len(nums))` means:
+
+- This layer may only choose elements at index `start` or later.
+- Earlier elements have already been handled by the current path.
+
+For `nums = [1,2,3]`:
+
+- `dfs(0)` may try `1,2,3`
+- after choosing `1`, `dfs(1)` may only try `2,3`
+- after choosing `2`, `dfs(2)` may only try `3`
+
+Now this version can:
+
+- Define the available candidates for each layer.
+- Use `start` to prevent order-based duplicates.
+
+It still lacks:
+
+- Actually adding a candidate into the current path.
+
+## Step 4: Choose One Element and Recurse on the Suffix
+
+In the previous version, replace the empty loop body with choosing and recursing:
+
+```python
+for i in range(start, len(nums)):
+    path.append(nums[i])
+    dfs(i + 1)
+```
+
+The call `dfs(i + 1)` is the key rule:
+
+> After choosing `nums[i]`, the next layer may only choose elements to its right.
+
+Writing `dfs(start + 1)` would be wrong when `i != start`; the next boundary must follow the chosen index, not the old layer boundary.
+
+Now this version can:
+
+- Generate downward paths such as `[] -> [1] -> [1,2]`.
+- Keep subset elements in increasing original-index order.
+
+It still lacks:
+
+- State restoration after returning from recursion.
+
+## Step 5: Undo the Choice and Finish the Solution
+
+In the previous version, add the undo operation after the recursive call:
+
+```python
+for i in range(start, len(nums)):
+    path.append(nums[i])
+    dfs(i + 1)
+    path.pop()
+```
+
+This solves the branch-isolation problem.
+
+For `nums = [1,2,3]`:
+
+```text
+path = [1,2,3] is collected
+pop 3 -> path = [1,2]
+pop 2 -> path = [1]
+same layer now tries 3 -> path = [1,3]
+```
+
+Without `path.pop()`, later branches would inherit choices that belong to earlier branches.
+
+This version is the complete runnable solution:
+
+```python
 class Solution:
-    def subsets(self, nums: List[int]) -> List[List[int]]:
-        res: List[List[int]] = []
-        path: List[int] = []
+    def subsets(self, nums: list[int]) -> list[list[int]]:
+        res: list[list[int]] = []
+        path: list[int] = []
 
         def dfs(start: int) -> None:
             res.append(path.copy())
+
             for i in range(start, len(nums)):
                 path.append(nums[i])
                 dfs(i + 1)
@@ -280,309 +214,98 @@ class Solution:
 
         dfs(0)
         return res
+
+
+if __name__ == "__main__":
+    ans = Solution().subsets([1, 2, 3])
+    print(ans)
 ```
 
-### What method did we just build?
+Now this version can:
 
-Its formal name is:
+- Enumerate every subset.
+- Avoid order-based duplicates such as `[2,1]`.
+- Restore `path` after each branch.
 
-- backtracking
-- combination-style search
-- `startIndex` boundary control
+It still lacks:
 
-But the more important part is the invariant set:
+- Duplicate-value handling. That belongs to `90. Subsets II`.
 
-- `path` means “what has already been chosen”
-- `start` means “where the current layer may continue”
-- every node is already a valid answer, so collection happens before deeper recursion
+## Slow Branch Trace
 
----
+For `nums = [1,2,3]`, follow one branch:
 
-## E — Engineering
+```text
+dfs(0), path = []
+collect []
 
-### Scenario 1: feature-flag bundle generation (Python)
+i = 0, choose 1
+path = [1]
+dfs(1), collect [1]
 
-**Background**: enumerate all possible flag bundles for offline experiment planning.
-**Why it fits**: each flag is either included or not included, which is exactly a subset model.
+i = 1, choose 2
+path = [1,2]
+dfs(2), collect [1,2]
 
-```python
-def all_flag_sets(flags):
-    res = [[]]
-    for flag in flags:
-        res += [old + [flag] for old in res]
-    return res
+i = 2, choose 3
+path = [1,2,3]
+dfs(3), collect [1,2,3]
 
-
-print(all_flag_sets(["new-ui", "cache-v2", "risk-guard"]))
+return, pop 3 -> [1,2]
+return, pop 2 -> [1]
+same layer tries i = 2, choose 3 -> [1,3]
 ```
 
-### Scenario 2: policy-module candidate sets (Go)
+The important invariants are:
 
-**Background**: a backend risk system wants to test all combinations of several rule modules.
-**Why it fits**: “pick any subset of modules” is the same combinational space.
+- `path` is always the current branch.
+- `start` always points to the next allowed suffix.
 
-```go
-package main
+## Correctness
 
-import "fmt"
+Invariant:
 
-func subsets(items []string) [][]string {
-	res := [][]string{{}}
-	for _, item := range items {
-		size := len(res)
-		for i := 0; i < size; i++ {
-			next := append([]string{}, res[i]...)
-			next = append(next, item)
-			res = append(res, next)
-		}
-	}
-	return res
-}
+- At the start of `dfs(start)`, `path` is a valid subset whose original indices are strictly increasing.
+- The current layer only chooses indices from `start` onward, so no branch can create a reversed duplicate.
 
-func main() {
-	fmt.Println(subsets([]string{"ruleA", "ruleB", "ruleC"}))
-}
-```
+Why nothing is missed:
 
-### Scenario 3: saved filter preset generation (JavaScript)
+- Any subset can be represented by its chosen original indices in increasing order.
+- DFS can follow exactly that increasing sequence, so the subset will be visited.
 
-**Background**: a frontend app wants to precompute filter presets for demos or regression coverage.
-**Why it fits**: each filter can be enabled or disabled, so the full set of presets is a power set.
+Why nothing is duplicated:
 
-```javascript
-function subsets(items) {
-  const res = [[]];
-  for (const item of items) {
-    const size = res.length;
-    for (let i = 0; i < size; i += 1) {
-      res.push([...res[i], item]);
-    }
-  }
-  return res;
-}
+- Every branch has strictly increasing indices.
+- The same set of indices has only one increasing order.
 
-console.log(subsets(["tag", "price", "stock"]));
-```
+## Complexity
 
----
+- There are `2^n` subsets.
+- Copying paths across all collected answers costs `O(n * 2^n)`.
+- The recursion stack and `path` use `O(n)` extra space, excluding output.
+- The output itself uses `O(n * 2^n)` space.
 
-## R — Reflection
+## Common Mistakes
 
-### Complexity
+- Collecting only at leaves, which misses `[]`, `[1]`, `[1,2]`, and other internal nodes.
+- Appending `path` without `copy()`, which lets later backtracking mutate saved answers.
+- Calling `dfs(start + 1)` instead of `dfs(i + 1)`.
+- Forgetting `path.pop()`, which leaks state across branches.
 
-- Time complexity: `O(n * 2^n)`
-- Auxiliary recursion space: `O(n)`
-- Output size: `O(n * 2^n)` in total
+## Summary
 
-### Alternatives
+- In subsets, every search-tree node is an answer.
+- `path` stores the current branch; `start` stores the next allowed index.
+- `dfs(i + 1)` removes order duplicates.
+- `path.pop()` restores branch-local state.
 
-| Method | Idea | Strength | Weakness |
-| --- | --- | --- | --- |
-| Backtracking | grow a path layer by layer | best template for later problems | requires a clear tree model |
-| Bitmask | one bit means choose / skip | short and compact | less intuitive for future pruning problems |
-| Iterative expansion | extend existing subsets by one new item | elegant for this one problem | less reusable when constraints become complex |
+## References
 
-### Common mistakes
+- LeetCode 78: Subsets
+- LeetCode 90: Subsets II
+- LeetCode 46: Permutations
 
-- collecting only at leaf nodes and missing most subsets
-- appending `path` directly instead of a copy
-- restarting each layer from index `0` and accidentally generating permutation-like duplicates
+## Notes
 
-## Best Practices
-
-- Treat this as the base template for “combination-style” backtracking
-- Always make a snapshot when storing `path`
-- Ask yourself four questions while coding:
-  `What does path mean?`
-  `Why collect here?`
-  `Where does this layer start?`
-  `What exactly is undone on return?`
-
----
-
-## S — Summary
-
-- LeetCode 78 is the cleanest problem for building the backtracking skeleton
-- `startIndex` is what makes this combinations/subsets logic, not permutations logic
-- In subsets, every node is a valid answer, so collection happens before deeper recursion
-- Once this template is stable, problems like permutations, combination sum, and subsets with duplicates become much easier
-
-### Suggested Next Problems
-
-- `46. Permutations`: add `used[]` and learn permutation-style backtracking
-- `17. Letter Combinations of a Phone Number`: fixed-depth DFS
-- `39. Combination Sum`: add pruning and repeated use of the same candidate
-- `90. Subsets II`: handle duplicates cleanly
-
-### CTA
-
-If this is your first backtracking problem today, write it once from memory after reading.
-That is the fastest way to make the template stick.
-
----
-
-## Multi-Language Implementations
-
-### Python
-
-```python
-from typing import List
-
-
-def subsets(nums: List[int]) -> List[List[int]]:
-    res: List[List[int]] = []
-    path: List[int] = []
-
-    def dfs(start: int) -> None:
-        res.append(path.copy())
-        for i in range(start, len(nums)):
-            path.append(nums[i])
-            dfs(i + 1)
-            path.pop()
-
-    dfs(0)
-    return res
-```
-
-### C
-
-```c
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct {
-    int** data;
-    int* col_sizes;
-    int size;
-    int capacity;
-} Result;
-
-static void push_result(Result* res, int* path, int path_size) {
-    if (res->size == res->capacity) {
-        res->capacity *= 2;
-        res->data = realloc(res->data, sizeof(int*) * res->capacity);
-        res->col_sizes = realloc(res->col_sizes, sizeof(int) * res->capacity);
-    }
-    int* row = malloc(sizeof(int) * path_size);
-    for (int i = 0; i < path_size; ++i) row[i] = path[i];
-    res->data[res->size] = row;
-    res->col_sizes[res->size] = path_size;
-    res->size += 1;
-}
-
-static void dfs(int* nums, int nums_size, int start, int* path, int path_size, Result* res) {
-    push_result(res, path, path_size);
-    for (int i = start; i < nums_size; ++i) {
-        path[path_size] = nums[i];
-        dfs(nums, nums_size, i + 1, path, path_size + 1, res);
-    }
-}
-
-int** subsets(int* nums, int nums_size, int* return_size, int** return_column_sizes) {
-    Result res = {0};
-    res.capacity = 16;
-    res.data = malloc(sizeof(int*) * res.capacity);
-    res.col_sizes = malloc(sizeof(int) * res.capacity);
-
-    int* path = malloc(sizeof(int) * nums_size);
-    dfs(nums, nums_size, 0, path, 0, &res);
-    free(path);
-
-    *return_size = res.size;
-    *return_column_sizes = res.col_sizes;
-    return res.data;
-}
-```
-
-### C++
-
-```cpp
-#include <vector>
-using namespace std;
-
-class Solution {
-public:
-    vector<vector<int>> subsets(vector<int>& nums) {
-        vector<vector<int>> res;
-        vector<int> path;
-        dfs(nums, 0, path, res);
-        return res;
-    }
-
-private:
-    void dfs(const vector<int>& nums, int start, vector<int>& path, vector<vector<int>>& res) {
-        res.push_back(path);
-        for (int i = start; i < (int)nums.size(); ++i) {
-            path.push_back(nums[i]);
-            dfs(nums, i + 1, path, res);
-            path.pop_back();
-        }
-    }
-};
-```
-
-### Go
-
-```go
-package main
-
-func subsets(nums []int) [][]int {
-	res := make([][]int, 0)
-	path := make([]int, 0)
-
-	var dfs func(int)
-	dfs = func(start int) {
-		snapshot := append([]int(nil), path...)
-		res = append(res, snapshot)
-		for i := start; i < len(nums); i++ {
-			path = append(path, nums[i])
-			dfs(i + 1)
-			path = path[:len(path)-1]
-		}
-	}
-
-	dfs(0)
-	return res
-}
-```
-
-### Rust
-
-```rust
-fn subsets(nums: Vec<i32>) -> Vec<Vec<i32>> {
-    fn dfs(nums: &[i32], start: usize, path: &mut Vec<i32>, res: &mut Vec<Vec<i32>>) {
-        res.push(path.clone());
-        for i in start..nums.len() {
-            path.push(nums[i]);
-            dfs(nums, i + 1, path, res);
-            path.pop();
-        }
-    }
-
-    let mut res = Vec::new();
-    let mut path = Vec::new();
-    dfs(&nums, 0, &mut path, &mut res);
-    res
-}
-```
-
-### JavaScript
-
-```javascript
-function subsets(nums) {
-  const res = [];
-  const path = [];
-
-  function dfs(start) {
-    res.push([...path]);
-    for (let i = start; i < nums.length; i += 1) {
-      path.push(nums[i]);
-      dfs(i + 1);
-      path.pop();
-    }
-  }
-
-  dfs(0);
-  return res;
-}
-```
+- Problem facts, examples, and constraints were taken from the existing repository draft for LeetCode 78.
+- Python is used as the implementation language for the guided build.

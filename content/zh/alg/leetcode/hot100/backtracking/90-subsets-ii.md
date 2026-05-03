@@ -1,173 +1,159 @@
 ---
-title: "Hot100：子集 II（Subsets II）排序 + 层内去重回溯 ACERS 解析"
-date: 2026-04-19T00:09:28+08:00
+title: "LeetCode 90：子集 II，从重复分支推出层内去重"
+date: 2026-05-03T14:25:07+08:00
 draft: false
 categories: ["LeetCode"]
-tags: ["Hot100", "回溯", "子集", "去重", "排序", "LeetCode 90"]
-description: "围绕 LeetCode 90 子集 II，讲清排序、层内去重与组合型回溯的真正边界，帮助你从 78 子集平滑升级到含重复元素的版本。"
-keywords: ["Subsets II", "子集 II", "回溯", "层内去重", "排序", "LeetCode 90", "Hot100"]
+tags: ["Hot100", "回溯", "子集", "去重", "LeetCode 90"]
 ---
 
-> **副标题 / 摘要**
-> `90. 子集 II` 是 `78. 子集` 的升级版。真正新增的难点不是“还能不能继续回溯”，而是“遇到重复元素时，怎样只跳过重复分支，而不误伤合法答案”。
+## 从 `[1,2,2]` 的重复分支开始
 
-- **预计阅读时长**：12~15 分钟
-- **标签**：`Hot100`、`回溯`、`子集`、`去重`、`排序`
-- **SEO 关键词**：Subsets II, 子集 II, 回溯, 层内去重, 排序
-- **元描述**：通过 LeetCode 90 理解排序后层内去重的稳定写法，建立含重复元素时的组合型回溯模板。
+题目给一个整数数组 `nums`，其中可能包含重复元素，要求返回所有不重复的子集。结果顺序不限。
 
----
+最小能暴露问题的例子是：
 
-## A — Algorithm（题目与算法）
+```text
+nums = [1,2,2]
+```
 
-### 题目还原
+如果直接照搬 `78. 子集` 的模板，搜索树里会出现两条不同分支：
 
-给定一个可能包含重复元素的整数数组 `nums`，请返回它的所有可能子集（幂集）。
+```text
+选择下标 1 的 2 -> [2]
+选择下标 2 的 2 -> [2]
+```
 
-结果集 **不能包含重复子集**，返回顺序不限。
+这两个分支路径不同，但值序列相同，最终答案重复。
 
-### 输入输出
+所以这题真正新增的问题不是“会不会回溯”，而是：
 
-| 名称 | 类型 | 描述 |
-| --- | --- | --- |
-| nums | `int[]` | 可能包含重复元素的整数数组 |
-| 返回 | `int[][]` | 所有不重复的子集 |
+> 怎样跳过重复分支，同时保留 `[2,2]` 这种合法答案？
 
-### 示例 1
+这篇只用 Python，从一个能跑但浪费的版本，一步一步过渡到排序 + 层内去重。
+
+## 题目事实
+
+- 输入：`nums`，长度 `1 <= nums.length <= 10`
+- 元素范围：`-10 <= nums[i] <= 10`
+- `nums` 可能有重复元素
+- 输出：所有不重复子集
+
+示例：
 
 ```text
 输入：nums = [1,2,2]
 输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
 ```
 
-### 示例 2
+## Step 1：先复用 78 的状态，看看哪里会坏
 
-```text
-输入：nums = [0]
-输出：[[],[0]]
-```
+当前部分答案仍然需要 `path`；当前层仍然需要 `start` 控制只能往右选。
 
-### 约束
-
-- `1 <= nums.length <= 10`
-- `-10 <= nums[i] <= 10`
-
----
-
-## 目标读者
-
-- 已经做过 `78. 子集`，但还没掌握“重复元素判重边界”的学习者
-- 会写基础回溯，但一碰到去重就想上 `set` 暴力兜底的开发者
-- 希望把“排序 + 同层跳过重复值”固定成稳定模板的 Hot100 刷题读者
-
-## 背景 / 动机
-
-在 `78. 子集` 里，数组元素互不相同，所以你只需要处理“选 / 不选”。
-但到了这题，重复元素一出现，搜索树里就会长出许多**值不同位置相同**的重复分支。
-
-例如 `nums = [1,2,2]`：
-
-- 第一个 `2` 可以产生 `[2]`
-- 第二个 `2` 也会再产生一个 `[2]`
-
-如果你不控制好分支边界，答案里就会出现重复子集。
-
-这道题的核心价值是让你真正建立下面这条链路：
-
-- 组合问题仍然用 `startIndex`
-- 先排序，把相同值放到一起
-- 去重不是“全局不准再用”，而是“同一层里，相同值只展开第一条分支”
-
-## 核心概念
-
-- **`path`**：当前递归路径上已经选中的元素
-- **`startIndex`**：当前层从哪个下标开始继续枚举
-- **排序**：把相同元素放在一起，去重条件才能稳定成立
-- **层内去重**：同一层遇到相同值，后面的重复值直接跳过
-- **前序收集答案**：子集问题里，每个节点都是一个合法答案
-
----
-
-## C — Concepts（核心思想）
-
-### 这道题是怎么一步一步推出来的
-
-#### Step 1：先用最小但不平凡的例子看重复是怎么产生的
-
-看 `nums = [1,2,2]`。
-
-如果你还按 `78. 子集` 的思路无脑展开，会得到两条会撞车的分支：
-
-- 第一层选第一个 `2`，得到 `[2]`
-- 第一层跳过第一个 `2`，再选第二个 `2`，也得到 `[2]`
-
-问题已经暴露出来了：
-
-- 我们不是不会生成子集
-- 我们是不知道**哪些分支其实表示同一个值选择**
-
-#### Step 2：当前部分答案最少要记住什么？
-
-和 `78. 子集` 一样，仍然需要一个状态保存“当前这条分支已经选了什么”。
-这就是 `path`。
+先写出 78 的核心版本：
 
 ```python
-path = []
+def dfs(start: int) -> None:
+    res.append(path.copy())
+
+    for i in range(start, len(nums)):
+        path.append(nums[i])
+        dfs(i + 1)
+        path.pop()
 ```
 
-`path` 只表示当前分支，不是最终答案全集。
+这个版本在 `nums` 全部互不相同时是正确的。
 
-#### Step 3：为什么这题必须先排序？
+现在这个版本能做到：
 
-如果相同的数散落在数组不同位置，你就很难写出稳定的去重条件。
-先排序后，相同值会挨在一起，我们才能判断“当前值是不是本层前一个值的重复展开”。
+- 枚举所有下标组合。
+- 允许 `[2,2]`，因为两个 `2` 来自不同下标。
+
+它还缺：
+
+- 无法区分“合法使用两个重复值”和“同一层重复开启同一个值分支”。
+
+## Step 2：先做一个正确但浪费的版本：收集时用 set 去重
+
+在上一版基础上，先不急着优化。为了得到一个正确版本，可以把每条 `path` 转成 `tuple` 放入 `seen`。
+
+新增 `seen`：
+
+```python
+seen: set[tuple[int, ...]] = set()
+```
+
+替换收集逻辑：
+
+```python
+state = tuple(path)
+if state not in seen:
+    seen.add(state)
+    res.append(path.copy())
+```
+
+拼起来就是第一版完整正确代码：
+
+```python
+def subsets_with_dup(nums: list[int]) -> list[list[int]]:
+    res: list[list[int]] = []
+    path: list[int] = []
+    seen: set[tuple[int, ...]] = set()
+
+    def dfs(start: int) -> None:
+        state = tuple(path)
+        if state not in seen:
+            seen.add(state)
+            res.append(path.copy())
+
+        for i in range(start, len(nums)):
+            path.append(nums[i])
+            dfs(i + 1)
+            path.pop()
+
+    dfs(0)
+    return res
+```
+
+现在这个版本能做到：
+
+- 返回不重复子集。
+- 保留 `[2,2]` 这种合法答案。
+
+它还缺：
+
+- 会先生成重复分支，再在收集时丢掉，搜索树没有变小。
+- 如果输入是 `[2,1,2]`，相同值不相邻，后面很难在搜索阶段判断重复分支。
+
+## Step 3：先排序，让相同值相邻
+
+上一版的瓶颈是“重复分支已经生成出来了”。要在进入分支前跳过重复，至少要让相同值相邻。
+
+在上一版基础上，进入 DFS 前新增排序：
 
 ```python
 nums.sort()
 ```
 
-例如 `[2,1,2]` 排序后变成 `[1,2,2]`，重复值被放到相邻位置，判重条件马上清晰很多。
+现在以 `[2,1,2]` 为例，排序后变成：
 
-#### Step 4：这题为什么仍然是 `startIndex` 模板？
-
-虽然有重复元素，但它本质上还是组合问题，不关心顺序。
-所以我们仍然要限制“下一层只能从当前位置往后选”，避免 `[1,2]` 和 `[2,1]` 这种顺序重复。
-
-```python
-def dfs(start: int) -> None:
-    ...
+```text
+[1,2,2]
 ```
 
-这里的 `start` 表示：
+两个 `2` 相邻以后，当前层如果刚试过第一个 `2`，就能看见第二个 `2` 是同一层的重复候选。
 
-- 当前层允许从哪个下标开始继续选
-- 更前面的元素不再回头考虑
+现在这个版本能做到：
 
-#### Step 5：什么时候该收集答案？
+- 把相同值聚到一起，为“进入分支前去重”创造条件。
+- 仍然可以用 `seen` 保证答案正确。
 
-这点和 `78. 子集` 完全一样。
+它还缺：
 
-只要当前 `path` 合法，它就是一个子集，所以一进入递归就应该先收集。
+- 还没有真正跳过重复分支。
 
-```python
-res.append(path.copy())
-```
+## Step 4：只跳过同一层的重复候选
 
-不是只在叶子收集，也不是长度固定后才收集。
-
-#### Step 6：当前层有哪些候选动作？
-
-当前层要从 `start` 开始，依次尝试每个可选元素。
-
-```python
-for i in range(start, len(nums)):
-    ...
-```
-
-到这里为止，代码和 `78. 子集` 还几乎一样。
-真正的升级发生在下一步。
-
-#### Step 7：怎样只跳过重复分支，而不误删合法答案？
+现在要把“生成后去重”替换成“生成前跳过重复分支”。
 
 关键判断是：
 
@@ -176,540 +162,139 @@ if i > start and nums[i] == nums[i - 1]:
     continue
 ```
 
-这句的含义不是“相同值永远不能再用”，而是：
+为什么是 `i > start`？
 
-- **如果当前值和前一个值相同**
-- **并且它们处在同一层枚举里**
-- 那么这个值作为“本层新开的分支”已经展开过了
+- `i > start` 表示当前值不是这一层第一个候选。
+- `nums[i] == nums[i - 1]` 表示这个值已经在同一层被前一个相同值开过分支。
 
-所以可以直接跳过。
+为什么不能写成 `i > 0`？
 
-注意这里必须是 `i > start`，不是 `i > 0`。
-因为我们只想做**层内去重**，不是全局禁用重复值。
+因为更深层允许选择第二个 `2` 来形成 `[2,2]`。
 
-#### Step 8：选中一个元素后，状态如何推进？
+看 `[1,2,2]`：
 
-当前值通过判重以后，就进入标准回溯三件套：
+```text
+第一层：
+  i = 1 选择第一个 2 -> 合法，生成 [2]
+  i = 2 第二个 2 和前一个相同，且 i > start -> 跳过，避免重复 [2]
 
-```python
-path.append(nums[i])
-dfs(i + 1)
-path.pop()
+进入 [2] 的下一层：
+  start = 2
+  i = 2 选择第二个 2 -> i == start，不跳过，生成 [2,2]
 ```
 
-这里仍然是 `i + 1`，因为子集问题里每个位置最多使用一次。
+现在可以移除 `seen`，恢复正常收集。
 
-#### Step 9：慢速走一条分支，看“同层跳过”到底在跳什么
-
-还是看排序后的 `[1,2,2]`。
-
-开始时：
-
-- `path = []`
-- `start = 0`
-
-进入 `dfs(0)`：
-
-- 先收集 `[]`
-
-第一层选 `1`：
-
-- `path = [1]`
-- 进入 `dfs(1)`，收集 `[1]`
-
-在这一层选第一个 `2`：
-
-- `path = [1,2]`
-- 进入 `dfs(2)`，收集 `[1,2]`
-
-再选第二个 `2`：
-
-- `path = [1,2,2]`
-- 进入 `dfs(3)`，收集 `[1,2,2]`
-
-回溯到第一层后，再看第一层的第二个 `2`：
-
-- 这时 `i = 2`
-- `start = 0`
-- `nums[2] == nums[1]`
-
-说明“以 `2` 作为第一层新分支”这件事已经做过一次了，因此跳过。
-
-#### Step 10：把规则整理成一句能复用的话
-
-这题可以直接记成：
-
-> 组合型回溯先排序；同一层里，如果当前值等于前一个值，就跳过当前分支。
-
-这也是很多“含重复元素的组合 / 子集 / 排列”题最常见的判重起点。
-
-### Assemble the Full Code
-
-先把上面推出来的碎片拼成第一版完整代码。
-这版代码可以直接运行验证。
+最终完整代码是：
 
 ```python
-from typing import List
-
-
-def subsets_with_dup(nums: List[int]) -> List[List[int]]:
-    nums.sort()
-    res: List[List[int]] = []
-    path: List[int] = []
-
-    def dfs(start: int) -> None:
-        res.append(path.copy())
-        for i in range(start, len(nums)):
-            if i > start and nums[i] == nums[i - 1]:
-                continue
-            path.append(nums[i])
-            dfs(i + 1)
-            path.pop()
-
-    dfs(0)
-    return res
-
-
-if __name__ == "__main__":
-    print(subsets_with_dup([1, 2, 2]))
-    print(subsets_with_dup([0]))
-```
-
-### Reference Answer
-
-如果你要提交到 LeetCode，可以整理成下面这种形式：
-
-```python
-from typing import List
-
-
 class Solution:
-    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+    def subsetsWithDup(self, nums: list[int]) -> list[list[int]]:
         nums.sort()
-        res: List[List[int]] = []
-        path: List[int] = []
+        res: list[list[int]] = []
+        path: list[int] = []
 
         def dfs(start: int) -> None:
             res.append(path.copy())
+
             for i in range(start, len(nums)):
                 if i > start and nums[i] == nums[i - 1]:
                     continue
+
                 path.append(nums[i])
                 dfs(i + 1)
                 path.pop()
 
         dfs(0)
         return res
+
+
+if __name__ == "__main__":
+    ans = Solution().subsetsWithDup([1, 2, 2])
+    print(ans)
 ```
 
-### 我们刚刚搭出来的到底是什么方法？
+现在这个版本能做到：
 
-它的正式名字可以叫：
+- 在进入重复分支前直接跳过。
+- 保留 `[2,2]`。
+- 不需要额外的 `seen` 存储答案去重。
 
-- 回溯
-- 组合型搜索
-- 排序 + 层内去重
+它还缺：
 
-但真正要固定下来的不是名词，而是这四个不变式：
+- 没有按特定顺序输出答案；题目本身不要求输出顺序。
 
-- `path` 表示当前已经选了什么
-- `startIndex` 保证这是组合而不是排列
-- 子集题依然在每个节点收集答案
-- 判重条件只针对同一层的重复展开
+## 慢速走一条分支
 
----
+排序后 `nums = [1,2,2]`。
 
-## E — Engineering（工程应用）
+第一层 `dfs(0)`：
 
-### 场景 1：SKU 筛选条件去重组合（Python）
-
-**背景**：电商后台从多个来源汇总筛选条件时，可能得到重复标签，例如两个上游都传来了 `red`。  
-**为什么适用**：你仍然需要生成所有候选筛选组合，但不能让重复标签造成重复预设。
-
-```python
-from typing import List
-
-
-def unique_filter_sets(tags: List[str]) -> List[List[str]]:
-    tags.sort()
-    res: List[List[str]] = []
-    path: List[str] = []
-
-    def dfs(start: int) -> None:
-        res.append(path.copy())
-        for i in range(start, len(tags)):
-            if i > start and tags[i] == tags[i - 1]:
-                continue
-            path.append(tags[i])
-            dfs(i + 1)
-            path.pop()
-
-    dfs(0)
-    return res
-
-
-print(unique_filter_sets(["red", "red", "xl"]))
+```text
+收集 []
+i = 0, 选 1 -> path = [1]
+i = 1, 选第一个 2 -> path = [2]
+i = 2, 第二个 2 与前一个相同，且 i > start，跳过
 ```
 
-### 场景 2：权限标签候选包去重生成（Go）
+进入 `[2]` 对应的下一层 `dfs(2)`：
 
-**背景**：权限系统把多个服务返回的角色标签合并后，可能出现重复角色名。  
-**为什么适用**：要枚举候选权限包做离线验证时，本质上就是“含重复元素的子集去重”。
-
-```go
-package main
-
-import (
-	"fmt"
-	"sort"
-)
-
-func bundles(tags []string) [][]string {
-	sort.Strings(tags)
-	res := make([][]string, 0)
-	path := make([]string, 0, len(tags))
-
-	var dfs func(int)
-	dfs = func(start int) {
-		snapshot := append([]string(nil), path...)
-		res = append(res, snapshot)
-		for i := start; i < len(tags); i++ {
-			if i > start && tags[i] == tags[i-1] {
-				continue
-			}
-			path = append(path, tags[i])
-			dfs(i + 1)
-			path = path[:len(path)-1]
-		}
-	}
-
-	dfs(0)
-	return res
-}
-
-func main() {
-	fmt.Println(bundles([]string{"read", "read", "write"}))
-}
+```text
+start = 2
+i = 2, 这里 i == start，不跳过
+选第二个 2 -> path = [2,2]
 ```
 
-### 场景 3：前端多选预设面板去重（JavaScript）
+所以这条规则的核心不是“重复值不能选”，而是：
 
-**背景**：配置中心返回的可选项里有重复值，前端要预生成所有多选预设用于回归测试。  
-**为什么适用**：如果不做层内去重，UI 会拿到大量语义相同的预设。
+> 同一层相同值只开一次分支；更深层仍然可以继续使用后面的重复值。
 
-```javascript
-function uniquePresets(items) {
-  const sorted = [...items].sort();
-  const res = [];
-  const path = [];
+## 正确性
 
-  function dfs(start) {
-    res.push([...path]);
-    for (let i = start; i < sorted.length; i += 1) {
-      if (i > start && sorted[i] === sorted[i - 1]) continue;
-      path.push(sorted[i]);
-      dfs(i + 1);
-      path.pop();
-    }
-  }
+不变量：
 
-  dfs(0);
-  return res;
-}
+- 排序后，相同值相邻。
+- 在同一递归层，如果一个值已经由较小下标开过分支，后面相同值开出的分支会产生重复答案。
+- `i > start` 限定“同一层”，不会影响更深层继续选择重复值。
 
-console.log(uniquePresets(["tag", "tag", "price"]));
-```
+为什么不会漏：
 
----
+- 每种值在每一层至少保留第一个候选分支。
+- 如果答案需要多个相同值，例如 `[2,2]`，第二个 `2` 会在更深层出现，此时 `i == start`，不会被跳过。
 
-## R — Reflection（反思与深入）
+为什么不会重：
 
-### 复杂度分析
+- 同一层相同值只允许第一个进入分支。
+- 重复答案的来源正是同一层相同值开启的等价分支，因此会被消除。
 
-- 时间复杂度：最坏情况下仍是 `O(n * 2^n)`
-  - 去重不会改变指数级枚举上界
-  - 复制路径的成本与答案规模同阶
-- 空间复杂度：递归栈 `O(n)`
-  - 若计入输出，整体空间同样受答案规模影响
+## 复杂度
 
-### 和几种常见写法对比
+- 排序成本是 `O(n log n)`。
+- 子集数量最多仍是 `2^n`。
+- 收集答案的总复制成本是 `O(n * 2^n)`。
+- 递归栈和 `path` 是 `O(n)`，输出空间是 `O(n * 2^n)`。
 
-| 方法 | 思路 | 优点 | 缺点 |
-| --- | --- | --- | --- |
-| 排序 + 层内去重 | 回溯时直接跳过重复分支 | 模板稳定、最适合继续做 `40/47/90` | 需要真正理解“同层”含义 |
-| 暴力生成后放 `set` 去重 | 先全枚举，再把结果转成集合 | 好想到 | 浪费搜索、代码重、迁移性差 |
-| 位运算 + 集合去重 | 每个位置选或不选后再 dedupe | 写法短 | 对重复控制不直观，不利于后续复杂题 |
+## 常见错误
 
-### 这题最容易错的地方
+- 把条件写成 `i > 0`，会误删 `[2,2]`。
+- 忘记排序，导致相同值不相邻，无法用 `nums[i] == nums[i - 1]` 判断同层重复。
+- 以为重复值不能选，实际应该跳过的是同一层重复分支。
+- 仍然保留 `seen`，让代码同时存在两套去重逻辑。
 
-- 把判重写成 `i > 0`，结果误伤跨层合法选择
-- 忘了先排序，导致相同值不相邻，判重条件失效
-- 以为“重复值不能再选”，把 `[2,2]` 这种合法子集也删掉
+## 小结
 
-## 常见问题与注意事项
+- `90. 子集 II` 是 `78. 子集` 加上重复值处理。
+- 第一个正确版本可以用 `seen` 去重，但它会浪费搜索。
+- 排序让相同值相邻，是进入分支前去重的前提。
+- `if i > start and nums[i] == nums[i - 1]` 的含义是“同层去重”，不是“禁止重复值”。
 
-### 为什么一定是 `i > start`，不能写成 `i > 0`？
+## 参考与延伸
 
-因为我们要跳过的是“同一层里重复开出来的新分支”。
+- LeetCode 78：Subsets
+- LeetCode 90：Subsets II
+- LeetCode 40：Combination Sum II
 
-如果写成 `i > 0`，那么在更深层递归里，合法的第二个 `2` 也会被错误跳过，像 `[2,2]` 这样的答案就没了。
+## Notes
 
-### 这题和 `78. 子集` 的差别到底只有哪一行？
-
-从模板角度看，几乎就是这一行：
-
-```python
-if i > start and nums[i] == nums[i - 1]:
-    continue
-```
-
-但这一行背后其实新增了两个前提：
-
-- 必须先排序
-- 必须理解“层内去重”而不是“全局禁用重复值”
-
-### 什么时候该想到这一套判重规则？
-
-当你看到：
-
-- 数组里可能有重复值
-- 问题要求返回不重复组合 / 子集 / 排列
-
-就应该优先检查：
-
-- 要不要先排序
-- 去重是发生在“同层”还是“同枝”
-
-## 最佳实践与建议
-
-- 先把 `78. 子集` 的 `dfs(start)` 模板写熟，再接这题
-- 去重题先想“重复答案是在哪一层长出来的”，不要先想 `set`
-- 只要涉及“相同元素相邻判重”，排序几乎都是第一步
-- 用小例子手动画出两条撞车分支，理解会比死背公式快得多
-
----
-
-## S — Summary（总结）
-
-- `90. 子集 II` 的本质仍然是组合型回溯，不是新题型
-- 真正新增的关键是：**排序后做层内去重**
-- 判重条件写成 `i > start and nums[i] == nums[i - 1]`，是因为我们只跳过同层重复分支
-- 子集题的收集时机没有变，仍然是“每个节点都是答案”
-- 学会这题后，`40. 组合总和 II`、`47. 全排列 II` 会顺很多
-
-### 推荐延伸阅读
-
-- `78. 子集`：不含重复元素的基础版本
-- `39. 组合总和`：理解组合型回溯与目标约束
-- `40. 组合总和 II`：重复元素 + 目标和 + 去重
-- `47. 全排列 II`：排列型问题里的重复元素判重
-
-### 行动建议
-
-现在最值得做的事，不是继续背更多题，而是把 `78` 和 `90` 并排写一遍。
-如果你能明确说出“只多了哪一个条件、为什么必须排序、为什么是层内去重”，回溯这一章就真正站稳了。
-
----
-
-## 多语言实现
-
-### Python
-
-```python
-from typing import List
-
-
-def subsets_with_dup(nums: List[int]) -> List[List[int]]:
-    nums.sort()
-    res: List[List[int]] = []
-    path: List[int] = []
-
-    def dfs(start: int) -> None:
-        res.append(path.copy())
-        for i in range(start, len(nums)):
-            if i > start and nums[i] == nums[i - 1]:
-                continue
-            path.append(nums[i])
-            dfs(i + 1)
-            path.pop()
-
-    dfs(0)
-    return res
-```
-
-### C
-
-```c
-#include <stdlib.h>
-
-typedef struct {
-    int** data;
-    int* col_sizes;
-    int size;
-    int capacity;
-} Result;
-
-static int cmp_int(const void* a, const void* b) {
-    return *(const int*)a - *(const int*)b;
-}
-
-static void push_result(Result* res, int* path, int path_size) {
-    if (res->size == res->capacity) {
-        res->capacity *= 2;
-        res->data = realloc(res->data, sizeof(int*) * res->capacity);
-        res->col_sizes = realloc(res->col_sizes, sizeof(int) * res->capacity);
-    }
-    int* row = malloc(sizeof(int) * path_size);
-    for (int i = 0; i < path_size; ++i) {
-        row[i] = path[i];
-    }
-    res->data[res->size] = row;
-    res->col_sizes[res->size] = path_size;
-    res->size += 1;
-}
-
-static void dfs(int* nums, int n, int start, int* path, int path_size, Result* res) {
-    push_result(res, path, path_size);
-    for (int i = start; i < n; ++i) {
-        if (i > start && nums[i] == nums[i - 1]) {
-            continue;
-        }
-        path[path_size] = nums[i];
-        dfs(nums, n, i + 1, path, path_size + 1, res);
-    }
-}
-
-int** subsetsWithDup(int* nums, int numsSize, int* returnSize, int** returnColumnSizes) {
-    qsort(nums, numsSize, sizeof(int), cmp_int);
-
-    Result res = {0};
-    res.capacity = 16;
-    res.data = malloc(sizeof(int*) * res.capacity);
-    res.col_sizes = malloc(sizeof(int) * res.capacity);
-
-    int* path = malloc(sizeof(int) * numsSize);
-    dfs(nums, numsSize, 0, path, 0, &res);
-    free(path);
-
-    *returnSize = res.size;
-    *returnColumnSizes = res.col_sizes;
-    return res.data;
-}
-```
-
-### C++
-
-```cpp
-#include <algorithm>
-#include <vector>
-using namespace std;
-
-class Solution {
-public:
-    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
-        sort(nums.begin(), nums.end());
-        vector<vector<int>> res;
-        vector<int> path;
-        dfs(nums, 0, path, res);
-        return res;
-    }
-
-private:
-    void dfs(const vector<int>& nums, int start, vector<int>& path, vector<vector<int>>& res) {
-        res.push_back(path);
-        for (int i = start; i < (int)nums.size(); ++i) {
-            if (i > start && nums[i] == nums[i - 1]) {
-                continue;
-            }
-            path.push_back(nums[i]);
-            dfs(nums, i + 1, path, res);
-            path.pop_back();
-        }
-    }
-};
-```
-
-### Go
-
-```go
-package main
-
-import "sort"
-
-func subsetsWithDup(nums []int) [][]int {
-	sort.Ints(nums)
-	res := make([][]int, 0)
-	path := make([]int, 0, len(nums))
-
-	var dfs func(int)
-	dfs = func(start int) {
-		snapshot := append([]int(nil), path...)
-		res = append(res, snapshot)
-		for i := start; i < len(nums); i++ {
-			if i > start && nums[i] == nums[i-1] {
-				continue
-			}
-			path = append(path, nums[i])
-			dfs(i + 1)
-			path = path[:len(path)-1]
-		}
-	}
-
-	dfs(0)
-	return res
-}
-```
-
-### Rust
-
-```rust
-impl Solution {
-    pub fn subsets_with_dup(mut nums: Vec<i32>) -> Vec<Vec<i32>> {
-        nums.sort();
-        let mut res: Vec<Vec<i32>> = Vec::new();
-        let mut path: Vec<i32> = Vec::new();
-
-        fn dfs(nums: &Vec<i32>, start: usize, path: &mut Vec<i32>, res: &mut Vec<Vec<i32>>) {
-            res.push(path.clone());
-            for i in start..nums.len() {
-                if i > start && nums[i] == nums[i - 1] {
-                    continue;
-                }
-                path.push(nums[i]);
-                dfs(nums, i + 1, path, res);
-                path.pop();
-            }
-        }
-
-        dfs(&nums, 0, &mut path, &mut res);
-        res
-    }
-}
-```
-
-### JavaScript
-
-```javascript
-/**
- * @param {number[]} nums
- * @return {number[][]}
- */
-var subsetsWithDup = function (nums) {
-  nums.sort((a, b) => a - b);
-  const res = [];
-  const path = [];
-
-  function dfs(start) {
-    res.push([...path]);
-    for (let i = start; i < nums.length; i += 1) {
-      if (i > start && nums[i] === nums[i - 1]) continue;
-      path.push(nums[i]);
-      dfs(i + 1);
-      path.pop();
-    }
-  }
-
-  dfs(0);
-  return res;
-};
-```
+- 题意、示例和约束来自当前仓库旧稿中的 LeetCode 90 摘要。
+- 代码语言按本仓库当前 LeetCode 教程默认选择 Python。

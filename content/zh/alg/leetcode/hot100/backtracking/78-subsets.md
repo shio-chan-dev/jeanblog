@@ -1,281 +1,212 @@
 ---
-title: "Hot100：子集（Subsets）回溯枚举 / startIndex 模板 ACERS 解析"
-date: 2026-04-02T13:48:57+08:00
+title: "LeetCode 78：子集，从搜索树推出 startIndex 回溯模板"
+date: 2026-05-03T14:25:07+08:00
 draft: false
 categories: ["LeetCode"]
-tags: ["Hot100", "回溯", "子集", "DFS", "startIndex", "LeetCode 78"]
-description: "围绕 LeetCode 78 子集，讲清回溯树、startIndex 边界与多语言可运行实现。"
-keywords: ["Subsets", "子集", "回溯", "startIndex", "幂集", "LeetCode 78", "Hot100"]
+tags: ["Hot100", "回溯", "子集", "DFS", "LeetCode 78"]
 ---
 
-> **副标题 / 摘要**
-> 子集是 Hot100 回溯专题里最适合打地基的一题。真正要固定下来的不是“把答案都列出来”，而是 `path`、`startIndex` 和“每个节点都是答案”这三个核心不变式。
+## 从 `[1,2]` 的搜索树开始
 
-- **预计阅读时长**：10~12 分钟
-- **标签**：`Hot100`、`回溯`、`子集`、`DFS`
-- **SEO 关键词**：Subsets, 子集, 回溯, startIndex, 幂集
-- **元描述**：用 LeetCode 78 子集建立最稳定的回溯模板，含工程场景、复杂度分析与多语言实现。
+题目给一个元素互不相同的整数数组 `nums`，要求返回它的所有子集。结果顺序不限，子集内部也不关心排列顺序。
 
----
+最小但有分叉的例子是：
 
-## A — Algorithm（题目与算法）
+```text
+nums = [1,2]
+```
 
-### 题目还原
+答案应该是：
 
-给定一个元素互不相同的整数数组 `nums`，返回它的所有可能子集。
-结果中不能包含重复子集，返回顺序不限。
+```text
+[], [1], [1,2], [2]
+```
 
-### 输入输出
+注意这里没有 `[2,1]`。这说明问题不是“随便排列所有选择”，而是“每个元素选或不选，且同一组元素只出现一次”。
 
-| 名称 | 类型 | 描述 |
-| --- | --- | --- |
-| nums | int[] | 元素互不相同的整数数组 |
-| 返回 | int[][] | 所有可能的子集 |
+如果把构造过程画成树：
 
-### 示例 1
+```text
+[]
+|- [1]
+|  |- [1,2]
+|- [2]
+```
+
+这棵树暴露出两个事实：
+
+- 每个节点都是一个合法子集。
+- 进入 `[1]` 之后，后面只能继续看 `2`，不能回头再选 `1` 或生成 `[2,1]`。
+
+这篇只用 Python 构造一个最小可运行解法。
+
+## 题目事实
+
+- 输入：`nums`，长度 `1 <= nums.length <= 10`
+- 元素范围：`-10 <= nums[i] <= 10`
+- 所有元素互不相同
+- 输出：所有可能子集
+
+示例：
 
 ```text
 输入：nums = [1,2,3]
 输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
 ```
 
-### 示例 2
+## Step 1：先说清楚一个递归层在解决什么
 
-```text
-输入：nums = [0]
-输出：[[],[0]]
-```
+如果当前已经选出一个 `path`，剩下的问题是：
 
-### 提示
+> 从某个起点之后的元素里，继续选择若干个元素，扩展当前 `path`。
 
-- `1 <= nums.length <= 10`
-- `-10 <= nums[i] <= 10`
-- `nums` 中所有元素互不相同
+这个“某个起点”必须被记下来。否则 `[1,2]` 和 `[2,1]` 会从不同路径重复出现。
 
----
+先写最小骨架。它只保留两个状态：
 
-## 目标读者
-
-- 刚进入 Hot100 回溯专题、想先把模板打稳的学习者
-- 能写 DFS，但还没真正理解“组合”和“排列”区别的开发者
-- 希望把枚举思路迁移到配置组合、策略试跑场景的工程师
-
-## 背景 / 动机
-
-“列出所有可能组合”在工程里并不少见。
-比如功能开关组合试跑、权限策略候选集生成、前端筛选项预设等，本质上都在做“从若干候选元素里列出所有选择结果”。
-
-这类问题最容易犯的错有两个：
-
-- 把组合写成排列，导致重复答案
-- 把“什么时候收集答案”放错位置，导致漏解
-
-LeetCode 78 的价值就在于：它约束足够简单，没有重复元素，也不要求复杂剪枝，适合你先把回溯树的骨架搭稳。
-
-## 核心概念
-
-- **`path`**：当前递归路径上已经选中的元素
-- **`startIndex`**：下一层从哪里开始选，保证组合不会倒序重复
-- **前序收集答案**：子集题里，每个节点本身就是一个合法答案
-- **回溯撤销**：递归返回后，要把刚加入 `path` 的元素弹出
-
----
-
-## C — Concepts（核心思想）
-
-### 这道题是怎么一步一步推出来的
-
-#### Step 1：先从一个最小但不平凡的例子开始
-
-看 `nums = [1,2,3]`。
-
-不要一上来就问“怎样一次性生成所有子集”，先换成更小的问题：
-
-- 当前已经选了一些数
-- 下一步还能从哪里继续选
-- 什么时候当前路径本身就已经是一个答案
-
-对 `[1,2,3]` 来说，搜索树会是：
-
-```text
-[]
-|- [1]
-|  |- [1,2]
-|  |  |- [1,2,3]
-|  |- [1,3]
-|- [2]
-|  |- [2,3]
-|- [3]
-```
-
-这个例子最重要的观察是：
-
-- 每个节点本身就是一个合法子集
-- 选了 `1` 之后，下一层不能再回头把 `1` 前面的元素重新枚举
-
-#### Step 2：当前部分答案最少要记住什么？
-
-既然我们是在“逐步构造一个子集”，那就必须有一个状态来保存当前已经选了哪些数。
-这就是 `path`。
+- `path`：当前分支已经选了什么
+- `res`：已经收集到的所有子集
 
 ```python
-path = []
-```
-
-`path` 的含义是：
-
-- 它只表示当前递归分支上的选择
-- 它不是最终答案全集
-
-#### Step 3：怎样避免把同一组元素按不同顺序重复生成？
-
-子集是组合问题，不关心顺序。
-所以 `[1,2]` 和 `[2,1]` 只能算一个答案。
-
-这就要求我们给每一层一个边界：只能从当前位置往后选。
-这就是 `startIndex` 的来源。
-
-```python
-def dfs(start: int) -> None:
-    ...
-```
-
-这里的 `start` 表示：
-
-- 当前层允许从哪个下标开始继续枚举
-- 更前面的元素不再回头考虑
-
-#### Step 4：什么时候应该收集答案？
-
-这题和排列、目标和类题不一样。
-它没有“必须选满”或“必须凑成 target”这种终点约束。
-
-只要当前 `path` 合法，它就是一个子集。
-所以一进入 `dfs`，就应该先收集当前路径。
-
-```python
-res.append(path.copy())
-```
-
-这里一定要 `copy()`，因为 `path` 后面还会继续变化。
-
-#### Step 5：当前层有哪些可选动作？
-
-当前层只需要从 `start` 开始往后看，把每个还没处理的元素依次拿出来试一下。
-
-```python
-for i in range(start, len(nums)):
-    ...
-```
-
-这个边界保证了：
-
-- 子集按下标递增的顺序构造
-- 不会出现 `[2,1]` 这种倒序重复
-
-#### Step 6：选中一个元素后，状态怎么推进？
-
-如果当前选择 `nums[i]`，就把它压进 `path`，然后递归处理后面的元素。
-
-```python
-path.append(nums[i])
-dfs(i + 1)
-```
-
-这里的 `i + 1` 非常关键：
-
-- 当前元素已经决定“选了”
-- 下一层不能再从自己或更前面重新开始
-
-#### Step 7：递归回来之后要撤销什么？
-
-回溯的核心就是：选完、递归、撤销。
-所以返回时必须把刚加入的元素弹出去。
-
-```python
-path.pop()
-```
-
-这样循环才能继续尝试同一层的下一个候选值。
-
-#### Step 8：慢速走一条分支
-
-还是看 `nums = [1,2,3]`。
-
-开始时：
-
-- `path = []`
-- `start = 0`
-
-一进入 `dfs(0)`：
-
-- 先收集 `[]`
-
-选择 `1`：
-
-- `path = [1]`
-- 进入 `dfs(1)`
-- 先收集 `[1]`
-
-在这一层再选 `2`：
-
-- `path = [1,2]`
-- 进入 `dfs(2)`
-- 先收集 `[1,2]`
-
-继续选 `3`：
-
-- `path = [1,2,3]`
-- 进入 `dfs(3)`
-- 收集 `[1,2,3]`
-
-然后一路 `pop()` 回来，再去尝试 `[1,3]`、`[2]`、`[2,3]`、`[3]`。
-整道题其实就是在重复这一个模式。
-
-### Assemble the Full Code
-
-下面把上面的碎片拼成第一版完整代码。
-这版代码可以直接运行验证结果。
-
-```python
-from typing import List
-
-
-def subsets(nums: List[int]) -> List[List[int]]:
-    res: List[List[int]] = []
-    path: List[int] = []
+def subsets(nums: list[int]) -> list[list[int]]:
+    res: list[list[int]] = []
+    path: list[int] = []
 
     def dfs(start: int) -> None:
-        res.append(path.copy())
-        for i in range(start, len(nums)):
-            path.append(nums[i])
-            dfs(i + 1)
-            path.pop()
+        pass
 
     dfs(0)
     return res
-
-
-if __name__ == "__main__":
-    print(subsets([1, 2, 3]))
-    print(subsets([0]))
 ```
 
-### Reference Answer
+现在这个版本能做到：
 
-如果你要提交到 LeetCode，可以整理成更贴近提交环境的版本：
+- 明确外层函数和递归函数的接口。
+- 给递归层预留 `start`，表示当前层从哪里继续选。
+
+它还缺：
+
+- 什么时候收集答案。
+- 当前层如何枚举选择。
+
+## Step 2：每个节点都是答案，所以先收集当前 path
+
+在上一版基础上，给 `dfs` 增加第一条规则：
 
 ```python
-from typing import List
+def dfs(start: int) -> None:
+    res.append(path.copy())
+```
 
+为什么是一进入递归就收集？
 
+因为子集不要求“选满多少个元素”。当前 `path` 只要由原数组元素按顺序构成，就是一个合法子集。
+
+为什么要 `copy()`？
+
+因为 `path` 后面会继续增删。如果直接把 `path` 放进 `res`，历史答案会跟着后续回溯一起变。
+
+现在这个版本能做到：
+
+- 收集空集 `[]`。
+- 收集任意进入递归层时的当前路径。
+
+它还缺：
+
+- 还没有向下扩展，所以只能拿到空集。
+
+## Step 3：当前层只能从 start 往后枚举
+
+在上一版基础上，给 `dfs` 加当前层的候选范围：
+
+```python
+def dfs(start: int) -> None:
+    res.append(path.copy())
+
+    for i in range(start, len(nums)):
+        pass
+```
+
+这里 `range(start, len(nums))` 的含义是：
+
+- 当前层只能选择下标 `start` 及其右侧的元素。
+- 更左侧的元素已经在前面的路径里处理过，不再回头。
+
+对 `nums = [1,2,3]`：
+
+- `dfs(0)` 可以尝试 `1,2,3`
+- 选了 `1` 后进入 `dfs(1)`，只能尝试 `2,3`
+- 选了 `2` 后进入 `dfs(2)`，只能尝试 `3`
+
+现在这个版本能做到：
+
+- 明确每一层有哪些候选元素。
+- 用 `start` 避免倒序重复。
+
+它还缺：
+
+- 还没有真正把候选元素加入路径。
+
+## Step 4：选中一个元素后，递归处理右侧剩余元素
+
+在上一版基础上，把循环体里的一个候选加入 `path`，然后递归到右侧：
+
+```python
+for i in range(start, len(nums)):
+    path.append(nums[i])
+    dfs(i + 1)
+```
+
+这里 `dfs(i + 1)` 是关键。它表达的是：
+
+> 当前元素已经被选入 path，下一层只能从它右边继续选。
+
+如果这里写成 `dfs(start + 1)`，当 `i` 不等于 `start` 时边界就错了。真正应该推进的是“当前选中的下标”。
+
+现在这个版本能做到：
+
+- 生成 `[] -> [1] -> [1,2]` 这样的向下路径。
+- 保证子集内部按原数组下标递增。
+
+它还缺：
+
+- 递归回来以后没有撤销选择，会污染同层后面的分支。
+
+## Step 5：递归回来后撤销选择，得到完整解法
+
+在上一版基础上，递归返回后把刚选的元素弹出：
+
+```python
+for i in range(start, len(nums)):
+    path.append(nums[i])
+    dfs(i + 1)
+    path.pop()
+```
+
+这一步解决的是“分支之间不能共享临时选择”的问题。
+
+以 `nums = [1,2,3]` 为例：
+
+```text
+path = [1,2,3] 收集后返回
+pop 3 -> path = [1,2]
+pop 2 -> path = [1]
+继续同层尝试 3 -> path = [1,3]
+```
+
+如果没有 `path.pop()`，从 `[1,2,3]` 回到上一层后，路径仍然带着 `3`，后面的分支会全部错乱。
+
+这一版已经是完整可运行代码：
+
+```python
 class Solution:
-    def subsets(self, nums: List[int]) -> List[List[int]]:
-        res: List[List[int]] = []
-        path: List[int] = []
+    def subsets(self, nums: list[int]) -> list[list[int]]:
+        res: list[list[int]] = []
+        path: list[int] = []
 
         def dfs(start: int) -> None:
             res.append(path.copy())
+
             for i in range(start, len(nums)):
                 path.append(nums[i])
                 dfs(i + 1)
@@ -283,322 +214,97 @@ class Solution:
 
         dfs(0)
         return res
+
+
+if __name__ == "__main__":
+    ans = Solution().subsets([1, 2, 3])
+    print(ans)
 ```
 
-### 我们刚刚搭出来的到底是什么方法？
+现在这个版本能做到：
 
-它的正式名字是：
+- 枚举所有子集。
+- 不产生 `[2,1]` 这类顺序重复。
+- 每个递归分支结束后恢复现场。
 
-- 回溯
-- 组合型搜索
-- `startIndex` 边界控制
+它还缺：
 
-但更重要的不是名字，而是这三个不变式：
+- 对重复元素的处理。这个问题在 `90. 子集 II` 里单独解决。
 
-- `path` 表示当前已经选了什么
-- `startIndex` 表示当前层从哪里开始继续选
-- 每个节点本身都是答案，所以收集发生在递归最前面
+## 慢速走一条分支
 
----
+用 `nums = [1,2,3]` 看一条路径：
 
-## E — Engineering（工程应用）
+```text
+dfs(0), path = []
+收集 []
 
-### 场景 1：功能开关组合试跑（Python）
+i = 0, 选择 1
+path = [1]
+dfs(1), 收集 [1]
 
-**背景**：你有几组灰度开关，想生成所有候选开关组合做小流量验证。
-**为什么适用**：这和“列出所有子集”完全同构。
+i = 1, 选择 2
+path = [1,2]
+dfs(2), 收集 [1,2]
 
-```python
-def all_toggle_sets(toggles):
-    ans = [[]]
-    for name in toggles:
-        ans += [old + [name] for old in ans]
-    return ans
+i = 2, 选择 3
+path = [1,2,3]
+dfs(3), 收集 [1,2,3]
 
-
-print(all_toggle_sets(["new-ui", "cache-v2", "risk-guard"]))
+返回，pop 3 -> [1,2]
+返回，pop 2 -> [1]
+同层继续 i = 2, 选择 3 -> [1,3]
 ```
 
-### 场景 2：策略模块候选集生成（Go）
+这个 trace 要看的不是答案顺序，而是两个不变量：
 
-**背景**：后台风控系统要枚举不同策略模块组合，离线评估命中效果。
-**为什么适用**：每个模块可选或不选，天然就是子集问题。
+- `path` 始终表示当前搜索分支。
+- `start` 始终保证下一层只看右侧剩余元素。
 
-```go
-package main
+## 正确性
 
-import "fmt"
+不变量：
 
-func subsets(items []string) [][]string {
-	res := [][]string{{}}
-	for _, item := range items {
-		size := len(res)
-		for i := 0; i < size; i++ {
-			next := append([]string{}, res[i]...)
-			next = append(next, item)
-			res = append(res, next)
-		}
-	}
-	return res
-}
+- `dfs(start)` 开始时，`path` 是一个由 `nums` 中若干元素按下标递增组成的合法子集。
+- 当前层只会从 `start` 到末尾选择元素，所以不会生成倒序重复。
 
-func main() {
-	fmt.Println(subsets([]string{"ruleA", "ruleB", "ruleC"}))
-}
-```
+为什么不会漏：
 
-### 场景 3：前端筛选预设生成（JavaScript）
+- 对任意一个子集，把它的元素按原数组下标从小到大排列。
+- DFS 会沿着这些下标依次选择它们，因此这个子集一定会被访问。
 
-**背景**：前端页面要预生成若干筛选器组合，做演示或回归测试。
-**为什么适用**：筛选项的开关组合本质上就是幂集。
+为什么不会重：
 
-```javascript
-function subsets(items) {
-  const res = [[]];
-  for (const item of items) {
-    const size = res.length;
-    for (let i = 0; i < size; i += 1) {
-      res.push([...res[i], item]);
-    }
-  }
-  return res;
-}
+- 每条路径的下标严格递增。
+- 同一组下标只能由唯一一条递增路径生成。
 
-console.log(subsets(["tag", "price", "stock"]));
-```
+## 复杂度
 
----
+- 子集数量是 `2^n`。
+- 每次收集答案需要复制 `path`，总复制成本是 `O(n * 2^n)`。
+- 递归栈和 `path` 的额外空间是 `O(n)`；输出本身占 `O(n * 2^n)`。
 
-## R — Reflection（反思与深入）
+## 常见错误
 
-### 复杂度分析
+- 只在叶子节点收集答案，会漏掉 `[]`、`[1]`、`[1,2]` 这类中间节点。
+- 忘记 `path.copy()`，导致 `res` 里的答案被后续回溯修改。
+- 递归写成 `dfs(start + 1)`，边界没有跟着当前选择的下标走。
+- 忘记 `path.pop()`，导致分支状态污染。
 
-- 时间复杂度：`O(n * 2^n)`
-  子集总数是 `2^n`，复制路径的总成本与答案规模同阶。
-- 空间复杂度：递归栈 `O(n)`，若计入输出则为 `O(n * 2^n)`
+## 小结
 
-### 替代方案对比
+- 子集题的核心不是叶子节点，而是“每个搜索树节点都是答案”。
+- `path` 表示当前分支，`start` 表示下一层从哪里继续选。
+- `dfs(i + 1)` 保证组合不倒序重复。
+- `path.pop()` 保证回溯后同层分支互不污染。
 
-| 方法 | 思路 | 优点 | 缺点 |
-| --- | --- | --- | --- |
-| 回溯 | 路径递归展开 | 模板统一，最适合迁移到后续题 | 需要理解搜索树 |
-| 位运算 | 用二进制位表示选或不选 | 写法短，适合离线枚举 | 可读性弱，不利于迁移到复杂回溯 |
-| 迭代扩展 | 对已有答案批量加新元素 | 简洁直观 | 对“剪枝 / 约束”类题扩展性较弱 |
+## 参考与延伸
 
-### 常见错误
+- LeetCode 78：Subsets
+- LeetCode 90：Subsets II
+- LeetCode 46：Permutations
 
-- 只在叶子节点收集答案，漏掉大量合法子集
-- 把 `path` 直接 append 到结果里，导致结果被后续修改污染
-- 下一层仍从 `0` 枚举，得到重复顺序结果
+## Notes
 
-## 常见问题与注意事项
-
-### 子集为什么不需要 `used[]`
-
-因为元素是否能再选，不是靠“当前层之前有没有用过”控制，
-而是靠 `startIndex` 保证后面的层只向后看。
-
-### 什么时候该从这题升级到下一题
-
-当你能稳定回答下面四个问题，就可以继续做 `46 全排列`：
-
-- `path` 表示什么
-- 为什么每个节点都收集答案
-- `startIndex` 为什么是 `i + 1`
-- 回溯时撤销了什么状态
-
-## 最佳实践与建议
-
-- 把“组合类回溯”统一写成 `dfs(startIndex)` 模板
-- 收集答案时一律复制路径，不要共享可变数组
-- 先画搜索树，再写代码，能明显降低出错率
-- 学完这题后，立刻衔接 `46 / 17 / 39`，模板差异最清楚
-
----
-
-## S — Summary（总结）
-
-- 子集题是回溯模板里最适合打地基的一题
-- `startIndex` 决定这是组合，不是排列
-- 子集题的答案收集时机是“每个节点”，不是“只在叶子”
-- 学会这题后，后续的组合、剪枝、固定层数 DFS 都更容易迁移
-
-### 推荐延伸阅读
-
-- `46. 全排列`：加入 `used[]`，理解排列型回溯
-- `39. 组合总和`：加入目标值与剪枝
-- `90. 子集 II`：处理重复元素时的层内判重
-- `77. 组合`：固定长度组合的经典模板
-
-### 行动建议
-
-今天如果你准备正式进入回溯专题，先把这题写到能脱稿，再去做 `46. 全排列`。
-这比一开始就上复杂剪枝题更稳。
-
----
-
-## 多语言实现
-
-### Python
-
-```python
-from typing import List
-
-
-def subsets(nums: List[int]) -> List[List[int]]:
-    res: List[List[int]] = []
-    path: List[int] = []
-
-    def dfs(start: int) -> None:
-        res.append(path.copy())
-        for i in range(start, len(nums)):
-            path.append(nums[i])
-            dfs(i + 1)
-            path.pop()
-
-    dfs(0)
-    return res
-```
-
-### C
-
-```c
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct {
-    int** data;
-    int* col_sizes;
-    int size;
-    int capacity;
-} Result;
-
-static void push_result(Result* res, int* path, int path_size) {
-    if (res->size == res->capacity) {
-        res->capacity *= 2;
-        res->data = realloc(res->data, sizeof(int*) * res->capacity);
-        res->col_sizes = realloc(res->col_sizes, sizeof(int) * res->capacity);
-    }
-    int* row = malloc(sizeof(int) * path_size);
-    for (int i = 0; i < path_size; ++i) row[i] = path[i];
-    res->data[res->size] = row;
-    res->col_sizes[res->size] = path_size;
-    res->size += 1;
-}
-
-static void dfs(int* nums, int nums_size, int start, int* path, int path_size, Result* res) {
-    push_result(res, path, path_size);
-    for (int i = start; i < nums_size; ++i) {
-        path[path_size] = nums[i];
-        dfs(nums, nums_size, i + 1, path, path_size + 1, res);
-    }
-}
-
-int** subsets(int* nums, int nums_size, int* return_size, int** return_column_sizes) {
-    Result res = {0};
-    res.capacity = 16;
-    res.data = malloc(sizeof(int*) * res.capacity);
-    res.col_sizes = malloc(sizeof(int) * res.capacity);
-
-    int* path = malloc(sizeof(int) * nums_size);
-    dfs(nums, nums_size, 0, path, 0, &res);
-    free(path);
-
-    *return_size = res.size;
-    *return_column_sizes = res.col_sizes;
-    return res.data;
-}
-```
-
-### C++
-
-```cpp
-#include <vector>
-using namespace std;
-
-class Solution {
-public:
-    vector<vector<int>> subsets(vector<int>& nums) {
-        vector<vector<int>> res;
-        vector<int> path;
-        dfs(nums, 0, path, res);
-        return res;
-    }
-
-private:
-    void dfs(const vector<int>& nums, int start, vector<int>& path, vector<vector<int>>& res) {
-        res.push_back(path);
-        for (int i = start; i < (int)nums.size(); ++i) {
-            path.push_back(nums[i]);
-            dfs(nums, i + 1, path, res);
-            path.pop_back();
-        }
-    }
-};
-```
-
-### Go
-
-```go
-package main
-
-func subsets(nums []int) [][]int {
-	res := make([][]int, 0)
-	path := make([]int, 0)
-
-	var dfs func(int)
-	dfs = func(start int) {
-		snapshot := append([]int(nil), path...)
-		res = append(res, snapshot)
-		for i := start; i < len(nums); i++ {
-			path = append(path, nums[i])
-			dfs(i + 1)
-			path = path[:len(path)-1]
-		}
-	}
-
-	dfs(0)
-	return res
-}
-```
-
-### Rust
-
-```rust
-fn subsets(nums: Vec<i32>) -> Vec<Vec<i32>> {
-    fn dfs(nums: &[i32], start: usize, path: &mut Vec<i32>, res: &mut Vec<Vec<i32>>) {
-        res.push(path.clone());
-        for i in start..nums.len() {
-            path.push(nums[i]);
-            dfs(nums, i + 1, path, res);
-            path.pop();
-        }
-    }
-
-    let mut res = Vec::new();
-    let mut path = Vec::new();
-    dfs(&nums, 0, &mut path, &mut res);
-    res
-}
-```
-
-### JavaScript
-
-```javascript
-function subsets(nums) {
-  const res = [];
-  const path = [];
-
-  function dfs(start) {
-    res.push([...path]);
-    for (let i = start; i < nums.length; i += 1) {
-      path.push(nums[i]);
-      dfs(i + 1);
-      path.pop();
-    }
-  }
-
-  dfs(0);
-  return res;
-}
-```
+- 题意、示例和约束来自当前仓库旧稿中的 LeetCode 78 摘要。
+- 代码语言按本仓库当前 LeetCode 教程默认选择 Python。

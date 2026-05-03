@@ -1,404 +1,324 @@
 ---
-title: "Hot100：最大子数组和（Maximum Subarray）Kadane 一维 DP ACERS 解析"
-date: 2026-01-23T11:58:26+08:00
+title: "LeetCode 53：最大子数组和，从 dp[i] 含义推出 Kadane"
+date: 2026-05-03T14:25:07+08:00
 draft: false
 categories: ["LeetCode"]
-tags: ["Hot100", "动态规划", "贪心", "子数组", "LeetCode 53"]
-description: "用 Kadane 算法在 O(n) 时间求最大子数组和，含工程场景、常见误区与多语言实现。"
-keywords: ["Maximum Subarray", "最大子数组和", "Kadane", "动态规划", "O(n)", "Hot100"]
+tags: ["Hot100", "动态规划", "一维DP", "Kadane", "LeetCode 53"]
 ---
 
-> **副标题 / 摘要**  
-> 最大子数组和是最经典的一维 DP / 贪心题。本文用 ACERS 模板拆解 Kadane 算法，给出工程迁移思路与多语言可运行实现。
+## 从 `[-2,1,-3,4]` 的断点开始
 
-- **预计阅读时长**：10~12 分钟  
-- **标签**：`Hot100`、`动态规划`、`贪心`  
-- **SEO 关键词**：Maximum Subarray, 最大子数组和, Kadane, 动态规划, O(n)  
-- **元描述**：Kadane 一维 DP 求最大子数组和，含工程场景、复杂度分析与多语言代码。  
+题目给一个整数数组 `nums`，要求找出一个连续且非空的子数组，使它的和最大，并返回这个最大和。
 
----
-
-## 目标读者
-
-- 正在刷 Hot100 的学习者  
-- 想掌握“最大子段和”经典模板的中级开发者  
-- 需要做序列区间增益分析的工程师
-
-## 背景 / 动机
-
-最大子数组和不仅是 LeetCode 经典题，也常见于实际系统：  
-交易收益区间、指标提升区间、日志峰值段落、吞吐提升区间等都可以抽象为“最大连续收益”。  
-朴素 O(n^2) 枚举无法扩展，Kadane 给出 O(n) 的线性解。
-
-## 核心概念
-
-- **子数组**：连续且非空的数组片段  
-- **状态转移**：`dp[i]` 表示“以 i 结尾的最大子数组和”  
-- **Kadane 思想**：如果前缀和为负，直接丢弃，从当前位置重新开始
-
----
-
-## A — Algorithm（题目与算法）
-
-### 题目还原
-
-给你一个整数数组 `nums`，找出一个具有最大和的连续子数组（子数组至少包含一个元素），返回其最大和。
-
-### 输入输出
-
-| 名称 | 类型 | 描述 |
-| --- | --- | --- |
-| nums | int[] | 整数数组 |
-| 返回 | int | 最大子数组和 |
-
-### 示例 1（官方）
+看一个前缀例子：
 
 ```text
-nums = [-2,1,-3,4,-1,2,1,-5,4]
-输出 = 6
-解释：子数组 [4,-1,2,1] 和为 6
+nums = [-2, 1, -3, 4]
 ```
 
-### 示例 2（官方）
+如果走到 `4`，有两种选择：
+
+- 把前面的某个连续子数组接到 `4` 前面
+- 从 `4` 自己重新开始
+
+这里的关键不是“所有子数组怎么枚举”，而是：
+
+> 当我们决定一个最优子数组必须以当前位置结尾时，它的来源只有两种：接上前一个位置的最优结尾，或者从当前位置重新开始。
+
+这就是一维 DP 的入口。
+
+## 题目事实
+
+- 输入：整数数组 `nums`
+- 输出：连续非空子数组的最大和
+- 子数组必须连续
+- 至少选一个元素
+
+示例：
 
 ```text
-nums = [1]
-输出 = 1
+输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+输出：6
+解释：[4,-1,2,1] 的和最大，为 6
 ```
 
----
-
-## C — Concepts（核心思想）
-
-### 关键公式
-
-设 `dp[i]` 为以 `i` 结尾的最大子数组和：
-
-```
-dp[i] = max(nums[i], dp[i-1] + nums[i])
-答案 = max(dp[i])
+```text
+输入：nums = [1]
+输出：1
 ```
 
-### 方法归类
+## Step 1：先定义一个更小的问题
 
-- **一维动态规划（DP）**  
-- **贪心（负前缀直接舍弃）**
+直接问“整个数组的最大子数组和是多少”太大。我们先强加一个限制：
 
-### 直观解释
+> 如果子数组必须以第 `i` 个元素结尾，它的最大和是多少？
 
-如果 `dp[i-1]` 为负数，继续加只会让后面的和变小，直接从 `nums[i]` 重新开始更优。  
-这就是 Kadane 的本质。
+这个值记为 `dp[i]`。
 
----
+这里的 `dp[i]` 不是“前 `i` 个元素里的最大子数组和”。它更窄：
 
-## 实践指南 / 步骤
+```text
+dp[i] = 必须以 nums[i] 结尾的连续子数组最大和
+```
 
-1. 初始化 `cur = nums[0]`、`best = nums[0]`  
-2. 从第 2 个元素开始扫描：  
-   - `cur = max(nums[i], cur + nums[i])`  
-   - `best = max(best, cur)`  
-3. 返回 `best`
-
-Python 可运行示例（保存为 `maximum_subarray.py`）：
+先写最小骨架：
 
 ```python
-def max_subarray(nums):
-    cur = best = nums[0]
-    for x in nums[1:]:
-        cur = max(x, cur + x)
-        best = max(best, cur)
-    return best
+def max_sub_array(nums: list[int]) -> int:
+    n = len(nums)
+    dp = [0] * n
+```
+
+现在这个版本能做到：
+
+- 给每个位置预留一个状态。
+- 明确 `dp[i]` 绑定的是“以 i 结尾”。
+
+它还缺：
+
+- 第一个位置的值。
+- 后续位置如何从前一个状态转移。
+- 最终答案从哪里取。
+
+## Step 2：第一个位置只能选自己
+
+在上一版基础上，先填 base case。
+
+如果子数组必须以 `0` 结尾，那它只能是：
+
+```text
+[nums[0]]
+```
+
+所以新增：
+
+```python
+dp[0] = nums[0]
+```
+
+现在代码是：
+
+```python
+def max_sub_array(nums: list[int]) -> int:
+    n = len(nums)
+    dp = [0] * n
+    dp[0] = nums[0]
+```
+
+现在这个版本能做到：
+
+- 正确处理第一个位置的“以 0 结尾”状态。
+
+它还缺：
+
+- `i > 0` 时的状态转移。
+- 整个数组的答案。
+
+## Step 3：当前位置只有“接上”或“重开”两种来源
+
+现在考虑 `i > 0`。
+
+如果最大子数组必须以 `i` 结尾，它最后一个元素一定是 `nums[i]`。它的前面只有两种情况：
+
+1. 接上一个也以 `i - 1` 结尾的最优子数组
+2. 不接任何前缀，从 `nums[i]` 重新开始
+
+所以在上一版基础上新增转移：
+
+```python
+for i in range(1, n):
+    dp[i] = max(dp[i - 1] + nums[i], nums[i])
+```
+
+这条转移里的两项含义是：
+
+- `dp[i - 1] + nums[i]`：接上前一个位置的最佳结尾
+- `nums[i]`：从当前位置重新开始
+
+现在代码是：
+
+```python
+def max_sub_array(nums: list[int]) -> int:
+    n = len(nums)
+    dp = [0] * n
+    dp[0] = nums[0]
+
+    for i in range(1, n):
+        dp[i] = max(dp[i - 1] + nums[i], nums[i])
+```
+
+现在这个版本能做到：
+
+- 算出每个位置作为结尾时的最大连续和。
+
+它还缺：
+
+- 最终答案不一定以最后一个位置结尾。
+
+## Step 4：答案是所有 dp[i] 的最大值
+
+上一版算出的 `dp[i]` 都是“必须以 i 结尾”的局部答案。题目问的是任意位置结尾的最大值。
+
+所以新增：
+
+```python
+return max(dp)
+```
+
+得到第一版完整正确代码：
+
+```python
+def max_sub_array(nums: list[int]) -> int:
+    n = len(nums)
+    dp = [0] * n
+    dp[0] = nums[0]
+
+    for i in range(1, n):
+        dp[i] = max(dp[i - 1] + nums[i], nums[i])
+
+    return max(dp)
+```
+
+现在这个版本能做到：
+
+- 正确返回最大子数组和。
+- 清楚保留每个位置的 `dp[i]`，适合学习状态含义。
+
+它还缺：
+
+- 空间还可以优化，因为转移只依赖 `dp[i - 1]`。
+
+## Step 5：慢速走一遍表
+
+用示例：
+
+```text
+nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+```
+
+逐步计算：
+
+| i | nums[i] | 接上 dp[i-1] + nums[i] | 重开 nums[i] | dp[i] |
+| --- | --- | --- | --- | --- |
+| 0 | -2 | - | -2 | -2 |
+| 1 | 1 | -1 | 1 | 1 |
+| 2 | -3 | -2 | -3 | -2 |
+| 3 | 4 | 2 | 4 | 4 |
+| 4 | -1 | 3 | -1 | 3 |
+| 5 | 2 | 5 | 2 | 5 |
+| 6 | 1 | 6 | 1 | 6 |
+| 7 | -5 | 1 | -5 | 1 |
+| 8 | 4 | 5 | 4 | 5 |
+
+所以：
+
+```text
+max(dp) = 6
+```
+
+这一步要确认的不是表本身，而是 `dp[i]` 的含义始终没有变：
+
+> `dp[i]` 只回答“必须以 i 结尾”的最大和。
+
+## Step 6：把 dp 数组压成两个变量
+
+上一版的瓶颈是空间。
+
+转移：
+
+```text
+dp[i] = max(dp[i - 1] + nums[i], nums[i])
+```
+
+只依赖上一个状态 `dp[i - 1]`，不需要保留整张表。
+
+把 `dp[i - 1]` 替换成 `cur`：
+
+```python
+cur = max(cur + x, x)
+```
+
+同时题目最终要的是所有 `dp[i]` 的最大值，所以保留 `best`：
+
+```python
+best = max(best, cur)
+```
+
+最终完整代码是：
+
+```python
+class Solution:
+    def maxSubArray(self, nums: list[int]) -> int:
+        cur = nums[0]
+        best = nums[0]
+
+        for x in nums[1:]:
+            cur = max(cur + x, x)
+            best = max(best, cur)
+
+        return best
 
 
 if __name__ == "__main__":
-    print(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))
-    print(max_subarray([1]))
+    print(Solution().maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))
+    print(Solution().maxSubArray([1]))
 ```
 
----
-
-## E — Engineering（工程应用）
+现在这个版本能做到：
 
-### 场景 1：交易收益区间（Python，数据分析）
+- 保持和 `dp` 表版本相同的转移含义。
+- 把额外空间从 `O(n)` 降到 `O(1)`。
 
-**背景**：用日收益序列找“最优连续盈利区间”。  
-**为什么适用**：最大子数组和直接给出收益峰值段。
+它还缺：
 
-```python
-def best_profit_streak(deltas):
-    cur = best = deltas[0]
-    for x in deltas[1:]:
-        cur = max(x, cur + x)
-        best = max(best, cur)
-    return best
+- 如果题目要求返回子数组本身，还需要额外记录起止下标；本题只要求返回最大和。
 
-print(best_profit_streak([3, -2, 5, -1, 2, -4, 6]))
-```
+## 正确性
 
-### 场景 2：系统监控峰值段（C++，高性能）
+不变量：
 
-**背景**：CPU 使用率变化序列中寻找最大连续上升段。  
-**为什么适用**：O(n) 扫描适合高频采样。
+- 处理到位置 `i` 后，`cur` 等于“必须以 `i` 结尾的最大连续子数组和”。
+- `best` 等于“到目前为止见过的最大 `cur`”。
 
-```cpp
-#include <iostream>
-#include <vector>
+为什么转移正确：
 
-int maxBurst(const std::vector<int>& deltas) {
-    int cur = deltas[0];
-    int best = deltas[0];
-    for (size_t i = 1; i < deltas.size(); ++i) {
-        cur = std::max(deltas[i], cur + deltas[i]);
-        best = std::max(best, cur);
-    }
-    return best;
-}
+- 任何以 `i` 结尾的连续子数组，要么只包含 `nums[i]`，要么由某个以 `i - 1` 结尾的连续子数组接上 `nums[i]`。
+- 如果要接上前面，接的那段必须是以 `i - 1` 结尾的最大者，否则可以替换成更大的，得到更优结果。
+- 所以 `cur = max(cur + x, x)` 覆盖了全部可能来源。
 
-int main() {
-    std::cout << maxBurst({3, -2, 5, -1, 2}) << "\n";
-    return 0;
-}
-```
+为什么返回 `best`：
 
-### 场景 3：后端吞吐提升区间（Go，后台服务）
+- 最大子数组可以结束在任意位置。
+- 每个结束位置的最优值都会成为某一次 `cur`。
+- `best` 记录所有这些 `cur` 的最大值。
 
-**背景**：请求 QPS 的差分序列中找“最大连续提升”。  
-**为什么适用**：Kadane 适合在线聚合。
+## 复杂度
 
-```go
-package main
+- 时间复杂度：`O(n)`，每个元素只扫描一次。
+- 额外空间：`O(1)`，只保存 `cur` 和 `best`。
 
-import "fmt"
+## 常见错误
 
-func maxIncrease(deltas []int) int {
-    cur := deltas[0]
-    best := deltas[0]
-    for i := 1; i < len(deltas); i++ {
-        if cur+deltas[i] > deltas[i] {
-            cur += deltas[i]
-        } else {
-            cur = deltas[i]
-        }
-        if cur > best {
-            best = cur
-        }
-    }
-    return best
-}
+- 把 `dp[i]` 定义成“前 i 个元素里的最大和”，然后又写 `dp[i - 1] + nums[i]`，状态含义不一致。
+- 初始化 `cur = 0`，会在全负数组里错误返回 `0`。
+- 只返回最后的 `cur`，会漏掉中途出现的最大值。
+- 把子序列和子数组混淆；本题必须连续。
 
-func main() {
-    fmt.Println(maxIncrease([]int{3, -2, 5, -1, 2}))
-}
-```
+## 小结
 
----
+- 一维 DP 先写清楚 `dp[i]` 的含义，再写转移。
+- 本题最稳定的状态是：`dp[i]` 表示必须以 `i` 结尾的最大连续和。
+- 转移来源只有两个：接上前一个最优结尾，或从当前位置重新开始。
+- Kadane 只是把 `dp` 表压成 `cur + best` 的空间优化版本。
 
-## R — Reflection（反思与深入）
+## 参考与延伸
 
-### 复杂度分析
+- LeetCode 53：Maximum Subarray
+- LeetCode 70：Climbing Stairs
+- LeetCode 746：Min Cost Climbing Stairs
+- LeetCode 198：House Robber
 
-- **时间复杂度**：O(n)  
-- **空间复杂度**：O(1)
+## Notes
 
-### 替代方案对比
-
-| 方法 | 思路 | 复杂度 | 问题 |
-| --- | --- | --- | --- |
-| 暴力枚举 | 枚举所有子数组 | O(n^2) | 规模大就不可用 |
-| 前缀和枚举 | 计算区间和 | O(n^2) | 仍然太慢 |
-| 分治 | 左右递归合并 | O(n log n) | 实现复杂 |
-| **Kadane** | 一维 DP | **O(n)** | 最优且简单 |
-
-### 为什么当前方法最优
-
-- 单次扫描，常数空间  
-- 实现简单、易复用  
-- 可直接迁移到流式数据
-
----
-
-## 解释与原理（为什么这么做）
-
-Kadane 的关键是“负贡献丢弃”：  
-如果当前累积和 `cur` 为负，它只会拖累后续区间，因此从当前元素重新开始更优。  
-这等价于 `dp[i] = max(nums[i], dp[i-1] + nums[i])` 的状态转移。
-
----
-
-## 常见问题与注意事项
-
-1. **全是负数怎么办？**  
-   依然成立，答案是最大（最不负）的那个数。
-
-2. **能否允许空子数组？**  
-   本题不允许，必须至少包含一个元素。
-
-3. **是否需要记录区间位置？**  
-   可以额外维护起止索引，但会增加代码复杂度。
-
----
-
-## 最佳实践与建议
-
-- 用 `cur` / `best` 两变量即可完成  
-- 遇到相似问题先做“差分序列”建模，再套 Kadane  
-- 若需要区间索引，可在更新 `cur` 时记录起点
-
----
-
-## S — Summary（总结）
-
-### 核心收获
-
-- 最大子数组和是经典一维 DP 模板题  
-- Kadane 通过“负贡献丢弃”实现 O(n)  
-- 时间 O(n)、空间 O(1) 可直接工程复用  
-- 全负数组也能正确处理  
-- 适用于收益、吞吐、波动等连续增益分析
-
-### 小结 / 结论
-
-掌握 Kadane 就掌握了“连续最优区间”的核心套路。  
-这是一道刷题与工程迁移价值都很高的题。
-
-### 参考与延伸阅读
-
-- LeetCode 53. Maximum Subarray
-- 经典 DP 教材（最大子段和）
-- 《算法导论》分治法与 Kadane 对比
-
----
-
-## 元信息
-
-- **阅读时长**：10~12 分钟  
-- **标签**：Hot100、动态规划、贪心、子数组  
-- **SEO 关键词**：Maximum Subarray, 最大子数组和, Kadane, O(n)  
-- **元描述**：Kadane 一维 DP 求最大子数组和，含工程场景与多语言实现。  
-
----
-
-## 行动号召（CTA）
-
-如果你在做 Hot100，建议把这类“连续最优区间”模板整理成自己的刷题工具箱。  
-欢迎评论区分享你在工程里的使用场景。
-
----
-
-## 多语言参考实现（Python / C / C++ / Go / Rust / JS）
-
-```python
-def max_subarray(nums):
-    cur = best = nums[0]
-    for x in nums[1:]:
-        cur = max(x, cur + x)
-        best = max(best, cur)
-    return best
-
-
-if __name__ == "__main__":
-    print(max_subarray([-2, 1, -3, 4, -1, 2, 1, -5, 4]))
-```
-
-```c
-#include <stdio.h>
-
-int max_subarray(const int *nums, int n) {
-    int cur = nums[0];
-    int best = nums[0];
-    for (int i = 1; i < n; ++i) {
-        int with_cur = cur + nums[i];
-        cur = nums[i] > with_cur ? nums[i] : with_cur;
-        if (cur > best) best = cur;
-    }
-    return best;
-}
-
-int main(void) {
-    int nums[] = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
-    printf("%d\n", max_subarray(nums, 9));
-    return 0;
-}
-```
-
-```cpp
-#include <iostream>
-#include <vector>
-
-int maxSubArray(const std::vector<int>& nums) {
-    int cur = nums[0];
-    int best = nums[0];
-    for (size_t i = 1; i < nums.size(); ++i) {
-        cur = std::max(nums[i], cur + nums[i]);
-        best = std::max(best, cur);
-    }
-    return best;
-}
-
-int main() {
-    std::vector<int> nums = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
-    std::cout << maxSubArray(nums) << "\n";
-    return 0;
-}
-```
-
-```go
-package main
-
-import "fmt"
-
-func maxSubArray(nums []int) int {
-    cur := nums[0]
-    best := nums[0]
-    for i := 1; i < len(nums); i++ {
-        if cur+nums[i] > nums[i] {
-            cur += nums[i]
-        } else {
-            cur = nums[i]
-        }
-        if cur > best {
-            best = cur
-        }
-    }
-    return best
-}
-
-func main() {
-    nums := []int{-2, 1, -3, 4, -1, 2, 1, -5, 4}
-    fmt.Println(maxSubArray(nums))
-}
-```
-
-```rust
-fn max_subarray(nums: &[i32]) -> i32 {
-    let mut cur = nums[0];
-    let mut best = nums[0];
-    for &x in &nums[1..] {
-        let with_cur = cur + x;
-        cur = if x > with_cur { x } else { with_cur };
-        if cur > best {
-            best = cur;
-        }
-    }
-    best
-}
-
-fn main() {
-    let nums = vec![-2, 1, -3, 4, -1, 2, 1, -5, 4];
-    println!("{}", max_subarray(&nums));
-}
-```
-
-```javascript
-function maxSubArray(nums) {
-  let cur = nums[0];
-  let best = nums[0];
-  for (let i = 1; i < nums.length; i++) {
-    cur = Math.max(nums[i], cur + nums[i]);
-    best = Math.max(best, cur);
-  }
-  return best;
-}
-
-console.log(maxSubArray([-2, 1, -3, 4, -1, 2, 1, -5, 4]));
-```
+- 题意和示例来自当前仓库旧稿中的 LeetCode 53 摘要。
+- 代码语言按本仓库当前 LeetCode 教程默认选择 Python。
