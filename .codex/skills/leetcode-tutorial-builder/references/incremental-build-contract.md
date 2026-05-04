@@ -6,6 +6,19 @@ Use this reference when the user wants a tutorial that feels like the code is be
 
 The tutorial must grow through connected code versions.
 
+Before code growth starts, the reader must know the problem.
+
+The first body section after front matter must state:
+
+- what the input gives,
+- what output is required,
+- whether order, uniqueness, continuity, or other constraints matter,
+- at least one concrete example,
+- the relevant constraints when available.
+
+Only after this problem block should the tutorial move to the tiny example,
+conflict pattern, smaller subproblem, or first code skeleton.
+
 Do not write:
 
 - explanation fragment,
@@ -64,16 +77,17 @@ If these connectors are absent, the tutorial will usually drift back into explan
 
 When the problem type allows it, the tutorial should contain:
 
-1. a tiny example that exposes the conflict or bottleneck,
-2. an explicit smaller-subproblem statement,
-3. the smallest runnable skeleton,
-4. the first partial-state variable,
-5. the completion rule,
-6. the first complete correct version,
-7. at least one middle version if optimization is staged,
-8. the final optimized version,
-9. a slow branch trace,
-10. one runnable complete code version.
+1. a front-loaded problem requirement / input-output / example / constraints block,
+2. a tiny example that exposes the conflict or bottleneck,
+3. an explicit smaller-subproblem statement,
+4. the smallest runnable skeleton,
+5. the first partial-state variable,
+6. the completion rule,
+7. the first complete correct version,
+8. at least one middle version if optimization is staged,
+9. the final optimized version,
+10. a slow branch trace,
+11. one runnable complete code version.
 
 Do not treat `Assemble the Full Code` or `Reference Answer` as mandatory landmarks.
 They are optional only when they add real teaching value.
@@ -83,6 +97,8 @@ They are optional only when they add real teaching value.
 Avoid these:
 
 - introducing `diag1`, `used`, `prefix`, `dp`, or similar helper state before the reader sees what pain it removes,
+- opening with derivation, target-audience prose, background, or a tiny search/DP trace before the problem requirement is clear,
+- placing the actual problem statement after the first derivation section,
 - explaining the final design as if the code had already been written,
 - making steps numerically sequential but not code-sequential,
 - jumping from the first correct version to the final optimized version without an intermediate build when the bridge is large,

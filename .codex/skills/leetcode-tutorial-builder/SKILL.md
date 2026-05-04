@@ -1,6 +1,6 @@
 ---
 name: leetcode-tutorial-builder
-description: v0.2.0 - Build publishable teaching-first LeetCode and algorithm-problem tutorials when the user wants one concrete problem solution to be constructed step by step from problem evidence, with strict incremental code growth, minimal front matter, and one final runnable complete code version.
+description: v0.2.1 - Build publishable teaching-first LeetCode and algorithm-problem tutorials when the user wants one concrete problem solution to be constructed step by step from a front-loaded problem statement, with strict incremental code growth, minimal front matter, and one final runnable complete code version.
 ---
 
 # LeetCode Tutorial Builder
@@ -18,17 +18,23 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
    - Default to `content/<lang>/alg/leetcode/<slug>.md`.
    - If the request clearly belongs to an existing series folder such as `hot100` or `binary-search` and that folder already exists, place it there instead.
    - Keep ASCII kebab-case filenames; preserve the slug once chosen.
-3. Start from a tiny example or conflict pattern that exposes the pressure behind the solution. Do not start from a finished DFS/DP template unless the tiny example has already established why that template fits.
-4. Define the smaller subproblem explicitly in plain language before writing code. The reader should be able to answer: “if this partial state is already fixed, what remains to solve?”
-5. Build the tutorial as a sequence of working versions, not as disconnected explanation fragments. For each numbered step:
+3. Start the teaching body by front-loading the problem itself.
+   - The first section after front matter must be a clear `题目要求` / `Problem Requirement` section.
+   - State what is given, what must be returned, whether ordering matters, and the key constraints.
+   - Include `输入输出` / `Input / Output` and at least one concrete `示例` / `Example` before any derivation, target-audience prose, background, template name, or algorithm label.
+   - If a tiny example will drive the tutorial, place it after the problem requirement block and clearly connect it to the official example or problem facts.
+4. Start the derivation from a tiny example or conflict pattern that exposes the pressure behind the solution. Do not start from a finished DFS/DP template unless the problem statement and tiny example have already established why that template fits.
+5. Define the smaller subproblem explicitly in plain language before writing code. The reader should be able to answer: “if this partial state is already fixed, what remains to solve?”
+6. Build the tutorial as a sequence of working versions, not as disconnected explanation fragments. For each numbered step:
    - solve exactly one concrete problem,
    - add exactly one new state, rule, or helper when possible,
    - say whether the new code is an addition or a replacement,
    - show the exact snippet being added or replaced,
    - state what the current version can do now,
    - state what it still lacks.
-6. Force the growth path to include these milestones when the problem family allows them:
+7. Force the growth path to include these milestones when the problem family allows them:
    - problem evidence,
+   - front-loaded problem requirement / input-output / example block,
    - smaller subproblem,
    - smallest runnable skeleton,
    - first state variable,
@@ -39,29 +45,29 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
    - final optimized version,
    - one slow trace,
    - one runnable complete code version.
-7. When moving from a naive version to an optimized version, preserve the bridge:
+8. When moving from a naive version to an optimized version, preserve the bridge:
    - first name the exact bottleneck,
    - then add the smallest helper state that removes one part of that bottleneck,
    - then wire that helper state back into the current code immediately,
    - then reassess what still remains slow.
-8. Add minimal publishable front matter and repo-aligned taxonomy:
+9. Add minimal publishable front matter and repo-aligned taxonomy:
    - `title`, `date`, `draft`, `categories`, `tags`
    - Use `date "+%Y-%m-%dT%H:%M:%S%:z"` for `date`.
    - Default `draft` to `false` unless the user says otherwise.
    - Default `categories` to `["LeetCode"]` unless nearby repo examples or the requested series clearly imply a different existing category.
    - Keep tags basic and topic-driven; do not expand into SEO keyword lists.
-9. Keep the output teaching-first:
+10. Keep the output teaching-first:
    - prioritize reasoning and code growth,
    - produce publishable Hugo Markdown in the chosen `content/` path,
    - use a clear reader-facing structure without requiring a separate formatting stage,
    - do not spend tokens on SEO, CTA, or marketing polish.
-10. If the problem family is clear, adapt the ladder:
+11. If the problem family is clear, adapt the ladder:
    - backtracking: tiny example -> layer meaning -> current choice -> completion -> first legality check -> first correct DFS -> one partial optimization -> full helper-state optimization,
    - DP: tiny example -> subproblem meaning -> base case -> first correct recurrence/table -> one optimization at a time,
    - graph: tiny example -> node/state meaning -> frontier container -> expansion rule -> first correct traversal -> optimization.
-11. By default, let the final incremental step become the runnable complete code. Do not add a separate `Assemble the Full Code` section unless the user explicitly asks for a post format that requires it.
-12. Do not add a separate `Reference Answer` section unless the user explicitly asks for a platform-specific wrapper such as a LeetCode `class Solution` shell. Even then, it must not introduce new logic.
-13. End with assumptions, missing facts, and what was inferred versus supplied.
+12. By default, let the final incremental step become the runnable complete code. Do not add a separate `Assemble the Full Code` section unless the user explicitly asks for a post format that requires it.
+13. Do not add a separate `Reference Answer` section unless the user explicitly asks for a platform-specific wrapper such as a LeetCode `class Solution` shell. Even then, it must not introduce new logic.
+14. End with assumptions, missing facts, and what was inferred versus supplied.
 
 ## Required Inputs
 - Problem statement or faithful summary.
@@ -75,6 +81,7 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
 - output shape: publishable tutorial post, not a draft-only reasoning note
 - output path: `content/<lang>/alg/leetcode/<slug>.md` unless an existing sub-series folder clearly fits better
 - front matter policy: minimal Hugo front matter only
+- opening policy: first body section must explain the problem requirement, input/output, example, and constraints before derivation
 - step policy: every step must explicitly connect to the previous version
 - final-code policy: default to one final runnable code block, not duplicated full-code sections
 - metadata policy: keep only minimal publishable metadata; enhancement belongs to `tech-post-enhancer`
@@ -89,6 +96,8 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
 
 ## Guardrails
 - Do not write a “teacher already knows the answer” retrospective explanation and call it a guided build.
+- Do not start with the tiny derivation example before the reader knows the actual problem requirement, input/output, example, and constraints.
+- Do not hide the problem statement in a later `题目事实` / `Problem Facts` section after derivation has already started.
 - Do not skip the tiny example or the explicit smaller-subproblem step when they are needed to justify the recursion or state design.
 - Do not use this skill for a concept-first algorithm tutorial such as Transformer, Union-Find, Segment Tree, Bloom Filter, or PageRank when the user is not solving one concrete problem.
 - Do not ask “why do we need X?” before defining what `X` is.
@@ -105,6 +114,7 @@ Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot1
 
 ## Verification
 - Confirm the input is one concrete problem rather than a general algorithm/topic tutorial request.
+- Confirm the first body section states the problem requirement, input/output, example, and constraints before any derivation or template discussion.
 - Confirm the tutorial starts from problem evidence, not from a pre-decided final template.
 - Confirm the smaller subproblem is stated explicitly in plain language.
 - Confirm the tutorial contains a first correct version before the optimized version.
