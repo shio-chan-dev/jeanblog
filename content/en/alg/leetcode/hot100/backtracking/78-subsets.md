@@ -6,9 +6,26 @@ categories: ["LeetCode"]
 tags: ["Hot100", "backtracking", "subsets", "DFS", "LeetCode 78"]
 ---
 
-## Start From the Search Tree for `[1,2]`
+## Problem Requirement
 
-The problem gives an integer array `nums` with distinct elements and asks for all possible subsets. The output order does not matter, and subset element order is not the point.
+### Input / Output
+
+- Input: `nums`, with `1 <= nums.length <= 10`
+- Value range: `-10 <= nums[i] <= 10`
+- All elements in `nums` are distinct
+- Output: return all possible subsets of `nums`
+- Ordering: the result order does not matter, and subset element order is not the point
+
+### Example
+
+```text
+Input: nums = [1,2,3]
+Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+```
+
+This tutorial builds one minimal Python solution.
+
+## Start From the Search Tree for `[1,2]`
 
 The smallest branching example is:
 
@@ -37,22 +54,6 @@ Two facts fall out of this tree:
 
 - Every node is already a valid subset.
 - After choosing `1`, the next layer may only look to the right, at `2`.
-
-This tutorial builds one minimal Python solution.
-
-## Problem Facts
-
-- Input: `nums`, with `1 <= nums.length <= 10`
-- Value range: `-10 <= nums[i] <= 10`
-- All elements in `nums` are distinct
-- Output: all possible subsets
-
-Example:
-
-```text
-Input: nums = [1,2,3]
-Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
-```
 
 ## Step 1: Define What One Recursion Layer Means
 

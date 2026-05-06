@@ -6,9 +6,26 @@ categories: ["LeetCode"]
 tags: ["Hot100", "backtracking", "subsets", "deduplication", "LeetCode 90"]
 ---
 
-## Start From Duplicate Branches in `[1,2,2]`
+## Problem Requirement
 
-The problem gives an integer array `nums` that may contain duplicates and asks for all unique subsets. The output order does not matter.
+### Input / Output
+
+- Input: `nums`, with `1 <= nums.length <= 10`
+- Value range: `-10 <= nums[i] <= 10`
+- `nums` may contain duplicates
+- Output: return all unique subsets
+- Ordering: the result order does not matter, but the same value sequence may appear only once
+
+### Example
+
+```text
+Input: nums = [1,2,2]
+Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+```
+
+This tutorial starts with a correct but wasteful version, then derives sorting plus layer-level deduplication.
+
+## Start From Duplicate Branches in `[1,2,2]`
 
 The smallest example that exposes the issue is:
 
@@ -28,22 +45,6 @@ The branches use different indices, but the value sequence is the same.
 So the new problem is not basic backtracking. The real question is:
 
 > How do we skip duplicate branches without deleting valid answers such as `[2,2]`?
-
-This tutorial starts with a correct but wasteful version, then derives sorting plus layer-level deduplication.
-
-## Problem Facts
-
-- Input: `nums`, with `1 <= nums.length <= 10`
-- Value range: `-10 <= nums[i] <= 10`
-- `nums` may contain duplicates
-- Output: all unique subsets
-
-Example:
-
-```text
-Input: nums = [1,2,2]
-Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
-```
 
 ## Step 1: Reuse the 78 State and Watch What Breaks
 
