@@ -14,7 +14,6 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
 - `references/derivation-first-explanations.md` for teaching the method from the problem pressure rather than from the final trick.
 - `references/language-selection-rubric.md` for code-language selection.
 - `references/depth-checklist.md` and `references/deepening-ladder.md` for depth and anti-fluff passes.
-- `references/acceptance-criteria.md` for final validation.
 
 ## Workflow
 1. Read `docs/std.md`, `assets/algorithm-tutorial-template.md`, `references/derivation-first-explanations.md`, `references/depth-checklist.md`, and `references/deepening-ladder.md`.
@@ -53,7 +52,7 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
 10. Run a deepening pass for the chosen concepts using `references/deepening-ladder.md`.
 11. Run an anchor pass using `references/depth-checklist.md`; add missing numeric examples, constraints, formulas, or counterexamples.
 12. Run an anti-fluff rewrite: remove generic phrasing and replace with concrete, testable statements.
-13. Validate with `references/acceptance-criteria.md` and fix gaps.
+13. Validate with the `Verification` checklist below and fix gaps.
 14. Report output (path, date, taxonomy, notes, checks).
 
 ## Required Inputs
@@ -111,10 +110,16 @@ Use when the user requests a tutorial about one concrete algorithm, data structu
 - Terms, formulas, and module names are introduced at first real use rather than in an upfront preview section.
 - If incremental code fragments appear, they clearly feed into the final runnable complete implementation/demo rather than duplicating it.
 - If a later step adds a module or block, that step shows the fully integrated current version of that unit, not only an isolated local snippet.
+- Complexity analysis is included when relevant.
+- At least one worked example or trace is included.
+- Common pitfalls, edge cases, or failure modes are covered.
+- Each major section includes at least one concrete anchor.
+- At least one explicit limitation or counterexample is included.
+- References or further reading resolve when present.
 - Confirm the output is publishable Hugo Markdown with minimal front matter.
 
 ## Acceptance Loop
-- Run `references/acceptance-criteria.md` and record pass/fail evidence.
+- Run the `Verification` checklist and record pass/fail evidence.
 - Capture gaps with scope impact and owner.
 - Define a next-iteration checklist (highest-impact gap first).
 - Name the highest-risk gap and the verification step.
