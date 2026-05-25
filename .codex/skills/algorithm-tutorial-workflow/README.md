@@ -40,5 +40,14 @@ or deepen gates decide whether the tutorial can advance.
 | Deepen | [`algorithm-tutorial-deepen`](algorithm-tutorial-deepen/SKILL.md) | Apply PDKH/depth standards to 1-2 selected concepts. |
 | Simplify | [`algorithm-tutorial-simplify`](algorithm-tutorial-simplify/SKILL.md) | Tighten a reviewed/deepened tutorial without weakening the teaching chain. |
 
-The legacy `$algorithm-tutorial-builder` entrypoint is kept as a compatibility
-router. New work should use this workflow directly.
+## Bundled Resources
+
+- [`references/derivation-first-explanations.md`](references/derivation-first-explanations.md)
+- [`references/language-selection-rubric.md`](references/language-selection-rubric.md)
+- [`references/depth-checklist.md`](references/depth-checklist.md)
+- [`references/deepening-ladder.md`](references/deepening-ladder.md)
+- [`assets/algorithm-tutorial-template.md`](assets/algorithm-tutorial-template.md)
+- reinforcement resources when explicitly enabled
+
+Use this workflow directly so planning, build, review, deepening, and
+simplification stay separate.

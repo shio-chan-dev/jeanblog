@@ -23,8 +23,8 @@ LeetCode problem optimization, or SEO enhancement.
 
 ## Reference Map
 
-- `../../algorithm-tutorial-builder/references/deepening-ladder.md`
-- `../../algorithm-tutorial-builder/references/depth-checklist.md`
+- `../references/deepening-ladder.md`
+- `../references/depth-checklist.md`
 
 ## The Deepening Loop
 

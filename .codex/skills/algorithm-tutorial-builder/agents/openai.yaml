@@ -1,4 +1,0 @@
-interface:
-  display_name: "Algorithm Tutorial Builder"
-  short_description: "v0.3.0 - Route algorithm tutorials to workflow"
-  default_prompt: "Use $algorithm-tutorial-builder as a compatibility router for standalone algorithm, data-structure, and method tutorials. Route new work to $algorithm-tutorial-plan, $algorithm-tutorial-build, $algorithm-tutorial-review, $algorithm-tutorial-deepen, or $algorithm-tutorial-simplify as appropriate. Preserve derivation-first construction and algorithm depth gates; do not write a whole tutorial directly from this legacy entrypoint or self-approve build checkpoints."

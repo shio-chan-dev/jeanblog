@@ -24,8 +24,8 @@ problem tutorials, or writing a whole multi-section article in one pass.
 
 ## Reference Map
 
-- `../../algorithm-tutorial-builder/references/derivation-first-explanations.md`
-- `../../algorithm-tutorial-builder/references/depth-checklist.md`
+- `../references/derivation-first-explanations.md`
+- `../references/depth-checklist.md`
 
 ## The Build Loop
 

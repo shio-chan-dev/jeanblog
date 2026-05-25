@@ -35,10 +35,10 @@ thoughts/evaluation posts, or final-code-only answers.
 
 ## Reference Map
 
-- `../../algorithm-tutorial-builder/references/derivation-first-explanations.md`
-- `../../algorithm-tutorial-builder/references/depth-checklist.md`
-- `../../algorithm-tutorial-builder/references/deepening-ladder.md`
-- `../../algorithm-tutorial-builder/references/language-selection-rubric.md`
+- `../references/derivation-first-explanations.md`
+- `../references/depth-checklist.md`
+- `../references/deepening-ladder.md`
+- `../references/language-selection-rubric.md`
 
 ## The Planning Loop
 
