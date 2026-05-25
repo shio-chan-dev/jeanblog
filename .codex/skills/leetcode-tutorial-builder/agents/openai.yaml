@@ -1,4 +1,4 @@
 interface:
   display_name: "LeetCode Tutorial Builder"
-  short_description: "v0.2.1 - Build publishable incremental problem tutorials"
-  default_prompt: "Use $leetcode-tutorial-builder to turn this LeetCode or OJ-style algorithm problem into a publishable teaching-first tutorial for this Hugo blog that first states the problem requirement, input/output, example, and constraints, then starts derivation from a tiny example, states the smaller subproblem explicitly, grows through one connected code version at a time, adds minimal front matter and repo-aligned path/taxonomy, shows the first correct naive version before optimization, includes any needed middle versions, and lets the final step itself become one runnable complete code version without ritual full-code or reference sections unless the user explicitly needs a wrapper."
+  short_description: "v0.3.0 - Route problem tutorials to workflow"
+  default_prompt: "Use $leetcode-tutorial-builder as a compatibility router for LeetCode or OJ-style problem tutorials. Route new work to $leetcode-tutorial-plan, $leetcode-tutorial-build, $leetcode-tutorial-review, or $leetcode-tutorial-simplify as appropriate. Do not write a whole multi-step tutorial directly from this legacy entrypoint; build one planned step, require independent review pass, then continue."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "LeetCode Tutorial Plan"
+  short_description: "v0.1.0 - Plan review-gated problem tutorials"
+  default_prompt: "Use $leetcode-tutorial-plan to plan one LeetCode or OJ-style tutorial before drafting it. Output a task-first plan with problem facts, placement, teaching dependency graph, build tasks, verification, review gates, and checkpoint handoff. Do not write the tutorial body or allow build self-approval."

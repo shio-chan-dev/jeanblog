@@ -1,0 +1,4 @@
+interface:
+  display_name: "LeetCode Tutorial Simplify"
+  short_description: "v0.1.0 - Simplify reviewed problem tutorials"
+  default_prompt: "Use $leetcode-tutorial-simplify to tighten a reviewed LeetCode or OJ-style tutorial while preserving problem facts, connected checkpoints, check evidence, final runnable code, and review-pass structure. Do not change algorithm behavior or hide missing review."

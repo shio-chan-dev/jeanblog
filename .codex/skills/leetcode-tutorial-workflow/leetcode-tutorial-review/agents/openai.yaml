@@ -1,0 +1,4 @@
+interface:
+  display_name: "LeetCode Tutorial Review"
+  short_description: "v0.1.0 - Gate problem tutorial checkpoints"
+  default_prompt: "Use $leetcode-tutorial-review to independently review one LeetCode tutorial checkpoint or draft. Return pass, revise, or block; check problem-first discipline, pressure, break, one change, executed or evidenced checks, freeze, code continuity, and whether the next step or checkpoint commit is allowed."

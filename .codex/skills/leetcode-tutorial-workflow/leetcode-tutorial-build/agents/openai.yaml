@@ -1,0 +1,4 @@
+interface:
+  display_name: "LeetCode Tutorial Build"
+  short_description: "v0.1.0 - Build one problem tutorial step"
+  default_prompt: "Use $leetcode-tutorial-build to draft exactly one planned LeetCode tutorial task, add concrete check evidence, freeze the checkpoint, and stop with status: needs_review. Do not continue to the next step or self-approve; require $leetcode-tutorial-review before progression."

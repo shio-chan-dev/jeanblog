@@ -1,128 +1,82 @@
 ---
 name: leetcode-tutorial-builder
-description: v0.2.1 - Build publishable teaching-first LeetCode and algorithm-problem tutorials when the user wants one concrete problem solution to be constructed step by step from a front-loaded problem statement, with strict incremental code growth, minimal front matter, and one final runnable complete code version.
+description: v0.3.0 - Compatibility router for LeetCode and OJ-style tutorial work. Use when the user calls the legacy builder name; route new problem-tutorial work to leetcode-tutorial-workflow plan/build/review/simplify so build cannot self-approve or write a whole multi-step tutorial in one pass.
 ---
 
 # LeetCode Tutorial Builder
 
-## Trigger
-Use when the user asks for a concrete algorithm problem tutorial: LeetCode, Hot100, Codeforces, AtCoder, Luogu, or a custom OJ-style problem with explicit input/output behavior. Use it when the main need is to make one problem solution teachable, incremental, and directly publishable in this Hugo blog. Do not use it for tutorials about an algorithm, data structure, or technique itself when there is no single problem statement to solve.
+## Overview
 
-## Bundled Resources
-- `docs/leetcode_std.md` for algorithm-post section expectations in this repo.
-- `.codex/skills/leetcode-tutorial-builder/references/incremental-build-contract.md` for the strict step template and anti-pattern checks.
+This legacy entrypoint now routes LeetCode and OJ-style problem tutorial work
+to the review-gated `leetcode-tutorial-workflow` package.
 
-## Workflow
-1. Gather only the supplied problem facts: statement, constraints, examples, target language, and any required implementation language.
-2. Choose the output path and slug before drafting the post body.
-   - Default to `content/<lang>/alg/leetcode/<slug>.md`.
-   - If the request clearly belongs to an existing series folder such as `hot100` or `binary-search` and that folder already exists, place it there instead.
-   - Keep ASCII kebab-case filenames; preserve the slug once chosen.
-3. Start the teaching body by front-loading the problem itself.
-   - The first section after front matter must be a clear `题目要求` / `Problem Requirement` section.
-   - State what is given, what must be returned, whether ordering matters, and the key constraints.
-   - Include `输入输出` / `Input / Output` and at least one concrete `示例` / `Example` before any derivation, target-audience prose, background, template name, or algorithm label.
-   - If a tiny example will drive the tutorial, place it after the problem requirement block and clearly connect it to the official example or problem facts.
-4. Start the derivation from a tiny example or conflict pattern that exposes the pressure behind the solution. Do not start from a finished DFS/DP template unless the problem statement and tiny example have already established why that template fits.
-5. Define the smaller subproblem explicitly in plain language before writing code. The reader should be able to answer: “if this partial state is already fixed, what remains to solve?”
-6. Build the tutorial as a sequence of working versions, not as disconnected explanation fragments. For each numbered step:
-   - solve exactly one concrete problem,
-   - add exactly one new state, rule, or helper when possible,
-   - say whether the new code is an addition or a replacement,
-   - show the exact snippet being added or replaced,
-   - state what the current version can do now,
-   - state what it still lacks.
-7. Force the growth path to include these milestones when the problem family allows them:
-   - problem evidence,
-   - front-loaded problem requirement / input-output / example block,
-   - smaller subproblem,
-   - smallest runnable skeleton,
-   - first state variable,
-   - completion condition,
-   - first correctness rule,
-   - first complete correct but still naive version,
-   - at least one middle version if optimization is multi-stage,
-   - final optimized version,
-   - one slow trace,
-   - one runnable complete code version.
-8. When moving from a naive version to an optimized version, preserve the bridge:
-   - first name the exact bottleneck,
-   - then add the smallest helper state that removes one part of that bottleneck,
-   - then wire that helper state back into the current code immediately,
-   - then reassess what still remains slow.
-9. Add minimal publishable front matter and repo-aligned taxonomy:
-   - `title`, `date`, `draft`, `categories`, `tags`
-   - Use `date "+%Y-%m-%dT%H:%M:%S%:z"` for `date`.
-   - Default `draft` to `false` unless the user says otherwise.
-   - Default `categories` to `["LeetCode"]` unless nearby repo examples or the requested series clearly imply a different existing category.
-   - Keep tags basic and topic-driven; do not expand into SEO keyword lists.
-10. Keep the output teaching-first:
-   - prioritize reasoning and code growth,
-   - produce publishable Hugo Markdown in the chosen `content/` path,
-   - use a clear reader-facing structure without requiring a separate formatting stage,
-   - do not spend tokens on SEO, CTA, or marketing polish.
-11. If the problem family is clear, adapt the ladder:
-   - backtracking: tiny example -> layer meaning -> current choice -> completion -> first legality check -> first correct DFS -> one partial optimization -> full helper-state optimization,
-   - DP: tiny example -> subproblem meaning -> base case -> first correct recurrence/table -> one optimization at a time,
-   - graph: tiny example -> node/state meaning -> frontier container -> expansion rule -> first correct traversal -> optimization.
-12. By default, let the final incremental step become the runnable complete code. Do not add a separate `Assemble the Full Code` section unless the user explicitly asks for a post format that requires it.
-13. Do not add a separate `Reference Answer` section unless the user explicitly asks for a platform-specific wrapper such as a LeetCode `class Solution` shell. Even then, it must not introduce new logic.
-14. End with assumptions, missing facts, and what was inferred versus supplied.
+The old behavior was a single builder that could plan, draft, and accept a
+whole tutorial in one flow. New work must use separate phases:
 
-## Required Inputs
-- Problem statement or faithful summary.
-- At least one example.
-- Target language for the tutorial (`zh` or `en`).
-- Preferred code language if not obvious.
+```text
+leetcode-tutorial-plan
+-> leetcode-tutorial-build writes one step
+-> leetcode-tutorial-review gates the step
+-> optional checkpoint commit
+-> next step
+-> leetcode-tutorial-simplify after review pass
+```
 
-## Defaults
-- teaching mode: derivation-first
-- default implementation language: follow user request; otherwise prefer Python
-- output shape: publishable tutorial post, not a draft-only reasoning note
-- output path: `content/<lang>/alg/leetcode/<slug>.md` unless an existing sub-series folder clearly fits better
-- front matter policy: minimal Hugo front matter only
-- opening policy: first body section must explain the problem requirement, input/output, example, and constraints before derivation
-- step policy: every step must explicitly connect to the previous version
-- final-code policy: default to one final runnable code block, not duplicated full-code sections
-- metadata policy: keep only minimal publishable metadata; enhancement belongs to `tech-post-enhancer`
-- domain policy: this skill is for problem-solving tutorials, not for standalone algorithm tutorials
+Build self-checks are useful evidence, but they are not acceptance. Only
+`leetcode-tutorial-review` can allow the next step.
 
-## Output Format
-- Path: `<file path>`
-- Scope: `<problem + language + code language>`
-- Taxonomy: `<categories/tags>`
-- Publishable Tutorial: `<guided-build markdown with minimal front matter>`
-- Notes: `<assumptions, missing facts, inferred pieces>`
+## When to Use
+
+- The user explicitly invokes `$leetcode-tutorial-builder`.
+- The user asks for a LeetCode, Hot100, Codeforces, AtCoder, Luogu, or
+  OJ-style problem tutorial through the legacy skill name.
+- A previous prompt or project config still points at this skill.
+
+**When NOT to use:** standalone algorithm/method/data-structure tutorials,
+stable post enhancement, SEO polish, or thoughts/evaluation posts.
+
+## Routing
+
+- Use `../leetcode-tutorial-workflow/leetcode-tutorial-plan/SKILL.md` when no
+  task-first tutorial plan exists.
+- Use `../leetcode-tutorial-workflow/leetcode-tutorial-build/SKILL.md` only for
+  the next planned step, then stop with `needs_review`.
+- Use `../leetcode-tutorial-workflow/leetcode-tutorial-review/SKILL.md` before
+  advancing to the next step or checkpoint commit.
+- Use `../leetcode-tutorial-workflow/leetcode-tutorial-simplify/SKILL.md` only
+  after review has passed.
+
+## Compatibility Loop
+
+1. Classify the user request.
+   - If it asks for a plan, route to `leetcode-tutorial-plan`.
+   - If it asks to draft content and no plan exists, route to
+     `leetcode-tutorial-plan` first.
+   - If it asks to continue drafting from a plan, route to
+     `leetcode-tutorial-build` for one step only.
+   - If it asks whether a step is acceptable, route to
+     `leetcode-tutorial-review`.
+   - If it asks to polish an accepted draft, route to
+     `leetcode-tutorial-simplify`.
+2. Preserve problem-first discipline.
+   - Problem requirement, input/output, examples, and constraints must appear
+     before derivation.
+3. Preserve review-gated progression.
+   - Do not continue to Step N+1 until Step N has review-pass evidence.
+4. Report the routed skill.
+   - Say which workflow skill should handle the current phase.
 
 ## Guardrails
-- Do not write a “teacher already knows the answer” retrospective explanation and call it a guided build.
-- Do not start with the tiny derivation example before the reader knows the actual problem requirement, input/output, example, and constraints.
-- Do not hide the problem statement in a later `题目事实` / `Problem Facts` section after derivation has already started.
-- Do not skip the tiny example or the explicit smaller-subproblem step when they are needed to justify the recursion or state design.
-- Do not use this skill for a concept-first algorithm tutorial such as Transformer, Union-Find, Segment Tree, Bloom Filter, or PageRank when the user is not solving one concrete problem.
-- Do not ask “why do we need X?” before defining what `X` is.
-- Do not introduce optimized helper state before the slower correct version exposes the need for it.
-- Do not jump directly from the first correct version to the final optimized version when an intermediate version would make the evolution materially clearer.
-- Do not leave steps as isolated concept fragments; each step must specify what was added or replaced in the previous code.
-- Do not hide the bridge from “first correct version” to “optimized version”; if the optimization is staged, show the stages.
-- Do not add ritual `Assemble the Full Code` or `Reference Answer` sections when the last step already yields a runnable complete solution.
-- Do not jump from the statement to a named template or final trick in one paragraph.
-- Do not add `readingTime`, `keywords`, CTA sections, or other enhancement-layer metadata by default.
-- Do not assume a separate formatting stage exists.
-- Do not automatically invoke enhancement skills.
+
+- Do not write a full multi-step tutorial directly from this legacy entrypoint.
+- Do not self-approve a build step.
+- Do not create a checkpoint commit without review-pass evidence.
+- Do not use this skill for concept-first algorithm tutorials.
 - Do not invent constraints, examples, or complexity claims.
 
 ## Verification
-- Confirm the input is one concrete problem rather than a general algorithm/topic tutorial request.
-- Confirm the first body section states the problem requirement, input/output, example, and constraints before any derivation or template discussion.
-- Confirm the tutorial starts from problem evidence, not from a pre-decided final template.
-- Confirm the smaller subproblem is stated explicitly in plain language.
-- Confirm the tutorial contains a first correct version before the optimized version.
-- Confirm each step says what was added or what was replaced from the previous version.
-- Confirm each step says what the current version can do and what it still lacks.
-- Confirm every optimization is justified by a pain point in the previous step.
-- Confirm there is a middle version when the optimization naturally happens in more than one stage.
-- Confirm the final step yields one runnable complete code version by default.
-- Confirm no duplicate full-code section was added unless the user explicitly needed a separate wrapper form.
-- Confirm the output is publishable Hugo Markdown with minimal front matter.
-- Confirm the path, slug, and basic taxonomy follow existing repo conventions.
+
+- [ ] The request was routed to one workflow phase.
+- [ ] Problem tutorial scope was confirmed.
+- [ ] Build self-check and review acceptance were kept separate.
+- [ ] The legacy entrypoint did not produce a full tutorial body directly.
