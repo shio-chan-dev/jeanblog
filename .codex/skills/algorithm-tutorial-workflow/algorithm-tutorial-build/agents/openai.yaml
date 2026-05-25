@@ -1,0 +1,4 @@
+interface:
+  display_name: "Algorithm Tutorial Build"
+  short_description: "v0.1.0 - Build one method tutorial checkpoint"
+  default_prompt: "Use $algorithm-tutorial-build to draft exactly one planned algorithm tutorial checkpoint from concrete pressure, add evidence, freeze it, and stop with a review or deepening handoff. Do not write the whole article or self-approve."

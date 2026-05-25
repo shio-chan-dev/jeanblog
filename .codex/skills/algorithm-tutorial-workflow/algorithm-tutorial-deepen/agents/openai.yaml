@@ -1,0 +1,4 @@
+interface:
+  display_name: "Algorithm Tutorial Deepen"
+  short_description: "v0.1.0 - Deepen selected method concepts"
+  default_prompt: "Use $algorithm-tutorial-deepen to strengthen 1-2 selected concepts in a reviewed algorithm tutorial with PDKH evidence: problem reframe, worked example, invariant, formalization, correctness, complexity, counterexample, and engineering reality. Do not broaden the article or self-approve."

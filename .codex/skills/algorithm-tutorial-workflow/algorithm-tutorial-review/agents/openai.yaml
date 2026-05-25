@@ -1,0 +1,4 @@
+interface:
+  display_name: "Algorithm Tutorial Review"
+  short_description: "v0.1.0 - Gate method tutorial checkpoints"
+  default_prompt: "Use $algorithm-tutorial-review to independently review one algorithm tutorial checkpoint or draft. Return pass, revise, or block; check derivation pressure, one mechanism, evidence, invariants, correctness/depth readiness, code continuity, and whether the next step may continue."

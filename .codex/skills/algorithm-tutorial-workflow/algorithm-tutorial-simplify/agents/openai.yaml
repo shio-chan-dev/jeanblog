@@ -1,0 +1,4 @@
+interface:
+  display_name: "Algorithm Tutorial Simplify"
+  short_description: "v0.1.0 - Simplify reviewed method tutorials"
+  default_prompt: "Use $algorithm-tutorial-simplify to tighten a reviewed and sufficiently deep algorithm tutorial while preserving derivation, concrete evidence, invariants, correctness, complexity, counterexamples, engineering reality, and final runnable demo. Do not change algorithm behavior or hide missing review."
