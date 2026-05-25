@@ -172,7 +172,7 @@ problem requirement
 ## Decision Points
 
 - If the user asks for a concept tutorial without one problem statement, route
-  to `algorithm-tutorial-builder` or a future algorithm workflow.
+  to `algorithm-tutorial-workflow`.
 - If examples or constraints are missing and they affect the algorithm choice,
   ask before planning.
 - If the route needs multiple optimization stages, make each stage a separate

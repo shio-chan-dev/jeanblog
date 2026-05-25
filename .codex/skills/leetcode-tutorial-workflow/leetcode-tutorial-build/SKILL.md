@@ -26,7 +26,7 @@ an already stable post.
 
 ## Bundled Resources
 
-- `../../leetcode-tutorial-builder/references/incremental-build-contract.md`
+- `../references/incremental-build-contract.md`
   for the original repository-specific incremental build rules.
 
 ## The Build Loop

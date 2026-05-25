@@ -53,5 +53,5 @@ $leetcode-tutorial-review
 $leetcode-tutorial-simplify
 ```
 
-The legacy `$leetcode-tutorial-builder` entrypoint is kept as a compatibility
-router. New work should use this workflow directly.
+Use this workflow directly so planning, build, review, and simplification stay
+separate.

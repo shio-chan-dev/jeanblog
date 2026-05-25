@@ -1,4 +1,0 @@
-interface:
-  display_name: "LeetCode Tutorial Builder"
-  short_description: "v0.3.0 - Route problem tutorials to workflow"
-  default_prompt: "Use $leetcode-tutorial-builder as a compatibility router for LeetCode or OJ-style problem tutorials. Route new work to $leetcode-tutorial-plan, $leetcode-tutorial-build, $leetcode-tutorial-review, or $leetcode-tutorial-simplify as appropriate. Do not write a whole multi-step tutorial directly from this legacy entrypoint; build one planned step, require independent review pass, then continue."
