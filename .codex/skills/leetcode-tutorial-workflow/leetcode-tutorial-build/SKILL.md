@@ -1,6 +1,6 @@
 ---
 name: leetcode-tutorial-build
-description: v0.1.0 - Build exactly one planned LeetCode tutorial step and stop for independent review. Use when a task-first LeetCode tutorial plan is ready and the next checkpoint must be drafted with problem evidence, one change, check evidence, freeze, and a needs-review handoff.
+description: v0.1.1 - Build exactly one planned LeetCode tutorial increment through problem pressure, naive baseline, break, change, check, freeze, and review handoff. Use when a task-first LeetCode tutorial plan is ready and the next checkpoint must be drafted without self-approval.
 ---
 
 # LeetCode Tutorial Build
@@ -8,7 +8,8 @@ description: v0.1.0 - Build exactly one planned LeetCode tutorial step and stop 
 ## Overview
 
 Write one planned tutorial task, not the whole article. This skill drafts the
-next checkpoint in a problem tutorial and then stops for `leetcode-tutorial-review`.
+next checkpoint in a problem tutorial through a fixed increment cycle, then
+stops for `leetcode-tutorial-review`.
 
 Build may run self-checks, but self-checks are not acceptance. The next step is
 blocked until an independent review returns `pass`.
@@ -23,6 +24,43 @@ blocked until an independent review returns `pass`.
 **When NOT to use:** planning, reviewing, simplifying, standalone algorithm
 concept tutorials, writing a full multi-step article in one pass, or enhancing
 an already stable post.
+
+## The Tutorial Increment Cycle
+
+```text
++------------------------------------------------+
+|                                                |
+|  Pressure -> Naive baseline -> Break -> Change |
+|      ^                                |        |
+|      +------ Freeze <- Check <--------+        |
+|                 |                              |
+|                 v                              |
+|          Review handoff                        |
+|                 |                              |
+|                 v                              |
+|        Next step after review_pass             |
+|                                                |
++------------------------------------------------+
+```
+
+For each LeetCode tutorial increment:
+
+1. **Pressure** - show the problem example, failing case, trace, bottleneck,
+   or constraint that makes the current baseline insufficient.
+2. **Naive baseline** - show what the reader currently has: problem facts,
+   current code, current recurrence, current trace, or current mental model.
+3. **Break** - name exactly what fails: wrong answer, missing case, duplicate
+   work, timeout risk, unclear state meaning, or unproved transition.
+4. **Change** - add or replace one thing: a state variable, branch, recurrence,
+   helper, loop, pruning rule, or code block.
+5. **Check** - prove this change against the pressure with a runnable command,
+   assertion, hand trace, table, or example walkthrough.
+6. **Freeze** - state what this checkpoint can now do, what it still lacks, and
+   stop with `needs_review`.
+
+Write and self-check one numbered increment before starting another. Do not
+draft multiple tutorial steps and then retrofit checks afterward. The next
+increment is blocked until `leetcode-tutorial-review` returns `pass`.
 
 ## Build Contract
 
@@ -70,6 +108,10 @@ Ask one concrete question.
 
 Explain why this problem must be solved now.
 
+Show the naive or previous baseline the reader currently has.
+
+Name exactly what breaks in that baseline.
+
 In the previous version, add:
 <small snippet>
 
@@ -90,10 +132,13 @@ It still lacks:
 
 The guided build should repeatedly use these connectors in substance:
 
-1. `In the previous version, add ...`
-2. `Replace this part with ...`
-3. `Now this version can ...`
-4. `It still lacks ...`
+1. `The current baseline is ...`
+2. `This breaks when ...`
+3. `In the previous version, add ...`
+4. `Replace this part with ...`
+5. `Check this change with ...`
+6. `Now this version can ...`
+7. `It still lacks ...`
 
 If these connectors are absent, the tutorial will usually drift back into
 explanation mode.
@@ -188,29 +233,46 @@ Graph progression:
    - Confirm previous tasks have review-pass evidence when they are
      dependencies.
    - Verify: exactly one task is in scope.
-2. Re-state the Current Baseline
+2. Confirm Problem Facts
+   - Ensure the tutorial already states input, required output, examples, and
+     relevant constraints before code growth starts.
+   - If problem facts are missing, add or request them before drafting the
+     increment.
+   - Verify: the reader knows the problem before seeing derivation or helper
+     state.
+3. Create Pressure
+   - Show the concrete example, failing case, trace, bottleneck, or constraint
+     that forces this task.
+   - Prefer a tiny input or table over a broad claim.
+   - Verify: the pressure is visible before the fix appears.
+4. Re-state the Naive Baseline
    - Identify what the reader already has from prior checkpoints.
-   - Identify the concrete problem evidence or trace that creates pressure.
    - Verify: the step starts from visible state, not final-answer memory.
-3. Draft One Step
-   - Show the problem pressure before the fix.
-   - Name what breaks in the previous baseline.
+5. Name the Break
+   - Say exactly what the baseline cannot handle.
+   - Use concrete failure language: wrong answer, missed case, duplicated
+     work, timeout risk, unclear state, or unproved transition.
+   - Verify: the break follows from the baseline, not from hidden final
+     knowledge.
+6. Make One Change
    - Add or replace exactly one state, rule, helper, recurrence, branch, or
      code block.
    - Keep code connected to the previous checkpoint.
-   - Verify: the step does not introduce unrelated future logic.
-4. Add Check Evidence
+   - Verify: the increment introduces one visible mechanism and no unrelated
+     future logic.
+7. Add Check Evidence
    - Add an assertion, trace, manual example walk-through, or command that
      verifies this one change.
    - Execute the runnable check when execution is feasible.
    - If the check is conceptual or manual, record concrete evidence, not a
      vague claim.
-   - Verify: check evidence targets this step's break.
-5. Freeze and Stop
+   - Verify: check evidence targets the named break.
+8. Freeze and Stop
    - State what the checkpoint can now do and what it still lacks.
    - Output `needs_review`.
    - Do not continue to the next planned task.
    - Do not call the checkpoint accepted.
+   - Verify: the next step can only start after review pass.
 
 ## Review Gate Contract
 
@@ -252,6 +314,13 @@ instead of writing the next task.
 
 ## Self-Checks
 - ...
+- increment_cycle:
+  - pressure:
+  - naive_baseline:
+  - break:
+  - change:
+  - check:
+  - freeze:
 
 ## Review Handoff
 - review_skill: leetcode-tutorial-review
@@ -267,6 +336,8 @@ instead of writing the next task.
 | "The next step is obvious." | Continuing without review recreates writer-as-judge failure. |
 | "One article pass is faster." | LeetCode tutorials fail when hidden leaps compound across steps. |
 | "The final code will prove it." | Final code does not prove each teaching checkpoint was earned. |
+| "The baseline is implied by the previous section." | The build step must make the current baseline visible before naming the break. |
+| "The check can be added later." | Without a check, the freeze is not a trustworthy checkpoint. |
 
 ## Red Flags
 
@@ -274,16 +345,23 @@ instead of writing the next task.
 - Build says `pass`, `accepted`, or `done` without review.
 - Step check is described but not executed or evidenced.
 - The step introduces a final trick before the pressure appears.
+- The step has a pressure and change but no explicit naive baseline.
+- The step names a technique without showing what the current baseline cannot
+  do.
+- The freeze does not say what still lacks.
 - The output proceeds to the next step after `Checkpoint`.
 
 ## Verification
 
 - [ ] Exactly one task was drafted.
+- [ ] The increment follows
+      `Pressure -> Naive baseline -> Break -> Change -> Check -> Freeze`.
 - [ ] Problem pressure appears before the change.
 - [ ] The previous baseline and break are explicit.
 - [ ] One change was added or replaced.
 - [ ] Check evidence is concrete and tied to the break.
 - [ ] Output ends with `needs_review`.
+- [ ] The next step is blocked until `leetcode-tutorial-review` returns `pass`.
 
 ## Guardrails
 
@@ -292,3 +370,5 @@ instead of writing the next task.
 - Do not invent problem facts.
 - Do not add detached final code.
 - Do not hide missing runnable checks behind generic "verified" language.
+- Do not collapse pressure, baseline, and break into one vague motivation
+  paragraph.
