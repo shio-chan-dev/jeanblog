@@ -390,3 +390,112 @@ O(n)
 
 - 如果不想用递归，怎么把同样的图遍历写成 BFS。
 - 如果想从“合并集合”的角度理解，怎么写并查集。
+
+## Step 4：同一个思路也可以写成 BFS
+
+DFS 版本已经足够解决这道题。BFS 不是新的解题思想，而是同一个“从入口扩散到整个省份”的动作换一种写法。
+
+当前 baseline 是：
+
+```text
+发现未访问城市 -> provinces += 1 -> 用 DFS 标记整个省份
+```
+
+如果你不想用递归，可以把“接下来要访问的城市”放进一个队列里。队列里每弹出一个城市，就扫描它能到达的邻居；遇到没访问过的邻居，就标记并放入队列。
+
+也就是说，替换的只是这一块：
+
+```text
+dfs(city)
+```
+
+换成：
+
+```text
+bfs(city)
+```
+
+BFS 版本代码如下：
+
+```python
+from collections import deque
+from typing import List
+
+
+class Solution:
+    def findCircleNum(self, isConnected: List[List[int]]) -> int:
+        n = len(isConnected)
+        visited = [False] * n
+
+        def bfs(start: int) -> None:
+            visited[start] = True
+            queue = deque([start])
+
+            while queue:
+                city = queue.popleft()
+                for next_city in range(n):
+                    if isConnected[city][next_city] == 1 and not visited[next_city]:
+                        visited[next_city] = True
+                        queue.append(next_city)
+
+        provinces = 0
+        for city in range(n):
+            if not visited[city]:
+                provinces += 1
+                bfs(city)
+
+        return provinces
+```
+
+注意 `visited[start] = True` 放在入队之前，`visited[next_city] = True` 放在发现邻居时。
+
+这样做是为了保证同一个城市不会被重复放进队列。对于这道题，即使重复入队最后也可能算出对的答案，但队列里会出现没有必要的重复工作。更稳的写法是：一旦决定把某个城市交给队列处理，就立刻标记它。
+
+看示例 1 的 BFS 过程：
+
+```text
+city = 0 未访问:
+  provinces = 1
+  queue = [0]
+
+弹出 0:
+  发现 1，标记并入队
+  queue = [1]
+
+弹出 1:
+  0 已访问，1 已访问，2 不相连
+  queue = []
+
+city = 1 已访问，跳过
+
+city = 2 未访问:
+  provinces = 2
+  queue = [2]
+  弹出 2 后结束
+```
+
+BFS 和 DFS 的外层计数完全一样：
+
+```python
+for city in range(n):
+    if not visited[city]:
+        provinces += 1
+        bfs(city)
+```
+
+所以它们的正确性也来自同一件事：每次从未访问城市出发，都完整标记一个新省份。
+
+复杂度也一样：
+
+- 时间复杂度：`O(n^2)`
+- 空间复杂度：`O(n)`
+
+当前 checkpoint 能做到：
+
+- 把递归 DFS 改写成队列 BFS。
+- 保留同样的外层扫描和 `visited` 语义。
+- 解释为什么发现节点时就标记访问。
+
+它还缺：
+
+- 如果不用“遍历扩散”的视角，而用“连接就合并”的视角，怎么写并查集。
