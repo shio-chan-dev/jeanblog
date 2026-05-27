@@ -176,3 +176,127 @@ visit(city):
 
 - 怎么把 `visit(city)` 写成 Python 代码。
 - 怎么扫描所有城市并统计省份数量。
+
+## Step 2：用 DFS 找到每一个省份
+
+上一节的 baseline 是：
+
+```text
+visit(city) 可以从一个城市出发，标记同一个省份里的所有城市。
+```
+
+但它还不能回答最终问题。因为题目要的是省份总数，而不是只找出城市 `0` 所在的省份。
+
+这会在示例 1 里暴露出来：
+
+```text
+{0, 1}
+{2}
+```
+
+如果我们只从城市 `0` 出发，只能得到 `{0, 1}`，城市 `2` 永远不会被处理。
+
+所以需要在上一版基础上增加一个外层扫描：
+
+> 从左到右检查每个城市。如果这个城市还没访问过，说明发现了一个新省份，于是答案加一，并从它开始 DFS 标记整个省份。
+
+这个逻辑可以直接写成 LeetCode 代码：
+
+```python
+from typing import List
+
+
+class Solution:
+    def findCircleNum(self, isConnected: List[List[int]]) -> int:
+        n = len(isConnected)
+        visited = [False] * n
+
+        def dfs(city: int) -> None:
+            visited[city] = True
+            for next_city in range(n):
+                if isConnected[city][next_city] == 1 and not visited[next_city]:
+                    dfs(next_city)
+
+        provinces = 0
+        for city in range(n):
+            if not visited[city]:
+                provinces += 1
+                dfs(city)
+
+        return provinces
+```
+
+这段代码里有两个动作。
+
+第一个动作是 `dfs(city)`：
+
+```python
+def dfs(city: int) -> None:
+    visited[city] = True
+    for next_city in range(n):
+        if isConnected[city][next_city] == 1 and not visited[next_city]:
+            dfs(next_city)
+```
+
+它只负责一件事：从 `city` 出发，把同一个省份里的城市全部标记成已访问。
+
+第二个动作是外层扫描：
+
+```python
+provinces = 0
+for city in range(n):
+    if not visited[city]:
+        provinces += 1
+        dfs(city)
+```
+
+这里的 `if not visited[city]` 很关键。
+
+如果一个城市已经访问过，说明它已经属于之前某个省份，不能再重复计数。
+
+如果一个城市还没访问过，说明之前发现的所有省份都到不了它。它一定属于一个新省份，所以先 `provinces += 1`，再用 `dfs(city)` 把这个新省份整体标记掉。
+
+用示例 1 手动走一遍：
+
+```text
+visited = [False, False, False]
+provinces = 0
+
+city = 0:
+  没访问过，provinces = 1
+  dfs(0) 标记 0 和 1
+  visited = [True, True, False]
+
+city = 1:
+  已访问过，跳过
+
+city = 2:
+  没访问过，provinces = 2
+  dfs(2) 标记 2
+  visited = [True, True, True]
+```
+
+最后返回 `2`。
+
+再看示例 2：
+
+```text
+isConnected = [
+  [1, 0, 0],
+  [0, 1, 0],
+  [0, 0, 1]
+]
+```
+
+每个城市都无法到达其他城市，所以外层扫描会在城市 `0`、`1`、`2` 各启动一次 DFS，答案就是 `3`。
+
+当前 checkpoint 能做到：
+
+- 用 DFS 从一个城市找出完整省份。
+- 用外层扫描统计所有省份。
+- 正确处理连在一起的城市和孤立城市。
+
+它还缺：
+
+- 为什么这个计数一定不会漏、不重。
+- 时间复杂度和空间复杂度是多少。
