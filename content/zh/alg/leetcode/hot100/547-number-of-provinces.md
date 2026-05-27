@@ -499,3 +499,153 @@ for city in range(n):
 它还缺：
 
 - 如果不用“遍历扩散”的视角，而用“连接就合并”的视角，怎么写并查集。
+
+## Step 5：把连接关系合并起来：并查集写法
+
+DFS 和 BFS 都是在做同一件事：
+
+```text
+从一个城市出发，把同一省份里的城市都找出来
+```
+
+并查集换了一个角度：
+
+```text
+一开始每个城市都是一个省份。
+每看到一条连接，就把两个城市所在的省份合并。
+最后还剩几个集合，就有几个省份。
+```
+
+用示例 1 看这个过程：
+
+```text
+初始：
+{0} {1} {2}
+
+看到 0 和 1 相连：
+{0, 1} {2}
+
+没有其他跨集合连接。
+最终还剩 2 个集合。
+```
+
+这就是并查集适合这道题的原因。题目给的是连接关系，而并查集最擅长回答：
+
+> 两个元素如果有关系，就把它们合并到同一个集合里。
+
+代码里需要三个东西。
+
+第一，`parent[i]` 表示城市 `i` 当前所属集合的代表：
+
+```python
+parent = list(range(n))
+```
+
+一开始每个城市的代表都是自己。
+
+第二，`find(city)` 找到一个城市所在集合的最终代表：
+
+```python
+def find(city: int) -> int:
+    if parent[city] != city:
+        parent[city] = find(parent[city])
+    return parent[city]
+```
+
+这里的 `parent[city] = find(parent[city])` 是路径压缩。它不会改变答案，只是让后续查找更快。
+
+第三，`union(a, b)` 把两个城市所在集合合并。如果它们本来就在同一个集合，什么也不做；如果不在同一个集合，就把集合数量减一：
+
+```python
+def union(a: int, b: int) -> None:
+    nonlocal provinces
+    root_a = find(a)
+    root_b = find(b)
+
+    if root_a == root_b:
+        return
+
+    parent[root_b] = root_a
+    provinces -= 1
+```
+
+完整代码如下：
+
+```python
+from typing import List
+
+
+class Solution:
+    def findCircleNum(self, isConnected: List[List[int]]) -> int:
+        n = len(isConnected)
+        parent = list(range(n))
+        provinces = n
+
+        def find(city: int) -> int:
+            if parent[city] != city:
+                parent[city] = find(parent[city])
+            return parent[city]
+
+        def union(a: int, b: int) -> None:
+            nonlocal provinces
+
+            root_a = find(a)
+            root_b = find(b)
+            if root_a == root_b:
+                return
+
+            parent[root_b] = root_a
+            provinces -= 1
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                if isConnected[i][j] == 1:
+                    union(i, j)
+
+        return provinces
+```
+
+这里内层循环从 `i + 1` 开始：
+
+```python
+for j in range(i + 1, n):
+```
+
+因为矩阵是对称的，`isConnected[i][j]` 和 `isConnected[j][i]` 表示同一条无向边。只看上三角就够了。对角线 `isConnected[i][i] == 1` 表示城市自己和自己连通，不需要合并。
+
+并查集版本和 DFS/BFS 的区别是：
+
+```text
+DFS/BFS：发现一个入口，扩散出整个省份。
+并查集：看到一条边，就合并两个集合。
+```
+
+但它们冻结的是同一个核心事实：
+
+> 省份就是连通分量。
+
+复杂度上，这份代码仍然要扫描邻接矩阵上三角，所以时间复杂度可以直接写成：
+
+```text
+O(n^2)
+```
+
+并查集的 `find/union` 有路径压缩，单次操作接近常数。但在这道题里，矩阵扫描本身已经是 `O(n^2)`，所以总时间仍然由矩阵扫描主导。
+
+空间复杂度是 `parent` 数组：
+
+```text
+O(n)
+```
+
+当前 checkpoint 能做到：
+
+- 从“连接就合并”的角度重新理解省份数量。
+- 写出完整并查集解法。
+- 解释为什么只扫描矩阵上三角。
+- 解释为什么成功合并一次，省份数就减少一次。
+
+它还缺：
+
+- 把三种写法放在一起比较，给出推荐选择。
+- 收尾常见错误，避免读者把题目重新做歪。
