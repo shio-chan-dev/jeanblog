@@ -2,7 +2,6 @@
 title: "从普通函数调用推导一个最小 Pipeline Runner"
 subtitle: "当最终结果不够用，执行过程本身就要变成可观察的 RunRecord"
 date: 2026-05-29T00:00:00+08:00
-draft: true
 description: "从普通函数调用开始，逐步推导一个最小顺序 Pipeline Runner：工程接入场景、run/step observation、共享 context、mode 解析、handler 表和 PipelineRunner.trigger。"
 summary: "本文保留 nano-pipeline-runner v0 的完整推导链条：先证明普通函数调用什么时候足够，再通过工程接入、运行观察、失败记录、重复执行策略和共享 context 的压力，构建一个最小顺序 Pipeline Runner。"
 tags: ["Pipeline", "Python", "工程实践", "可观察性", "教程"]

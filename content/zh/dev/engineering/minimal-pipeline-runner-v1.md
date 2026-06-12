@@ -2,7 +2,6 @@
 title: "从顺序 Pipeline Runner 演进到 Graph Runner"
 subtitle: "当 workflow list 不能表达分支依赖时，用 dependency graph 和 ready wave 推动执行"
 date: 2026-06-03T00:00:00+08:00
-draft: true
 description: "在最小顺序 Pipeline Runner 的基础上，继续推导 graph pipeline runner：为什么 workflow list 不够用，为什么要用 dependency map、ready wave、GraphNodeRecord 和失败分支跳过。"
 summary: "本文是最小 Pipeline Runner 系列的 v1 后续章节：从 v0 的顺序 workflow list 出发，推导 dependency graph、ready wave、graph validation、node record 和 failed dependency blocking。"
 tags: ["Pipeline", "Python", "工程实践", "Graph", "教程"]
