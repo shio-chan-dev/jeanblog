@@ -20,7 +20,26 @@ keywords: ["LeetCode 208", "Implement Trie", "Prefix Tree", "Trie", "startsWith"
 
 ## A - Algorithm
 
-### Start with the smallest operation pressure
+### Problem setup: design a prefix-tree word index
+
+The task is to design a mutable word index.
+The index starts empty, then receives words one by one, and must answer two kinds of lookup:
+
+- exact lookup: was this complete word inserted?
+- prefix lookup: does any inserted word start with this prefix?
+
+That gives the required operations:
+
+| Operation | Meaning | Example |
+| --- | --- | --- |
+| `Trie()` | create an empty index | `trie = Trie()` |
+| `insert(word)` | add a word to the index | `insert("apple")` |
+| `search(word)` | check exact word existence | `search("app")` |
+| `startsWith(prefix)` | check whether a prefix exists | `startsWith("ap")` |
+
+The important part is that exact lookup and prefix lookup are not the same question.
+
+### Smallest operation pressure
 
 The key LeetCode 208 sequence is:
 
