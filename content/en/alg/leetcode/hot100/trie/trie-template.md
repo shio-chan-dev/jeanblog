@@ -1,20 +1,20 @@
 ---
-title: "Trie Template: Node Fields, Child Traversal, and Loop Invariants"
+title: "Trie Template Guide: Node Fields, Child Traversal, and Loop Invariants"
 date: 2026-06-25T13:58:00+08:00
 draft: false
 categories: ["LeetCode"]
 tags: ["Hot100", "Trie", "prefix tree", "string", "template"]
-description: "Build a minimal Trie template from first principles: what each node stores, how children are traversed, why is_end matters, and the loop invariants behind insert and search."
-keywords: ["Trie", "prefix tree", "children", "is_end", "string template", "Hot100"]
+description: "Build a Python Trie template from first principles: derive children, is_end, insert/search traversal, prefix lookup, and the loop invariants behind each method."
+keywords: ["Trie template", "Python Trie", "prefix tree", "children", "is_end", "insert search prefix", "LeetCode 208", "Hot100"]
 ---
 
 > **Subtitle / Summary**
-> A Trie is not code to memorize. The key model is: a node represents a prefix reached by a path. Once that model is stable, insertion, full-word search, and prefix search become the same traversal with different final checks.
+> Build a Trie from a small word-index task instead of memorizing the final class. The key model is: a node represents a prefix reached by a path, and `is_end` decides whether that prefix is also a complete word.
 
-- **Reading time**: 8-10 min
+- **Reading time**: 10-12 min
 - **Tags**: `Hot100`, `Trie`, `prefix tree`, `string`
-- **SEO keywords**: Trie, prefix tree, children, is_end
-- **Meta description**: A minimal Python Trie template with node fields, child traversal, end markers, and insert/search loop invariants.
+- **SEO keywords**: Trie template, Python Trie, prefix tree, children, is_end, LeetCode 208
+- **Meta description**: A minimal Python Trie template that derives node fields, child traversal, end markers, prefix search, and insert/search loop invariants.
 
 ---
 
@@ -231,36 +231,80 @@ Now this version can:
 
 It still lacks:
 
-- a lookup path that can answer whether a query reaches a node
+- the two public lookup methods
 
-### Step 4: Add one shared path lookup helper
+### Step 4: Implement search and starts_with directly first
 
-Both full-word search and prefix search need the same traversal:
+Now use the state we already have.
+
+For full-word lookup, walk the path and then check `is_end`:
+
+```python
+def search(self, word: str) -> bool:
+    node = self.root
+    for ch in word:
+        if ch not in node.children:
+            return False
+        node = node.children[ch]
+    return node.is_end
+```
+
+The `search` lookup invariant is:
+
+> Before processing character `i`, `node` points to the node for prefix `word[:i]`.
+
+If the path is missing, the word was not inserted.
+If the path exists, the final node still must be marked as a complete word.
+
+For prefix lookup, walk the same path shape but stop after path existence:
+
+```python
+def starts_with(self, prefix: str) -> bool:
+    node = self.root
+    for ch in prefix:
+        if ch not in node.children:
+            return False
+        node = node.children[ch]
+    return True
+```
+
+The `starts_with` lookup invariant is:
+
+> Before processing character `i`, `node` points to the node for prefix `prefix[:i]`.
+
+If the loop finishes, the prefix exists.
+There is no `is_end` check because a prefix does not need to be a full word.
+
+Now this version can answer the original task:
+
+```text
+insert("app")
+insert("apple")
+search("app")        -> True
+search("ap")         -> False
+starts_with("ap")    -> True
+search("apply")      -> False
+```
+
+It also exposes the duplication: both lookup methods start at `root`, walk one character at a time, and fail when an edge is missing.
+
+### Step 5: Extract one shared path lookup helper
+
+Now the helper is earned.
+The repeated traversal is:
 
 > Start at root, consume one character at a time, and stop if the path breaks.
 
-In the previous version, add `_find_node`:
+Extract only that traversal:
 
 ```python
-class Trie:
-    def __init__(self):
-        self.root = TrieNode()
-
-    def insert(self, word: str) -> None:
-        node = self.root
-        for ch in word:
-            if ch not in node.children:
-                node.children[ch] = TrieNode()
-            node = node.children[ch]
-        node.is_end = True
-
-    def _find_node(self, s: str):
-        node = self.root
-        for ch in s:
-            if ch not in node.children:
-                return None
-            node = node.children[ch]
-        return node
+def _find_node(self, s: str):
+    node = self.root
+    for ch in s:
+        if ch not in node.children:
+            return None
+        node = node.children[ch]
+    return node
 ```
 
 The lookup loop invariant is:
@@ -275,13 +319,7 @@ Now this version can:
 - tell whether a path exists
 - return the exact node reached by a word or prefix
 
-It still lacks:
-
-- public methods that interpret that node differently for exact lookup and autocomplete
-
-### Step 5: Split exact word search from prefix search
-
-Now the final distinction becomes small.
+The final distinction becomes small.
 
 For exact word lookup:
 
@@ -314,7 +352,7 @@ starts_with("ap")    -> True
 search("apply")      -> False
 ```
 
-At this point the full runnable code has been earned.
+At this point the full runnable code has been earned: the helper is part of the final code because duplication forced it out.
 
 ---
 
@@ -402,6 +440,67 @@ If we later insert `app`, we walk to the same `app` node and set its `is_end` to
 
 ---
 
+## E - Engineering: Where this shape shows up
+
+The same template is useful whenever exact lookup and prefix lookup must stay separate.
+With the `Trie` class above, these examples are executable as direct calls.
+
+### Autocomplete prefix gate
+
+Before generating expensive suggestions, first check whether the prefix can match anything:
+
+```python
+trie = Trie()
+for word in ["app", "apple", "bat"]:
+    trie.insert(word)
+
+assert trie.starts_with("ap") is True
+assert trie.starts_with("ba") is True
+assert trie.starts_with("ca") is False
+```
+
+### Exact dictionary membership
+
+Autocomplete may accept `ap` as a prefix, but a spelling or command validator may require a complete word:
+
+```python
+trie = Trie()
+for word in ["app", "apple", "bat"]:
+    trie.insert(word)
+
+assert trie.search("app") is True
+assert trie.search("ap") is False
+```
+
+### Namespaced keys
+
+Using a dictionary for `children` keeps the template usable beyond lowercase letters:
+
+```python
+commands = Trie()
+for command in ["user:add", "user:delete", "team:add"]:
+    commands.insert(command)
+
+assert commands.starts_with("user:") is True
+assert commands.search("user") is False
+```
+
+### FAQ
+
+**Should `_find_node` be written first?**
+In final code it is fine to keep `_find_node`, but the concept should be earned from repeated lookup logic.
+If a helper does not remove real duplication or name a stable operation, inline code is usually clearer.
+
+**Does each node need to store its own character?**
+Not in this template.
+The character is already the key used to reach the child node, so storing it again is redundant for basic insert/search/prefix lookup.
+
+**Can `children` be a set?**
+No for this implementation.
+A set can tell whether a character exists, but it cannot move to the child node that represents the longer prefix.
+
+---
+
 ## R - Reflection
 
 ### Complexity
@@ -421,6 +520,7 @@ The more prefixes are shared, the more useful the Trie structure becomes.
 - Continuing after a missing character during lookup
 - Creating a fresh node every time during insertion and overwriting shared prefixes
 - Making `starts_with` require `is_end`, which rejects valid prefixes
+- Extracting helpers before the repeated operation is visible
 
 ### Template memory hook
 

@@ -1,20 +1,20 @@
 ---
-title: "LeetCode 208: Implement Trie (Prefix Tree) Template Guide"
+title: "LeetCode 208: Implement Trie (Prefix Tree) in Python"
 date: 2026-06-25T13:58:00+08:00
 draft: false
 categories: ["LeetCode"]
 tags: ["Hot100", "Trie", "prefix tree", "string", "LeetCode 208"]
-description: "LeetCode 208 is the core Trie template problem: implement insert, search, and startsWith with the required class interface."
-keywords: ["LeetCode 208", "Implement Trie", "Prefix Tree", "Trie", "startsWith"]
+description: "Solve LeetCode 208 in Python by deriving Trie node fields, children traversal, is_end, insert, search, startsWith, and the exact interface LeetCode expects."
+keywords: ["LeetCode 208", "Implement Trie", "Prefix Tree", "Python Trie", "Trie", "startsWith", "is_end", "Hot100"]
 ---
 
 > **Subtitle / Summary**
-> LeetCode 208 is not about a new trick. It asks you to fit the Trie template into a fixed interface: `insert` builds paths, `search` checks full words, and `startsWith` checks prefix paths.
+> LeetCode 208 is the fixed-interface version of the Trie template. We will derive the node fields and lookup invariant first, then fit them into `Trie()`, `insert`, `search`, and `startsWith`.
 
-- **Reading time**: 8-10 min
+- **Reading time**: 10-12 min
 - **Tags**: `Hot100`, `Trie`, `prefix tree`, `LeetCode 208`
-- **SEO keywords**: LeetCode 208, Implement Trie, Prefix Tree, startsWith
-- **Meta description**: A pressure-first guide to LeetCode 208 covering Trie nodes, children, is_end, insert, search, and startsWith.
+- **SEO keywords**: LeetCode 208, Implement Trie, Prefix Tree, Python Trie, startsWith, is_end
+- **Meta description**: A pressure-first Python guide to LeetCode 208 covering Trie nodes, children, is_end, insert, search, startsWith, and submission checks.
 
 ---
 
@@ -476,6 +476,87 @@ This does not introduce new logic; it is the runnable version arranged as a subm
 
 ---
 
+## E - Engineering: Submission checks and extension points
+
+### LeetCode interface checklist
+
+Before submitting, check the contract rather than only the algorithm idea:
+
+| Requirement | Check |
+| --- | --- |
+| Class name | `class Trie:` |
+| Constructor | `def __init__(self):` creates the root |
+| Insert | `insert` mutates the tree and returns `None` |
+| Exact lookup | `search` returns `True` only when the final node has `is_end == True` |
+| Prefix lookup | `startsWith` returns `True` when the path exists, without checking `is_end` |
+
+The most common accepted-code bug is not traversal.
+It is mixing up the final check for `search` and `startsWith`.
+
+### Edge tests to run before submission
+
+With the reference class above, this block should pass:
+
+```python
+trie = Trie()
+
+trie.insert("apple")
+assert trie.search("apple") is True
+assert trie.search("app") is False
+assert trie.startsWith("app") is True
+assert trie.startsWith("apply") is False
+
+trie.insert("app")
+assert trie.search("app") is True
+assert trie.startsWith("apple") is True
+assert trie.search("appl") is False
+```
+
+These cases cover:
+
+- a full word that exists
+- a prefix that is not yet a full word
+- a prefix that should pass `startsWith`
+- a longer string whose path breaks
+- inserting a word that is already a prefix of another word
+
+### How later Trie problems extend this solution
+
+LeetCode 208 stores only the minimal state:
+
+```text
+children: next character -> child node
+is_end:  whether this path is a complete word
+```
+
+Later problems usually keep the same traversal but add one field:
+
+| Need | Typical extra field |
+| --- | --- |
+| Count words ending at a node | `end_count` |
+| Count words passing through a prefix | `pass_count` |
+| Support delete | counts plus careful decrement logic |
+| Prune DFS by prefix | reuse `_find_node` idea or walk Trie nodes during DFS |
+
+Do not add those fields to LeetCode 208.
+They are useful extensions, but this problem only asks for the basic template.
+
+### FAQ
+
+**Why not use a hash set for LeetCode 208?**
+A hash set handles `search(word)`, but `startsWith(prefix)` would need scanning all words or storing all prefixes separately.
+Trie stores shared prefixes directly.
+
+**Why keep `_find_node` if LeetCode does not require it?**
+It names the shared traversal used by `search` and `startsWith`.
+The public interface stays exactly the same, and the helper keeps the two final checks from drifting apart.
+
+**Should `startsWith` check `is_end`?**
+No.
+`startsWith("app")` should be true after inserting only `"apple"`, even before `"app"` itself is inserted.
+
+---
+
 ## Explanation
 
 ### Why is LeetCode 208 a template problem?
@@ -540,6 +621,8 @@ Let `L` be the string length:
 - Making `startsWith` check `is_end`, which rejects valid prefixes
 - Rebuilding nodes even when a child already exists during insertion
 - Forgetting to set `is_end` at the end of `insert`
+- Changing the required method name from `startsWith` to `starts_with` in the LeetCode submission
+- Adding counters or delete logic before the basic interface is correct
 
 ### When should children be an array?
 
@@ -568,3 +651,4 @@ This guide uses `dict` because it directly expresses "character -> child node."
 - Trie Template: Node Fields, Child Traversal, and Loop Invariants
 - Word Search II: use Trie to prune impossible DFS branches
 - Prefix-counting problems: add `pass_count` or `end_count` to nodes
+- Delete operation: keep counts so removing one word does not break another shared prefix
