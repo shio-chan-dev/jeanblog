@@ -136,7 +136,17 @@ We will build only the state needed to make these answers correct.
 ### Step 1: Start with paths for inserted words
 
 The first behavior is `insert(word)`.
-To insert a word, the structure must create one edge per character.
+To insert a word, the structure must create one edge per character and let different words reuse the same prefix.
+
+For example, `app` and `apple` should not be stored as two unrelated strings:
+
+```text
+app
+apple
+```
+
+They should share the path for `a -> p -> p`.
+That means each position in the structure should represent a prefix reached so far, and from that prefix we need to know which next characters are available.
 
 So start with the smallest node:
 
@@ -151,6 +161,9 @@ Here `children` is a dictionary:
 ```text
 character -> child node
 ```
+
+It is a dictionary rather than a set because we do not only need to know that a next character exists.
+We also need to move to the child node that represents the longer prefix after taking that character.
 
 Now add the root and the first version of `insert`:
 
@@ -182,19 +195,34 @@ This version can:
 - make inserted words reachable as paths
 - share prefixes between words
 
-It still fails the trace:
+But if we try to answer exact word search using only path existence, the first attempt would look like this:
+
+```python
+def search_by_path_only(word: str) -> bool:
+    node = self.root
+    for ch in word:
+        if ch not in node.children:
+            return False
+        node = node.children[ch]
+    return True
+```
+
+Now test it against the required behavior:
 
 ```text
 insert("apple")
-search("app") should be False
-startsWith("app") should be True
+search_by_path_only("app") -> True
+expected search("app")     -> False
+expected startsWith("app") -> True
 ```
 
-With only paths, `app` looks like it exists because the path `a -> p -> p` is present.
+This is the exact pressure for the next field.
+The path `a -> p -> p` really exists, so prefix lookup should succeed.
+But the complete word `app` was not inserted yet, so exact lookup should fail.
 
 ### Step 2: Add an end marker for exact word search
 
-To make `search("app")` different from `startsWith("app")`, the final node of a complete word needs a marker.
+To fix the wrong `search_by_path_only("app")` result, the final node of a complete word needs a marker.
 
 Add `is_end` to each node:
 
