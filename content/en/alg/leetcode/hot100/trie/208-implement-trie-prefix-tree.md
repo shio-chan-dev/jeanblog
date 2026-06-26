@@ -258,14 +258,13 @@ This version can:
 
 It still lacks:
 
-- a lookup operation that returns the node reached by a query
+- the two required public lookup methods
 
-### Step 3: Extract one path lookup helper
+### Step 3: Implement search and startsWith directly first
 
-Both `search` and `startsWith` walk a string path.
-They differ only in what they check after walking.
+Now use the state we already have.
 
-Add `_find_node`:
+For `search(word)`, walk the path and then check `is_end`:
 
 ```python
 class Trie:
@@ -280,54 +279,97 @@ class Trie:
             node = node.children[ch]
         node.is_end = True
 
-    def _find_node(self, s: str):
+    def search(self, word: str) -> bool:
         node = self.root
-        for ch in s:
+        for ch in word:
             if ch not in node.children:
-                return None
+                return False
             node = node.children[ch]
-        return node
+        return node.is_end
 ```
 
-The lookup invariant is:
+The `search` lookup invariant is:
+
+> Before processing character `i`, `node` points to the node for `word[:i]`.
+
+If the path is missing, the word does not exist.
+If the path exists, the final node still must be marked as a complete word.
+
+For `startsWith(prefix)`, walk the same kind of path, but do not check `is_end`:
+
+```python
+def startsWith(self, prefix: str) -> bool:
+    node = self.root
+    for ch in prefix:
+        if ch not in node.children:
+            return False
+        node = node.children[ch]
+    return True
+```
+
+The `startsWith` lookup invariant is:
+
+> Before processing character `i`, `node` points to the node for `prefix[:i]`.
+
+If the path exists, the prefix exists.
+It does not matter whether the final node is the end of a complete word.
+
+Now the required behavior works:
+
+```text
+insert("apple")
+search("apple")    -> True
+search("app")      -> False
+startsWith("app")  -> True
+```
+
+But the two methods clearly repeat the same path-walking loop.
+
+### Step 4: Extract one path lookup helper
+
+The repeated part is:
+
+- start at `root`
+- walk one character at a time
+- fail if the next edge is missing
+- otherwise return the final node reached by the query
+
+Extract that repeated path lookup into `_find_node`:
+
+```python
+def _find_node(self, s: str):
+    node = self.root
+    for ch in s:
+        if ch not in node.children:
+            return None
+        node = node.children[ch]
+    return node
+```
+
+The helper invariant is the same path invariant, only with a neutral name:
 
 > Before processing character `i`, `node` points to the node for `s[:i]`.
 
 If a character is missing, the helper returns `None`.
 If the loop finishes, it returns the node for the whole query string.
 
-This version can:
-
-- tell whether a path exists
-- recover the final node for a word or prefix
-
-It still lacks:
-
-- public methods that interpret the returned node according to the required interface
-
-### Step 4: Implement search and startsWith from the same helper
-
-Now `search(word)` is just:
+Then the two public methods become the two different interpretations of that returned node:
 
 ```python
 def search(self, word: str) -> bool:
     node = self._find_node(word)
     return node is not None and node.is_end
-```
 
-It requires:
-
-- the path exists
-- the final node is marked as a complete word
-
-And `startsWith(prefix)` is:
-
-```python
 def startsWith(self, prefix: str) -> bool:
     return self._find_node(prefix) is not None
 ```
 
-It requires only path existence.
+`search` requires:
+
+- the path exists
+- the final node is marked as a complete word
+
+`startsWith` requires only path existence.
 
 Now the original trace works:
 
