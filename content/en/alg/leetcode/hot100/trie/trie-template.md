@@ -20,9 +20,10 @@ keywords: ["Trie", "prefix tree", "children", "is_end", "string template", "Hot1
 
 ## A - Algorithm: Start From A Small Task
 
-### Tiny task: answer full-word and prefix questions
+### Tiny task: build a word index for lookup and autocomplete
 
-Suppose we have inserted:
+Suppose we are building a small word index for a search box.
+After adding:
 
 ```text
 app
@@ -30,18 +31,18 @@ apple
 bat
 ```
 
-Now we need to answer:
+the index must answer two kinds of user-facing queries:
 
-- Is `app` a full word?
-- Is `ap` a prefix of any inserted word?
-- Does `apply` exist?
+- `search("app")`: was `app` added as a complete word?
+- `starts_with("ap")`: can autocomplete suggest words that begin with `ap`?
+- `search("apply")`: should return false because this word was never added.
 
-This tiny task exposes two missing capabilities:
+This is the smallest task that makes Trie useful:
 
 - A hash set can answer full-word existence quickly, but it does not naturally answer prefix existence.
 - A raw path check can confuse "this prefix exists" with "this full word exists."
 
-A Trie solves both: it shares common prefixes while still distinguishing "prefix path exists" from "full word exists."
+A Trie solves both: it shares common prefixes for autocomplete while still distinguishing "prefix path exists" from "full word exists."
 
 ### Derive the operations from the pressure
 
@@ -90,9 +91,112 @@ It compresses shared prefixes into shared paths.
 
 ## C - Concepts
 
-### Step 1: What does each node store?
+### Build the template one capability at a time
 
-A minimal Trie node needs two fields:
+The current pressure is the word index:
+
+```text
+add: app, apple, bat
+ask: search("app"), starts_with("ap"), search("apply")
+```
+
+We will not jump straight to the final class.
+Each step adds one missing capability to the current version.
+
+### Step 1: Start with only outgoing edges
+
+The first thing the index must remember is: from the current prefix, which next characters are possible?
+
+That gives the smallest node:
+
+```python
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+```
+
+Here `children` is a dictionary:
+
+```text
+character -> child node
+```
+
+For example, after the root sees `"a"`, it can store:
+
+```python
+root.children["a"] = TrieNode()
+```
+
+Now this version can:
+
+- represent a path from one prefix to the next prefix
+- share the first character of `app` and `apple`
+
+It still lacks:
+
+- a root object that owns the whole index
+- insertion logic that creates paths
+- a way to tell full words from prefixes
+
+### Step 2: Add the root and grow paths during insertion
+
+The whole Trie needs one starting point.
+That root represents the empty prefix `""`.
+
+In the previous version, add a `Trie` class and an `insert` method:
+
+```python
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+```
+
+The insertion loop invariant is:
+
+> Before processing character `i`, `node` points to the node for prefix `word[:i]`, and the path for `word[:i]` already exists.
+
+When we process `ch`, we create the missing child if needed, then move into it.
+
+After inserting `apple`, the path exists:
+
+```text
+root -> a -> p -> p -> l -> e
+```
+
+Now this version can:
+
+- create paths for inserted words
+- share the `app` prefix between `app` and `apple`
+
+It still lacks:
+
+- a way to know whether a path is a complete word
+
+This is exactly where the earlier task breaks:
+
+```text
+insert("apple")
+search("app") should be False
+starts_with("app") should be True
+```
+
+With paths only, both queries look the same.
+
+### Step 3: Mark the end of a complete word
+
+To separate a prefix from a complete word, each node needs one more field:
 
 ```python
 class TrieNode:
@@ -101,97 +205,116 @@ class TrieNode:
         self.is_end = False
 ```
 
-Field meaning:
-
-- `children`: possible next characters from the current prefix
-- `is_end`: whether the path from the root to this node is a complete word
-
-Usually the node does not need to store its own character.
-That character is already represented by the edge used from its parent.
-
-### Step 2: How do children move?
-
-Suppose the current node represents prefix `ap`, and the next character is `p`:
+Then `insert` marks only the final node:
 
 ```python
-node = node.children["p"]
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
 ```
 
-The meaning is:
+This detail matters.
+When inserting `apple`, we should not mark `a`, `ap`, `app`, or `appl` as full words.
+Only the final `e` node represents the complete word `apple`.
 
-> The current prefix changes from `ap` to `app`.
+Now this version can:
 
-If `"p"` is not in `children`, then this path does not exist.
-During insertion, create the missing node.
-During lookup, fail immediately.
+- store the difference between `apple` as a word and `app` as only a prefix
 
-### Step 3: Why do we need is_end?
+It still lacks:
 
-Path existence alone is not enough.
+- a lookup path that can answer whether a query reaches a node
 
-After inserting `apple`, the path `a -> p -> p` definitely exists.
-But that does not mean `app` has been inserted as a word.
+### Step 4: Add one shared path lookup helper
 
-So:
+Both full-word search and prefix search need the same traversal:
 
-- `starts_with("app")` only needs the path to exist
-- `search("app")` also needs the final node to have `is_end == True`
+> Start at root, consume one character at a time, and stop if the path breaks.
 
-That is the purpose of `is_end`: it separates "only a prefix" from "a complete word."
-
-### Step 4: The insertion loop invariant
-
-When inserting `word`, before processing character `i`, keep this invariant:
-
-> `node` points to the node for prefix `word[:i]`, and the path for `word[:i]` already exists.
-
-Process the current character `ch = word[i]`:
+In the previous version, add `_find_node`:
 
 ```python
-if ch not in node.children:
-    node.children[ch] = TrieNode()
-node = node.children[ch]
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
+
+    def _find_node(self, s: str):
+        node = self.root
+        for ch in s:
+            if ch not in node.children:
+                return None
+            node = node.children[ch]
+        return node
 ```
 
-After the loop:
+The lookup loop invariant is:
 
-> `node` points to the node for the whole `word`.
+> Before processing character `i`, `node` points to the node for prefix `s[:i]`, and this prefix path has been found.
 
-Now set `node.is_end = True`.
-That marks this path as a complete word, not just a prefix.
+If a character is missing, the path is broken and `_find_node` returns `None`.
+If the loop finishes, it returns the node for the whole query string.
 
-### Step 5: The lookup loop invariant
+Now this version can:
 
-When looking up `word` or `prefix`, before processing character `i`, keep this invariant:
+- tell whether a path exists
+- return the exact node reached by a word or prefix
 
-> `node` points to the node for prefix `s[:i]`, and this prefix path has been found.
+It still lacks:
 
-Process the current character:
+- public methods that interpret that node differently for exact lookup and autocomplete
+
+### Step 5: Split exact word search from prefix search
+
+Now the final distinction becomes small.
+
+For exact word lookup:
 
 ```python
-if ch not in node.children:
-    return None
-node = node.children[ch]
+def search(self, word: str) -> bool:
+    node = self._find_node(word)
+    return node is not None and node.is_end
 ```
 
-If a character is missing, the path is broken.
-If all characters are consumed, return the last node.
-
-That lets us extract `_find_node(s)`:
-
-- missing path: return `None`
-- found path: return the node for the last character
-
-Then `search` and `starts_with` differ only in the final check:
+For autocomplete prefix lookup:
 
 ```python
-node = self._find_node(word)
-return node is not None and node.is_end
+def starts_with(self, prefix: str) -> bool:
+    return self._find_node(prefix) is not None
 ```
 
-```python
-return self._find_node(prefix) is not None
+The difference is only the final check:
+
+- `search` requires both path existence and `is_end`
+- `starts_with` requires only path existence
+
+Now this version can answer the original task:
+
+```text
+insert("app")
+insert("apple")
+search("app")        -> True
+search("ap")         -> False
+starts_with("ap")    -> True
+search("apply")      -> False
 ```
+
+At this point the full runnable code has been earned.
 
 ---
 

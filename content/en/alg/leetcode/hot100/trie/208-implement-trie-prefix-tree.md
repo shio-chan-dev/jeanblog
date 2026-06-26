@@ -92,9 +92,92 @@ It checks whether you understand three basic questions:
 
 ## C - Concepts
 
-### Step 1: Fix the node structure
+### Build the required interface one behavior at a time
 
-Each node needs two fields:
+The platform asks for:
+
+```python
+insert(word)
+search(word)
+startsWith(prefix)
+```
+
+Those methods are not arbitrary names.
+They come from the operation trace:
+
+```text
+insert("apple")
+search("apple")    -> True
+search("app")      -> False
+startsWith("app")  -> True
+```
+
+We will build only the state needed to make these answers correct.
+
+### Step 1: Start with paths for inserted words
+
+The first behavior is `insert(word)`.
+To insert a word, the structure must create one edge per character.
+
+So start with the smallest node:
+
+```python
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+```
+
+Here `children` is a dictionary:
+
+```text
+character -> child node
+```
+
+Now add the root and the first version of `insert`:
+
+```python
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+```
+
+This version can create the path for `apple`:
+
+```text
+root -> a -> p -> p -> l -> e
+```
+
+The loop invariant is:
+
+> Before processing character `i`, `node` points to the node for `word[:i]`, and that path already exists.
+
+This version can:
+
+- make inserted words reachable as paths
+- share prefixes between words
+
+It still fails the trace:
+
+```text
+insert("apple")
+search("app") should be False
+startsWith("app") should be True
+```
+
+With only paths, `app` looks like it exists because the path `a -> p -> p` is present.
+
+### Step 2: Add an end marker for exact word search
+
+To make `search("app")` different from `startsWith("app")`, the final node of a complete word needs a marker.
+
+Add `is_end` to each node:
 
 ```python
 class TrieNode:
@@ -103,84 +186,114 @@ class TrieNode:
         self.is_end = False
 ```
 
-- `children`: mapping from next character to child node
-- `is_end`: whether the path from root to this node is a complete word
-
-The problem only asks for a basic Trie, so no extra fields are needed.
-
-### Step 2: insert builds missing paths
-
-When inserting `word`, start at the root and scan each character.
-
-Current loop invariant:
-
-> Before processing character `i`, `node` points to the node for `word[:i]`, and that path already exists.
-
-If the next character is missing, create it:
+Then mark only the final node during insertion:
 
 ```python
-if ch not in node.children:
-    node.children[ch] = TrieNode()
-node = node.children[ch]
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
 ```
 
-After the loop, `node` points to the final node for `word`.
-Then set:
+After `insert("apple")`, only the `e` node is marked as a complete word.
+The `app` node exists as a prefix, but it is not marked.
 
-```python
-node.is_end = True
-```
+This version can:
 
-### Step 3: Extract path lookup
+- store the difference between a complete word and a prefix
+
+It still lacks:
+
+- a lookup operation that returns the node reached by a query
+
+### Step 3: Extract one path lookup helper
 
 Both `search` and `startsWith` walk a string path.
 They differ only in what they check after walking.
 
-So use an internal helper:
+Add `_find_node`:
 
 ```python
-def _find_node(self, s: str):
-    node = self.root
-    for ch in s:
-        if ch not in node.children:
-            return None
-        node = node.children[ch]
-    return node
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
+
+    def _find_node(self, s: str):
+        node = self.root
+        for ch in s:
+            if ch not in node.children:
+                return None
+            node = node.children[ch]
+        return node
 ```
 
-Lookup loop invariant:
+The lookup invariant is:
 
 > Before processing character `i`, `node` points to the node for `s[:i]`.
 
-If a character is missing, the path is broken and the helper returns `None`.
+If a character is missing, the helper returns `None`.
+If the loop finishes, it returns the node for the whole query string.
 
-### Step 4: search checks a full word
+This version can:
 
-`search(word)` needs two conditions:
+- tell whether a path exists
+- recover the final node for a word or prefix
 
-- the path for `word` exists
-- the final node has `is_end == True`
+It still lacks:
 
-So:
+- public methods that interpret the returned node according to the required interface
 
-```python
-node = self._find_node(word)
-return node is not None and node.is_end
-```
+### Step 4: Implement search and startsWith from the same helper
 
-After inserting only `apple`, the path for `app` exists, but the `app` node is not marked as a full word.
-Therefore `search("app")` must return `False`.
-
-### Step 5: startsWith checks only the prefix path
-
-`startsWith(prefix)` only cares whether the path exists:
+Now `search(word)` is just:
 
 ```python
-return self._find_node(prefix) is not None
+def search(self, word: str) -> bool:
+    node = self._find_node(word)
+    return node is not None and node.is_end
 ```
 
-It does not check `is_end`.
-The prefix does not need to be a complete word; it only needs to be the beginning of some inserted word.
+It requires:
+
+- the path exists
+- the final node is marked as a complete word
+
+And `startsWith(prefix)` is:
+
+```python
+def startsWith(self, prefix: str) -> bool:
+    return self._find_node(prefix) is not None
+```
+
+It requires only path existence.
+
+Now the original trace works:
+
+```text
+insert("apple")
+search("apple")    -> True
+search("app")      -> False
+startsWith("app")  -> True
+insert("app")
+search("app")      -> True
+```
+
+The complete runnable class is now earned.
 
 ---
 
