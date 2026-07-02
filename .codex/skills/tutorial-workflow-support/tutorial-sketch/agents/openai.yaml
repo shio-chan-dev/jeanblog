@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tutorial Sketch"
+  short_description: "v0.1.0 - Create pre-build teaching skeletons from saved tutorial plans"
+  default_prompt: "Use $tutorial-sketch to turn the saved tutorial plan in .agent-runs/tutorials/<slug>/plan.md into a teaching skeleton and code-growth contract before build starts."

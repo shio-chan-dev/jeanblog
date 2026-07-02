@@ -16,3 +16,6 @@ __pycache__/
 agent.log
 Node*
 node*
+
+# Local agent run artifacts
+.agent-runs/

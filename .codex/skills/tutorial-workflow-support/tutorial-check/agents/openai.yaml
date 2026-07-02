@@ -1,0 +1,4 @@
+interface:
+  display_name: "Tutorial Check"
+  short_description: "v0.1.0 - Check tutorial drafts against saved plans and sketches"
+  default_prompt: "Use $tutorial-check to compare this tutorial draft with its saved .agent-runs plan and sketch before sending it to the appropriate tutorial review skill."
