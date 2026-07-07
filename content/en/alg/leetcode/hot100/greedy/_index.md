@@ -9,3 +9,4 @@ This section collects Hot100 greedy tutorials, focusing on which local state is 
 
 1. [LeetCode 121: Best Time to Buy and Sell Stock, derive one-transaction greedy from the historical minimum price](121-best-time-to-buy-and-sell-stock/)
 2. [LeetCode 55: Jump Game, use the farthest reachable range to decide reachability](55-jump-game/)
+3. [LeetCode 435: Non-overlapping Intervals, turn minimum removals into maximum kept intervals](435-non-overlapping-intervals/)
