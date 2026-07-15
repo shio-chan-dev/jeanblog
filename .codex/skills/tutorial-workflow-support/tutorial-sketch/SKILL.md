@@ -1,6 +1,6 @@
 ---
 name: tutorial-sketch
-description: v0.1.0 - Create a teaching skeleton and code-growth contract from a saved tutorial plan. Use before tutorial build when concept timing, helper extraction, final-code placement, or checkpoint continuity must be made explicit.
+description: v0.1.1 - Create a teaching skeleton and code-growth contract from a saved tutorial plan. Use before tutorial build when concept timing, first operational use, helper extraction, final-code placement, or checkpoint continuity must be made explicit.
 ---
 
 # Tutorial Sketch
@@ -90,12 +90,20 @@ For each checkpoint, write the allowed growth rule:
 - previous visible baseline
 - pressure that forces the next change
 - exactly what new code, field, helper, invariant, or proof idea may appear
+- where each newly named concept first does real work
 - what must not appear yet
 - evidence that proves the checkpoint is ready to freeze
 
 Helpers should be forced by repetition or pressure. If a helper is useful only
 after two duplicated paths exist, the sketch must forbid that helper before the
 duplication appears in the article.
+
+Variables, helpers, invariants, formulas, and rules follow the same timing
+discipline. They should be introduced only when the current checkpoint needs
+them. If a name must be introduced before it is used, the sketch must mark it as
+`named_only`, name the later `first_operational_use`, and forbid any freeze or
+capability wording that says the reader can use it before that later
+checkpoint.
 
 ### Step 5: Place Final Code And Evidence
 
@@ -126,6 +134,7 @@ Belongs in `sketch.md`:
 - section skeleton
 - checkpoint contract
 - code-growth map
+- concept timing and first operational use
 - forbidden early concepts
 - final runnable code placement
 - review handoff
@@ -194,12 +203,17 @@ the build from hidden jumps.
 | "The builder can decide helper timing." | The sketch exists to prevent premature helpers and hidden final logic. |
 | "A section outline is enough." | Tutorial sketches need code/prose growth and forbidden-early-concept rules. |
 | "Final code can appear anywhere." | Final code should appear only after the article has earned every piece. |
+| "I can define a variable now and use it later." | A name that does no work yet needs explicit pressure and must be marked named-only until first operational use. |
 | "This should fix the plan." | Unsafe plans should be revised by the plan skill, not silently patched in sketch. |
 
 ## Red Flags
 
 - The sketch starts with a named template instead of problem pressure.
 - A helper or state variable appears before the pressure that requires it.
+- A concept is introduced in one checkpoint but its first operational use is
+  neither in the same checkpoint nor explicitly scheduled later.
+- A checkpoint's freeze says the reader can use a concept that was only named,
+  not operationally used.
 - The final runnable code contains logic not mapped to earlier checkpoints.
 - The sketch writes article prose instead of a build contract.
 - The sketch changes plan order without sending the plan back for revision.
@@ -212,6 +226,10 @@ the build from hidden jumps.
 - [ ] First screen pressure is explicit.
 - [ ] Each planned task maps to a checkpoint or justified shared checkpoint.
 - [ ] Each checkpoint introduces one mechanism, rule, helper, or invariant.
+- [ ] Each introduced concept has a same-checkpoint or explicitly later first
+      operational use.
+- [ ] Freeze wording is constrained so named-only concepts are not claimed as
+      usable.
 - [ ] Forbidden early concepts and helper timing are listed.
 - [ ] Code-growth map states previous baseline, allowed change, and blocked
       premature logic.

@@ -1,6 +1,6 @@
 ---
 name: leetcode-tutorial-review
-description: v0.1.0 - Review one LeetCode tutorial checkpoint or full draft as an independent gate. Use when deciding whether a problem tutorial step can advance, needs revision, or must block because pressure, break, change, check evidence, code continuity, or final-code placement is weak.
+description: v0.1.1 - Review one LeetCode tutorial checkpoint or full draft as an independent gate. Use when deciding whether a problem tutorial step can advance, needs revision, or must block because pressure, break, change, concept timing, check evidence, code continuity, or final-code placement is weak.
 ---
 
 # LeetCode Tutorial Review
@@ -37,16 +37,24 @@ algorithm concept review, or full rewrite requests.
    - For the target step, inspect pressure, previous baseline, break, change,
      check evidence, freeze, and still-lacks.
    - Verify: the change follows from the break and changes only one core thing.
-4. Check Evidence
+4. Check Concept Timing
+   - For every newly named variable, helper, invariant, recurrence, formula, or
+     rule, identify where it is first operationally used.
+   - Verify: the concept is introduced only after pressure forces it, and the
+     checkpoint does not claim the reader can use it before that first
+     operational use.
+   - If the concept is named now but used later, verify `still-lacks` says the
+     first operational use is still missing.
+5. Check Evidence
    - Confirm checks were executed or backed by concrete manual trace evidence.
    - Reject generic "checked" language.
    - Verify: evidence proves this checkpoint, not just the final answer.
-5. Check Code Continuity
+6. Check Code Continuity
    - Confirm snippets add to or replace the previous baseline.
    - Confirm optimization stages preserve a bridge from first correct version
      to final version.
    - Verify: no hidden helper or final trick appears only at the end.
-6. Produce Verdict
+7. Produce Verdict
    - `pass`: the step may advance.
    - `revise`: targeted fixes are needed before advancing.
    - `block`: the teaching chain is broken or evidence is missing.
@@ -56,7 +64,8 @@ algorithm concept review, or full rewrite requests.
 - `block`: no concrete check evidence, hidden final logic, problem facts
   missing, or step cannot be derived from the previous baseline.
 - `revise`: pressure is present but thin, break is generic, change is too broad,
-  or checkpoint/freeze is unclear.
+  checkpoint/freeze is unclear, or a named-only concept is over-claimed before
+  first operational use.
 - `suggestion`: local wording or polish that does not block progression.
 
 ## Output Format
@@ -97,6 +106,7 @@ algorithm concept review, or full rewrite requests.
 | "The builder ran self-checks." | Self-checks are evidence to inspect, not acceptance. |
 | "The missing bridge is obvious." | If the bridge is obvious, it should be visible in the tutorial. |
 | "The final answer covers it." | Final answers do not repair hidden jumps in earlier checkpoints. |
+| "The variable will be used in the next step." | Then this step may only claim the reader knows what it represents, not that they can use it. |
 
 ## Red Flags
 
@@ -104,6 +114,10 @@ algorithm concept review, or full rewrite requests.
 - No smaller subproblem when recursion, DP, or staged optimization needs one.
 - Step check is missing or unexecuted.
 - Optimization appears before a first correct baseline exposes the bottleneck.
+- A checkpoint introduces a variable, helper, invariant, formula, or rule before
+  the current pressure needs it.
+- A freeze says "can use X" when X has not yet participated in a condition,
+  update, recurrence, helper call, return value, proof step, or decision.
 - Review output gives `pass` while listing blocking issues.
 
 ## Verification
@@ -111,6 +125,7 @@ algorithm concept review, or full rewrite requests.
 - [ ] Review scope was identified.
 - [ ] Problem-first discipline was checked.
 - [ ] Step pressure, break, change, check, freeze, and still-lacks were checked.
+- [ ] Concept timing and first operational use were checked.
 - [ ] Check evidence quality was evaluated.
 - [ ] Code continuity was checked.
 - [ ] Verdict is one of `pass`, `revise`, or `block`.

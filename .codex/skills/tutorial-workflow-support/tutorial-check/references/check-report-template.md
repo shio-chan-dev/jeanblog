@@ -17,10 +17,13 @@
 - taxonomy:
 - task_order:
 - pressure_break_change_check_freeze:
+- checkpoint_check_requirements:
+- concept_timing:
 
 ## Sketch Adherence
 - first_screen_pressure:
 - concept_timing:
+- first_operational_use:
 - helper_timing:
 - code_growth:
 - final_code_placement:

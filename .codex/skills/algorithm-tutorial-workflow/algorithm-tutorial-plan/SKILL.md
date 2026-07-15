@@ -1,6 +1,6 @@
 ---
 name: algorithm-tutorial-plan
-description: v0.1.0 - Plan one standalone algorithm, data-structure, or method tutorial as review-gated writing tasks. Use when the subject is the technique itself and the plan must preserve derivation-first construction, runnable checkpoints, invariants, correctness, complexity, counterexamples, engineering tradeoffs, deepening tasks, and publishable Hugo placement before drafting.
+description: v0.1.1 - Plan one standalone algorithm, data-structure, or method tutorial as review-gated writing tasks. Use when the subject is the technique itself and the plan must preserve derivation-first construction, runnable checkpoints, checkpoint check requirements, concept timing, invariants, correctness, complexity, counterexamples, engineering tradeoffs, deepening tasks, and publishable Hugo placement before drafting.
 ---
 
 # Algorithm Tutorial Plan
@@ -53,6 +53,9 @@ thoughts/evaluation posts, or final-code-only answers.
 3. Plan Derivation Checkpoints
    - Order missing state, mechanism, helper, invariant, code fragment, and final
      demo tasks.
+   - For each checkpoint, state what must be inspected, what passes, what
+     fails, what evidence is required, and whether newly named concepts are
+     operationally used in that checkpoint or only scheduled for later use.
    - Verify: every build task introduces one mechanism or rule.
 4. Plan Algorithm Depth
    - Select 1-2 core concepts for PDKH deepening.
@@ -103,6 +106,12 @@ pressure
 - [ ] ...
 **Verification:**
 - [ ] ...
+**Checkpoint check requirements:**
+- inspect:
+- pass_when:
+- fail_when:
+- required_evidence:
+- concept_timing_coverage:
 **Dependencies:**
 **Document target:**
 **Code change role:** prose-only | patch | checkpoint

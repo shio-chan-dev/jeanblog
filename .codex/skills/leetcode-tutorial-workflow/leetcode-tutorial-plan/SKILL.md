@@ -1,6 +1,6 @@
 ---
 name: leetcode-tutorial-plan
-description: v0.1.0 - Plan one LeetCode or OJ-style tutorial as ordered, review-gated writing tasks before drafting. Use when a concrete problem needs a publishable guided-build tutorial with problem facts, examples, constraints, smaller subproblem, connected code checkpoints, optimization bridge, verification, and checkpoint handoff.
+description: v0.1.1 - Plan one LeetCode or OJ-style tutorial as ordered, review-gated writing tasks before drafting. Use when a concrete problem needs a publishable guided-build tutorial with problem facts, examples, constraints, smaller subproblem, connected code checkpoints, checkpoint check requirements, concept timing, optimization bridge, verification, and checkpoint handoff.
 ---
 
 # LeetCode Tutorial Plan
@@ -61,7 +61,13 @@ explainers, post enhancement, SEO work, or final-code-only answers.
    - Create ordered tasks with description, acceptance criteria, verification,
      dependencies, document target, code change role, and review gate.
    - Each tutorial-step task must include problem pressure, previous baseline,
-     break, one change, check evidence, freeze, still lacks, and next gap.
+     break, one change, check evidence, checkpoint check requirements, freeze,
+     still lacks, and next gap.
+   - Each task that introduces a state variable, helper, invariant, recurrence,
+     formula, rule, or named concept must include a `concept_timing` check:
+     what pressure forces the name, where it is first named, where it is first
+     operationally used, and what capability claim is allowed before that first
+     use.
    - Verify: every task can be written and reviewed in one focused pass.
 6. Plan Review and Checkpoint Handoff
    - Mark tasks that require `leetcode-tutorial-review` before continuation.
@@ -79,10 +85,39 @@ Every tutorial-step task must include:
 - `Change`: exactly one state, rule, helper, recurrence, branch, or code block.
 - `Check evidence`: assertion, trace, example walk-through, or runnable command
   that must be executed or reviewed.
+- `Checkpoint check requirements`: what the builder/reviewer must inspect for
+  this checkpoint, what passes, what fails, what evidence is required, and
+  whether concept timing is covered.
 - `Freeze`: what the checkpoint can now do.
+  Do not claim the reader can use a concept, variable, helper, rule, or
+  invariant unless that checkpoint has shown its first operational use. Before
+  first operational use, freeze may only say the reader knows what it
+  represents or why it will be needed.
 - `Still lacks`: the next defect that justifies the next task.
 - `Review gate`: `leetcode-tutorial-review` must pass this step before the next
   build task starts.
+
+## Concept Timing Contract
+
+Plans must prevent named ideas from arriving before the current problem
+pressure needs them.
+
+For each new concept, field, helper, state variable, recurrence, invariant, or
+rule introduced by a task, record:
+
+- `introduced_concepts`: names introduced in this task.
+- `pressure_for_introduction`: the unresolved problem that forces the name now.
+- `first_operational_use`: the first task or checkpoint where the concept
+  participates in a condition, update, recurrence, helper call, return value,
+  proof step, or decision.
+- `capability_claim_rule`: what the freeze may claim before and after that
+  first operational use.
+
+If a task names a concept but its first operational use belongs to a later
+task, that task's `freeze` must use wording like "knows what X represents" or
+"knows why X will be needed"; it must not say "can use X" or "can solve with
+X". When possible, prefer moving the concept introduction into the same task as
+its first operational use.
 
 ## Output Format
 
@@ -137,7 +172,11 @@ problem requirement
 - [ ] Break is concrete.
 - [ ] One change is introduced.
 - [ ] Check evidence is executable or reviewable.
+- [ ] Checkpoint check requirements specify inspect/pass/fail/evidence and
+      concept timing coverage.
 - [ ] Freeze and still-lacks are explicit.
+- [ ] Concept timing is explicit: no introduced variable/helper/rule is claimed
+      as usable before its first operational use.
 **Verification:**
 - [ ] ...
 **Dependencies:**
@@ -151,9 +190,16 @@ problem requirement
 - Break:
 - Change:
 - Check:
+- Checkpoint check requirements:
+  - inspect:
+  - pass_when:
+  - fail_when:
+  - required_evidence:
+  - concept_timing_coverage:
 - Freeze:
 - Still lacks:
 - Next:
+- Concept timing:
 
 ## Review Gate Handoff
 | Task | review_required | review_scope | pass_allows |
@@ -194,6 +240,10 @@ problem requirement
 - No smaller subproblem is planned.
 - No first correct baseline is planned before optimization.
 - Tutorial tasks lack verification or review gate.
+- Tutorial tasks introduce a variable, helper, invariant, or rule before the
+  current pressure needs it.
+- A task's freeze claims "can use X" even though X is not operationally used
+  until a later task.
 - A task asks build to write more than one numbered step.
 - Final runnable code is planned as a detached reference answer.
 
@@ -204,6 +254,8 @@ problem requirement
 - [ ] Dependency graph starts from problem evidence.
 - [ ] Build tasks include acceptance criteria, verification, dependencies,
       document targets, review gates, and checkpoint handoff.
+- [ ] Build tasks record concept timing and first operational use for new
+      state, helpers, invariants, recurrences, formulas, and rules.
 - [ ] First correct baseline and optimization bridge are planned when relevant.
 - [ ] Final code appears as a connected checkpoint.
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Algorithm Tutorial Plan"
-  short_description: "v0.1.0 - Plan derivation-first method tutorials"
-  default_prompt: "Use $algorithm-tutorial-plan to plan one standalone algorithm, data-structure, or method tutorial. Output a task-first plan with real pressure, dependency graph, build tasks, review gates, deepening plan, verification matrix, placement, and final runnable demo target. Do not write the article body or allow build self-approval."
+  short_description: "v0.1.1 - Plan derivation-first method tutorials with checkpoint checks"
+  default_prompt: "Use $algorithm-tutorial-plan to plan one standalone algorithm, data-structure, or method tutorial. Output a task-first plan with real pressure, dependency graph, build tasks, checkpoint check requirements, concept timing, review gates, deepening plan, verification matrix, placement, and final runnable demo target. Do not write the article body or allow build self-approval."

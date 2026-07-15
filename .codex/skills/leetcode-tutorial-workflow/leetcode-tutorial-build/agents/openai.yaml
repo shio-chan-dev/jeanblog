@@ -1,4 +1,4 @@
 interface:
   display_name: "LeetCode Tutorial Build"
-  short_description: "v0.1.1 - Build one review-gated problem tutorial increment"
-  default_prompt: "Use $leetcode-tutorial-build to draft exactly one planned LeetCode tutorial increment through pressure, naive baseline, break, one change, check evidence, freeze, and status: needs_review. Do not continue to the next step or self-approve; require $leetcode-tutorial-review before progression."
+  short_description: "v0.1.2 - Build one review-gated problem tutorial increment"
+  default_prompt: "Use $leetcode-tutorial-build to draft exactly one planned LeetCode tutorial increment through pressure, naive baseline, break, one change, concept timing, check evidence, freeze, and status: needs_review. Do not continue to the next step or self-approve; require $leetcode-tutorial-review before progression."

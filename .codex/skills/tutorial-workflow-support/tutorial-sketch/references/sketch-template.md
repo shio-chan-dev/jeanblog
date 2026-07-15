@@ -26,6 +26,10 @@
 - pressure:
 - break:
 - allowed_change:
+- concept_timing:
+  - introduced_concepts:
+  - first_operational_use:
+  - capability_claim_rule:
 - forbidden_early_concepts:
 - evidence:
 - freeze:

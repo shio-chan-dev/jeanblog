@@ -28,8 +28,19 @@
 - break:
 - change:
 - check_evidence:
+- checkpoint_check_requirements:
+  - inspect:
+  - pass_when:
+  - fail_when:
+  - required_evidence:
+  - concept_timing_coverage:
 - freeze:
 - still_lacks:
+- concept_timing:
+  - introduced_concepts:
+  - pressure_for_introduction:
+  - first_operational_use:
+  - capability_claim_rule:
 - review_gate:
 - checkpoint_commit:
 

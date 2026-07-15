@@ -1,6 +1,6 @@
 ---
 name: tutorial-check
-description: v0.1.0 - Check a tutorial draft against its saved plan and sketch before review. Use when a draft needs plan adherence, concept timing, code continuity, runnable snippet, and Hugo placement checks before tutorial review.
+description: v0.1.1 - Check a tutorial draft against its saved plan and sketch before review. Use when a draft needs plan adherence, concept timing, first operational use, code continuity, runnable snippet, and Hugo placement checks before tutorial review.
 ---
 
 # Tutorial Check
@@ -82,6 +82,12 @@ Compare the article to `plan.md`:
 - current task order follows the recorded plan
 - pressure, previous baseline, break, change, check, freeze, and still-lacks
   are visible for the checked checkpoint
+- checkpoint check requirements from the plan are satisfied or explicitly
+  marked missing: inspect targets, pass conditions, fail conditions, required
+  evidence, and concept timing coverage
+- concept timing from the plan is visible: newly named variables, helpers,
+  invariants, recurrences, formulas, and rules are not claimed as usable before
+  first operational use
 - review gate and next recommended skill match the planned workflow
 - any intentional divergence is named and routed back to plan/sketch revision
 
@@ -94,6 +100,9 @@ Compare the article to `sketch.md`:
 
 - first screen starts from the planned pressure, not from a detached template
 - each introduced concept appears after its pressure
+- each concept's first operational use appears at the planned checkpoint or is
+  explicitly still missing for partial checkpoints
+- freeze wording does not over-claim named-only concepts
 - helpers, state variables, formulas, and invariants respect the forbidden
   early concept list
 - code grows from the previous visible baseline to the allowed change
@@ -203,6 +212,8 @@ draft against the saved contract.
   `still_lacks`, not as blocking drift.
 - If the draft is complete but final code contains unexplained logic, mark the
   check `fail`.
+- If the draft says a checkpoint can use a concept that was only defined and
+  not operationally used, mark the check `fail` and route back to build.
 
 ## Common Rationalizations
 
@@ -210,6 +221,7 @@ draft against the saved contract.
 | --- | --- |
 | "Review will catch this." | Check catches mechanical drift before reviewer attention is spent. |
 | "The article reads fine, so plan drift is okay." | Planned checkpoints are the contract for multi-turn build continuity. |
+| "A concept is defined, so the checkpoint can claim it." | The checkpoint can claim use only after first operational use. |
 | "A Hugo build is unnecessary for docs." | Markdown/front matter changes can break a static site. |
 | "Check pass means review pass." | Check pass only means the draft is ready for the appropriate review skill. |
 
@@ -217,6 +229,8 @@ draft against the saved contract.
 
 - The report gives `pass` while listing blocking drift.
 - The draft has a helper/state variable before the planned pressure.
+- The draft introduces a concept without the planned first operational use or
+  over-claims it in the freeze.
 - The article path or language differs from the plan without explanation.
 - Final code contains logic that never appeared in a checkpoint.
 - Checks are described generically instead of naming concrete evidence.
@@ -229,6 +243,7 @@ draft against the saved contract.
 - [ ] Check boundary is identified as partial checkpoint or full draft.
 - [ ] Plan adherence was checked.
 - [ ] Sketch adherence was checked.
+- [ ] Concept timing and first operational use were checked.
 - [ ] Code/prose continuity was checked.
 - [ ] Runnable or operational verification was recorded.
 - [ ] Pass/fail/blocked status matches the findings.

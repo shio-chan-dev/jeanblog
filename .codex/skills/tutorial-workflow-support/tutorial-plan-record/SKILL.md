@@ -1,6 +1,6 @@
 ---
 name: tutorial-plan-record
-description: v0.1.0 - Record an approved tutorial plan into an ignored local run directory. Use when a LeetCode or algorithm tutorial plan must survive context compaction, multi-turn work, or handoff before build starts.
+description: v0.1.1 - Record an approved tutorial plan into an ignored local run directory. Use when a LeetCode or algorithm tutorial plan must survive context compaction, multi-turn work, concept-timing checks, or handoff before build starts.
 ---
 
 # Tutorial Plan Record
@@ -9,8 +9,8 @@ description: v0.1.0 - Record an approved tutorial plan into an ignored local run
 
 Save an already-created tutorial plan as local execution state. This skill does
 not plan, improve, or approve the tutorial. It preserves the plan's task order,
-freeze fields, review gates, and article target so later build/check/review
-turns can resume without relying on chat history.
+checkpoint check requirements, freeze fields, review gates, and article target
+so later build/check/review turns can resume without relying on chat history.
 
 Default output location:
 
@@ -27,7 +27,8 @@ explicitly asks for a long-lived project document.
   accepted as the working plan.
 - A tutorial will be built across multiple turns or sessions.
 - The next agent needs task order, pressure/break/change/check/freeze fields,
-  or review gates without scanning chat history.
+  per-checkpoint check requirements, or review gates without scanning chat
+  history.
 
 **When NOT to use:** creating a new plan, revising a weak plan, recording a
 draft article, publishing user-facing documentation, or saving one-off notes
@@ -49,7 +50,8 @@ Before touching `.agent-runs/`, identify the final tutorial plan to record:
   approved revision of an existing run.
 - Confirm the source includes target article path, tutorial type, article
   language, code language, ordered tasks, pressure/baseline/break/change/check/
-  freeze fields, still-lacks, and review gates.
+  freeze fields, checkpoint check requirements, still-lacks, concept timing,
+  and review gates.
 - Confirm the human has accepted the plan as the working route, or that the
   request explicitly says to record this plan.
 - If the input is only a rough idea, draft article, review report, or chat
@@ -104,7 +106,8 @@ Use `references/plan-record-template.md` and preserve durable handoff data:
 - supplied facts and inferred assumptions
 - ordered task list
 - each task's pressure, previous baseline, break, change, check evidence,
-  freeze, still-lacks, review gate, and checkpoint commit guidance when present
+  checkpoint check requirements, freeze, still-lacks, concept timing, review
+  gate, and checkpoint commit guidance when present
 - review gates and verification matrix
 - next recommended skill
 
@@ -119,6 +122,9 @@ Belongs in `plan.md`:
 - article target, language, and tutorial type
 - task order and checkpoint boundaries
 - pressure/break/change/check/freeze summaries
+- per-checkpoint check requirements, including what must be inspected, pass
+  conditions, fail conditions, and required evidence
+- concept timing, including first operational use and capability-claim limits
 - review gates and checkpoint commit guidance
 - assumptions separated from supplied facts
 
@@ -154,8 +160,15 @@ Before reporting success:
 
 - Confirm `plan.md` reflects the final accepted plan, not an earlier draft.
 - Confirm every recorded task maps to a source task or checkpoint.
-- Confirm task order, pressure, break, change, check, freeze, still-lacks, and
-  review gates were preserved or explicitly marked missing from the source.
+- Confirm task order, pressure, break, change, check, checkpoint check
+  requirements, freeze, still-lacks, and review gates were preserved or
+  explicitly marked missing from the source.
+- Confirm every task states concrete `checkpoint_check_requirements` or
+  `checkpoint_check_requirements: missing_from_source`.
+- Confirm every new concept, variable, helper, invariant, recurrence, formula,
+  or rule records whether it is first operationally used in the same task or
+  later. If the source lacks this, mark `concept_timing: missing_from_source`
+  instead of silently inventing it.
 - Confirm `.agent-runs/` is ignored and no run artifact is staged.
 - Confirm no article body was modified.
 
@@ -205,7 +218,9 @@ must follow the completed plan.
 | "I should improve the plan while recording it." | Recording preserves the accepted plan. Replanning belongs to the plan skill. |
 | "Plans are useful, so they should go in docs." | Most plan records are execution state, not long-lived reader documentation. |
 | "The chat already has the plan." | Context compaction and handoffs are exactly why this skill exists. |
-| "A loose summary is enough." | Build and check need task-level pressure, break, change, check, and freeze fields. |
+| "A loose summary is enough." | Build and check need task-level pressure, break, change, check evidence, checkpoint check requirements, and freeze fields. |
+| "Concept timing can be inferred later." | Build and review need the plan record to say when a named idea first does real work. |
+| "The verification matrix is enough." | The matrix is cross-task coverage; each checkpoint still needs local pass/fail requirements. |
 
 ## Red Flags
 
@@ -213,6 +228,10 @@ must follow the completed plan.
 - The file is written under `content/` or `.codex/skills/`.
 - The plan record is staged for commit without explicit promotion.
 - The record lacks target article path, tutorial type, or review gates.
+- The record omits per-checkpoint check requirements or collapses them into a
+  vague "verify this step" note.
+- The record omits concept timing for a task that introduces a variable,
+  helper, invariant, recurrence, formula, or rule.
 - A new slug is created for a revision of the same article plan.
 - The output report presents `plan.md` as the plan itself.
 
@@ -223,7 +242,10 @@ must follow the completed plan.
 - [ ] Run path is `.agent-runs/tutorials/<slug>/plan.md`.
 - [ ] `.agent-runs/` is ignored by Git.
 - [ ] Every recorded task maps to the source plan.
-- [ ] Task order, pressure, check, freeze, and review gates are preserved.
+- [ ] Task order, pressure, break, change, check evidence, checkpoint check
+      requirements, freeze, still-lacks, and review gates are preserved.
+- [ ] Concept timing and first operational use are preserved or explicitly
+      marked missing from the source.
 - [ ] No article body or skill definition was modified.
 - [ ] The record states the next recommended skill.
 

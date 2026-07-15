@@ -1,4 +1,4 @@
 interface:
   display_name: "Tutorial Plan Record"
-  short_description: "v0.1.0 - Save tutorial plans as ignored local run records"
-  default_prompt: "Use $tutorial-plan-record to save this accepted LeetCode or algorithm tutorial plan into .agent-runs/tutorials/<slug>/plan.md so later build, sketch, check, and review turns can resume without relying on chat history."
+  short_description: "v0.1.1 - Save tutorial plans with checkpoint checks"
+  default_prompt: "Use $tutorial-plan-record to save this accepted LeetCode or algorithm tutorial plan into .agent-runs/tutorials/<slug>/plan.md with task order, checkpoint check requirements, concept timing, and review gates so later build, sketch, check, and review turns can resume without relying on chat history."

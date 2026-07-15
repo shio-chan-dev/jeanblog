@@ -1,6 +1,6 @@
 ---
 name: leetcode-tutorial-build
-description: v0.1.1 - Build exactly one planned LeetCode tutorial increment through problem pressure, naive baseline, break, change, check, freeze, and review handoff. Use when a task-first LeetCode tutorial plan is ready and the next checkpoint must be drafted without self-approval.
+description: v0.1.2 - Build exactly one planned LeetCode tutorial increment through problem pressure, naive baseline, break, change, check, freeze, concept timing, and review handoff. Use when a task-first LeetCode tutorial plan is ready and the next checkpoint must be drafted without self-approval.
 ---
 
 # LeetCode Tutorial Build
@@ -53,6 +53,9 @@ For each LeetCode tutorial increment:
    work, timeout risk, unclear state meaning, or unproved transition.
 4. **Change** - add or replace one thing: a state variable, branch, recurrence,
    helper, loop, pruning rule, or code block.
+   Any new variable, helper, invariant, recurrence, formula, or rule must be
+   forced by the current break and either be operationally used in this
+   checkpoint or explicitly marked as named-only until a later checkpoint.
 5. **Check** - prove this change against the pressure with a runnable command,
    assertion, hand trace, table, or example walkthrough.
 6. **Freeze** - state what this checkpoint can now do, what it still lacks, and
@@ -143,6 +146,34 @@ The guided build should repeatedly use these connectors in substance:
 If these connectors are absent, the tutorial will usually drift back into
 explanation mode.
 
+### Concept Timing Rule
+
+Do not introduce a variable, helper, invariant, recurrence, formula, or rule
+just because the final answer will need it. A named concept must follow this
+sequence:
+
+```text
+pressure -> name only if needed -> meaning -> first operational use -> capability claim
+```
+
+Operational use means the concept participates in a condition, update,
+recurrence, helper call, return value, proof step, or decision. Before that
+first operational use, the checkpoint may say only:
+
+- the reader knows what the concept represents
+- the reader knows why the concept will be needed
+- the next checkpoint will show how it is used
+
+It must not say:
+
+- the reader can use the concept
+- the algorithm can solve a case with that concept
+- this version can apply the concept
+
+If a concept would be named in one checkpoint but not used until the next,
+prefer delaying the name. If delaying would make the prose awkward, explicitly
+write the `still lacks` gap as "the first operational use of X".
+
 ### Growth Landmarks
 
 When the problem type allows it, include:
@@ -169,6 +200,9 @@ Avoid these:
 
 - introducing `diag1`, `used`, `prefix`, `dp`, or similar helper state before
   the reader sees what pain it removes
+- defining `current_end`, `dp`, `visited`, `stack`, `heap`, or similar state in
+  one checkpoint and claiming it is usable before a condition, update,
+  recurrence, return value, or proof step actually uses it
 - opening with derivation, target-audience prose, background, or a tiny
   search/DP trace before the problem requirement is clear
 - placing the actual problem statement after the first derivation section
@@ -258,6 +292,8 @@ Graph progression:
    - Add or replace exactly one state, rule, helper, recurrence, branch, or
      code block.
    - Keep code connected to the previous checkpoint.
+   - Check concept timing: each new name must be operationally used now or
+     explicitly described as named-only with its first use deferred.
    - Verify: the increment introduces one visible mechanism and no unrelated
      future logic.
 7. Add Check Evidence
@@ -269,6 +305,9 @@ Graph progression:
    - Verify: check evidence targets the named break.
 8. Freeze and Stop
    - State what the checkpoint can now do and what it still lacks.
+   - If a concept was only named but not yet operationally used, freeze may
+     claim only that its meaning is known; `still lacks` must name its first
+     operational use.
    - Output `needs_review`.
    - Do not continue to the next planned task.
    - Do not call the checkpoint accepted.
@@ -348,6 +387,8 @@ instead of writing the next task.
 - The step has a pressure and change but no explicit naive baseline.
 - The step names a technique without showing what the current baseline cannot
   do.
+- The step claims the reader can use a variable, helper, invariant, formula, or
+  rule whose first operational use appears only in a later step.
 - The freeze does not say what still lacks.
 - The output proceeds to the next step after `Checkpoint`.
 
@@ -359,6 +400,8 @@ instead of writing the next task.
 - [ ] Problem pressure appears before the change.
 - [ ] The previous baseline and break are explicit.
 - [ ] One change was added or replaced.
+- [ ] New variables, helpers, invariants, recurrences, formulas, and rules obey
+      concept timing and are not over-claimed before first operational use.
 - [ ] Check evidence is concrete and tied to the break.
 - [ ] Output ends with `needs_review`.
 - [ ] The next step is blocked until `leetcode-tutorial-review` returns `pass`.
@@ -369,6 +412,7 @@ instead of writing the next task.
 - Do not continue to the next step.
 - Do not invent problem facts.
 - Do not add detached final code.
+- Do not claim capability for a concept that has only been named.
 - Do not hide missing runnable checks behind generic "verified" language.
 - Do not collapse pressure, baseline, and break into one vague motivation
   paragraph.
