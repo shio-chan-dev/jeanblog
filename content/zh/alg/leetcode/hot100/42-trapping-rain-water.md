@@ -1,510 +1,131 @@
 ---
-title: "Hot100：接雨水（Trapping Rain Water）双指针 / 前后最大值 ACERS 解析"
+title: "LeetCode 42：一个位置上方为什么能留住水？"
 date: 2026-01-24T10:27:35+08:00
-draft: false
+draft: true
 categories: ["LeetCode"]
-tags: ["Hot100", "双指针", "数组", "前缀最大值", "LeetCode 42"]
-description: "用双指针与左右最大值在 O(n) 时间计算接雨水总量，含工程场景、常见误区与多语言实现。"
-keywords: ["Trapping Rain Water", "接雨水", "双指针", "前后最大值", "O(n)", "Hot100"]
+tags: ["Hot100", "数组", "LeetCode 42"]
+description: "从一个位置能接多少水开始，逐步构造 LeetCode 42 接雨水的可运行解法。"
+keywords: ["LeetCode 42", "Trapping Rain Water", "接雨水", "数组", "Python"]
 ---
 
-> **副标题 / 摘要**  
-> 接雨水是最经典的“区间高度约束”题。本文按 ACERS 模板讲清双指针思路、关键公式与工程迁移，并提供多语言可运行实现。
+## 题目要求
 
-- **预计阅读时长**：12~15 分钟  
-- **标签**：`Hot100`、`双指针`、`数组`  
-- **SEO 关键词**：Trapping Rain Water, 接雨水, 双指针, 前后最大值, O(n)  
-- **元描述**：双指针 O(n) 求接雨水总量，含工程场景、复杂度分析与多语言代码。  
+给定 `n` 个非负整数 `height`。每个整数表示一根宽度为 `1` 的柱子高度，所有柱子从左到右相邻排列。
 
----
+下雨后，有些较矮的柱子上方会被两侧较高的柱子围住水。返回整张高度图最终能接住的雨水总量。
 
-## 目标读者
+LeetCode 要求实现：
 
-- 正在刷 Hot100 的学习者  
-- 需要掌握“左右边界约束”模板的中级开发者  
-- 处理地形/容量/水位等区间分析的工程师
+```python
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        ...
+```
 
-## 背景 / 动机
-
-接雨水问题本质是“每个位置能盛多少水”，与工程中的容量评估、缓冲区盈余、资源占用上限等模型高度相似。  
-朴素做法每个位置都向两侧找最高，复杂度 O(n^2)。  
-双指针与前后最大值可以把复杂度降到 O(n)。
-
-## 核心概念
-
-- **局部水位**：`water[i] = min(maxLeft[i], maxRight[i]) - height[i]`  
-- **左右边界**：当前位置两侧的最高柱子决定水位上限  
-- **双指针**：用左/右指针同步维护左右最大值
-
----
-
-## A — Algorithm（题目与算法）
-
-### 题目还原
-
-给定 n 个非负整数表示每个宽度为 1 的柱子的高度，计算按此排列的柱子能接多少雨水。
-
-### 输入输出
-
-| 名称 | 类型 | 描述 |
-| --- | --- | --- |
-| height | int[] | 柱子高度数组 |
-| 返回 | int | 能接住的雨水总量 |
-
-### 示例 1（官方）
+### 示例 1
 
 ```text
-height = [0,1,0,2,1,0,1,3,2,1,2,1]
-输出 = 6
+输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
+输出：6
 ```
 
-### 示例 2（官方）
+### 示例 2
 
 ```text
-height = [4,2,0,3,2,5]
-输出 = 9
+输入：height = [4,2,0,3,2,5]
+输出：9
 ```
 
----
+### 约束
 
-## C — Concepts（核心思想）
-
-### 关键公式
-
-对任意位置 `i`：
-
-```
-water[i] = min(maxLeft[i], maxRight[i]) - height[i]
+```text
+n == len(height)
+1 <= n <= 2 * 10^4
+0 <= height[i] <= 10^5
 ```
 
-### 方法归类
+## Step 1：先回答一个位置能接多少水
 
-- **双指针**  
-- **前后最大值（边界约束）**
+先不计算整张高度图，只看一个位置：
 
-### 直观解释
+```text
+height = [3,0,2]
+            ^
+           i = 1
+```
 
-当前位置能盛多少水由左右最高柱子中较矮的一侧决定。  
-因此只要能维护左右最大值，就能在线计算水量。
+下标 `1` 的柱子高度是 `0`。它左边有高度为 `3` 的柱子，右边有高度为 `2` 的柱子。
 
----
+如果只看左边，似乎可以把水加到高度 `3`。但右边的墙只有高度 `2`，超过 `2` 的水会从右边流走。因此这个位置的水面最高只能到：
 
-## 思路推导（从朴素到双指针）
+```text
+min(左侧最高柱子, 右侧最高柱子)
+= min(3, 2)
+= 2
+```
 
-### 朴素解法与瓶颈
+这个位置上方的水量是：
 
-对每个位置 `i`，分别向左、向右扫描找到最高柱子，再计算  
-`min(maxLeft, maxRight) - height[i]`。  
-这样每个位置都会重复扫描两侧，时间复杂度为 **O(n^2)**，瓶颈在“重复找最大值”。
+```text
+水面高度 - 当前柱子高度
+= 2 - 0
+= 2
+```
 
-### 关键观察
+当前 baseline 是：
 
-每个位置的水位只与两侧最高值的**较小者**有关。  
-因此如果我们能维护左右最高值，就能决定一侧的水量，无需再回头。
+> 找到当前位置两边的墙，再判断水能留到多高。
 
-### 方案选择与正确性直觉
+但“看两边的墙”还不够精确。如果一侧有多根柱子，我们需要知道这一侧真正能提供的最高边界；如果直接采用较高一侧，水又会从较矮一侧流走。
 
-用双指针从两侧向中间移动，同时维护 `leftMax` 与 `rightMax`。  
+因此，对一个下标 `i`，只增加一个可执行规则：
 
-- 若 `leftMax <= rightMax`，则当前位置 `l` 的水位由 `leftMax` 决定：  
-  右侧最高值至少为 `rightMax`，而 `rightMax >= leftMax`，  
-  所以 `min(leftMax, rightMax) = leftMax`，可安全结算 `l` 并右移。
-- 若 `leftMax > rightMax`，同理可安全结算右侧 `r` 并左移。
+1. 在 `0..i` 中找到 `left_highest`。
+2. 在 `i..n-1` 中找到 `right_highest`。
+3. 较矮的边界决定 `water_level`。
+4. 用 `water_level - height[i]` 得到当前位置的水量。
 
-这个选择让每个位置只处理一次，时间 **O(n)**，空间 **O(1)**。
+左右范围都包含 `i`。这样两个最高值都不会低于 `height[i]`，计算结果不会变成负数。
 
----
-
-## 实践指南 / 步骤
-
-1. 设置双指针 `l=0, r=n-1`，并维护 `leftMax`、`rightMax`  
-2. 比较 `leftMax` 和 `rightMax`：
-   - 若 `leftMax <= rightMax`，当前由左侧决定，累加 `leftMax - height[l]` 并 `l++`  
-   - 否则由右侧决定，累加 `rightMax - height[r]` 并 `r--`
-3. 扫描结束得到总水量
-
-Python 可运行示例（保存为 `trapping_rain_water.py`）：
+把这个局部规则写成第一个可运行版本：
 
 ```python
-def trap(height):
-    if not height:
-        return 0
-    l, r = 0, len(height) - 1
-    left_max = right_max = 0
-    ans = 0
-    while l < r:
-        left_max = max(left_max, height[l])
-        right_max = max(right_max, height[r])
-        if left_max <= right_max:
-            ans += left_max - height[l]
-            l += 1
-        else:
-            ans += right_max - height[r]
-            r -= 1
-    return ans
+from typing import List
 
 
-if __name__ == "__main__":
-    print(trap([0,1,0,2,1,0,1,3,2,1,2,1]))
-    print(trap([4,2,0,3,2,5]))
+def trapped_at(height: List[int], i: int) -> int:
+    left_highest = max(height[: i + 1])
+    right_highest = max(height[i:])
+    water_level = min(left_highest, right_highest)
+    return water_level - height[i]
 ```
 
----
-
-## E — Engineering（工程应用）
-
-### 场景 1：缓存容量“被占用”估算（Python，数据分析）
-
-**背景**：将“高度序列”视为资源使用量，计算可容纳的空余容量。  
-**为什么适用**：等价于左右边界约束的容量计算。
+用刚才的低洼位置检查它：
 
 ```python
-def free_capacity(usage):
-    return trap(usage)
-
-print(free_capacity([2, 0, 2]))
+assert trapped_at([3, 0, 2], 1) == 2
 ```
 
-### 场景 2：地形高程蓄水估计（C++，系统/仿真）
-
-**背景**：在 1D 剖面上估算积水量。  
-**为什么适用**：前后最高点限制水位上限。
-
-```cpp
-#include <iostream>
-#include <vector>
-
-int trap(const std::vector<int>& h) {
-    if (h.empty()) return 0;
-    int l = 0, r = (int)h.size() - 1;
-    int leftMax = 0, rightMax = 0, ans = 0;
-    while (l < r) {
-        leftMax = std::max(leftMax, h[l]);
-        rightMax = std::max(rightMax, h[r]);
-        if (leftMax <= rightMax) {
-            ans += leftMax - h[l];
-            ++l;
-        } else {
-            ans += rightMax - h[r];
-            --r;
-        }
-    }
-    return ans;
-}
-
-int main() {
-    std::cout << trap({0,1,0,2,1,0,1,3,2,1,2,1}) << "\n";
-    return 0;
-}
-```
-
-### 场景 3：后端缓冲区水位上限评估（Go，后台服务）
-
-**背景**：请求队列高度序列中估算“可容纳的溢出量”。  
-**为什么适用**：双指针 O(n) 适合在线评估。
-
-```go
-package main
-
-import "fmt"
-
-func trap(height []int) int {
-    if len(height) == 0 {
-        return 0
-    }
-    l, r := 0, len(height)-1
-    leftMax, rightMax := 0, 0
-    ans := 0
-    for l < r {
-        if height[l] > leftMax {
-            leftMax = height[l]
-        }
-        if height[r] > rightMax {
-            rightMax = height[r]
-        }
-        if leftMax <= rightMax {
-            ans += leftMax - height[l]
-            l++
-        } else {
-            ans += rightMax - height[r]
-            r--
-        }
-    }
-    return ans
-}
-
-func main() {
-    fmt.Println(trap([]int{0,1,0,2,1,0,1,3,2,1,2,1}))
-}
-```
-
----
-
-## R — Reflection（反思与深入）
-
-### 复杂度分析
-
-- **时间复杂度**：O(n)  
-- **空间复杂度**：O(1)
-
-### 替代方案对比
-
-| 方法 | 思路 | 复杂度 | 问题 |
-| --- | --- | --- | --- |
-| 暴力枚举 | 每个位置向两侧找最高 | O(n^2) | 太慢 |
-| 预处理数组 | 预存 maxLeft / maxRight | O(n) | 需要 O(n) 空间 |
-| 单调栈 | 用栈维护凹槽 | O(n) | 代码复杂度高 |
-| **双指针** | 左右最大值在线维护 | **O(n)** | 最简洁 |
-
-### 为什么当前方法最工程可行
-
-- 不需要额外数组  
-- 单次扫描、常数空间  
-- 逻辑可解释、易于调试
-
----
-
-## 解释与原理（为什么这么做）
-
-雨水高度由两侧更低的墙决定，因此本质是寻找左右最大值的下界。  
-双指针法保证始终处理“较低一侧”，让已确定的边界直接参与计算。  
-这样既避免了重复计算，又能保证每个位置只被处理一次。
-
----
-
-## 常见问题与注意事项
-
-1. **为什么用 `leftMax <= rightMax` 决定方向？**  
-   因为较低边界决定水位，上界已经确定的一侧可以安全结算。
-
-2. **高度为 0 会影响结果吗？**  
-   不会，它只是一个普通高度值。
-
-3. **能否允许负数高度？**  
-   题目限定非负；若出现负数，需要重新定义模型。
-
----
-
-## 最佳实践与建议
-
-- 优先使用双指针版本，空间 O(1)  
-- 如果需要直观可视化，可先用预处理数组  
-- 工程迁移时，先明确“边界上限”的语义
-
----
-
-## S — Summary（总结）
-
-### 核心收获
-
-- 接雨水问题的关键在于左右边界最小值  
-- 双指针能在 O(n) 内完成并节省空间  
-- 适用于各种“容量上限”计算场景  
-- 预处理与单调栈是可选的替代方案  
-- 工程上更推荐双指针
-
-### 小结 / 结论
-
-掌握接雨水的双指针解法，就能快速迁移到容量评估、峰谷填充等问题中。  
-这也是 Hot100 必背的经典模板。
-
-### 参考与延伸阅读
-
-- LeetCode 42. Trapping Rain Water
-- 单调栈与区间极值问题
-- 地形分析与水位建模基础
-
----
-
-## 元信息
-
-- **阅读时长**：12~15 分钟  
-- **标签**：Hot100、双指针、数组、前后最大值  
-- **SEO 关键词**：Trapping Rain Water, 接雨水, 双指针, O(n)  
-- **元描述**：双指针 O(n) 求接雨水总量，含工程场景与多语言实现。  
-
----
-
-## 行动号召（CTA）
-
-如果你在刷 Hot100，建议把“边界约束类”问题整理成自己的模板库。  
-欢迎评论区分享你的工程迁移思路。
-
----
-
-## 多语言参考实现（Python / C / C++ / Go / Rust / JS）
+两端没有完整的左右包围，因此都接不到水：
 
 ```python
-def trap(height):
-    if not height:
-        return 0
-    l, r = 0, len(height) - 1
-    left_max = right_max = 0
-    ans = 0
-    while l < r:
-        left_max = max(left_max, height[l])
-        right_max = max(right_max, height[r])
-        if left_max <= right_max:
-            ans += left_max - height[l]
-            l += 1
-        else:
-            ans += right_max - height[r]
-            r -= 1
-    return ans
-
-
-if __name__ == "__main__":
-    print(trap([0,1,0,2,1,0,1,3,2,1,2,1]))
+assert trapped_at([3, 0, 2], 0) == 0
+assert trapped_at([3, 0, 2], 2) == 0
 ```
 
-```c
-#include <stdio.h>
+再检查一个两侧等高的低洼位置：
 
-int trap(const int *h, int n) {
-    if (n == 0) return 0;
-    int l = 0, r = n - 1;
-    int leftMax = 0, rightMax = 0, ans = 0;
-    while (l < r) {
-        if (h[l] > leftMax) leftMax = h[l];
-        if (h[r] > rightMax) rightMax = h[r];
-        if (leftMax <= rightMax) {
-            ans += leftMax - h[l];
-            ++l;
-        } else {
-            ans += rightMax - h[r];
-            --r;
-        }
-    }
-    return ans;
-}
-
-int main(void) {
-    int h[] = {0,1,0,2,1,0,1,3,2,1,2,1};
-    printf("%d\n", trap(h, 12));
-    return 0;
-}
+```python
+assert trapped_at([2, 1, 2], 1) == 1
 ```
 
-```cpp
-#include <iostream>
-#include <vector>
+现在这个版本可以：
 
-int trap(const std::vector<int>& h) {
-    if (h.empty()) return 0;
-    int l = 0, r = (int)h.size() - 1;
-    int leftMax = 0, rightMax = 0, ans = 0;
-    while (l < r) {
-        leftMax = std::max(leftMax, h[l]);
-        rightMax = std::max(rightMax, h[r]);
-        if (leftMax <= rightMax) {
-            ans += leftMax - h[l];
-            ++l;
-        } else {
-            ans += rightMax - h[r];
-            --r;
-        }
-    }
-    return ans;
-}
+- 计算任意一个下标上方的雨水量
+- 解释为什么水面由两侧最高边界中较矮的一侧决定
+- 通过包含当前位置的左右范围保证结果非负
 
-int main() {
-    std::cout << trap({0,1,0,2,1,0,1,3,2,1,2,1}) << "\n";
-    return 0;
-}
-```
+它还不能：
 
-```go
-package main
-
-import "fmt"
-
-func trap(height []int) int {
-    if len(height) == 0 {
-        return 0
-    }
-    l, r := 0, len(height)-1
-    leftMax, rightMax := 0, 0
-    ans := 0
-    for l < r {
-        if height[l] > leftMax {
-            leftMax = height[l]
-        }
-        if height[r] > rightMax {
-            rightMax = height[r]
-        }
-        if leftMax <= rightMax {
-            ans += leftMax - height[l]
-            l++
-        } else {
-            ans += rightMax - height[r]
-            r--
-        }
-    }
-    return ans
-}
-
-func main() {
-    fmt.Println(trap([]int{0,1,0,2,1,0,1,3,2,1,2,1}))
-}
-```
-
-```rust
-fn trap(height: &[i32]) -> i32 {
-    if height.is_empty() {
-        return 0;
-    }
-    let mut l: i32 = 0;
-    let mut r: i32 = height.len() as i32 - 1;
-    let mut left_max = 0;
-    let mut right_max = 0;
-    let mut ans = 0;
-    while l < r {
-        let li = l as usize;
-        let ri = r as usize;
-        if height[li] > left_max {
-            left_max = height[li];
-        }
-        if height[ri] > right_max {
-            right_max = height[ri];
-        }
-        if left_max <= right_max {
-            ans += left_max - height[li];
-            l += 1;
-        } else {
-            ans += right_max - height[ri];
-            r -= 1;
-        }
-    }
-    ans
-}
-
-fn main() {
-    let h = vec![0,1,0,2,1,0,1,3,2,1,2,1];
-    println!("{}", trap(&h));
-}
-```
-
-```javascript
-function trap(height) {
-  if (height.length === 0) return 0;
-  let l = 0;
-  let r = height.length - 1;
-  let leftMax = 0;
-  let rightMax = 0;
-  let ans = 0;
-  while (l < r) {
-    leftMax = Math.max(leftMax, height[l]);
-    rightMax = Math.max(rightMax, height[r]);
-    if (leftMax <= rightMax) {
-      ans += leftMax - height[l];
-      l++;
-    } else {
-      ans += rightMax - height[r];
-      r--;
-    }
-  }
-  return ans;
-}
-
-console.log(trap([0,1,0,2,1,0,1,3,2,1,2,1]));
-```
+- 计算整张高度图的雨水总量
+- 避免不同位置反复扫描相同的左右区间

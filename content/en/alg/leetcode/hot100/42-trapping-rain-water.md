@@ -1,483 +1,131 @@
 ---
-title: "Hot100: Trapping Rain Water (Two Pointers O(n) ACERS Guide)"
+title: "LeetCode 42: Why Can Water Stay Above One Position?"
 date: 2026-01-24T10:40:53+08:00
-draft: false
+draft: true
 categories: ["LeetCode"]
-tags: ["Hot100", "two pointers", "array", "prefix max", "LeetCode 42", "ACERS"]
-description: "Compute trapped rain water in O(n) using two pointers and left/right maxima. Includes engineering scenarios, pitfalls, and multi-language implementations."
-keywords: ["Trapping Rain Water", "two pointers", "left right max", "O(n)", "Hot100"]
+tags: ["Hot100", "array", "LeetCode 42"]
+description: "Start with the water above one position, then build a runnable solution for LeetCode 42 step by step."
+keywords: ["LeetCode 42", "Trapping Rain Water", "array", "Python"]
 ---
 
-> **Subtitle / Summary**  
-> Trapping Rain Water is the classic boundary-constraint problem. This ACERS guide explains the two-pointer method, key formulas, and runnable multi-language solutions.
+## Problem Requirement
 
-- **Reading time**: 12–15 min  
-- **Tags**: `Hot100`, `two pointers`, `array`  
-- **SEO keywords**: Trapping Rain Water, two pointers, left right max, O(n), Hot100  
-- **Meta description**: Two-pointer O(n) trapped water solution with engineering scenarios and multi-language code.
+You are given `n` non-negative integers in `height`. Each integer is the height of a bar with width `1`, and all bars are adjacent from left to right.
 
----
+After rain, taller bars on both sides may hold water above shorter bars. Return the total amount of water trapped by the entire elevation map.
 
-## A — Algorithm
+LeetCode expects this interface:
 
-### Problem Restatement
+```python
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        ...
+```
 
-Given an array of non-negative integers representing bar heights (each width 1), compute how much water can be trapped after raining.
-
-### Input / Output
-
-| Name | Type | Description |
-| --- | --- | --- |
-| height | int[] | bar heights |
-| return | int | total trapped water |
-
-### Example 1 (official)
+### Example 1
 
 ```text
-height = [0,1,0,2,1,0,1,3,2,1,2,1]
-output = 6
+Input: height = [0,1,0,2,1,0,1,3,2,1,2,1]
+Output: 6
 ```
 
-### Example 2 (official)
+### Example 2
 
 ```text
-height = [4,2,0,3,2,5]
-output = 9
+Input: height = [4,2,0,3,2,5]
+Output: 9
 ```
 
----
+### Constraints
 
-## Target Readers
-
-- Hot100 learners building core templates  
-- Engineers handling capacity/volume constraints  
-- Anyone who wants a clean O(n) solution
-
-## Background / Motivation
-
-Trapped water is a proxy for “capacity under boundary constraints.”  
-It appears in cache headroom estimation, buffer overflow analysis, and terrain capacity modeling.  
-The naive O(n^2) method is too slow; the two-pointer approach reduces it to O(n).
-
-## Core Concepts
-
-- **Local water level**: `water[i] = min(maxLeft[i], maxRight[i]) - height[i]`  
-- **Boundary constraints**: the lower side limits water  
-- **Two pointers**: maintain left/right maxima in one pass
-
----
-
-## C — Concepts
-
-### Key Formula
-
-For each index `i`:
-
-```
-water[i] = min(maxLeft[i], maxRight[i]) - height[i]
+```text
+n == len(height)
+1 <= n <= 2 * 10^4
+0 <= height[i] <= 10^5
 ```
 
-### Method Type
+## Step 1: First Answer How Much Water One Position Holds
 
-- **Two pointers**  
-- **Left/right maxima boundary**
+Do not calculate the whole elevation map yet. Focus on one position:
 
-### Intuition
+```text
+height = [3,0,2]
+            ^
+           i = 1
+```
 
-The lower of the two boundaries determines the water level.  
-If `leftMax <= rightMax`, the left side is settled and can be computed safely.
+The bar at index `1` has height `0`. There is a bar of height `3` on its left and a bar of height `2` on its right.
 
----
+If we look only at the left side, it seems that the water could rise to height `3`. But the right wall has height `2`, so any water above `2` would spill over that side. The highest possible water level is therefore:
 
-## Practical Steps
+```text
+min(highest bar on the left, highest bar on the right)
+= min(3, 2)
+= 2
+```
 
-1. Initialize `l=0`, `r=n-1`, `leftMax`, `rightMax`  
-2. Update `leftMax` and `rightMax` each step  
-3. If `leftMax <= rightMax`, accumulate `leftMax - height[l]` and move `l`  
-4. Otherwise accumulate `rightMax - height[r]` and move `r`
+The water above this position is:
 
-Runnable Python example (save as `trapping_rain_water.py`):
+```text
+water level - current bar height
+= 2 - 0
+= 2
+```
+
+The current baseline is:
+
+> Find walls on both sides of the current position, then determine how high the water can remain.
+
+But "look at both walls" is not executable enough. If one side contains several bars, we need the highest boundary that side can provide. If we use only the taller side, water may still spill over the shorter side.
+
+For one index `i`, add one executable rule:
+
+1. Find `left_highest` in `0..i`.
+2. Find `right_highest` in `i..n-1`.
+3. Let the shorter boundary determine `water_level`.
+4. Use `water_level - height[i]` as the water above this position.
+
+Both ranges include `i`. This guarantees that neither highest value is lower than `height[i]`, so the result cannot become negative.
+
+Write this local rule as the first runnable version:
 
 ```python
-def trap(height):
-    if not height:
-        return 0
-    l, r = 0, len(height) - 1
-    left_max = right_max = 0
-    ans = 0
-    while l < r:
-        left_max = max(left_max, height[l])
-        right_max = max(right_max, height[r])
-        if left_max <= right_max:
-            ans += left_max - height[l]
-            l += 1
-        else:
-            ans += right_max - height[r]
-            r -= 1
-    return ans
+from typing import List
 
 
-if __name__ == "__main__":
-    print(trap([0,1,0,2,1,0,1,3,2,1,2,1]))
-    print(trap([4,2,0,3,2,5]))
+def trapped_at(height: List[int], i: int) -> int:
+    left_highest = max(height[: i + 1])
+    right_highest = max(height[i:])
+    water_level = min(left_highest, right_highest)
+    return water_level - height[i]
 ```
 
----
-
-## E — Engineering
-
-### Scenario 1: Cache headroom estimation (Python)
-
-**Background**: treat usage as heights and compute “empty capacity” between peaks.  
-**Why it fits**: identical boundary-constrained volume calculation.
+Check it against the valley above:
 
 ```python
-def free_capacity(usage):
-    return trap(usage)
-
-print(free_capacity([2, 0, 2]))
+assert trapped_at([3, 0, 2], 1) == 2
 ```
 
-### Scenario 2: Terrain cross-section volume (C++)
-
-**Background**: approximate water volume on a 1D elevation slice.  
-**Why it fits**: left/right maxima are the limiting walls.
-
-```cpp
-#include <iostream>
-#include <vector>
-
-int trap(const std::vector<int>& h) {
-    if (h.empty()) return 0;
-    int l = 0, r = (int)h.size() - 1;
-    int leftMax = 0, rightMax = 0, ans = 0;
-    while (l < r) {
-        leftMax = std::max(leftMax, h[l]);
-        rightMax = std::max(rightMax, h[r]);
-        if (leftMax <= rightMax) {
-            ans += leftMax - h[l];
-            ++l;
-        } else {
-            ans += rightMax - h[r];
-            --r;
-        }
-    }
-    return ans;
-}
-
-int main() {
-    std::cout << trap({0,1,0,2,1,0,1,3,2,1,2,1}) << "\n";
-    return 0;
-}
-```
-
-### Scenario 3: Backend buffer overflow risk (Go)
-
-**Background**: estimate how much extra load can fit between high-water marks.  
-**Why it fits**: two-pointer O(n) is fast enough for online checks.
-
-```go
-package main
-
-import "fmt"
-
-func trap(height []int) int {
-    if len(height) == 0 {
-        return 0
-    }
-    l, r := 0, len(height)-1
-    leftMax, rightMax := 0, 0
-    ans := 0
-    for l < r {
-        if height[l] > leftMax {
-            leftMax = height[l]
-        }
-        if height[r] > rightMax {
-            rightMax = height[r]
-        }
-        if leftMax <= rightMax {
-            ans += leftMax - height[l]
-            l++
-        } else {
-            ans += rightMax - height[r]
-            r--
-        }
-    }
-    return ans
-}
-
-func main() {
-    fmt.Println(trap([]int{0,1,0,2,1,0,1,3,2,1,2,1}))
-}
-```
-
----
-
-## R — Reflection
-
-### Complexity
-
-- **Time**: O(n)  
-- **Space**: O(1)
-
-### Alternatives
-
-| Method | Idea | Complexity | Drawbacks |
-| --- | --- | --- | --- |
-| Brute force | scan left/right for each index | O(n^2) | too slow |
-| Precompute arrays | store maxLeft/maxRight | O(n) | extra memory |
-| Monotonic stack | compute basins | O(n) | more complex |
-| **Two pointers** | online maxima | **O(n)** | simplest |
-
-### Why This Is Best in Practice
-
-- No extra arrays  
-- Linear scan, easy to reason about  
-- Great for streaming or large datasets
-
----
-
-## Explanation & Rationale
-
-Water is bounded by the lower of the two sides.  
-By always processing the side with the smaller boundary, we ensure the water level is fixed.  
-This allows a single pass without missing any contribution.
-
----
-
-## FAQs / Pitfalls
-
-1. **Why compare `leftMax <= rightMax`?**  
-   The smaller boundary determines the water level on that side.
-
-2. **Do zeros break anything?**  
-   No, zeros are just low bars.
-
-3. **Are negative heights allowed?**  
-   The problem restricts to non-negative heights.
-
----
-
-## Best Practices
-
-- Use the two-pointer variant for O(1) space  
-- Use the precompute variant if you want clearer intermediate arrays  
-- Make sure indices don’t cross (`l < r`)
-
----
-
-## S — Summary
-
-### Key Takeaways
-
-- Trapped water depends on left/right maxima  
-- Two pointers compute it in one pass  
-- O(n) time and O(1) space  
-- Applicable to capacity and boundary-constrained volume problems  
-- Hot100 essential template
-
-### Conclusion
-
-The two-pointer solution is both elegant and production-friendly.  
-Mastering it gives you a reusable pattern for boundary-constrained volume problems.
-
-### References & Further Reading
-
-- LeetCode 42. Trapping Rain Water
-- Monotonic stack techniques
-- Boundary constraint modeling
-
----
-
-## Meta
-
-- **Reading time**: 12–15 min  
-- **Tags**: Hot100, two pointers, array, prefix max  
-- **SEO keywords**: Trapping Rain Water, two pointers, O(n), Hot100  
-- **Meta description**: Two-pointer O(n) trapped water with engineering scenarios and code.
-
----
-
-## Call to Action
-
-If you are working through Hot100, turn this into a template for boundary-constrained problems.  
-Share your real-world adaptations in the comments.
-
----
-
-## Multi-language Implementations (Python / C / C++ / Go / Rust / JS)
+The two endpoints do not have complete boundaries on both sides, so neither traps water:
 
 ```python
-def trap(height):
-    if not height:
-        return 0
-    l, r = 0, len(height) - 1
-    left_max = right_max = 0
-    ans = 0
-    while l < r:
-        left_max = max(left_max, height[l])
-        right_max = max(right_max, height[r])
-        if left_max <= right_max:
-            ans += left_max - height[l]
-            l += 1
-        else:
-            ans += right_max - height[r]
-            r -= 1
-    return ans
-
-
-if __name__ == "__main__":
-    print(trap([0,1,0,2,1,0,1,3,2,1,2,1]))
+assert trapped_at([3, 0, 2], 0) == 0
+assert trapped_at([3, 0, 2], 2) == 0
 ```
 
-```c
-#include <stdio.h>
+Check another valley with equal-height boundaries:
 
-int trap(const int *h, int n) {
-    if (n == 0) return 0;
-    int l = 0, r = n - 1;
-    int leftMax = 0, rightMax = 0, ans = 0;
-    while (l < r) {
-        if (h[l] > leftMax) leftMax = h[l];
-        if (h[r] > rightMax) rightMax = h[r];
-        if (leftMax <= rightMax) {
-            ans += leftMax - h[l];
-            ++l;
-        } else {
-            ans += rightMax - h[r];
-            --r;
-        }
-    }
-    return ans;
-}
-
-int main(void) {
-    int h[] = {0,1,0,2,1,0,1,3,2,1,2,1};
-    printf("%d\n", trap(h, 12));
-    return 0;
-}
+```python
+assert trapped_at([2, 1, 2], 1) == 1
 ```
 
-```cpp
-#include <iostream>
-#include <vector>
+Now this version can:
 
-int trap(const std::vector<int>& h) {
-    if (h.empty()) return 0;
-    int l = 0, r = (int)h.size() - 1;
-    int leftMax = 0, rightMax = 0, ans = 0;
-    while (l < r) {
-        leftMax = std::max(leftMax, h[l]);
-        rightMax = std::max(rightMax, h[r]);
-        if (leftMax <= rightMax) {
-            ans += leftMax - h[l];
-            ++l;
-        } else {
-            ans += rightMax - h[r];
-            --r;
-        }
-    }
-    return ans;
-}
+- calculate the trapped water above any one index
+- explain why the shorter of the two highest boundaries determines the water level
+- keep the result non-negative by including the current position in both ranges
 
-int main() {
-    std::cout << trap({0,1,0,2,1,0,1,3,2,1,2,1}) << "\n";
-    return 0;
-}
-```
+It still lacks:
 
-```go
-package main
-
-import "fmt"
-
-func trap(height []int) int {
-    if len(height) == 0 {
-        return 0
-    }
-    l, r := 0, len(height)-1
-    leftMax, rightMax := 0, 0
-    ans := 0
-    for l < r {
-        if height[l] > leftMax {
-            leftMax = height[l]
-        }
-        if height[r] > rightMax {
-            rightMax = height[r]
-        }
-        if leftMax <= rightMax {
-            ans += leftMax - height[l]
-            l++
-        } else {
-            ans += rightMax - height[r]
-            r--
-        }
-    }
-    return ans
-}
-
-func main() {
-    fmt.Println(trap([]int{0,1,0,2,1,0,1,3,2,1,2,1}))
-}
-```
-
-```rust
-fn trap(height: &[i32]) -> i32 {
-    if height.is_empty() {
-        return 0;
-    }
-    let mut l: i32 = 0;
-    let mut r: i32 = height.len() as i32 - 1;
-    let mut left_max = 0;
-    let mut right_max = 0;
-    let mut ans = 0;
-    while l < r {
-        let li = l as usize;
-        let ri = r as usize;
-        if height[li] > left_max {
-            left_max = height[li];
-        }
-        if height[ri] > right_max {
-            right_max = height[ri];
-        }
-        if left_max <= right_max {
-            ans += left_max - height[li];
-            l += 1;
-        } else {
-            ans += right_max - height[ri];
-            r -= 1;
-        }
-    }
-    ans
-}
-
-fn main() {
-    let h = vec![0,1,0,2,1,0,1,3,2,1,2,1];
-    println!("{}", trap(&h));
-}
-```
-
-```javascript
-function trap(height) {
-  if (height.length === 0) return 0;
-  let l = 0;
-  let r = height.length - 1;
-  let leftMax = 0;
-  let rightMax = 0;
-  let ans = 0;
-  while (l < r) {
-    leftMax = Math.max(leftMax, height[l]);
-    rightMax = Math.max(rightMax, height[r]);
-    if (leftMax <= rightMax) {
-      ans += leftMax - height[l];
-      l++;
-    } else {
-      ans += rightMax - height[r];
-      r--;
-    }
-  }
-  return ans;
-}
-
-console.log(trap([0,1,0,2,1,0,1,3,2,1,2,1]));
-```
+- the total trapped water for the entire elevation map
+- reuse across positions that repeatedly scan the same left and right ranges
