@@ -1,518 +1,434 @@
 ---
-title: "滑动窗口最大值：单调队列（Monotonic Queue）一遍扫描 ACERS 解析"
+title: "LeetCode 239：滑动窗口最大值"
 date: 2026-01-18T18:32:08+08:00
 draft: false
 categories: ["LeetCode"]
-tags: ["滑动窗口", "单调队列", "数组", "队列", "LeetCode 239"]
-description: "用单调队列在 O(n) 时间求滑动窗口最大值，含工程场景、复杂度对比与多语言实现。"
-keywords: ["Sliding Window Maximum", "滑动窗口最大值", "单调队列", "deque", "O(n)"]
+tags: ["滑动窗口", "数组", "双端队列", "LeetCode 239"]
+description: "从完整窗口的边界出发，先实现正确的扫描解法，再推导出 O(n) 的索引双端队列解法。"
+keywords: ["滑动窗口最大值", "滑动窗口", "双端队列", "LeetCode 239", "Python"]
 ---
 
-> **副标题 / 摘要**  
-> 滑动窗口最大值是“滑动窗口 + 单调队列”的经典组合题。本文按 ACERS 模板拆解思路，给出可复用的工程做法与多语言实现。
+## 题目要求
 
-- **预计阅读时长**：12~15 分钟  
-- **标签**：`滑动窗口`、`单调队列`、`数组`  
-- **SEO 关键词**：Sliding Window Maximum, 滑动窗口最大值, 单调队列, deque, O(n)  
-- **元描述**：滑动窗口最大值的单调队列解法与工程应用，含复杂度分析与多语言代码。  
+给你一个整数数组 `nums` 和一个整数 `k`。一个恰好包含 `k` 个连续元素的窗口从
+`nums` 最左端开始，每次向右移动一位。请按窗口从左到右的顺序，返回每个窗口中
+的最大值。
 
----
+窗口中的元素必须连续，其原有顺序和位置不会改变，相邻窗口可以重叠。数组中的值
+可以重复，也可以是负数。
 
-## 目标读者
+### LeetCode 接口约定
 
-- 正在刷 LeetCode / Hot100 的同学  
-- 想建立“滑动窗口 + 单调队列”模板的中级开发者  
-- 做实时监控、日志分析、风控的工程师
+LeetCode 会调用 `maxSlidingWindow(nums, k)`。该方法接收整数数组和一个合法的窗口
+大小，返回一个整数数组，其中依次包含每个完整窗口的最大值。输入保证满足下面的
+约束。
 
-## 背景 / 动机
+### 示例
 
-连续窗口的最大值在工程里非常常见：  
-延迟监控、价格波动、温度报警、在线指标平滑等都需要“窗口最大值”。  
-暴力做法每次窗口重算最大值是 O(nk)，当 n 很大时会不可接受。  
-单调队列能把复杂度降到 O(n)，是最工程可行的方案之一。
-
-## 核心概念
-
-- **滑动窗口**：固定长度 k 的连续区间  
-- **单调队列**：队列中元素按值单调递减，队首永远是当前最大值  
-- **索引维护**：用索引判断元素是否过期（离开窗口）
-
----
-
-## A — Algorithm（题目与算法）
-
-### 题目还原
-
-给你一个整数数组 `nums`，有一个大小为 `k` 的滑动窗口从数组最左侧移动到最右侧。  
-你只能看到窗口内的 k 个数字，窗口每次右移一位。  
-返回每个窗口中的最大值。
-
-### 输入输出
-
-| 名称 | 类型 | 描述 |
-| --- | --- | --- |
-| nums | int[] | 整数数组 |
-| k | int | 窗口大小 |
-| 返回 | int[] | 每个窗口的最大值 |
-
-### 示例 1
+示例 1：
 
 ```text
-nums = [1,3,-1,-3,5,3,6,7], k = 3
-输出 = [3,3,5,5,6,7]
+输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+输出：[3,3,5,5,6,7]
 ```
 
-### 示例 2
+示例 2：
 
 ```text
-nums = [1], k = 1
-输出 = [1]
+输入：nums = [1], k = 1
+输出：[1]
 ```
 
----
+### 约束
 
-## C — Concepts（核心思想）
+- `1 <= nums.length <= 10^5`
+- `-10^4 <= nums[i] <= 10^4`
+- `1 <= k <= nums.length`
 
-### 方法类型
+## 第 1 步：窗口什么时候才完整？
 
-**滑动窗口 + 单调队列（Monotonic Queue）**。
+在示例 1 中，当窗口右端到达索引 `2` 时，窗口由哪些索引组成？右端继续到达索引
+`3` 时，又会发生什么变化？
 
-### 关键不变式
+目前我们只知道一个大小为 `k` 的窗口会向右移动。要枚举所有输出时，这个描述还
+不够：它既没有准确说明窗口的左端，也没有说明第一个完整窗口会在哪个位置出现。
 
-1. 队列中索引对应的值 **单调递减**  
-2. 队首索引始终在当前窗口内  
-3. 队首元素就是当前窗口最大值
-
-### 模型示意
+使用从零开始的索引，把当前结束位置记为 `right`。如果窗口从 `left` 开始，并且
+恰好包含 `k` 个元素，那么：
 
 ```text
-窗口右移:
-1) 先弹出队首过期索引
-2) 再从队尾弹出小于新值的索引
-3) 把新索引加入队尾
-4) 队首即最大值
+right - left + 1 = k
+left = right - k + 1
 ```
 
----
+只有 `left >= 0` 时窗口才完整，这等价于：
 
-## 实践指南 / 步骤
+```text
+right >= k - 1
+```
 
-1. 使用一个双端队列 `dq` 存索引  
-2. 遍历 `nums`，对每个 `i` 做：
-   - 如果 `dq[0]` 已经离开窗口（`dq[0] <= i - k`），弹出  
-   - 从队尾弹出所有 `nums[dq[-1]] <= nums[i]` 的索引  
-   - 把 `i` 入队  
-   - 当 `i >= k - 1` 时，记录 `nums[dq[0]]`
+在这个条件成立之前，元素不足 `k` 个，因此还没有对应的输出位置。条件成立后，
+窗口就是 `nums[left:right + 1]`。从左到右完整遍历时，这个窗口会产生位于 `left`
+的输出。
 
----
+用 `k = 3` 的完整示例检查这条边界规则：
 
-## 可运行示例（Python）
+| `right` | `left = right - k + 1` | 完整？ | 窗口索引 | 窗口值 | 输出位置 | 最大值 |
+| ---: | ---: | :---: | :---: | :--- | ---: | ---: |
+| 0 | -2 | 否 | - | - | - | - |
+| 1 | -1 | 否 | - | - | - | - |
+| 2 | 0 | 是 | `0..2` | `[1,3,-1]` | 0 | 3 |
+| 3 | 1 | 是 | `1..3` | `[3,-1,-3]` | 1 | 3 |
+| 4 | 2 | 是 | `2..4` | `[-1,-3,5]` | 2 | 5 |
+| 5 | 3 | 是 | `3..5` | `[-3,5,3]` | 3 | 5 |
+| 6 | 4 | 是 | `4..6` | `[5,3,6]` | 4 | 6 |
+| 7 | 5 | 是 | `5..7` | `[3,6,7]` | 5 | 7 |
+
+第一个输出出现在 `right = 2 = k - 1`。对于长度为 `n` 的数组，合法的左端点是
+从 `0` 到 `n - k`，所以输出数量为：
+
+```text
+(n - k) - 0 + 1 = n - k + 1
+```
+
+这里 `n = 8`、`k = 3`，因此共有 `8 - 3 + 1 = 6` 个输出。这与表格中的六个完整
+窗口以及预期结果中的六个值完全一致。
+
+### 检查点 1
+
+**当前成果：** 读者可以找出每个完整窗口及其输出位置。
+
+**仍然缺少：** 还没有可运行的算法来计算所有最大值。
+
+## 第 2 步：扫描每个完整窗口
+
+第 1 步可以找出所有完整窗口，但示例表格中的最大值仍然是手工填写的。例如，当
+`right = 2` 时，边界规则会得到 `left = 0` 和切片 `nums[0:3]`，但还没有可执行的
+规则算出 `3` 并把它放进返回列表。
+
+当前基线就是第 1 步得到的精确边界模型。需要生成完整答案时，它会失效：即使知道
+所有合法的 `left` 和 `right`，也不会自动计算或收集任何最大值。
+
+只做一处改变：把边界模型变成一个完整的扫描函数。对每个合法的 `left`，推导出
+包含在窗口内的 `right`，准确扫描 `nums[left:right + 1]`，再把最大值追加到
+`answer`。
 
 ```python
-from collections import deque
-from typing import List
+def max_sliding_window_scan(nums: list[int], k: int) -> list[int]:
+    answer = []
+
+    for left in range(len(nums) - k + 1):
+        right = left + k - 1
+        answer.append(max(nums[left:right + 1]))
+
+    return answer
 
 
-def max_sliding_window(nums: List[int], k: int) -> List[int]:
-    dq = deque()
-    ans = []
-    for i, x in enumerate(nums):
-        while dq and dq[0] <= i - k:
-            dq.popleft()
-        while dq and nums[dq[-1]] <= x:
-            dq.pop()
-        dq.append(i)
-        if i >= k - 1:
-            ans.append(nums[dq[0]])
-    return ans
+# Official examples
+assert max_sliding_window_scan([1, 3, -1, -3, 5, 3, 6, 7], 3) == [
+    3, 3, 5, 5, 6, 7
+]
+assert max_sliding_window_scan([1], 1) == [1]
 
-
-if __name__ == "__main__":
-    print(max_sliding_window([1, 3, -1, -3, 5, 3, 6, 7], 3))
+# Boundary cases
+assert max_sliding_window_scan([4, -2, 7], 1) == [4, -2, 7]
+assert max_sliding_window_scan([4, -2, 7], 3) == [7]
+assert max_sliding_window_scan([9, 7, 5, 3, 1], 3) == [9, 7, 5]
 ```
 
-运行方式示例：
+运行这段代码即可检查本次改动。断言覆盖了两个官方示例、`k = 1`、`k = n` 和递减
+输入。所有返回列表都正确时，程序会正常结束且不产生输出。
 
-```bash
-python3 demo.py
-```
+一共有 `n - k + 1` 个窗口。每个切片包含 `k` 个值，创建切片和查找最大值都需要
+`O(k)` 时间。因此总时间复杂度是 `O((n - k + 1)k)`，通常写作 `O(nk)`。返回
+列表保存 `n - k + 1` 个值，临时切片使用 `O(k)` 额外空间。
 
----
+### 检查点 2
 
-## 解释与原理（为什么这么做）
+**当前成果：** 读者可以用完整的 `O(nk)` 扫描基线正确计算每个窗口的最大值。
 
-单调队列的核心在于维护两个不变式：  
-1) 队列里存**索引**，并且索引对应的值**单调递减**  
-2) 队首索引始终在当前窗口 `[i-k+1, i]` 内
+**仍然缺少：** 重叠窗口仍然会从头扫描最多 `k` 个值，没有复用前一个窗口的工作。
 
-具体原因如下：
+## 第 3 步：刚刚过期的是哪个位置？
 
-- **为什么存索引？**  
-  需要判断元素是否“过期”（离开窗口）。值本身无法判断位置，索引可以。
+扫描基线是正确的，但它会为每个窗口重新创建切片，随后丢掉这个窗口的成员信息。
+要把成员信息延续到下一个窗口，就必须准确知道 `left` 右移时哪个旧元素离开了。
 
-- **为什么从队尾弹出小于等于当前值的元素？**  
-  若 `nums[dq[-1]] <= nums[i]`，队尾元素更旧且不更大，  
-  之后所有包含它的窗口也一定包含当前元素 `i`，  
-  它不可能再成为最大值，因此可以安全移除。
+如果只保存值，这件事就会变得含糊。对于 `nums = [2,2,1]` 和 `k = 2`，第一个
+完整窗口包含索引 `0` 上的 `2` 和索引 `1` 上的另一个 `2`。下一个窗口从索引 `1`
+开始时，索引 `0` 离开，索引 `1` 保留。仅凭数值 `2` 无法区分这两次出现。
 
-- **为什么队首就是最大值？**  
-  队列单调递减，最大值自然在队首；  
-  再配合“过期索引先弹出”，队首一定属于当前窗口。
+当前基线 `max_sliding_window_scan` 知道 `left` 和 `right`，却没有在窗口之间保留
+任何状态。当我们尝试从一个窗口更新到下一个窗口时，它会失效：过期与位置有关，
+而基线没有保存任何可供删除的位置。
 
-- **为什么总复杂度是 O(n)？**  
-  每个索引最多**入队一次、出队一次**，  
-  虽然有 while 循环，但总弹出次数不超过 n 次。
+只做一处改变：使用一个名为 `candidates` 的普通 `collections.deque`，按到达顺序
+保存索引。每次追加 `right` 索引。算出 `left` 后，只要 `candidates[0] < left`，
+就从队首删除索引，因为这些位置已经位于当前窗口之外。等于 `left` 的索引必须保留。
 
-对比暴力法，每个窗口都扫描 k 个元素是 O(nk)。  
-当 n 很大或 k 较大时，单调队列的 O(n) 优势非常明显。
-
----
-
-## E — Engineering（工程应用）
-
-### 场景 1：价格监控中的滚动最高价（Python，数据分析）
-
-**背景**：统计某商品过去 k 天内的最高价。  
-**为什么适用**：价格序列长，O(n) 滚动最大值更省时。
+这个版本会有意扫描当前所有候选索引对应的值，从中找出每个窗口的最大值：
 
 ```python
 from collections import deque
 
 
-def rolling_max(prices, k):
-    dq = deque()
-    ans = []
-    for i, x in enumerate(prices):
-        while dq and dq[0] <= i - k:
-            dq.popleft()
-        while dq and prices[dq[-1]] <= x:
-            dq.pop()
-        dq.append(i)
-        if i >= k - 1:
-            ans.append(prices[dq[0]])
-    return ans
+def max_sliding_window_candidates(nums: list[int], k: int) -> list[int]:
+    answer = []
+    candidates = deque()
+
+    for right in range(len(nums)):
+        candidates.append(right)
+        left = right - k + 1
+
+        while candidates and candidates[0] < left:
+            candidates.popleft()
+
+        if left >= 0:
+            answer.append(max(nums[index] for index in candidates))
+
+    return answer
 
 
-print(rolling_max([10, 12, 9, 14, 11, 15], 3))
+cases = [
+    ([1, 3, -1, -3], 3),
+    ([2, 2, 1], 2),
+    ([1, 3, -1, -3, 5, 3, 6, 7], 3),
+    ([1], 1),
+    ([4, -2, 7], 1),
+    ([4, -2, 7], 3),
+    ([9, 7, 5, 3, 1], 3),
+]
+
+for nums, k in cases:
+    assert max_sliding_window_candidates(nums, k) == max_sliding_window_scan(
+        nums, k
+    )
 ```
 
-### 场景 2：服务延迟监控（Go，后台服务）
+用 `nums = [1,3,-1,-3]` 和 `k = 3` 检查过期过程：
 
-**背景**：实时观察最近 k 个请求的最高延迟，用于报警与限流。  
-**为什么适用**：在线统计，单调队列能做到 O(1) 均摊更新。
+| `right` | `left` | 追加后 | 过期索引 | 移除过期项后的 `candidates` | 当前值 | 输出 |
+| ---: | ---: | :---: | :---: | :---: | :--- | ---: |
+| 0 | -2 | `[0]` | - | `[0]` | `[1]` | - |
+| 1 | -1 | `[0,1]` | - | `[0,1]` | `[1,3]` | - |
+| 2 | 0 | `[0,1,2]` | - | `[0,1,2]` | `[1,3,-1]` | 3 |
+| 3 | 1 | `[0,1,2,3]` | `0` | `[1,2,3]` | `[3,-1,-3]` | 3 |
 
-```go
-package main
+在 `right = 3` 时，新的左端点是 `1`。判断 `0 < 1` 会从队首删除索引 `0`，而
+索引 `1`、`2` 和 `3` 会保留下来，恰好组成当前窗口。
 
-import "fmt"
+再用 `nums = [2,2,1]` 和 `k = 2` 检查重复值的身份：
 
-func rollingMax(nums []int, k int) []int {
-	dq := make([]int, 0)
-	ans := make([]int, 0)
-	for i, x := range nums {
-		if len(dq) > 0 && dq[0] <= i-k {
-			dq = dq[1:]
-		}
-		for len(dq) > 0 && nums[dq[len(dq)-1]] <= x {
-			dq = dq[:len(dq)-1]
-		}
-		dq = append(dq, i)
-		if i >= k-1 {
-			ans = append(ans, nums[dq[0]])
-		}
-	}
-	return ans
-}
+| `right` | `left` | 追加后 | 过期索引 | 移除过期项后的 `candidates` | 当前值 | 输出 |
+| ---: | ---: | :---: | :---: | :---: | :--- | ---: |
+| 0 | -1 | `[0]` | - | `[0]` | `[2]` | - |
+| 1 | 0 | `[0,1]` | - | `[0,1]` | `[2,2]` | 2 |
+| 2 | 1 | `[0,1,2]` | `0` | `[1,2]` | `[2,1]` | 2 |
 
-func main() {
-	fmt.Println(rollingMax([]int{120, 98, 110, 140, 105}, 2))
-}
+两个相等的值分别位于索引 `0` 和 `1`，因此仍然可以区分。窗口移动时，过期规则会
+准确删除索引 `0`，并保留索引 `1` 上的相等值。可执行检查会让这个成员维护版本与
+第 2 步的完整扫描进行比较，覆盖两组跟踪数据、官方输入和前面的边界情况。
+
+每个索引只追加一次，最多从队首删除一次，每次操作都是常数时间。但是，每个完整
+窗口仍需扫描当前的 `k` 个候选值并调用 `max`，所以总时间复杂度为
+`O((n - k + 1)k + n)`，通常写作 `O(nk)`。除返回结果外，双端队列使用 `O(k)`
+辅助空间。
+
+### 检查点 3
+
+**当前成果：** 读者可以准确维护当前窗口中的索引，并按位置区分相等的值。
+
+**仍然缺少：** 每次寻找最大值仍要扫描当前所有候选项，每个完整窗口需要 `O(k)`
+时间。
+
+## 第 4 步：哪些候选项永远不可能成为最大值？
+
+普通的成员双端队列是正确的，但一个完整窗口中仍可能有 `k` 个候选索引。每次对
+这些候选项调用 `max()`，会为每个输出重复一次 `O(k)` 扫描。
+
+考虑一个较早的候选索引 `i` 和新索引 `right`，且满足：
+
+```text
+i < right
+nums[i] <= nums[right]
 ```
 
-### 场景 3：前端走势图高亮（JavaScript，前端）
+后来的值会让较早的值永远失去作用：
 
-**背景**：在折线图上标出每个窗口中的最高点。  
-**为什么适用**：前端可直接完成计算，无需后端接口。
+- 只要未来某个窗口仍包含 `i`，它就一定也包含更晚出现的 `right`。
+- `nums[right]` 至少与 `nums[i]` 一样大，因此 `i` 不可能提供更大的最大值。
+- 索引 `i` 会先于 `right` 过期，所以不会存在一个 `i` 仍保留、`right` 却已经离开
+  的后续窗口。
 
-```javascript
-function rollingMax(nums, k) {
-  const dq = [];
-  const ans = [];
-  for (let i = 0; i < nums.length; i += 1) {
-    if (dq.length && dq[0] <= i - k) dq.shift();
-    while (dq.length && nums[dq[dq.length - 1]] <= nums[i]) dq.pop();
-    dq.push(i);
-    if (i >= k - 1) ans.push(nums[dq[0]]);
-  }
-  return ans;
-}
+称 `i` 为一个**被支配的候选项**。当前基线会保留被支配的索引，并再次扫描它们。
+这使我们无法把最大值查询降到常数时间。
 
-console.log(rollingMax([2, 5, 3, 6, 1, 4], 3));
+双端队列已经按到达顺序递增地保存索引，因此可以让新值与队尾比较。在上一个版本
+中，用“追加 `right` 前删除所有小于或等于新值的队尾”替换每个窗口中的 `max()`
+扫描：
+
+```python
+while candidates and nums[candidates[-1]] <= nums[right]:
+    candidates.pop()
 ```
 
----
+如果队尾被删除，就让同一个新值继续与下一个队尾比较。循环停止时，双端队列要么
+为空，要么队尾值大于 `nums[right]`。此时追加 `right`，候选值从队首到队尾就会
+保持严格递减。最大值现在是 `nums[candidates[0]]`。
 
-## R — Reflection（反思与深入）
+这是双端队列第一次成为**单调**队列：其中的索引递增，而对应的值严格递减。
 
-### 复杂度分析
+### 最终 LeetCode 实现
 
-- 时间复杂度：O(n)  
-- 空间复杂度：O(k)
-
-### 替代方案与取舍
-
-| 方法 | 时间 | 空间 | 说明 |
-| --- | --- | --- | --- |
-| 暴力扫描 | O(nk) | O(1) | 简单但性能差 |
-| 堆（优先队列） | O(n log k) | O(k) | 需要清理过期元素 |
-| 单调队列 | O(n) | O(k) | 当前方法，最优 |
-
-### 常见错误思路
-
-- 队列里存值而不是索引，导致无法判断过期元素  
-- 忘记在入队前弹出小于当前值的元素  
-- 滑动窗口边界 off-by-one（`i >= k - 1`）写错
-
-### 为什么这是最优
-
-每个元素最多入队、出队一次，  
-因此总操作数是线性的，满足最优复杂度要求。
-
----
-
-## 常见问题与注意事项
-
-1. **k=1 怎么办？**  
-   结果就是原数组，每个窗口只有一个元素。
-
-2. **为什么要存索引而不是值？**  
-   因为需要判断元素是否已经滑出窗口。
-
-3. **窗口大小大于数组长度？**  
-   题目一般保证合法；工程中可加边界判断。
-
----
-
-## 最佳实践与建议
-
-- 把“单调队列模板”记成可复用代码片段  
-- 用索引维护窗口边界  
-- 避免使用 `shift()` 的场景可用双指针模拟队列以提速  
-- 对于实时流式数据，可以把队列做成持续结构
-
----
-
-## S — Summary（总结）
-
-- 滑动窗口最大值的最优解是单调队列  
-- 队首始终是当前窗口最大值  
-- 每个元素最多进出队一次，复杂度 O(n)  
-- 工程中常用于监控、滚动统计、实时指标
-
-### 推荐延伸阅读
-
-- LeetCode 239 — Sliding Window Maximum  
-- Monotonic Queue / Deque 经典模板  
-- Rolling Aggregation / Streaming Analytics
-
----
-
-## 小结 / 结论
-
-滑动窗口最大值的价值在于“可复用的模板化实现”。  
-掌握单调队列，就等于掌握了一类高频的滚动统计问题。
-
----
-
-## 参考与延伸阅读
-
-- https://leetcode.com/problems/sliding-window-maximum/
-- https://en.cppreference.com/w/cpp/container/deque
-- https://docs.python.org/3/library/collections.html#collections.deque
-- https://doc.rust-lang.org/std/collections/struct.VecDeque.html
-
----
-
-## 元信息
-
-- **阅读时长**：12~15 分钟  
-- **标签**：滑动窗口、单调队列、数组  
-- **SEO 关键词**：Sliding Window Maximum, 滑动窗口最大值, 单调队列  
-- **元描述**：滑动窗口最大值的单调队列解法与工程实践，含多语言实现。  
-
----
-
-## 行动号召（CTA）
-
-如果你在刷题或做实时指标统计，建议把单调队列当作“必备模板”。  
-欢迎评论区分享你在工程中使用滑动窗口的场景。
-
----
-
-## 多语言参考实现（Python / C / C++ / Go / Rust / JS）
+把新规则接到成员维护版本上。对每个 `right`，先移除过期的队首索引，再移除被
+支配的队尾索引，随后追加 `right`，并在第一个窗口完整后输出队首值。
 
 ```python
 from collections import deque
-from typing import List
 
 
-def max_sliding_window(nums: List[int], k: int) -> List[int]:
-    dq = deque()
-    ans = []
-    for i, x in enumerate(nums):
-        while dq and dq[0] <= i - k:
-            dq.popleft()
-        while dq and nums[dq[-1]] <= x:
-            dq.pop()
-        dq.append(i)
-        if i >= k - 1:
-            ans.append(nums[dq[0]])
-    return ans
+class Solution:
+    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:
+        answer = []
+        candidates = deque()
 
+        for right in range(len(nums)):
+            left = right - k + 1
 
-if __name__ == "__main__":
-    print(max_sliding_window([1, 3, -1, -3, 5, 3, 6, 7], 3))
+            while candidates and candidates[0] < left:
+                candidates.popleft()
+
+            while candidates and nums[candidates[-1]] <= nums[right]:
+                candidates.pop()
+
+            candidates.append(right)
+
+            if right >= k - 1:
+                answer.append(nums[candidates[0]])
+
+        return answer
 ```
 
-```c
-#include <stdio.h>
-#include <stdlib.h>
+### 官方示例跟踪
 
-int *max_sliding_window(const int *nums, int n, int k, int *out_len) {
-    if (k <= 0 || n <= 0) {
-        *out_len = 0;
-        return NULL;
-    }
-    int *ans = (int *)malloc(sizeof(int) * (n - k + 1));
-    int *dq = (int *)malloc(sizeof(int) * n);
-    int head = 0, tail = 0;
-    int idx = 0;
+对于 `nums = [1,3,-1,-3,5,3,6,7]` 和 `k = 3`，下表把每个双端队列元素写成
+`索引:值`，队尾删除项则按实际删除顺序列出。
 
-    for (int i = 0; i < n; ++i) {
-        if (head < tail && dq[head] <= i - k) head++;
-        while (head < tail && nums[dq[tail - 1]] <= nums[i]) tail--;
-        dq[tail++] = i;
-        if (i >= k - 1) {
-            ans[idx++] = nums[dq[head]];
-        }
-    }
-    *out_len = idx;
-    free(dq);
-    return ans;
-}
+| `right` | `left` | 过期队首 | 删除的队尾 | 追加后的双端队列 | 输出 |
+| ---: | ---: | :---: | :--- | :--- | ---: |
+| 0 | -2 | - | - | `[0:1]` | - |
+| 1 | -1 | - | `0:1` | `[1:3]` | - |
+| 2 | 0 | - | - | `[1:3, 2:-1]` | 3 |
+| 3 | 1 | - | - | `[1:3, 2:-1, 3:-3]` | 3 |
+| 4 | 2 | `1:3` | `3:-3`、`2:-1` | `[4:5]` | 5 |
+| 5 | 3 | - | - | `[4:5, 5:3]` | 5 |
+| 6 | 4 | - | `5:3`、`4:5` | `[6:6]` | 6 |
+| 7 | 5 | - | `6:6` | `[7:7]` | 7 |
 
-int main(void) {
-    int nums[] = {1, 3, -1, -3, 5, 3, 6, 7};
-    int out_len = 0;
-    int *res = max_sliding_window(nums, 8, 3, &out_len);
-    for (int i = 0; i < out_len; ++i) {
-        printf("%d ", res[i]);
-    }
-    printf("\n");
-    free(res);
-    return 0;
-}
+输出为 `[3,3,5,5,6,7]`。在 `right = 4` 时，队首过期操作先删除索引 `1`，然后
+新值 `5` 再删除两个更小的队尾值。这一行在同一次迭代中展示了两个方向的删除。
+
+### 相等值策略
+
+使用 `<=` 比较会删除较早的相等值，保留较晚的相等值。对于 `k = 2` 的
+`[2,2,1]`，处理索引 `1` 时，会先删除索引 `0`，再追加索引 `1`。两个值都能产生
+相同的最大值，但索引 `1` 过期得更晚，因此对于当前和未来的任何窗口，它都不会
+比索引 `0` 更差。
+
+改用 `<` 也能得到正确的最大值，但它会保留相等值，使队列中的值非严格递减而不是
+严格递减。本实现有意使用 `<=`，让相等最大值只保留一个代表，也就是其中最新的
+那个。
+
+### 循环不变式与正确性
+
+每次处理并追加 `right` 后：
+
+1. 候选索引严格递增，并且没有候选索引位于当前 `left` 边界左侧。
+2. 候选值从队首到队尾严格递减。
+3. 每个已处理但未过期、同时又不在队列中的索引，都被队列中一个更晚且值大于或
+   等于它的索引支配。
+
+过期循环可以保持第一条性质，因为过期索引只可能出现在队首。队尾循环可以保持
+第三条性质，因为每个被删除的索引都由更晚出现、值大于或等于它的 `right` 取代。
+弹出操作会持续进行，直到追加 `right` 后仍能保持第二条性质。
+
+对于一个完整窗口，根据第二条性质，队首候选值至少与其他所有已保存候选值一样大。
+根据第三条性质，每个未保存的窗口索引都不会大于一个更晚的已保存候选项。因此，
+队首值就是整个当前窗口的最大值，每个追加到答案中的输出都是正确的。
+
+### 复杂度
+
+`n` 个索引都会恰好追加一次。随后，一个索引最多被删除一次：要么在更晚的值支配
+它时从队尾删除，要么在过期时从队首删除。因此在整个运行过程中，两个 `while`
+循环成功删除的次数最多为 `n`，而不是每个窗口都删除 `k` 次。外层循环和所有让
+循环停止的失败比较，对每个索引都只增加常数工作量，所以均摊时间复杂度为 `O(n)`。
+
+移除过期项后，双端队列只包含当前窗口中的索引，因此最多保存 `k` 个索引。除返回
+的 `n - k + 1` 个最大值外，辅助空间复杂度为 `O(k)`。
+
+### 可执行检查
+
+固定断言覆盖官方示例、两种窗口大小极值、递减输入、连续删除多个队尾和相等值：
+
+```python
+solution = Solution()
+
+assert solution.maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3) == [
+    3, 3, 5, 5, 6, 7
+]
+assert solution.maxSlidingWindow([1], 1) == [1]
+assert solution.maxSlidingWindow([4, -2, 7], 1) == [4, -2, 7]
+assert solution.maxSlidingWindow([4, -2, 7], 3) == [7]
+assert solution.maxSlidingWindow([9, 7, 5, 3, 1], 3) == [9, 7, 5]
+assert solution.maxSlidingWindow([1, 2, 3, 4, 5], 3) == [3, 4, 5]
+assert solution.maxSlidingWindow([2, 2, 1], 2) == [2, 2]
 ```
 
-```cpp
-#include <deque>
-#include <iostream>
-#include <vector>
+还可以在自动生成的合法输入上，把优化方法与第 2 步的扫描结果比较。固定随机种子
+可以重现失败，副本检查则能确认该方法没有修改 `nums`：
 
-std::vector<int> maxSlidingWindow(const std::vector<int> &nums, int k) {
-    std::deque<int> dq;
-    std::vector<int> ans;
-    for (int i = 0; i < (int)nums.size(); ++i) {
-        while (!dq.empty() && dq.front() <= i - k) dq.pop_front();
-        while (!dq.empty() && nums[dq.back()] <= nums[i]) dq.pop_back();
-        dq.push_back(i);
-        if (i >= k - 1) ans.push_back(nums[dq.front()]);
-    }
-    return ans;
-}
+```python
+from random import Random
 
-int main() {
-    std::vector<int> nums{1, 3, -1, -3, 5, 3, 6, 7};
-    auto res = maxSlidingWindow(nums, 3);
-    for (int x : res) std::cout << x << " ";
-    std::cout << "\n";
-    return 0;
-}
+
+rng = Random(239)
+
+for _ in range(2000):
+    n = rng.randint(1, 30)
+    nums = [rng.randint(-20, 20) for _ in range(n)]
+    k = rng.randint(1, n)
+    original = nums.copy()
+
+    actual = solution.maxSlidingWindow(nums, k)
+
+    assert nums == original
+    assert actual == max_sliding_window_scan(nums, k)
 ```
 
-```go
-package main
+### 常见错误
 
-import "fmt"
+- 只保存值而不保存索引，遇到重复值时就无法准确判断队首何时过期。
+- 用 `candidates[0] <= left` 判断过期，会错误删除当前左边界上的索引。只有
+  `< left` 的索引才在窗口之外。
+- 在队尾循环之前追加 `right`，会让新索引与自身比较。应先删除被支配的旧队尾。
+- 队尾循环使用 `<`，却声称值严格递减，会在队列中留下相等值。这种策略的结果仍然
+  正确，但所声称的不变式并不成立。
+- 维护好递减顺序后，仍对双端队列调用 `max()`，会重新引入这一步已经消除的 `O(k)`
+  查询。最大值应直接从队首读取。
 
-func maxSlidingWindow(nums []int, k int) []int {
-	dq := make([]int, 0)
-	ans := make([]int, 0)
-	for i, x := range nums {
-		if len(dq) > 0 && dq[0] <= i-k {
-			dq = dq[1:]
-		}
-		for len(dq) > 0 && nums[dq[len(dq)-1]] <= x {
-			dq = dq[:len(dq)-1]
-		}
-		dq = append(dq, i)
-		if i >= k-1 {
-			ans = append(ans, nums[dq[0]])
-		}
-	}
-	return ans
-}
+## 推导总结
 
-func main() {
-	fmt.Println(maxSlidingWindow([]int{1, 3, -1, -3, 5, 3, 6, 7}, 3))
-}
-```
+1. `left = right - k + 1` 确定当前窗口，输出从 `right = k - 1` 开始。
+2. 扫描每个完整窗口，可以得到一个正确的 `O(nk)` 基线。
+3. 在双端队列中保存索引，即使值相等，也能准确判断哪个位置过期。
+4. 后出现且大于或等于当前值的元素会永久支配较早的元素，因此可以删除被支配的
+   队尾。
+5. 剩余值严格递减，使未过期的队首成为窗口最大值，并把均摊时间复杂度降到 `O(n)`，
+   辅助空间复杂度为 `O(k)`。
 
-```rust
-use std::collections::VecDeque;
+### 检查点 4
 
-fn max_sliding_window(nums: &[i32], k: usize) -> Vec<i32> {
-    let mut dq: VecDeque<usize> = VecDeque::new();
-    let mut ans: Vec<i32> = Vec::new();
-    for (i, &x) in nums.iter().enumerate() {
-        if let Some(&front) = dq.front() {
-            if front + k <= i {
-                dq.pop_front();
-            }
-        }
-        while let Some(&back) = dq.back() {
-            if nums[back] <= x {
-                dq.pop_back();
-            } else {
-                break;
-            }
-        }
-        dq.push_back(i);
-        if i + 1 >= k {
-            ans.push(nums[*dq.front().unwrap()]);
-        }
-    }
-    ans
-}
+**当前成果：** 读者可以按照 LeetCode 要求的 `maxSlidingWindow` 接口，在均摊
+`O(n)` 时间和 `O(k)` 辅助空间内解决 LeetCode 239。
 
-fn main() {
-    let nums = vec![1, 3, -1, -3, 5, 3, 6, 7];
-    println!("{:?}", max_sliding_window(&nums, 3));
-}
-```
-
-```javascript
-function maxSlidingWindow(nums, k) {
-  const dq = [];
-  const ans = [];
-  for (let i = 0; i < nums.length; i += 1) {
-    if (dq.length && dq[0] <= i - k) dq.shift();
-    while (dq.length && nums[dq[dq.length - 1]] <= nums[i]) dq.pop();
-    dq.push(i);
-    if (i >= k - 1) ans.push(nums[dq[0]]);
-  }
-  return ans;
-}
-
-console.log(maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3));
-```
+**仍然缺少：** 题目要求的内容已经完整，只剩独立的全文审查。
