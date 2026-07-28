@@ -3,9 +3,9 @@ title: "LeetCode 42：一张高度图能接住多少雨水？"
 date: 2026-01-24T10:27:35+08:00
 draft: false
 categories: ["LeetCode"]
-tags: ["Hot100", "数组", "双指针", "前后最大值", "LeetCode 42"]
-description: "从单个位置的水量开始，先构造 O(n²) 正确解，再经过边界数组推导 O(n) 时间、O(1) 额外空间的双指针解法。"
-keywords: ["LeetCode 42", "Trapping Rain Water", "接雨水", "双指针", "前后最大值", "Python"]
+tags: ["Hot100", "数组", "双指针", "前后最大值", "栈", "单调栈", "LeetCode 42"]
+description: "从单个位置出发，推导边界数组和 O(1) 空间的双指针解法，再把同一个边界模型迁移到单调栈。"
+keywords: ["LeetCode 42", "Trapping Rain Water", "接雨水", "双指针", "前后最大值", "单调栈", "Python"]
 ---
 
 ## 题目要求
@@ -401,7 +401,7 @@ right_highest = max(height[right..n-1])
 - 额外空间复杂度：O(1)。只保存指针、边界最高值和总量。
 - 不修改输入数组。
 
-## 常见错误
+## 双指针常见错误
 
 ### 1. 先计算水量，再更新当前边界
 
@@ -430,6 +430,157 @@ right_highest = max(right_highest, height[right])
 
 其他循环边界也可能得到正确实现，但本文的 invariant 是“每个下标恰好结算一次”。使用 `left <= right` 会显式处理最后相遇的位置；更换循环条件时必须同步修改终止证明。
 
+## 另一条路线：用单调栈结算凹槽
+
+双指针解法会在某一侧的较矮边界确定时，立即结算一个位置。单调栈使用的工作单位不同：
+
+> 先让凹槽底部保持未结算；等更高的右墙出现时，再结算这堵右墙刚刚封闭的一层水。
+
+这不是对双指针版本的进一步优化。两种解法的时间复杂度都是 O(n)。单调栈版本的价值在于，它把这道题连接到“每日温度”和“柱状图中最大的矩形”使用的同一种未解决候选模型。
+
+### 按柱高单调不增保存未结算下标
+
+从左到右扫描柱子，把下标保存在 `stack` 中。栈内下标对应的柱高从栈底到栈顶保持单调不增：
+
+```text
+height[stack[0]] >= height[stack[1]] >= ...
+```
+
+如果当前柱子不高于栈顶，它还不能封闭栈顶上方的凹槽。把当前下标入栈，继续等待未来的右墙。
+
+当当前柱子高于栈顶时，栈顶可以作为凹槽底部，而它的右墙刚刚出现：
+
+```python
+bottom = stack.pop()
+```
+
+弹栈后：
+
+- 当前下标 `right` 是右墙
+- 新的栈顶是左墙
+- `bottom` 是两堵墙之间较低的底层
+
+如果弹栈后栈为空，说明不存在左墙，这个底部无法接水。
+
+否则，计算刚刚封闭的水平水层：
+
+```text
+width = right - left - 1
+bounded_height = min(height[left], height[right]) - height[bottom]
+water = width * bounded_height
+```
+
+只要当前柱子仍然高于新的栈顶，就继续弹栈。同一堵右墙可能连续结算同一个凹槽中的多个水层。
+
+### 按水层追踪一次结算
+
+使用：
+
+```text
+height = [4,2,0,3]
+```
+
+扫描到下标 `3` 之前，栈是 `[0,1,2]`，对应柱高为 `[4,2,0]`。当前柱高是 `3`。
+
+先弹出高度为 `0` 的下标 `2`：
+
+```text
+left = 1
+right = 3
+width = 3 - 1 - 1 = 1
+bounded_height = min(2, 3) - 0 = 2
+新增水量 = 1 * 2 = 2
+```
+
+当前柱子仍然高于新的栈顶下标 `1`，因此继续弹栈：
+
+```text
+left = 0
+right = 3
+width = 3 - 0 - 1 = 2
+bounded_height = min(4, 3) - 2 = 1
+新增水量 = 2 * 1 = 2
+```
+
+两次弹栈计算的是不同的垂直水层，不会重复计算同一部分雨水。最终总量是 `4`。
+
+### 完整单调栈实现
+
+```python
+from typing import List
+
+
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        total = 0
+        stack = []
+
+        for right, right_height in enumerate(height):
+            while stack and right_height > height[stack[-1]]:
+                bottom = stack.pop()
+
+                if not stack:
+                    break
+
+                left = stack[-1]
+                width = right - left - 1
+                bounded_height = min(height[left], right_height) - height[bottom]
+                total += width * bounded_height
+
+            stack.append(right)
+
+        return total
+```
+
+### 为什么每次弹栈都是正确的
+
+处理 `right` 之前，栈中的每个下标都还没有遇到能够封闭其上方水层的更高右墙。栈内柱高从栈底到栈顶保持单调不增。
+
+当 `height[right] > height[bottom]` 时：
+
+- `right` 是扫描过程中第一个能够封闭 `bottom` 上方水层的位置；否则 `bottom` 早已被弹出
+- 弹栈后的新栈顶是最近的有效左边界
+- 两侧边界都不低于本次新增水层
+- `right - left - 1` 恰好覆盖两堵墙之间的位置
+
+这次弹栈只计算 `height[bottom]` 之上、较矮边界之下的一层水。如果后面继续弹栈，新的计算会从更高的底部开始，因此不同水层互不重叠。
+
+所有较低栈顶弹出后，当前柱高小于或等于栈顶柱高。把 `right` 入栈后，单调不增的 invariant 得以恢复。
+
+### 检查
+
+```python
+solution = Solution()
+
+assert solution.trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]) == 6
+assert solution.trap([4, 2, 0, 3, 2, 5]) == 9
+assert solution.trap([4, 2, 0, 3]) == 4
+assert solution.trap([3, 0, 2]) == 2
+assert solution.trap([5, 4, 3, 2, 1]) == 0
+assert solution.trap([2, 2, 2]) == 0
+assert solution.trap([1]) == 0
+```
+
+### 复杂度
+
+每个下标入栈一次，最多弹栈一次。因此嵌套 `while` 在整个扫描过程中的总执行次数仍然是 O(n)：
+
+- 时间复杂度：O(n)。
+- 额外空间复杂度：O(n)，用于保存下标栈。
+
+如果主要目标是 O(1) 额外空间，双指针版本更合适。如果学习目标是识别未解决候选，并在未来边界出现时结算完整区间，单调栈版本更有迁移价值。
+
+### 与其他单调栈题目的联系
+
+这些题共享相同的栈机制，但每次弹栈结算的内容不同：
+
+| 题目 | 栈内顺序 | 弹栈结算的内容 |
+| --- | --- | --- |
+| 739 每日温度 | 温度单调不增 | 到第一个更高温度的等待天数 |
+| 503 下一个更大元素 II | 数值单调不增 | 环形数组中的下一个更大值 |
+| 84 柱状图中最大的矩形 | 高度单调不减 | 当前限制高度能够覆盖的最大宽度 |
+| 42 接雨水 | 高度单调不增 | 左右墙刚刚封闭的水平水层 |
+
 ## 总结
 
 这道题的推导路线是：
@@ -442,4 +593,14 @@ right_highest = max(right_highest, height[right])
 -> 每轮移动一个指针，得到 O(n) 时间、O(1) 额外空间解
 ```
 
-双指针版本最关键的不是记住 `if left_highest <= right_highest`，而是解释为什么这个条件足以确定一侧的真实较矮边界。只要这一步能够独立推导，四个状态和移动规则就不再是需要死记的模板。
+另一条单调栈路线是：
+
+```text
+按柱高单调不增保存尚未结算的凹槽下标
+-> 更高右墙出现时弹出一个凹槽底部
+-> 用新的栈顶和当前下标组成左右边界
+-> 结算一个水平水层
+-> 每个下标最多入栈、出栈一次
+```
+
+双指针版本的关键是解释为什么当前较矮的已知边界能够结算一侧；单调栈版本的关键是解释为什么一次弹栈已经同时得到结算一个独立水层所需的左右边界。两种解法使用相同的物理边界模型，只是组织计算的方式不同。

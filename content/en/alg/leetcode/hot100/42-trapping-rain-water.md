@@ -3,9 +3,9 @@ title: "LeetCode 42: How Much Rain Water Can an Elevation Map Hold?"
 date: 2026-01-24T10:40:53+08:00
 draft: false
 categories: ["LeetCode"]
-tags: ["Hot100", "array", "two pointers", "prefix max", "LeetCode 42"]
-description: "Start with one position, build an O(n^2) correct solution, then derive O(n) time and O(1) extra space through boundary arrays and two pointers."
-keywords: ["LeetCode 42", "Trapping Rain Water", "two pointers", "prefix max", "array", "Python"]
+tags: ["Hot100", "array", "two pointers", "prefix max", "monotonic stack", "LeetCode 42"]
+description: "Start with one position, derive boundary arrays and an O(1)-space two-pointer solution, then connect the same boundary model to a monotonic stack."
+keywords: ["LeetCode 42", "Trapping Rain Water", "two pointers", "prefix max", "monotonic stack", "array", "Python"]
 ---
 
 ## Problem Requirement
@@ -401,7 +401,7 @@ This version now satisfies the problem requirements:
 - Extra space: O(1). Only the pointers, highest boundaries, and total are stored.
 - The input array is not modified.
 
-## Common Mistakes
+## Two-Pointer Common Mistakes
 
 ### 1. Calculating Water Before Updating the Current Boundaries
 
@@ -430,6 +430,179 @@ If a highest value excludes the current bar, `water_level - height[i]` may becom
 
 Other loop boundaries can support correct implementations, but this tutorial's invariant says that every index is settled exactly once. `left <= right` explicitly processes the meeting position. Changing the loop condition also requires a different termination argument.
 
+## Alternative: Settle Valleys With a Monotonic Stack
+
+The two-pointer solution settles one position as soon as its lower boundary is
+known. A monotonic stack uses a different unit of work:
+
+> Keep valley bottoms unresolved until a higher right wall arrives, then settle
+> the horizontal water layer closed by that wall.
+
+This is not a further optimization of the two-pointer version. Both approaches
+run in O(n) time. The stack version is useful because it connects this problem
+to the same unresolved-candidate model used by Daily Temperatures and Largest
+Rectangle in Histogram.
+
+### Keep Unresolved Indices in Non-Increasing Height Order
+
+Scan bars from left to right and store their indices in `stack`. The heights at
+those indices remain non-increasing from bottom to top:
+
+```text
+height[stack[0]] >= height[stack[1]] >= ...
+```
+
+If the current bar is not taller than the stack top, it cannot close a valley
+above that top. Push its index and continue.
+
+When the current bar is taller than the stack top, the top can act as a valley
+bottom whose right wall has just appeared:
+
+```python
+bottom = stack.pop()
+```
+
+After the pop:
+
+- the current index `right` is the right wall
+- the new stack top is the left wall
+- `bottom` is the lower level between those walls
+
+If the stack becomes empty, no left wall exists, so that bottom cannot trap
+water.
+
+Otherwise, calculate the newly closed horizontal layer:
+
+```text
+width = right - left - 1
+bounded_height = min(height[left], height[right]) - height[bottom]
+water = width * bounded_height
+```
+
+Continue popping while the current bar is taller than the new stack top. One
+right wall may settle several layers of the same valley.
+
+### Trace One Layer at a Time
+
+Use:
+
+```text
+height = [4,2,0,3]
+```
+
+Before index `3`, the stack contains `[0,1,2]`, with heights `[4,2,0]`.
+The current height is `3`.
+
+First pop index `2`, whose height is `0`:
+
+```text
+left = 1
+right = 3
+width = 3 - 1 - 1 = 1
+bounded_height = min(2, 3) - 0 = 2
+added water = 1 * 2 = 2
+```
+
+The current bar is still taller than the new top at index `1`, so pop again:
+
+```text
+left = 0
+right = 3
+width = 3 - 0 - 1 = 2
+bounded_height = min(4, 3) - 2 = 1
+added water = 2 * 1 = 2
+```
+
+The two pops calculate different vertical layers, so they do not count the
+same water twice. The total is `4`.
+
+### Complete Monotonic-Stack Implementation
+
+```python
+from typing import List
+
+
+class Solution:
+    def trap(self, height: List[int]) -> int:
+        total = 0
+        stack = []
+
+        for right, right_height in enumerate(height):
+            while stack and right_height > height[stack[-1]]:
+                bottom = stack.pop()
+
+                if not stack:
+                    break
+
+                left = stack[-1]
+                width = right - left - 1
+                bounded_height = min(height[left], right_height) - height[bottom]
+                total += width * bounded_height
+
+            stack.append(right)
+
+        return total
+```
+
+### Why Each Pop Is Correct
+
+Before processing `right`, every index in the stack is still missing a higher
+right wall. Heights are non-increasing from bottom to top.
+
+When `height[right] > height[bottom]`:
+
+- `right` is the first processed position that can close water above
+  `bottom`; otherwise `bottom` would have been popped earlier
+- the new stack top is the nearest remaining left boundary
+- both boundaries are higher than or equal to the level being added
+- `right - left - 1` covers exactly the positions between the two walls
+
+The pop calculates only the layer above `height[bottom]` and below the shorter
+wall. If another pop follows, it starts from a higher bottom level, so the
+layers remain disjoint.
+
+After all lower tops are popped, the current height is less than or equal to
+the stack-top height. Pushing `right` restores the non-increasing invariant.
+
+### Checks
+
+```python
+solution = Solution()
+
+assert solution.trap([0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]) == 6
+assert solution.trap([4, 2, 0, 3, 2, 5]) == 9
+assert solution.trap([4, 2, 0, 3]) == 4
+assert solution.trap([3, 0, 2]) == 2
+assert solution.trap([5, 4, 3, 2, 1]) == 0
+assert solution.trap([2, 2, 2]) == 0
+assert solution.trap([1]) == 0
+```
+
+### Complexity
+
+Every index is pushed once and popped at most once. All iterations of the
+nested `while` therefore total O(n):
+
+- Time: O(n).
+- Extra space: O(n), for the index stack.
+
+The two-pointer version remains preferable when O(1) extra space is the main
+goal. The stack version is preferable when the learning goal is to recognize
+unresolved candidates and settle a full interval when its future boundary
+arrives.
+
+### Connection to Other Monotonic-Stack Problems
+
+The stack mechanism is shared, but each problem assigns a different meaning to
+a pop:
+
+| Problem | Stack order | What a pop settles |
+| --- | --- | --- |
+| 739 Daily Temperatures | Non-increasing temperatures | Waiting distance to the first warmer day |
+| 503 Next Greater Element II | Non-increasing values | Next greater value in a circular array |
+| 84 Largest Rectangle in Histogram | Non-decreasing heights | Maximal width for one limiting height |
+| 42 Trapping Rain Water | Non-increasing heights | Water layer closed by left and right walls |
+
 ## Summary
 
 The derivation is:
@@ -442,4 +615,18 @@ calculate the water above one position
 -> move one pointer per round for O(n) time and O(1) extra space
 ```
 
-The essential part of the two-pointer solution is not memorizing `if left_highest <= right_highest`. It is explaining why that condition determines the true lower boundary on one side. Once that proof is clear, the four state variables and movement rules no longer need to be memorized as a template.
+The alternative monotonic-stack branch is:
+
+```text
+keep unresolved valley indices in non-increasing height order
+-> let a higher right wall pop one valley bottom
+-> combine the new stack top and current index as two boundaries
+-> calculate one horizontal water layer
+-> push and pop every index at most once
+```
+
+The essential part of the two-pointer solution is explaining why the lower
+known boundary settles one side. The essential part of the stack solution is
+explaining why one pop has both boundaries needed to settle a disjoint water
+layer. The two approaches share the same physical boundary model, but they
+organize the computation differently.
