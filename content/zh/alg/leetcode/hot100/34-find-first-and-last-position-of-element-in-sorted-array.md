@@ -257,7 +257,7 @@ assert first_not_less([1, 3, 5], 6) == 3
 
 ```python
 if start == len(nums) or nums[start] != target:
-    return [-1, -1]
+    return -1
 ```
 
 Python 从左到右计算 `or`，并且会短路：
@@ -266,45 +266,47 @@ Python 从左到右计算 `or`，并且会短路：
 - 只有 `start < len(nums)` 时，才会继续判断 `nums[start] != target`。
 - 两个条件都为假时，`start` 才是一个实际下标，并且 `nums[start] == target`。
 
+这个辅助函数保持统一的整数返回契约：目标存在时返回已验证的第一个下标，不存在时返回 `-1`。完整的 `searchRange` 方法稍后会在目标不存在时返回题目要求的 `[-1, -1]`。
+
 把这条判断接到上一步的辅助函数后面：
 
 ```python
 from typing import List
 
 
-def verified_start_or_absent(nums: List[int], target: int):
+def verified_start_or_absent(nums: List[int], target: int) -> int:
     start = first_not_less(nums, target)
 
     if start == len(nums) or nums[start] != target:
-        return [-1, -1]
+        return -1
 
     return start
 
 
-assert verified_start_or_absent([1, 3, 5], 0) == [-1, -1]
-assert verified_start_or_absent([1, 3, 5], 6) == [-1, -1]
-assert verified_start_or_absent([1, 3, 5], 4) == [-1, -1]
-assert verified_start_or_absent([], 0) == [-1, -1]
+assert verified_start_or_absent([1, 3, 5], 0) == -1
+assert verified_start_or_absent([1, 3, 5], 6) == -1
+assert verified_start_or_absent([1, 3, 5], 4) == -1
+assert verified_start_or_absent([], 0) == -1
 assert verified_start_or_absent([1, 2, 2, 2, 4], 2) == 1
 ```
 
-这个中间函数还不是 LeetCode 的完整方法。目标不存在时，它先沿用题目要求返回 `[-1, -1]`；目标存在时，它只暴露已经验证过的 `start`，不编造尚未求出的另一个下标。
+这个中间函数还不是 LeetCode 的完整方法。它始终返回一个整数：目标不存在时返回 `-1`，目标存在时返回已验证的 `start`。它不编造尚未求出的另一个下标。
 
 ### 检查：两个条件分别挡住什么
 
 | 输入 | `first_not_less` 返回值 | 验证结果 |
 | :--- | ---: | :--- |
-| `[1,3,5]`, `target = 0` | `0` | `nums[0]` 是 `1`，返回 `[-1, -1]` |
-| `[1,3,5]`, `target = 6` | `3` | `start == len(nums)`，短路后返回 `[-1, -1]` |
-| `[1,3,5]`, `target = 4` | `2` | `nums[2]` 是 `5`，返回 `[-1, -1]` |
-| `[]`, `target = 0` | `0` | `start == len(nums)`，短路后返回 `[-1, -1]` |
+| `[1,3,5]`, `target = 0` | `0` | `nums[0]` 是 `1`，返回 `-1` |
+| `[1,3,5]`, `target = 6` | `3` | `start == len(nums)`，短路后返回 `-1` |
+| `[1,3,5]`, `target = 4` | `2` | `nums[2]` 是 `5`，返回 `-1` |
+| `[]`, `target = 0` | `0` | `start == len(nums)`，短路后返回 `-1` |
 | `[1,2,2,2,4]`, `target = 2` | `1` | `nums[1] == 2`，保留已验证的起始下标 `1` |
 
 最后一行还说明了为什么继续复用 `first_not_less`：通过验证的下标不仅包含目标值，而且仍然是目标值第一次出现的位置。
 
 ### Step 3 结果
 
-现在这个版本可以安全地区分插入位置和真实命中：目标不存在时返回 `[-1, -1]`，目标存在时得到经过验证的第一次出现位置。
+现在这个版本可以安全地区分插入位置和真实命中：目标不存在时返回 `-1`，目标存在时得到经过验证的第一次出现位置。
 
 它仍然缺少：目标存在时，我们还没有计算它最后一次出现的位置，因此还不能返回完整范围。
 

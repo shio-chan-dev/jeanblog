@@ -256,7 +256,7 @@ Reuse `first_not_less` from Step 2 and add this condition after it returns:
 
 ```python
 if start == len(nums) or nums[start] != target:
-    return [-1, -1]
+    return -1
 ```
 
 Python evaluates `or` from left to right and short-circuits:
@@ -265,45 +265,47 @@ Python evaluates `or` from left to right and short-circuits:
 - Only when `start < len(nums)` does Python continue to test `nums[start] != target`.
 - When both conditions are false, `start` is an actual index and `nums[start] == target`.
 
+This helper has one consistent integer return contract: return the verified first index when the target exists, or `-1` when it does not. The complete `searchRange` method will later return the problem's required `[-1, -1]` for the absent case.
+
 Attach this check to the helper from the previous step:
 
 ```python
 from typing import List
 
 
-def verified_start_or_absent(nums: List[int], target: int):
+def verified_start_or_absent(nums: List[int], target: int) -> int:
     start = first_not_less(nums, target)
 
     if start == len(nums) or nums[start] != target:
-        return [-1, -1]
+        return -1
 
     return start
 
 
-assert verified_start_or_absent([1, 3, 5], 0) == [-1, -1]
-assert verified_start_or_absent([1, 3, 5], 6) == [-1, -1]
-assert verified_start_or_absent([1, 3, 5], 4) == [-1, -1]
-assert verified_start_or_absent([], 0) == [-1, -1]
+assert verified_start_or_absent([1, 3, 5], 0) == -1
+assert verified_start_or_absent([1, 3, 5], 6) == -1
+assert verified_start_or_absent([1, 3, 5], 4) == -1
+assert verified_start_or_absent([], 0) == -1
 assert verified_start_or_absent([1, 2, 2, 2, 4], 2) == 1
 ```
 
-This intermediate helper is not the complete LeetCode method. For an absent target, it follows the problem contract by returning `[-1, -1]` early. For a present target, it exposes only the verified `start`; it does not fabricate the other index that has not been derived yet.
+This intermediate helper is not the complete LeetCode method. It returns one integer: `-1` for an absent target or the verified `start` for a present target. It does not fabricate the other index that has not been derived yet.
 
 ### Check: What Each Part of the Guard Prevents
 
 | Input | `first_not_less` result | Validation result |
 | :--- | ---: | :--- |
-| `[1,3,5]`, `target = 0` | `0` | `nums[0]` is `1`, so return `[-1, -1]` |
-| `[1,3,5]`, `target = 6` | `3` | `start == len(nums)`, so short-circuit and return `[-1, -1]` |
-| `[1,3,5]`, `target = 4` | `2` | `nums[2]` is `5`, so return `[-1, -1]` |
-| `[]`, `target = 0` | `0` | `start == len(nums)`, so short-circuit and return `[-1, -1]` |
+| `[1,3,5]`, `target = 0` | `0` | `nums[0]` is `1`, so return `-1` |
+| `[1,3,5]`, `target = 6` | `3` | `start == len(nums)`, so short-circuit and return `-1` |
+| `[1,3,5]`, `target = 4` | `2` | `nums[2]` is `5`, so return `-1` |
+| `[]`, `target = 0` | `0` | `start == len(nums)`, so short-circuit and return `-1` |
 | `[1,2,2,2,4]`, `target = 2` | `1` | `nums[1] == 2`, so preserve the verified start index `1` |
 
 The last row also shows why we continue to reuse `first_not_less`: after validation, its index not only contains the target but remains the target's first occurrence.
 
 ### Step 3 Result
 
-This version can now safely distinguish an insertion position from a real match: it returns `[-1, -1]` when the target is absent and produces a verified first occurrence when the target is present.
+This version can now safely distinguish an insertion position from a real match: it returns `-1` when the target is absent and produces a verified first occurrence when the target is present.
 
 It still lacks the last occurrence of a present target, so it cannot return the complete range yet.
 
