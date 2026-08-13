@@ -1,7 +1,7 @@
 ---
 title: "LeetCode 74：搜索二维矩阵"
 date: 2026-08-13
-draft: true
+draft: false
 categories:
   - LeetCode
 tags:
@@ -245,3 +245,141 @@ assert solution.searchMatrix(matrix, 61) is False
 二分搜索阶段每轮排除至少一半候选下标，时间复杂度是 `O(log(mn))`。但是，完整方法仍然要先复制 `m * n` 个元素来构造 `flat`，因此完整方法的时间复杂度仍是 `O(mn)`，额外空间复杂度也是 `O(mn)`。
 
 到这个检查点，我们已经能在实际展开的有序数组上使用标准闭区间二分查找。不过，构造 `flat` 仍然需要复制和保存矩阵中的全部 `m * n` 个元素。
+
+## 第四步：不创建数组也能访问 `flat[mid]`
+
+当前基线已经有一段完整、正确的二分查找。观察它的循环可以发现，每一轮只需要读取一个值：`flat[mid]`。但是，为了得到这一个值，当前版本会先复制矩阵中的全部 `m * n` 个元素。
+
+这正是完整方法仍然需要 `O(mn)` 时间和额外空间的原因。现在缺少的不是另一种搜索方法，而是一个更直接的读取方式：给定按行展开后的下标 `mid`，怎样从原矩阵中找到同一个元素？
+
+设每行有 `cols` 个元素。在虚拟下标 `mid` 之前，每经过完整的 `cols` 个元素，就跨过一行。因此：
+
+```text
+row = mid // cols
+col = mid % cols
+```
+
+整数除法得到已经跨过的完整行数，余数得到当前元素在这一行中的列号。以三行四列的官方矩阵为例，四个边界下标会映射为：
+
+| 虚拟下标 | `row = mid // cols` | `col = mid % cols` | 矩阵位置 |
+| --- | ---: | ---: | --- |
+| `0` | 0 | 0 | 第一行第一个元素 |
+| `cols - 1 = 3` | 0 | 3 | 第一行最后一个元素 |
+| `cols = 4` | 1 | 0 | 第二行第一个元素 |
+| `rows * cols - 1 = 11` | 2 | 3 | 最后一行最后一个元素 |
+
+因此，不需要真的创建 `flat`。在上一个版本中，把右边界从 `len(flat) - 1` 换成 `rows * cols - 1`，再把 `flat[mid]` 换成 `matrix[row][col]`。其余二分逻辑保持不变：
+
+```python
+import random
+from typing import List
+
+
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        rows = len(matrix)
+        cols = len(matrix[0])
+
+        left = 0
+        right = rows * cols - 1
+
+        while left <= right:
+            mid = (left + right) // 2
+            row = mid // cols
+            col = mid % cols
+            value = matrix[row][col]
+
+            if value == target:
+                return True
+            if value < target:
+                left = mid + 1
+            else:
+                right = mid - 1
+
+        return False
+
+
+solution = Solution()
+matrix = [
+    [1, 3, 5, 7],
+    [10, 11, 16, 20],
+    [23, 30, 34, 60],
+]
+
+# 官方示例：普通命中与缺失。
+assert solution.searchMatrix(matrix, 3) is True
+assert solution.searchMatrix(matrix, 13) is False
+
+# 单个元素：命中与缺失。
+assert solution.searchMatrix([[1]], 1) is True
+assert solution.searchMatrix([[1]], 0) is False
+
+# 第一个元素、最后一个元素，以及范围之外的目标。
+assert solution.searchMatrix(matrix, 1) is True
+assert solution.searchMatrix(matrix, 60) is True
+assert solution.searchMatrix(matrix, 0) is False
+assert solution.searchMatrix(matrix, 61) is False
+
+# 只有一行或一列。
+assert solution.searchMatrix([[1, 3, 5, 7]], 5) is True
+assert solution.searchMatrix([[1, 3, 5, 7]], 6) is False
+assert solution.searchMatrix([[1], [3], [5]], 3) is True
+assert solution.searchMatrix([[1], [3], [5]], 4) is False
+
+# 行内可以有重复值，但下一行开头仍严格大于上一行结尾。
+matrix_with_duplicates = [
+    [1, 1, 3],
+    [5, 5, 8],
+]
+assert solution.searchMatrix(matrix_with_duplicates, 1) is True
+assert solution.searchMatrix(matrix_with_duplicates, 5) is True
+assert solution.searchMatrix(matrix_with_duplicates, 4) is False
+
+# 搜索不会修改输入矩阵。
+snapshot = [row[:] for row in matrix]
+solution.searchMatrix(matrix, 16)
+assert matrix == snapshot
+
+# 用固定种子生成 1,200 个合法矩阵，并与逐个扫描的结果比较。
+rng = random.Random(74)
+
+for _ in range(1_200):
+    test_rows = rng.randint(1, 8)
+    test_cols = rng.randint(1, 8)
+    next_value = rng.randint(-100, 100)
+    test_matrix = []
+
+    for _ in range(test_rows):
+        test_row = [next_value]
+        for _ in range(1, test_cols):
+            test_row.append(test_row[-1] + rng.randint(0, 3))
+        test_matrix.append(test_row)
+        next_value = test_row[-1] + rng.randint(1, 3)
+
+    test_target = rng.randint(test_matrix[0][0] - 2, test_matrix[-1][-1] + 2)
+    expected = any(
+        value == test_target
+        for test_row in test_matrix
+        for value in test_row
+    )
+    actual = solution.searchMatrix(test_matrix, test_target)
+    assert actual is expected
+```
+
+### 为什么映射后的二分仍然正确
+
+第二步已经得到一个关键事实：矩阵按行读取后形成全局有序序列。现在虽然不再保存这个序列，但虚拟下标与矩阵坐标之间是一一对应的。对任意 `0 <= mid < rows * cols`：
+
+- `mid // cols` 一定落在 `0` 到 `rows - 1` 之间。
+- `mid % cols` 一定落在 `0` 到 `cols - 1` 之间。
+- 把坐标换回一维下标，会得到 `(mid // cols) * cols + mid % cols == mid`。
+
+所以，`matrix[mid // cols][mid % cols]` 读取的正是原来 `flat[mid]` 对应的元素，并且不会越界。
+
+二分循环继续维护同一个不变式：如果目标存在，它的虚拟下标就在闭区间 `[left, right]` 中。中间值小于目标时，全局有序性保证 `mid` 及其左侧都可以排除；中间值大于目标时，则可以排除 `mid` 及其右侧。每轮都排除 `mid` 并严格缩小区间。找到相等值时返回 `True`；区间变空时，所有候选下标都已排除，因此返回 `False`。
+
+### 复杂度
+
+虚拟序列一共有 `m * n` 个下标，二分查找每轮把候选范围缩小至少一半，因此时间复杂度是 `O(log(mn))`。算法只保存矩阵尺寸、三个下标和当前值，没有创建 `flat`，额外空间复杂度是 `O(1)`。
+
+到这个检查点，我们已经把真实一维数组上的标准二分直接迁移到矩阵：用商和余数读取虚拟下标对应的元素，不复制输入，并满足题目要求的 `O(log(mn))` 时间与 `O(1)` 额外空间。算法部分已经完整，接下来只需要教程一致性检查和独立全文审核。
