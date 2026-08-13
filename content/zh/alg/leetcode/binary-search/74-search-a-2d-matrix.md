@@ -96,3 +96,61 @@ assert solution.searchMatrix([[1], [3], [5]], 4) is False
 这个版本最多检查 `m * n` 个元素，因此时间复杂度是 `O(mn)`。循环只保存当前行和当前值，额外空间复杂度是 `O(1)`。
 
 到这个检查点，我们已经能通过逐个扫描正确判断目标值是否存在。不过，它在最慢情况下会检查所有元素，还没有满足题目要求的 `O(log(m * n))` 时间复杂度。
+
+## 第二步：把所有行接成一个有序数组
+
+上一步的逐个扫描是正确的，但它没有使用题目给出的两个排列条件。先看一个更小的矩阵：
+
+```text
+1  3  5
+7  9  11
+```
+
+在每一行内部，元素按非递减顺序排列。跨过行边界时，第二行的第一个元素 `7` 又严格大于第一行的最后一个元素 `5`。因此，如果按从上到下、每行从左到右的顺序接起所有元素，会得到：
+
+```text
+[1, 3, 5, 7, 9, 11]
+```
+
+这个数组仍然有序。同样的关系存在于任意两行之间：行内顺序保证一行中的元素不会逆序，相邻两行首尾之间的严格大小关系保证跨过行边界时也不会逆序。所以，整个矩阵按行展开后是一个全局有序数组。
+
+当前版本直接在两层循环中比较元素，二维的行边界让这个连续顺序没有显现出来。在上一个版本中，先把元素按行写入一个真实的 `flat` 数组，再线性检查 `flat`：
+
+```python
+from typing import List
+
+
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        flat = [value for row in matrix for value in row]
+
+        for value in flat:
+            if value == target:
+                return True
+
+        return False
+
+
+# 小矩阵按行展开后的结果必须完全一致。
+tiny_matrix = [
+    [1, 3, 5],
+    [7, 9, 11],
+]
+tiny_flat = [value for row in tiny_matrix for value in row]
+assert tiny_flat == [1, 3, 5, 7, 9, 11]
+
+solution = Solution()
+matrix = [
+    [1, 3, 5, 7],
+    [10, 11, 16, 20],
+    [23, 30, 34, 60],
+]
+
+# 官方示例：展开后的线性检查保持相同的命中与缺失结果。
+assert solution.searchMatrix(matrix, 3) is True
+assert solution.searchMatrix(matrix, 13) is False
+```
+
+构造 `flat` 会复制 `m * n` 个元素，随后最慢仍要检查其中的 `m * n` 个元素，因此完整方法的时间复杂度是 `O(mn)`，额外空间复杂度也是 `O(mn)`。
+
+到这个检查点，我们已经能把矩阵实际展开为一个全局有序数组，并在搜索中使用它。不过，当前搜索仍然逐个检查元素，而且 `flat` 保存了矩阵中的所有元素。
