@@ -3,8 +3,8 @@ title: "看懂 C# 的 Task<(T1, T2)>：从返回值、命名元组到 async/awai
 subtitle: "以页面观察与决策为例，逐层拆解异步方法签名和调用过程"
 date: 2026-09-01T09:00:00+08:00
 draft: false
-summary: "从同步方法返回一个值开始，逐步引出命名元组、Task<T>、async/await 和 var，最终读懂 Task<(PageObservation Observation, AgentDecision Decision)>。"
-description: "用一个可运行的 .NET 8 示例逐层讲清 C# 命名元组、Task<T>、async/await、var 类型推断，以及如何阅读复杂的异步方法签名。"
+summary: "从同步返回值开始，逐步引出命名元组、泛型任务、异步等待和类型推断，最终读懂同时返回页面观察与决策的异步方法。"
+description: "用一个可运行的 .NET 8 示例逐层讲清 C# 命名元组、泛型任务、异步等待、类型推断，以及如何阅读复杂的异步方法签名。"
 categories: ["语言设计"]
 tags: ["C#", ".NET 8", "async/await", "Task", "命名元组"]
 keywords: ["C# Task 元组", "C# async await", "Task<T>", "C# 命名元组", "C# 异步返回值"]
@@ -67,7 +67,131 @@ Task<T>：异步操作完成后会产生一个什么类型的结果
 2. `Task<T>` 中的 `T`，就是异步完成后得到的结果类型；
 3. `await Task<T>` 的结果是 `T`，不再是 `Task<T>`。
 
-下面从第一条开始。
+在进入“返回一个值”之前，先看最基础的情况：方法可以做事，但不向调用方返回结果。
+
+## 开始之前：`void` 表示不返回结果
+
+在 C# 方法声明中，方法名前面的类型表示返回类型。例如：
+
+```csharp
+static void PrintDecision(
+    PageObservation observation,
+    AgentDecision decision)
+{
+    Console.WriteLine($"agent_observation: {observation.Page}");
+    Console.WriteLine($"agent_action: {decision.Action}");
+}
+```
+
+这里的方法头是：
+
+```csharp
+static void PrintDecision(...)
+```
+
+其中 `void` 表示：`PrintDecision` 执行结束后，不会把一个结果交还给调用方。
+
+调用时只需要执行方法：
+
+```csharp
+PrintDecision(
+    supplierResult.Observation,
+    supplierDecision);
+```
+
+程序进入 `PrintDecision`，打印两行日志，然后回到调用位置继续执行下一行：
+
+```text
+读取 observation 和 decision
+        ↓
+向控制台打印两行日志
+        ↓
+PrintDecision 执行结束
+        ↓
+回到调用位置继续执行
+```
+
+因为没有结果返回，不能用变量接收它：
+
+```csharp
+var result = PrintDecision(
+    supplierResult.Observation,
+    supplierDecision); // 编译错误：无法把 void 赋给变量
+```
+
+### `void` 不等于“什么都没做”
+
+`PrintDecision` 确实做了事情：它读取参数，并把内容写入控制台。`void` 只说明它没有把一个计算结果返回给调用方。
+
+这种“改变外部可观察状态，但不返回结果”的操作通常称为副作用。写日志、保存文件和点击按钮都可以是副作用。是否产生副作用与是否返回值是两个不同问题：
+
+```text
+做了什么：PrintDecision 向控制台写入日志
+返回什么：没有返回值，所以返回类型是 void
+```
+
+对比一个返回 `bool` 的方法：
+
+```csharp
+static bool IsTrustedHost(string host)
+{
+    return host == "example.com";
+}
+```
+
+它的方法头声明返回类型为 `bool`：
+
+```csharp
+static bool IsTrustedHost(string host)
+```
+
+因此方法必须返回 `true` 或 `false`，调用方也可以接收这个结果：
+
+```csharp
+bool trusted = IsTrustedHost("example.com");
+```
+
+两种调用的区别是：
+
+```text
+PrintDecision(...)             执行操作，没有结果可接收
+IsTrustedHost("example.com")   执行判断，返回 bool 结果
+```
+
+### `void` 方法中的 `return;`
+
+`void` 方法可以使用不带值的 `return;` 提前结束：
+
+```csharp
+static void PrintMessage(string? message)
+{
+    if (message is null)
+    {
+        return;
+    }
+
+    Console.WriteLine(message);
+}
+```
+
+如果 `message` 是 `null`，程序执行 `return;` 后立即离开方法，不再运行后面的 `Console.WriteLine`。
+
+但 `void` 方法不能返回一个值：
+
+```csharp
+return "hello"; // 编译错误：void 方法不能返回 string
+```
+
+现在可以得到第一组清晰的对应关系：
+
+```text
+void    → 方法结束后不返回结果
+bool    → 方法结束后返回 true 或 false
+int     → 方法结束后返回整数
+string  → 方法结束后返回文本
+```
+
+接下来先让方法返回一个 `PageObservation`。后续再依次把返回类型扩展为命名元组和 `Task<T>`。
 
 ## 第一步：同步方法先返回一个值
 
